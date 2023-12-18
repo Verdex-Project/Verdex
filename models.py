@@ -2,9 +2,11 @@ import os, json, sys, random, datetime, copy, base64
 from passlib.hash import sha256_crypt as sha
 from dotenv import load_dotenv
 
-def fileContent(fileName):
-    with open(fileName, 'r') as f:
+def fileContent(filePath, passAPIKey=False):
+    with open(filePath, 'r') as f:
         f_content = f.read()
+        if passAPIKey:
+            f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
         return f_content
     
 class Encryption:
