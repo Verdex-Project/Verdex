@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 @app.route('/')
-def hello_world():
+def homepage():
     return render_template('homepage.html')
 
 if __name__ == '__main__':
