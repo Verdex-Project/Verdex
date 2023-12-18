@@ -41,3 +41,6 @@ class Encryption:
     @staticmethod
     def convertBase64ToSHA(base64Hash):
         return Encryption.encodeToSHA256(Encryption.decodeFromB64(base64Hash))
+    
+class Universal:
+    systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
