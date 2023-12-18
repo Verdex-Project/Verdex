@@ -16,3 +16,7 @@ def logo():
         return send_file("assets/logos/icon.png", mimetype="image/png")
     else:
         return send_file("assets/logos/logoColour.png", mimetype="image/png")
+    
+@assetsBP.route("/assets/profileIcon", methods=["GET"])
+def profileIcon():
+    return send_file("assets/logos/profileIcon.svg", mimetype="image/svg+xml")

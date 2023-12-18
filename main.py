@@ -8,11 +8,11 @@ CORS(app)
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return render_template('homepage.html')
 
 if __name__ == '__main__':
     # Register routes
-    
+
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)
