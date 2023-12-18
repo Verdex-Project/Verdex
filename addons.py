@@ -1,5 +1,8 @@
 import os, sys, json, datetime, copy
-
+import firebase_admin
+from firebase_admin import db
+from dotenv import load_dotenv
+load_dotenv()
 
 class AddonsManager:
     config = None

@@ -2,6 +2,8 @@ import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
 from flask_cors import CORS
 from models import *
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)

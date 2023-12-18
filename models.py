@@ -1,6 +1,7 @@
 import os, json, sys, random, datetime, copy, base64
 from passlib.hash import sha256_crypt as sha
 from dotenv import load_dotenv
+load_dotenv()
 
 def fileContent(filePath, passAPIKey=False):
     with open(filePath, 'r') as f:
