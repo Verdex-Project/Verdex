@@ -20,3 +20,7 @@ def logo():
 @assetsBP.route("/assets/profileIcon", methods=["GET"])
 def profileIcon():
     return send_file("assets/logos/profileIcon.svg", mimetype="image/svg+xml")
+
+@assetsBP.route("/assets/copyright")
+def copyright():
+    return fileContent("assets/copyright.js")
