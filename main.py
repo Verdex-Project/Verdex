@@ -12,6 +12,20 @@ CORS(app)
 def homepage():
     return render_template('homepage.html')
 
+# Security pages
+@app.route('/security/error')
+def error():
+    if 'error' not in request.args:
+        return render_template("error.html", error=None, originURL=request.host_url)
+    else:
+        return render_template("error.html", error=request.args["error"], originURL=request.host_url)
+    
+@app.route("/security/unauthorised")
+def unauthorised():
+    if "error" not in request.args:
+        return render_template("unauthorised.html", message="No error message was provided.", originURL=request.host_url)
+    return render_template("unauthorised.html", message=request.args["error"], originURL=request.host_url)
+
 if __name__ == '__main__':
     # Register routes
 
