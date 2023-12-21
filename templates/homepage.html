@@ -6,17 +6,56 @@
 <style>
     /* Create rulesets to align content to the centre of the screen. */
     #content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        text-align: center;
+        /* text-align: center; */
+        margin-top: 200px;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #topFold {
+        padding: 50px;
+    }
+
+    .left {
+        float: left;
+    }
+
+    .right {
+        float: right;
+    }
+
+    #heading {
+        font-size: 5em;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    @media screen and (max-width: 600px) {
+        #heading {
+            font-size: 2em;
+        }
+    }
+
+    #emphasis {
+        color: #00b300;
+        font-style: italic;
+        text-decoration: underline;
     }
 </style>
 {% endblock %}
 
 {% block body %}
 <div id="content">
-    <h1>Welcome to Verdex.</h1>
+    <div id="topFold">
+        <div class="left">
+            <h1 id="heading">See the world in<br> <span id="emphasis">a green way.</span></h1>
+            <h5 style="margin-bottom: 50px;">Re-imagine your trips with us.</h5>
+            <p>Integrate sustainable activities in your itinerary and do things you would have never imagined otherwise.</p>
+        </div>
+        <div class="right">
+            <img src="https://media.istockphoto.com/id/493084438/vector/green-earth.jpg?s=612x612&w=0&k=20&c=5O72nXxFVInQRTju6WyydCBdqwp14lWi25H6Aq-EZCA="
+                height="300" />
+        </div>
+    </div>
 </div>
 {% endblock %}
