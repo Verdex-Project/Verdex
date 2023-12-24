@@ -8,6 +8,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+app.secret_key = os.environ['AppSecretKey']
+
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
