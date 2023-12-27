@@ -28,6 +28,11 @@ def unauthorised():
         return render_template("unauthorised.html", message="No error message was provided.", originURL=request.host_url)
     return render_template("unauthorised.html", message=request.args["error"], originURL=request.host_url)
 
+## Make a 404 route
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("error.html", error="404: Page not found.", originURL=request.host_url)
+
 if __name__ == '__main__':
     # Register routes
 
