@@ -4,3 +4,5 @@ virt/
 venv/
 serviceAccountKey.json
 config.txt
+.DS_Store
+database.txt
