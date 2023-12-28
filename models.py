@@ -1,7 +1,6 @@
 import os, json, sys, random, datetime, copy, base64
 from passlib.hash import sha256_crypt as sha
-from dotenv import load_dotenv
-load_dotenv()
+from addons import *
 
 def fileContent(filePath, passAPIKey=False):
     with open(filePath, 'r') as f:
@@ -9,7 +8,98 @@ def fileContent(filePath, passAPIKey=False):
         if passAPIKey:
             f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
         return f_content
+
+# DatabaseInterface class
+class DI:
+    data = []
+
+    @staticmethod
+    def setup():
+        if not os.path.exists(os.path.join(os.getcwd(), "database.txt")):
+            with open("database.txt", "w") as f:
+                f.write("{}")
+        
+        if FireConn.checkPermissions():
+            print("DI: Firebase RTDB is enabled. Connecting to Firebase...")
+            try:
+                response = FireConn.connect()
+                if response != True:
+                    print("DI FIRECONN ERROR: " + response)
+                    return "Error"
+                
+                print("DI: Connected to Firebase!")
+            except Exception as e:
+                print("DI FIRECONN ERROR: " + str(e))
+                return "Error"
+            
+        return DI.load()
     
+    @staticmethod
+    def load():
+        try:
+            if not os.path.exists(os.path.join(os.getcwd(), "database.txt")):
+                with open("database.txt", "w") as f:
+                    f.write("{}")
+            
+            if FireConn.checkPermissions():
+                # Fetch data from RTDB
+                fetchedData = FireRTDB.getRef()
+                if isinstance(fetchedData, str) and fetchedData.startswith("ERROR"):
+                    # Trigger last resort of local database (Auto-repair)
+                    print("DI-FIRERTDB GETREF ERROR: " + fetchedData)
+                    print("DI: System will try to resort to local database to load data to prevent a crash. Attempts to sync with RTDB will continue.")
+
+                    # Read data from local database file
+                    with open("database.txt", "r") as f:
+                        DI.data = json.load(f)
+                    return "Success"
+                
+                # Translate data for local use
+                fetchedData = FireRTDB.translateForLocal(fetchedData)
+                if isinstance(fetchedData, str) and fetchedData.startswith("ERROR"):
+                    # Trigger last resort of local database (Auto-repair)
+                    print("DI-FIRERTDB TRANSLATELOCAL ERROR: " + fetchedData)
+                    print("DI: System will try to resort to local database to load data to prevent a crash. Attempts to sync with RTDB will continue.")
+
+                    # Read data from local database file
+                    with open("database.txt", "r") as f:
+                        DI.data = json.load(f)
+                    return "Success"
+                
+                # Write data to local db file
+                with open("database.txt", "w") as f:
+                    json.dump(fetchedData, f)
+
+                # Load data into DI
+                DI.data = fetchedData
+            else:
+                # Read data from local database file
+                with open("database.txt", "r") as f:
+                    DI.data = json.load(f)
+                return "Success"
+        except Exception as e:
+            print("DI ERROR: Failed to load data from database; error: {}".format(e))
+            return "Error"
+        return "Success"
+    
+    @staticmethod
+    def save():
+        try:
+            with open("database.txt", "w") as f:
+                json.dump(DI.data, f)
+
+            # Update RTDB
+            if FireConn.checkPermissions():
+                response = FireRTDB.setRef(FireRTDB.translateForCloud(DI.data))
+                if response != True:
+                    print("DI FIRERTDB SETREF ERROR: " + response)
+                    print("DI: System will resort to local database to prevent a crash. Attempts to sync with RTDB will continue.")
+                    # Continue runtime as system can function without cloud database
+        except Exception as e:
+            print("DI ERROR: Failed to save data to database; error: {}".format(e))
+            return "Error"
+        return "Success"
+
 class Encryption:
     @staticmethod
     def encodeToB64(inputString):
