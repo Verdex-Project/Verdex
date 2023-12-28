@@ -6,7 +6,8 @@ def fileContent(filePath, passAPIKey=False):
     with open(filePath, 'r') as f:
         f_content = f.read()
         if passAPIKey:
-            f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
+            # f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
+            f_content = f_content.replace("\\{{ API_KEY }}", os.getenv("API_KEY"))
         return f_content
 
 # DatabaseInterface class
