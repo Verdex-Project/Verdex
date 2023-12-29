@@ -28,6 +28,14 @@ def unauthorised():
         return render_template("unauthorised.html", message="No error message was provided.", originURL=request.host_url)
     return render_template("unauthorised.html", message=request.args["error"], originURL=request.host_url)
 
+#Added this
+@app.route('/report')
+def report():
+    with open('test_data.json', 'r') as file:
+        data = json.load(file)
+    return render_template('report.html', data=data)
+#End
+
 ## Make a 404 route
 @app.errorhandler(404)
 def page_not_found(e):
