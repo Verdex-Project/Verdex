@@ -34,6 +34,14 @@ def page_not_found(e):
     return render_template("error.html", error="404: Page not found.", originURL=request.host_url)
 
 if __name__ == '__main__':
+    # Boot pre-processing
+
+    ## Set up DatabaseInterface
+    response = DI.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up DI; error: " + response)
+        sys.exit(1)
+
     # Register routes
 
     ## Assets service
