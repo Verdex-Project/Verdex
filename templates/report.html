@@ -7,10 +7,13 @@
     <title>Report</title>
 </head>
 <body>
-    <h1>Generated Report</h1>
-    <p>Number of Sign-ins: {{ data.sign_ins }}</p>
-    <p>Number of Forum Posts: {{ data.forum_posts }}</p>
-    <p>Number of Users Banned: {{ data.users_banned }}</p>
-    <p>System Health > 80%: {{ data.system_healthy }}</p>
+    <h1>Generated Reports</h1>
+    <div class="report-container">
+        <h3>Report #{{ data.report_id }}</h3>
+        <p>Number of Sign-ins: {{ data.sign_ins }}</p>
+        <p>Number of Forum Posts: {{ data.forum_posts }}</p>
+        <p>Number of Users Banned: {{ data.users_banned }}</p>
+        <p>System Health > 80%: {{ data.system_healthy }}</p>
+    </div>
 </body>
 </html>
