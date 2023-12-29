@@ -39,6 +39,9 @@
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
+								<div id="timeDropdownContent">
+									<!--time radio selection (interval:30minutes/1hour)-->
+								</div>
                             </div>
                         </div>
                         <div id="divider">-</div>
@@ -48,6 +51,9 @@
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
+								<div id="timeDropdownContent">
+									<!--time radio selection (interval:30minutes/1hour)-->
+								</div>
                             </div>
                         </div>
                     </div>
@@ -137,6 +143,21 @@
                 </div>
 				<div id="extendFilter">
 					<button id="extendFilterButton">▼</button>
+					<div id="extendFilterContent">
+						<div id="filtersSelected">
+							<p>{{ filtersSelectedCount }} Selected</p> <!--center-->
+						</div>
+						<div id="extendFilterContent-locations">
+							<h6>Locations:</h6>
+							<label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+							<input type="checkbox" id="location1" name="location1" value="Example">
+						</div>
+						<div id="extendFilterContent-Activities">
+							<h6>Activities:</h6>
+							<label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+							<input type="checkbox" id="location1" name="location1" value="Example">
+						</div>
+					</div>
 				</div>
                 {% endblock %}
             {% else %}
