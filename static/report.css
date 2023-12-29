@@ -1,4 +1,4 @@
-body {
+.secondarybody {
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 20px;
@@ -8,6 +8,10 @@ body {
 .report-container {
     border: 2px solid #333;
     border-radius: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-top: 0px;
+    margin-bottom: 10px;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -15,6 +19,15 @@ body {
 
 h1 {
     color: #333;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    padding-left: 20px;
+    padding-right:20px;
+    padding-top:5px;
+    padding-bottom: 15px;
+    font-family: Arial, sans-serif;
 }
 
 p {
