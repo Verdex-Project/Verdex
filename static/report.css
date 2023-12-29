@@ -35,6 +35,17 @@ p {
     margin-bottom: 10px;
 }
 
-.download-report-button {
-    margin-left:1125px;
+.download-report-button{
+    float: right;
+    margin-top: -45px;
+    margin-right: 70px;
+    border-radius: 7px;
+    background-color: whitesmoke;
+    transition: 0.2s;
+}
+
+.download-report-button:hover {
+    background-color: whitesmoke;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: 0.2s;
 }
