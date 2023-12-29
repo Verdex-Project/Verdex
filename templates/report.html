@@ -3,12 +3,13 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='report.css') }}">
-    {% block title %}<title>Report</title>{% endblock %}
+    {% block title %}Report{% endblock %}
 {% endblock %}
 
 <div class="secondarybody">
     {% block body %}
         <h2>Generated Reports</h2>
+        <button class="download-report-button">Download a report</button>
         <div class="report-container">
             <h3>Report #{{ data.report_id }}</h3>
             <p>Number of Sign-ins: <b>{{ data.sign_ins }}</b></p>
