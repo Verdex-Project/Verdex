@@ -1,4 +1,4 @@
-{% extends "baseNav.html" %}
+{% extends "baseNav.html" %} <!--NAVBAR-->
 
 {% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
 
@@ -7,5 +7,174 @@
 {% endblock %}
 
 {% block body %}
-<!-- html structure -->
+<div id="content">
+
+    <div id="editorPanel"> <!--editor panel start-->
+
+        <div id="editorPanel-header"> <!--HEADER-->
+            Itinerary Editor
+        </div>
+
+        <div id="editorPanel-sub-header"> <!--SUB HEADER-->
+            <div id="sub-headder-box-left">
+                <div id="changeDayArrowLeft"><button><</button></div>
+                <div id="dayCount">Day {{ count }}</div>
+                <div id="changeDayArrowRight"><button>></button></div>
+            </div>
+            <div id="sub-headder-box-right">
+                <div id="date">
+                    <!-- add date jinja -->
+                </div>
+            </div>
+        </div>
+
+        <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+            {% for i in [Day {{count}}][activities] %} 
+                <div id="activityBox">
+
+                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                        <div id="timestart">
+                            <div>
+                                <!--getStartTime-->
+                            </div>
+                            <div id="timeDropdown">
+                                <button id="timeDropButton">▼</button>
+                            </div>
+                        </div>
+                        <div id="divider">-</div>
+                        <div id="timeEnd">
+                            <div>
+                                <!--getEndTime-->
+                            </div>
+                            <div id="timeDropdown">
+                                <button id="timeDropButton">▼</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                    <div id="activityFooter">
+                        <div id="acticityDescription"> <!--left-->
+                            <p>Example | Example</p>
+                        </div>
+                        <div id="deleteActivity"> <!--right-->
+                            <button id="deleteButton">
+                                <img src="#" alt="Delete">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transportBox">
+                    <div id="etaBox">
+                        <!--getETA-->
+                    </div>
+                    <div id="processArrow">
+                        <h1>↓</h1> <!--Or use image to replace-->
+                    </div>
+                    <div id="journeyBox">
+                        <div id="journeyBox-box">
+                            <div id="transportInfo">
+                                <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                            </div>
+                            <div id="transportLogo">
+                                <!--
+                                    If bus import busLogo
+                                    If train import trainLogo
+                                    ...
+                                -->
+                            </div>
+                            <div id="transportDescription">
+                                <p>From {{ start location }} to {{ end location }}</p>
+                            </div>
+                            <div id="detailJourney">
+                                <button id="detailJoutneyButton" onclick="detailedJourney()">
+                                    <img src="#" alt="#">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <button id="addButton" onclick="addNewBlanckActivity()"> <!--Add Button--> <!--Add drop area-->
+                <img src="#" alt="Add Here">
+            </button>
+
+        </div>
+
+        <div id="activityPanelFooter"> <!--Footer-->
+            <div id="deleteItinerary">
+                <img src="#" alt="#">
+                <h5>Delete</h5>
+            </div>
+
+            <div id="saveItinerary">
+                <h5>Proceed</h5>
+				<img src="#" alt="#">
+            </div>
+        </div>
+    </div>
+
+    <div id="borderLine"></div> <!--set height in style-->
+
+    <div id="recommendations"></div>
+        <div id="editorPanel-header"> <!--HEADER-->
+            Recommendations
+        </div>
+
+        <div id="filters"> <!--Filters-->
+            {% if filter == 1 %}
+                {% block content %}
+                <div id="filter1">
+                    <div id="filterLogo">
+                        <img src="#" alt="#">
+                    </div>
+                    <div id="filterName">
+                        {{ filter name }}
+                    </div>
+                </div>
+				<div id="extendFilter">
+					<button id="extendFilterButton">▼</button>
+				</div>
+                {% endblock %}
+            {% else %}
+            {% block content %}
+                <div id="filter2">
+                    <div id="filterNumber">
+                        {{ filter total count }}
+                    </div>
+                    <div id="filterName">
+                        <h5>Filters</h5>
+                    </div>
+                </div>
+				<div id="extendFilter">
+					<button id="extendFilterButton">▼</button>
+				</div>
+                {% endblock %}
+            {% endif %}
+        </div>
+
+        <div id="Recommendations"> <!--Recommendations-->
+            {% for i in [Recommendations] %}
+			<div id="recom"> <!--set dragable and scrolable-->
+				<div id="recomImage">
+					<img src="#" alt="#"> <!--get recommendation image-->
+				</div>
+				<div id="addSign">
+					<img src="#" alt="#">
+				</div>
+				<div id="recomDescription">
+					<h5>{ recom name }}</h5>{
+					<h6>{{ recom type }}</h6>
+					<div id="rating">
+						{{ getRating }} <img src="#" alt="#"> <!--star image-->
+					</div>
+					<h4>${{ recom price }}/Pax</h4>
+				</div>
+			</div>
+            {% endfor %}
+        </div>
+</div>
 {% endblock %}
