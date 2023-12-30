@@ -53,6 +53,10 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+        
+    ## Generation routes
+    from generation.itineraryGeneration import itineraryGenBP
+    app.register_blueprint(itineraryGenBP)
 
     ## Assets service
     from assets import assetsBP
