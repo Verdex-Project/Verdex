@@ -7,15 +7,15 @@
 
 
 {% block body %}
-<div class="secondarybody">
-    <h2>Generated Reports</h2>
+<div class="content">
+    <h2 class="generated-reports-header">Generated Reports</h2>
     {% for report_id, report_data in data.items() %}
     <div class="report-container">
         <h3>Report #{{ report_id }}</h3>
-        <p>Number of Sign-ins: <b>{{ report_data.sign_ins }}</b></p>
-        <p>Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
-        <p>Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
-        <p>System Health: <b>{{ report_data.system_health }}</b></p>
+        <p class="report-data-content">Number of Sign-ins: <b>{{ report_data.sign_ins }}</b></p>
+        <p class="report-data-content">Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
+        <p class="report-data-content">Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
+        <p class="report-data-content">System Health: <b>{{ report_data.system_health }}</b></p>
         <form action="{{ url_for('download_report') }}" method="post">
             <input type="hidden" name="report_id" value="{{ report_id }}">
             <button class="download-report-button" type="submit">Download Report</button>
