@@ -1,7 +1,12 @@
-import os, sys, json, datetime, copy
+import os, sys, json, datetime, copy, pyrebase
 from firebase_admin import db, storage, credentials, initialize_app
 from dotenv import load_dotenv
 load_dotenv()
+
+config = {
+    "apikey": "AIzaSyBPoAKpx8kn3f2d7BzGcFzzDEAoM8Lxwt8",
+    "AuthDomain": "verdex-238ed.firebaseapp.com"
+}
 
 class AddonsManager:
     config = None
@@ -214,3 +219,43 @@ class FireStorage:
         except Exception as e:
             return "ERROR: Error occurred in downloading file from cloud storage; error: {}".format(e)
         return True
+    
+class FireAuth:
+    @staticmethod
+    def connect():
+        global firebase
+        try:
+            firebase = pyrebase.initialize_app(config)
+            return True
+        except Exception as e:
+            print(f"AUTHENTICATION ERROR: Failed to connect to Firebase; error: {e}")
+            return False
+    
+    @staticmethod
+    def createuser(username, email, password, confirmpassword):
+        global firebase
+        global signedInUser
+        auth = firebase.auth()
+        if password == confirmpassword:
+            user = auth.create_user_with_email_and_password(email, password)
+            user_data = {
+                "email": email,
+                "password": password
+            }
+            db.child("users").child(username).set(user_data)
+            return user
+        else:
+            return "ERROR: Passwords do not match"
+    
+    @staticmethod
+    def login(username, password):
+        global firebase
+        global signedInUser
+        auth = firebase.auth()
+        user_data = db.child("users").child(username).get().val()
+        if user_data:
+            email = user_data["email"]
+            user = auth.sign_in_with_email_and_password(email, password)
+            return user
+        else:
+            return "ERROR: User not found!"

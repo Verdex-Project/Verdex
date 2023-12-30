@@ -69,23 +69,23 @@
     <div id="left">
         <div id="username">
             <p>Username</p>
-            <input type="text" placeholder="Username">
+            <input type="text" id="usernameInput" placeholder="Username">
         </div>
         <div id="email">
             <p>Email</p>
-            <input type="email" placeholder="Email">
+            <input type="email" id="emailInput" placeholder="Email">
         </div>
         <div id="password">
             <p>Password</p>
-            <input type="password" placeholder="Password">
+            <input type="password" id="passwordInput" placeholder="Password">
         </div>
         <div id="cfm-password">
             <p>Confirm Password</p>
-            <input type="password" placeholder="Password">
-        </div>
+            <input type="password" id="confirmPasswordInput" placeholder="Password">
+        </div>        
         <br>
         <div>
-            <input type="submit" value="Sign Up">
+            <input type="submit" id="signUpButton" value="Sign Up">
         </div>
     </div>
 </div>
@@ -97,4 +97,5 @@
 <div id="copyright">
     <script src="/assets/copyright"></script>
 </div>
+<script src="/identity_js/signup.js"></script>
 {% endblock %}
