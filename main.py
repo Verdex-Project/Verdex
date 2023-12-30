@@ -54,6 +54,14 @@ if __name__ == '__main__':
 
     # Register routes
 
+    ## Editor Page
+    from editor.editor import editorPage
+    app.register_blueprint(editorPage)
+
+    ## Completion Page
+    from editor.completion import completionPage
+    app.register_blueprint(completionPage)
+
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)

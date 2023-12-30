@@ -1,11 +1,8 @@
-# refer to prakhar main file
-
-from flask import Flask,render_template
+from flask import Flask,render_template,Blueprint
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+editorPage = Blueprint("editorPageBP",__name__)
 
-@app.route("/editor")
+@editorPage.route("/editor")
 def editor():
-    return render_template("editor.html")
+    return render_template("editor/editor.html")
