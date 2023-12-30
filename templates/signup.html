@@ -38,6 +38,13 @@
         font-size: large;
     }
 
+    #username > p,
+    #password > p,
+    #email > p,
+    #cfm-password > p {
+        margin-top: 15px;
+    }
+
     input {
         height: 30px;
         width: 300px;
@@ -45,6 +52,10 @@
 
     input[type="submit"] {
         margin-top: 20px;
+    }
+
+    #copyright {
+        text-align: center;
     }
 </style>
 {% endblock %}
@@ -81,5 +92,9 @@
 
 <div id="signinlink">
     <p>Already a Verdex user? <a href="/templates/login">Sign In</a></p>
+</div>
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
 </div>
 {% endblock %}

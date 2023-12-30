@@ -36,6 +36,11 @@
         font-size: large;
     }
 
+    #username > p,
+    #password > p {
+        margin-top: 20px;
+    }
+
     input {
         height: 30px;
         width: 300px;
@@ -43,9 +48,13 @@
 
     #recover {
         font-style: italic;
-        font-size: small7;
+        font-size: small;
+        margin-top: 10px;
     }
 
+    #copyright {
+        text-align: center;
+    }
 </style>
 {% endblock %}
 
@@ -77,5 +86,9 @@
 
 <div id="signuplink">
     <p>New to Verdex? <a href="/templates/signup">Sign Up</a></p>
+</div>
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
 </div>
 {% endblock %}
