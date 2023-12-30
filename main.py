@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
+from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -34,6 +34,23 @@ def report():
     with open('test_data.json', 'r') as file:
         data = json.load(file)
     return render_template('report.html', data=data)
+#End
+
+#Added this for report downloading feature
+@app.route('/download_report', methods=['POST'])
+def download_report():
+    report_id = request.form['report_id']
+    with open('test_data.json', 'r') as file:
+        data = json.load(file)
+
+    if report_id in data:
+        report_data = data[report_id]
+        with open('downloaded_report.txt', 'w') as report_file:
+            for key, value in report_data.items():
+                report_file.write(f"{key}: {value}\n")
+        return send_file('downloaded_report.txt', as_attachment=True)
+    else:
+        return "Error: Report ID not found."
 #End
 
 #Added this for forum

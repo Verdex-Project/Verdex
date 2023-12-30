@@ -9,14 +9,19 @@
 <div class="secondarybody">
     {% block body %}
         <h2>Generated Reports</h2>
-        <button class="download-report-button">Download a report</button>
-        <div class="report-container">
-            <h3>Report #{{ data.report_id }}</h3>
-            <p>Number of Sign-ins: <b>{{ data.sign_ins }}</b></p>
-            <p>Number of Forum Posts: <b>{{ data.forum_posts }}</b></p>
-            <p>Number of Users Banned: <b>{{ data.users_banned }}</b></p>
-            <p>System Health: <b>{{ data.system_health }}</b></p>
-        </div>
+        {% for report_id, report_data in data.items() %}
+            <div class="report-container">
+                <h3>Report #{{ report_id }}</h3>
+                <p>Number of Sign-ins: <b>{{ report_data.sign_ins }}</b></p>
+                <p>Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
+                <p>Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
+                <p>System Health: <b>{{ report_data.system_health }}</b></p>
+                <form action="{{ url_for('download_report') }}" method="post">
+                    <input type="hidden" name="report_id" value="{{ report_id }}">
+                    <button class="download-report-button" type="submit">Download Report</button>
+                </form>
+            </div>
+        {% endfor %}
     {% endblock %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
