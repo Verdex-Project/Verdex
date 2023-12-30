@@ -40,12 +40,12 @@ p {
     margin-top: -45px;
     margin-right: 70px;
     border-radius: 7px;
-    background-color: whitesmoke;
+    background-color: rgba(245, 245, 245, 0.596);
     transition: 0.2s;
 }
 
 .download-report-button:hover {
-    background-color: whitesmoke;
+    background-color: rgba(245, 245, 245, 0.596);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     transition: 0.2s;
 }
