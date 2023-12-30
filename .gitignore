@@ -6,4 +6,4 @@ serviceAccountKey.json
 config.txt
 .DS_Store
 database.txt
-downloaded_report.txt
+reports/

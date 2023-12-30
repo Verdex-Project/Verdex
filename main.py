@@ -40,17 +40,29 @@ def report():
 @app.route('/download_report', methods=['POST'])
 def download_report():
     report_id = request.form['report_id']
-    with open('test_data.json', 'r') as file:
-        data = json.load(file)
 
-    if report_id in data:
-        report_data = data[report_id]
-        with open('downloaded_report.txt', 'w') as report_file:
-            for key, value in report_data.items():
-                report_file.write(f"{key}: {value}\n")
-        return send_file('downloaded_report.txt', as_attachment=True)
-    else:
-        return "Error: Report ID not found."
+    ## Load reportsInfo.json using the json module
+    read_reportsInfo = open('reports/reportsInfo.json')
+    loaded_json = json.load(read_reportsInfo)
+    report_id_variable = loaded_json.get('report_id')
+    
+    ## Check whether report_id exists in the loaded reportsInfo
+    if report_id_variable not in loaded_json:
+        return "ID not found in database, please try again."
+    
+    ## Check whether the report file exists in the reports folder (os.path.isfile, os.path.join, os.getcwd)
+    report_folder_path = os.getcwd()
+    report_file_name = f"report_{report_id_variable}.txt"
+    report_file_path = os.path.join(report_folder_path, report_file_name)
+    print(report_file_path)
+    if not os.path.isfile(report_file_path):
+        return "The report file is not found in the database."
+    
+    ## Use send_file to send the corresponding report txt file back
+    try:
+        return send_file(report_file_path)
+    except Exception as e:
+        return str(e)
 #End
 
 #Added this for forum
@@ -93,3 +105,6 @@ if __name__ == '__main__':
     print("Booting Verdex...")
 
     app.run(port=8000, host='0.0.0.0')
+
+# if not os.path.isfile(os.path.join(os.getcwd(), "reports", "report-{}.txt".format(report_id))):
+#     return "ERROR: Report file was not found."
