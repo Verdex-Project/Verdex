@@ -29,7 +29,9 @@
         </div>
 
         <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
-            {% for i in [Day {{count}}][activities] %} 
+            {% for i in [Day {{count}}][activities] %}
+            {% if i != activitiesList.[-1] %}
+                {% block content %}
                 <div id="activityBox">
 
                     <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
@@ -102,12 +104,58 @@
                         </div>
                     </div>
                 </div>
+                {% endblock %}
+            {% else %}
+                {% block content %}
+                <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                    <div id="timestart">
+                        <div>
+                            <!--getStartTime-->
+                        </div>
+                        <div id="timeDropdown">
+                            <button id="timeDropButton">▼</button>
+                            <div id="timeDropdownContent">
+                                <!--time radio selection (interval:30minutes/1hour)-->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divider">-</div>
+                    <div id="timeEnd">
+                        <div>
+                            <!--getEndTime-->
+                        </div>
+                        <div id="timeDropdown">
+                            <button id="timeDropButton">▼</button>
+                            <div id="timeDropdownContent">
+                                <!--time radio selection (interval:30minutes/1hour)-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                    <div id="activityFooter">
+                        <div id="acticityDescription"> <!--left-->
+                            <p>Example | Example</p>
+                        </div>
+                        <div id="deleteActivity"> <!--right-->
+                            <button id="deleteButton">
+                                <img src="#" alt="Delete">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addExtra">
+                    <button id="addButton" onclick="addNewBlanckActivity()"> <!--Add Button--> <!--Add drop area-->
+                        <img src="#" alt="Add Here">
+                    </button>
+                </div>
+                {% endblock %}
+            {% endif %}
             {% endfor %}
 
-            <button id="addButton" onclick="addNewBlanckActivity()"> <!--Add Button--> <!--Add drop area-->
-                <img src="#" alt="Add Here">
-            </button>
-
+            
         </div>
 
         <div id="activityPanelFooter"> <!--Footer-->
@@ -131,7 +179,7 @@
         </div>
 
         <div id="filters"> <!--Filters-->
-            {% if filter == 1 %}
+            {% if selectedFilter == 1 %}
                 {% block content %}
                 <div id="filter1">
                     <div id="filterLogo">
