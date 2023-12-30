@@ -41,26 +41,28 @@ def report():
 def download_report():
     report_id = request.form['report_id']
 
-    ## Load reportsInfo.json using the json module
-    read_reportsInfo = open('reports/reportsInfo.json')
-    loaded_json = json.load(read_reportsInfo)
-    report_id_variable = loaded_json.get('report_id')
+    with open('reports/reportsInfo.json', 'r') as read_reportsInfo:
+        loaded_json = json.load(read_reportsInfo)
     
-    ## Check whether report_id exists in the loaded reportsInfo
-    if report_id_variable not in loaded_json:
+    if report_id not in loaded_json:
         return "ID not found in database, please try again."
-    
-    ## Check whether the report file exists in the reports folder (os.path.isfile, os.path.join, os.getcwd)
+
+    report_id_variable = str(report_id)
+
     report_folder_path = os.getcwd()
     report_file_name = f"report_{report_id_variable}.txt"
-    report_file_path = os.path.join(report_folder_path, report_file_name)
-    print(report_file_path)
+    report_file_path = os.path.join(report_folder_path, 'reports', report_file_name)
+
     if not os.path.isfile(report_file_path):
         return "The report file is not found in the database."
     
-    ## Use send_file to send the corresponding report txt file back
+    #For code reviewing and debugging purposes 
+    print(f"Report ID: {report_id}")
+    print(f"Report File Path: {report_file_path}")
+
+    # Use send_file to send the corresponding report txt file back
     try:
-        return send_file(report_file_path)
+        return send_file(report_file_path, as_attachment=True)
     except Exception as e:
         return str(e)
 #End
