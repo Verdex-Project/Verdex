@@ -18,12 +18,12 @@
         <div id="editorPanel-sub-header"> <!--SUB HEADER-->
             <div id="sub-headder-box-left">
                 <div id="changeDayArrowLeft" onclick="previousDay()"><button><</button></div>
-                <div id="dayCount">Day {{ count }}</div>
+                <div id="dayCount">Day {{ days }}</div>
                 <div id="changeDayArrowRight" onclick="nextDay()"><button>></button></div>
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
-                    <!-- add date jinja -->
+                    {{ days[date] }}
                 </div>
             </div>
         </div>
@@ -94,7 +94,7 @@
                                 -->
                             </div>
                             <div id="transportDescription">
-                                <p>From {{ startLocation }} to {{ endLocation }}</p>
+                                <p>From <!--get start location--> to <!--get end location--></p>
                             </div>
                             <div id="detailJourney">
                                 <button id="detailJoutneyButton" onclick="detailedJourney()">
@@ -145,7 +145,7 @@
                 </div>
 
                 <div id="addExtra">
-                    <button id="addButton" onclick="addNewBlanckActivity()"> <!--Add Button--> <!--Add drop area-->
+                    <button id="addButton" onclick="addNewBlankActivity()"> <!--Add Button--> <!--Add drop area-->
                         <img src="#" alt="Add Here">
                     </button>
                 </div>
@@ -155,18 +155,18 @@
 
         <div id="activityPanelFooter"> <!--Footer-->
             <div id="deleteItinerary">
-                <div id="deleteItineraryButton">
-                <img src="#" alt="#">
-                <h5>Delete</h5>
+                <button id="deleteItineraryButton" onclick="deleteItinerary()">
+                    <img src="#" alt="#">
+                    <h5>Delete</h5>
+                </button>
             </div>
-        </div>
 
-        <div id="saveItinerary">
-            <div id="saveItineraryButton">
-                <h5>Proceed</h5>
-				<img src="#" alt="#">
+            <div id="saveItinerary">
+                <button id="saveItineraryButton" onclick="saveItinerary()">
+                    <h5>Proceed</h5>
+				    <img src="#" alt="#">
+                </button>
             </div>
-        </div>
         </div>
     </div>
 
