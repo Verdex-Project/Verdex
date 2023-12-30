@@ -23,7 +23,7 @@
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
-                    {{ days[date] }}
+                    {{ [days][date] }}
                 </div>
             </div>
         </div>
@@ -31,13 +31,85 @@
         <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
             <!--get current day from dayCount-->
             {% for j in activities %}
-            {% if not loop.last %}
-                <div id="activityBox">
+                {% if not loop.last %}
+                    <div id="activityBox">
 
+                        <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                            <div id="timestart">
+                                <div>
+                                    <h3 id="startTime">{{ startTime }}</h3>
+                                </div>
+                                <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divider">-</div>
+                            <div id="timeEnd">
+                                <div>
+                                    <h3 id="endTime">{{ endTime }}</h3>
+                                </div>
+                                <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                        <div id="activityFooter">
+                            <div id="acticityDescription"> <!--left-->
+                                <p>{{ location }} | {{ name }}</p>
+                            </div>
+                            <div id="deleteActivity"> <!--right-->
+                                <button id="deleteButton">
+                                    <img src="#" alt="Delete">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="transportBox">
+                        <div id="etaBox">
+                            <!--getETA-->
+                        </div>
+                        <div id="processArrow">
+                            <h1>↓</h1> <!--Or use image to replace-->
+                        </div>
+                        <div id="journeyBox">
+                            <div id="journeyBox-box">
+                                <div id="transportInfo">
+                                    <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                                </div>
+                                <div id="transportLogo">
+                                    <!--
+                                        If bus import busLogo
+                                        If train import trainLogo
+                                        ...
+                                    -->
+                                </div>
+                                <div id="transportDescription">
+                                    <p>From <!--get start location--> to <!--get end location--></p>
+                                </div>
+                                <div id="detailJourney">
+                                    <button id="detailJoutneyButton" onclick="detailedJourney()">
+                                        <img src="#" alt="#">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if loop.last %}
                     <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                         <div id="timestart">
                             <div>
-                                <h3 id="startTime">{{ startTime }}</h3>
+                                {{ startTime }}
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
@@ -49,7 +121,7 @@
                         <div id="divider">-</div>
                         <div id="timeEnd">
                             <div>
-                                <h3 id="endTime">{{ endTime }}</h3>
+                                {{ endTime }}
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
@@ -59,97 +131,26 @@
                             </div>
                         </div>
                     </div>
-
                     <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
 
-                    <div id="activityFooter">
-                        <div id="acticityDescription"> <!--left-->
-                            <p>{{ location }} | {{ name }}</p>
-                        </div>
-                        <div id="deleteActivity"> <!--right-->
-                            <button id="deleteButton">
-                                <img src="#" alt="Delete">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="transportBox">
-                    <div id="etaBox">
-                        <!--getETA-->
-                    </div>
-                    <div id="processArrow">
-                        <h1>↓</h1> <!--Or use image to replace-->
-                    </div>
-                    <div id="journeyBox">
-                        <div id="journeyBox-box">
-                            <div id="transportInfo">
-                                <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                        <div id="activityFooter">
+                            <div id="acticityDescription"> <!--left-->
+                                <p>Example | Example</p>
                             </div>
-                            <div id="transportLogo">
-                                <!--
-                                    If bus import busLogo
-                                    If train import trainLogo
-                                    ...
-                                -->
-                            </div>
-                            <div id="transportDescription">
-                                <p>From <!--get start location--> to <!--get end location--></p>
-                            </div>
-                            <div id="detailJourney">
-                                <button id="detailJoutneyButton" onclick="detailedJourney()">
-                                    <img src="#" alt="#">
+                            <div id="deleteActivity"> <!--right-->
+                                <button id="deleteButton">
+                                    <img src="#" alt="Delete">
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
-            {% if loop.last %}
-                <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
-                    <div id="timestart">
-                        <div>
-                            {{ startTime }}
-                        </div>
-                        <div id="timeDropdown">
-                            <button id="timeDropButton">▼</button>
-                            <div id="timeDropdownContent">
-                                <!--time radio selection (interval:30minutes/1hour)-->
-                            </div>
-                        </div>
-                    </div>
-                    <div id="divider">-</div>
-                    <div id="timeEnd">
-                        <div>
-                            {{ endTime }}
-                        </div>
-                        <div id="timeDropdown">
-                            <button id="timeDropButton">▼</button>
-                            <div id="timeDropdownContent">
-                                <!--time radio selection (interval:30minutes/1hour)-->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
 
-                    <div id="activityFooter">
-                        <div id="acticityDescription"> <!--left-->
-                            <p>Example | Example</p>
-                        </div>
-                        <div id="deleteActivity"> <!--right-->
-                            <button id="deleteButton">
-                                <img src="#" alt="Delete">
-                            </button>
-                        </div>
+                    <div id="addExtra">
+                        <button id="addButton" onclick="addNewBlankActivity()"> <!--Add Button--> <!--Add drop area-->
+                            <img src="#" alt="Add Here">
+                        </button>
                     </div>
-                </div>
-
-                <div id="addExtra">
-                    <button id="addButton" onclick="addNewBlankActivity()"> <!--Add Button--> <!--Add drop area-->
-                        <img src="#" alt="Add Here">
-                    </button>
-                </div>
-            {% endif %}
+                {% endif %}
             {% endfor %}
         </div>
 
@@ -230,7 +231,7 @@
 					<img src="#" alt="#">
 				</div>
 				<div id="recomDescription">
-					<h5>{ recomName }}</h5>{
+					<h5>{{ recomName }}</h5>
 					<h6>{{ recomType }}</h6>
 					<div id="rating">
 						{{ getRating }} <img src="#" alt="#"> <!--star image-->

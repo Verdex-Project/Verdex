@@ -22,7 +22,7 @@
         <div id="itineraryLogFinal">
             {% for i in days %}
                 {% for j in activities %}
-                {% if j not loop.last %}
+                {% if not loop.last %}
                     <div id="dayAndDateHeader">
                         <div id="dayFinal">
                             <h1>Day {{ i }}</h1>
@@ -81,6 +81,7 @@
                             </div>
                         </div>
                     </div>
+                {% endif %}
                 {% if loop.last %}
                     <tr>
                     <th>{{ startTime }}</th>
