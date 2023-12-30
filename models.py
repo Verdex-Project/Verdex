@@ -13,11 +13,17 @@ def fileContent(filePath, passAPIKey=False):
 class DI:
     data = []
 
+    sampleData = {
+        "accounts": {},
+        "itineraries": {},
+        "forum": {}
+    }
+
     @staticmethod
     def setup():
         if not os.path.exists(os.path.join(os.getcwd(), "database.txt")):
             with open("database.txt", "w") as f:
-                f.write("{}")
+                json.dump(DI.sampleData, f)
         
         if FireRTDB.checkPermissions():
             print("DI: Firebase RTDB is enabled. Connecting to Firebase...")
@@ -39,7 +45,7 @@ class DI:
         try:
             if not os.path.exists(os.path.join(os.getcwd(), "database.txt")):
                 with open("database.txt", "w") as f:
-                    f.write("{}")
+                    json.dump(DI.sampleData, f)
             
             if FireRTDB.checkPermissions():
                 # Fetch data from RTDB
