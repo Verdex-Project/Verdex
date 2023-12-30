@@ -19,7 +19,7 @@ class DI:
             with open("database.txt", "w") as f:
                 f.write("{}")
         
-        if FireConn.checkPermissions():
+        if FireRTDB.checkPermissions():
             print("DI: Firebase RTDB is enabled. Connecting to Firebase...")
             try:
                 response = FireConn.connect()
@@ -41,7 +41,7 @@ class DI:
                 with open("database.txt", "w") as f:
                     f.write("{}")
             
-            if FireConn.checkPermissions():
+            if FireRTDB.checkPermissions():
                 # Fetch data from RTDB
                 fetchedData = FireRTDB.getRef()
                 if isinstance(fetchedData, str) and fetchedData.startswith("ERROR"):
@@ -89,7 +89,7 @@ class DI:
                 json.dump(DI.data, f)
 
             # Update RTDB
-            if FireConn.checkPermissions():
+            if FireRTDB.checkPermissions():
                 response = FireRTDB.setRef(FireRTDB.translateForCloud(DI.data))
                 if response != True:
                     print("DI FIRERTDB SETREF ERROR: " + response)
