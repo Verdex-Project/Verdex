@@ -1,6 +1,6 @@
 {% extends "baseNav.html" %}
 
-{% block title %}Verdex Sign In{% endblock %}
+{% block title %}Sign Up{% endblock %}
 
 {% block head %}
 <style>
@@ -16,7 +16,7 @@
         margin-bottom: 50px;
     }
 
-    #signuplink {
+    #signinlink {
         text-align: center;
         padding: 50px;
     }
@@ -28,7 +28,9 @@
     }
 
     #username,
-    #password {
+    #password,
+    #email,
+    #cfm-password {
         width: 100%;
         display: inline-block;
         border-radius: 5px;
@@ -41,17 +43,15 @@
         width: 300px;
     }
 
-    #recover {
-        font-style: italic;
-        font-size: small7;
+    input[type="submit"] {
+        margin-top: 20px;
     }
-
 </style>
 {% endblock %}
 
 {% block body %}
 <div id="top">
-    <h1 id="heading">Sign In To Verdex</h1>
+    <h1 id="heading">Create Your Verdex Account</h1>
 </div>
 
 <div id="content">
@@ -60,22 +60,26 @@
             <p>Username</p>
             <input type="text" placeholder="Username">
         </div>
+        <div id="email">
+            <p>Email</p>
+            <input type="email" placeholder="Email">
+        </div>
         <div id="password">
-        <p>Password</p>
-        <input type="password" placeholder="Password">
+            <p>Password</p>
+            <input type="password" placeholder="Password">
         </div>
-        <div id="recover">
-            <a href="#">
-                <p>Forgot username and password?</p>
-            </a>
+        <div id="cfm-password">
+            <p>Confirm Password</p>
+            <input type="password" placeholder="Password">
         </div>
+        <br>
         <div>
-            <input type="submit" value="Sign In">
+            <input type="submit" value="Sign Up">
         </div>
     </div>
 </div>
 
-<div id="signuplink">
-    <p>New to Verdex? <a href="/templates/signup">Sign Up</a></p>
+<div id="signinlink">
+    <p>Already a Verdex user? <a href="/templates/login">Sign In</a></p>
 </div>
 {% endblock %}

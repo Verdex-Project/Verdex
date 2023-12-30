@@ -14,6 +14,14 @@ app.secret_key = os.environ['AppSecretKey']
 def homepage():
     return render_template('homepage.html')
 
+@app.route('/templates/login')
+def loginpage():
+    return render_template('login.html')
+
+@app.route('/templates/signup')
+def signuppage():
+    return render_template('signup.html')
+
 # Security pages
 @app.route('/security/error')
 def error():
@@ -62,4 +70,4 @@ if __name__ == '__main__':
     print("All services online; boot pre-processing and setup complete.")
     print("Booting Verdex...")
 
-    app.run(port=8000, host='0.0.0.0', debug=True)
+    app.run(port=8000, host='0.0.0.0')
