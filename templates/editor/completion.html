@@ -36,7 +36,7 @@
                         <div id="activityTable">
                             <!-- <table style="width:100%"> --> <!--this may be changed-->
                                 <tr>
-                                <th><!--getTime--></th>
+                                <th>{{ startTime }}</th>
                                 <th></th>
                                 </tr>
                                 <tr>
@@ -73,13 +73,17 @@
                                 <td style="text-align:center">|</td>
                                 <td></td>
                                 </tr>
+                                <tr>
+                                <th>{{ endTime }}</th>
+                                <th></th>
+                                </tr>
                             </table>
                             </div>
                         </div>
                     </div>
                 {% else %}
                     <tr>
-                    <th><!--getTime--></th>
+                    <th>{{ startTime }}</th>
                     <th></th>
                     </tr>
                 {% endif %}
