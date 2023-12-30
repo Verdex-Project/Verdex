@@ -17,9 +17,9 @@
 
         <div id="editorPanel-sub-header"> <!--SUB HEADER-->
             <div id="sub-headder-box-left">
-                <div id="changeDayArrowLeft"><button><</button></div>
+                <div id="changeDayArrowLeft" onclick="previousDay()"><button><</button></div>
                 <div id="dayCount">Day {{ count }}</div>
-                <div id="changeDayArrowRight"><button>></button></div>
+                <div id="changeDayArrowRight" onclick="nextDay()"><button>></button></div>
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
@@ -29,9 +29,9 @@
         </div>
 
         <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
-            {% for i in [Day {{count}}][activities] %}
-            {% if i != activitiesList.[-1] %}
-                {% block content %}
+            <!--get current day from dayCount-->
+            {% for j in [activities] %}
+            {% if i != activitiesList[-1] %}
                 <div id="activityBox">
 
                     <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
@@ -41,9 +41,9 @@
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
-								<div id="timeDropdownContent">
-									<!--time radio selection (interval:30minutes/1hour)-->
-								</div>
+                                <div id="timeDropdownContent">
+                                    <!--time radio selection (interval:30minutes/1hour)-->
+                                </div>
                             </div>
                         </div>
                         <div id="divider">-</div>
@@ -53,9 +53,9 @@
                             </div>
                             <div id="timeDropdown">
                                 <button id="timeDropButton">▼</button>
-								<div id="timeDropdownContent">
-									<!--time radio selection (interval:30minutes/1hour)-->
-								</div>
+                                <div id="timeDropdownContent">
+                                    <!--time radio selection (interval:30minutes/1hour)-->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                                 -->
                             </div>
                             <div id="transportDescription">
-                                <p>From {{ start location }} to {{ end location }}</p>
+                                <p>From {{ startLocation }} to {{ endLocation }}</p>
                             </div>
                             <div id="detailJourney">
                                 <button id="detailJoutneyButton" onclick="detailedJourney()">
@@ -104,9 +104,7 @@
                         </div>
                     </div>
                 </div>
-                {% endblock %}
             {% else %}
-                {% block content %}
                 <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                     <div id="timestart">
                         <div>
@@ -151,11 +149,8 @@
                         <img src="#" alt="Add Here">
                     </button>
                 </div>
-                {% endblock %}
             {% endif %}
             {% endfor %}
-
-            
         </div>
 
         <div id="activityPanelFooter"> <!--Footer-->
@@ -180,13 +175,12 @@
 
         <div id="filters"> <!--Filters-->
             {% if selectedFilter == 1 %}
-                {% block content %}
                 <div id="filter1">
                     <div id="filterLogo">
                         <img src="#" alt="#">
                     </div>
                     <div id="filterName">
-                        {{ filter name }}
+                        {{ filtername }}
                     </div>
                 </div>
 				<div id="extendFilter">
@@ -207,12 +201,10 @@
 						</div>
 					</div>
 				</div>
-                {% endblock %}
             {% else %}
-            {% block content %}
                 <div id="filter2">
                     <div id="filterNumber">
-                        {{ filter total count }}
+                        {{ filterTotalCount }}
                     </div>
                     <div id="filterName">
                         <h5>Filters</h5>
@@ -221,12 +213,11 @@
 				<div id="extendFilter">
 					<button id="extendFilterButton">▼</button>
 				</div>
-                {% endblock %}
             {% endif %}
         </div>
 
         <div id="Recommendations"> <!--Recommendations-->
-            {% for i in [Recommendations] %}
+            {% for i in [recommendations] %}
 			<div id="recom"> <!--set dragable and scrolable-->
 				<div id="recomImage">
 					<img src="#" alt="#"> <!--get recommendation image-->
@@ -235,12 +226,12 @@
 					<img src="#" alt="#">
 				</div>
 				<div id="recomDescription">
-					<h5>{ recom name }}</h5>{
-					<h6>{{ recom type }}</h6>
+					<h5>{ recomName }}</h5>{
+					<h6>{{ recomType }}</h6>
 					<div id="rating">
 						{{ getRating }} <img src="#" alt="#"> <!--star image-->
 					</div>
-					<h4>${{ recom price }}/Pax</h4>
+					<h4>${{ recomPrice }}/Pax</h4>
 				</div>
 			</div>
             {% endfor %}

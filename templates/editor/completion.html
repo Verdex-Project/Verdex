@@ -22,8 +22,7 @@
         <div id="itineraryLogFinal">
             {% for i in [Days] %}
                 {% for j in [activities] %}
-                {% if i != activitiesList.[-1] %}
-                    {% block content %}
+                {% if j != activitiesList[-1] %}
                     <div id="dayAndDateHeader">
                         <div id="dayFinal">
                             <h1>Day {{ i }}</h1>
@@ -60,7 +59,7 @@
                                                 -->
                                             </div>
                                             <div id="transportDescription">
-                                                <p>From {{ start location }} to {{ end location }}</p>
+                                                <p>From {{ startLocation }} to {{ endLocation }}</p>
                                             </div>
                                             <div id="detailJourney">
                                                 <button id="detailJoutneyButton" onclick="detailedJourney()">
@@ -78,14 +77,12 @@
                             </div>
                         </div>
                     </div>
-                    {% endblock %}
                 {% else %}
-                    {% block content %}
                     <tr>
                     <th><!--getTime--></th>
                     <th></th>
                     </tr>
-                    {% endblock %}
+                {% endif %}
                 {% endfor %}
             {% endfor %}
         </div>
