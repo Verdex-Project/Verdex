@@ -20,15 +20,15 @@
 
     <div id="completeItinerary"> <!--FINAL ITINERARY-->
         <div id="itineraryLogFinal">
-            {% for i in [Days] %}
-                {% for j in [activities] %}
-                {% if j != activitiesList[-1] %}
+            {% for i in days %}
+                {% for j in activities %}
+                {% if j not loop.last %}
                     <div id="dayAndDateHeader">
                         <div id="dayFinal">
                             <h1>Day {{ i }}</h1>
                         </div>
                         <div id="dateFinal">
-                            <h6><!--getDate--></h6>
+                            <h6>{{ date }}</h6>
                         </div>
                     </div>
                         
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-                {% else %}
+                {% if loop.last %}
                     <tr>
                     <th>{{ startTime }}</th>
                     <th></th>

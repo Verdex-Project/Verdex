@@ -30,8 +30,8 @@
 
         <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
             <!--get current day from dayCount-->
-            {% for j in [activities] %}
-            {% if i != activitiesList[-1] %}
+            {% for j in activities %}
+            {% if not loop.last %}
                 <div id="activityBox">
 
                     <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
@@ -64,7 +64,7 @@
 
                     <div id="activityFooter">
                         <div id="acticityDescription"> <!--left-->
-                            <p>Example | Example</p>
+                            <p>{{ location }} | {{ name }}</p>
                         </div>
                         <div id="deleteActivity"> <!--right-->
                             <button id="deleteButton">
@@ -104,11 +104,11 @@
                         </div>
                     </div>
                 </div>
-            {% else %}
+            {% if loop.last %}
                 <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                     <div id="timestart">
                         <div>
-                            <!--getStartTime-->
+                            {{ startTime }}
                         </div>
                         <div id="timeDropdown">
                             <button id="timeDropButton">▼</button>
@@ -120,7 +120,7 @@
                     <div id="divider">-</div>
                     <div id="timeEnd">
                         <div>
-                            <!--getEndTime-->
+                            {{ endTime }}
                         </div>
                         <div id="timeDropdown">
                             <button id="timeDropButton">▼</button>
@@ -155,14 +155,18 @@
 
         <div id="activityPanelFooter"> <!--Footer-->
             <div id="deleteItinerary">
+                <div id="deleteItineraryButton">
                 <img src="#" alt="#">
                 <h5>Delete</h5>
             </div>
+        </div>
 
-            <div id="saveItinerary">
+        <div id="saveItinerary">
+            <div id="saveItineraryButton">
                 <h5>Proceed</h5>
 				<img src="#" alt="#">
             </div>
+        </div>
         </div>
     </div>
 
