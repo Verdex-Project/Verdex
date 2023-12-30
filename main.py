@@ -3,10 +3,21 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
+
+#Added these imports for report and forum blueprints
+from report import report_display_page
+from forum import verdextalks_page
+
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+#Register blueprint for main report webpage
+app.register_blueprint(report_display_page, url_prefix="/report")
+
+#Register blueprint for VerdexTalks webpage
+app.register_blueprint(verdextalks_page, url_prefix="/verdextalks")
 
 app.secret_key = os.environ['AppSecretKey']
 
@@ -27,50 +38,6 @@ def unauthorised():
     if "error" not in request.args:
         return render_template("unauthorised.html", message="No error message was provided.", originURL=request.host_url)
     return render_template("unauthorised.html", message=request.args["error"], originURL=request.host_url)
-
-#Added this for report generation
-@app.route('/report')
-def report():
-    with open('test_data.json', 'r') as file:
-        data = json.load(file)
-    return render_template('report.html', data=data)
-#End
-
-#Added this for report downloading feature
-@app.route('/download_report', methods=['POST'])
-def download_report():
-    report_id = request.form['report_id']
-
-    with open('reports/reportsInfo.json', 'r') as read_reportsInfo:
-        loaded_json = json.load(read_reportsInfo)
-    
-    if report_id not in loaded_json:
-        return "ID not found in database, please try again."
-
-    report_id_variable = str(report_id)
-
-    report_folder_path = os.getcwd()
-    report_file_name = f"report_{report_id_variable}.txt"
-    report_file_path = os.path.join(report_folder_path, 'reports', report_file_name)
-
-    if not os.path.isfile(report_file_path):
-        return "The report file is not found in the database."
-    
-    #For code reviewing and debugging purposes 
-    print(f"Report ID: {report_id}")
-    print(f"Report File Path: {report_file_path}")
-
-    # Use send_file to send the corresponding report txt file back
-    try:
-        return send_file(report_file_path, as_attachment=True)
-    except Exception as e:
-        return str(e)
-#End
-
-#Added this for forum
-@app.route('/verdextalks')
-def verdextalks():
-    return render_template('forum/forum.html')
 
 ## Make a 404 route
 @app.errorhandler(404)

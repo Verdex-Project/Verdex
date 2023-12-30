@@ -16,7 +16,7 @@
         <p class="report-data-content">Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
         <p class="report-data-content">Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
         <p class="report-data-content">System Health: <b>{{ report_data.system_health }}</b></p>
-        <form action="{{ url_for('download_report') }}" method="post">
+        <form action="{{ url_for('report.download_report') }}" method="post">
             <input type="hidden" name="report_id" value="{{ report_id }}">
             <button class="download-report-button" type="submit">Download Report</button>
         </form>
