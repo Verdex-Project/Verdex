@@ -5,7 +5,7 @@ from models import *
 from dotenv import load_dotenv
 
 #Added these imports for report and forum blueprints
-from templates.reportGen.report import reportBP
+from templates.admin.report import reportBP
 from templates.forum.forum import forumBP
 
 load_dotenv()
