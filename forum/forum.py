@@ -5,6 +5,6 @@ from flask import Blueprint, render_template
 forumBP = Blueprint("forum", __name__)
 
 #Main forum page
-@forumBP.route('/')
+@forumBP.route('/verdextalks')
 def verdextalks():
     return render_template('forum/forum.html')

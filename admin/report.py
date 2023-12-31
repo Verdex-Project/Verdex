@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, json, request, send_file, flash, r
 reportBP = Blueprint("report", __name__)
 
 #Main report displaying webpage
-@reportBP.route('/')
+@reportBP.route('/report')
 def report():
     with open('templates/admin/test_data.json', 'r') as file:
         data = json.load(file)

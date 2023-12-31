@@ -54,10 +54,10 @@ if __name__ == '__main__':
 
     # Register routes
     from admin.report import reportBP
-    app.register_blueprint(reportBP, url_prefix="/report")
+    app.register_blueprint(reportBP)
     
     from forum.forum import forumBP
-    app.register_blueprint(forumBP, url_prefix="/verdextalks")
+    app.register_blueprint(forumBP)
 
     ## Editor Page
     from editor.editor import editorPage
