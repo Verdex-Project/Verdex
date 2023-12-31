@@ -53,10 +53,10 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
-    from templates.admin.report import reportBP
+    from admin.report import reportBP
     app.register_blueprint(reportBP, url_prefix="/report")
     
-    from templates.forum.forum import forumBP
+    from forum.forum import forumBP
     app.register_blueprint(forumBP, url_prefix="/verdextalks")
 
     ## Assets service
