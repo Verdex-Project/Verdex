@@ -53,17 +53,24 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+    
+    ## Generation routes
+    from generation.itineraryGeneration import itineraryGenBP
+    app.register_blueprint(itineraryGenBP)
+    
+    ## Admin routes
     from admin.report import reportBP
     app.register_blueprint(reportBP)
     
+    ## Forum routes
     from forum.forum import forumBP
     app.register_blueprint(forumBP)
 
-    ## Editor Page
+    ## Editor routes
     from editor.editor import editorPage
     app.register_blueprint(editorPage)
 
-    ## Completion Page
+    ## Completion routes
     from editor.completion import completionPage
     app.register_blueprint(completionPage)
 
