@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
+from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -53,10 +53,26 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
-        
+    
     ## Generation routes
     from generation.itineraryGeneration import itineraryGenBP
     app.register_blueprint(itineraryGenBP)
+    
+    ## Admin routes
+    from admin.report import reportBP
+    app.register_blueprint(reportBP)
+    
+    ## Forum routes
+    from forum.forum import forumBP
+    app.register_blueprint(forumBP)
+
+    ## Editor routes
+    from editor.editor import editorPage
+    app.register_blueprint(editorPage)
+
+    ## Completion routes
+    from editor.completion import completionPage
+    app.register_blueprint(completionPage)
 
     ## Assets service
     from assets import assetsBP

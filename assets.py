@@ -24,3 +24,11 @@ def profileIcon():
 @assetsBP.route("/assets/copyright")
 def copyright():
     return fileContent("assets/copyright.js")
+
+@assetsBP.route("/assets/editorJS")
+def editorJS():
+    return fileContent("js/editor.js")
+
+@assetsBP.route("/assets/completionJS")
+def completionJS():
+    return fileContent("js/completion.js")

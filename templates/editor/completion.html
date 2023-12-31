@@ -1,0 +1,109 @@
+{% extends "baseNav.html" %} <!--NAVBAR-->
+
+{% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='completion.css') }}">
+{% endblock %}
+
+{% block body %}
+<div id="content">
+
+    <div id="header"> <!--HEADER-->
+        <img id="tickIcon" src="#" alt="#"> <!--tick icon-->
+        <h1>Hooray! You're Done!</h1> <!--Super Bold-->
+    </div>
+
+    <div id="beforeItineraryLabel"> <!--LABEL BEFORE THE FINAL ITINERARY-->
+        <h3>Your Itinerary</h3>
+    </div>
+
+    <div id="completeItinerary"> <!--FINAL ITINERARY-->
+        <div id="itineraryLogFinal">
+            {% for i in days %}
+                {% for j in activities %}
+                {% if not loop.last %}
+                    <div id="dayAndDateHeader">
+                        <div id="dayFinal">
+                            <h1>Day {{ i }}</h1>
+                        </div>
+                        <div id="dateFinal">
+                            <h6>{{ date }}</h6>
+                        </div>
+                    </div>
+                        
+                    <div id="itineraryActivityFinal">
+                        <div id="activityTable">
+                            <!-- <table style="width:100%"> --> <!--this may be changed-->
+                                <tr>
+                                <th>{{ startTime }}</th>
+                                <th></th>
+                                </tr>
+                                <tr>
+                                <td style="text-align:center">|</td>
+                                <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center">|</td>
+                                    <td>
+                                    <div id="journeyBox">
+                                        <div id="journeyBox-box">
+                                            <div id="transportInfo">
+                                                <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                                            </div>
+                                            <div id="transportLogo">
+                                                <!--
+                                                    If bus import busLogo
+                                                    If train import trainLogo
+                                                    ...
+                                                -->
+                                            </div>
+                                            <div id="transportDescription">
+                                                <p>From {{ startLocation }} to {{ endLocation }}</p>
+                                            </div>
+                                            <div id="detailJourney">
+                                                <button id="detailJoutneyButton" onclick="detailedJourney()">
+                                                <img src="#" alt="#">
+                                            </button>
+                                        </div>
+                                    </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <td style="text-align:center">|</td>
+                                <td></td>
+                                </tr>
+                                <tr>
+                                <th>{{ endTime }}</th>
+                                <th></th>
+                                </tr>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if loop.last %}
+                    <tr>
+                    <th>{{ startTime }}</th>
+                    <th></th>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="completionFooter">
+        <div id="share">
+            <button class="shareForumButton" onclick="shareForum()">
+                <h5 style="float: left;">Share To Forum</h5><img src="#" alt="#" style="float: right;">
+            </button>
+        </div>
+        <div id="exit">
+            <button class="exitButton" onclick="exitToHomepage()">
+                <h5 style="float: left;">Exit</h5><img src="#" alt="#" style="float: right;">
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

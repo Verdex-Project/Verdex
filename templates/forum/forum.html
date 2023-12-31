@@ -1,0 +1,57 @@
+{% extends 'baseNav.html' %}
+    {% block title %}VerdexTalks{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <div class="list-of-all-filter-buttons-container">
+            <ul class="list-of-all-filter-buttons">
+                <li class="filter-buttons">All</li>
+                <li class="filter-buttons">#Attractions</li>
+                <li class="filter-buttons">#Island Hopping</li>
+                <li class="filter-buttons">#Food</li>
+            </ul>
+        </div>
+        <div class="create-a-post-container">
+            <button class="create-a-post-button">Create A Post!</button><br>
+            <p class="or-separator">-----------------OR-----------------</p>
+            <p class="recent-itineraries-para">Recent itineraries:</p><br>
+            <button class="recent-itineraries-buttons">Sentosa</button><br>
+            <button class="recent-itineraries-buttons">Singapore Islands</button><br>
+            <button class="recent-itineraries-buttons">Food Galore</button><br>
+        </div>
+        <div class="post-section-container">
+            <div class="individual-posts">
+                <div class="post-content">
+                    <h3 class="name-of-user-who-shared-post-header">[name] shared:</h3>
+                    <h2 class="itinerary-header">Itinerary for [itinerary-name]</h2><br>
+                    <p class="image">Image here</p>
+                    <p class="post-description">Post description here</p>
+                </div>
+                <div class="post-reaction-buttons-container">
+                    <ul class="list-of-reaction-buttons">
+                        <li class="reaction-buttons">Like</li>
+                        <li class="reaction-buttons">Comment</li>
+                        <li class="reaction-buttons">Follow</li>
+                    </ul>
+                </div>
+                <div class="post-content">
+                    <h3 class="name-of-user-who-shared-post-header">[name] shared:</h3>
+                    <h2 class="itinerary-header">Itinerary for [itinerary-name]</h2>
+                    <p class="image">Image here</p>
+                    <p class="post-description">Post description here</p>
+                </div>
+                <div class="post-reaction-buttons-container">
+                    <ul class="list-of-reaction-buttons">
+                        <li class="reaction-buttons">Like</li>
+                        <li class="reaction-buttons">Comment</li>
+                        <li class="reaction-buttons">Follow</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
