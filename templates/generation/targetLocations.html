@@ -29,12 +29,11 @@
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
+        cursor: grab;
     }
 
     button {
         padding: 5px 10px;
-        border-radius: 5px;
-        border: none;
         cursor: pointer;
     }
 
@@ -53,30 +52,80 @@
     <h1>What do you want to see?</h1>
     <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
 
-    <div class="attractions-box">
+    <div id="targetAttractionsBox" class="attractions-box">
         <h2>Target Attractions</h2>
-        <div class="attraction-item">
+        <div id="MBS" class="attraction-item" draggable="true">
             <span>Marina Bay Sands</span>
-            <button>Remove</button>
+            <button class="btn btn-outline-primary" onclick="move(this)">Remove</button>
         </div>
     </div>
 
-    <div class="attractions-box">
+    <div id="popularAttractionsBox" class="attractions-box">
         <h2>Popular Attractions</h2>
-        <div class="attraction-item">
+        <div id="USS" class="attraction-item" draggable="true">
             <span>Universal Studios Singapore</span>
-            <button>Add</button>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
         </div>
-        <div class="attraction-item">
+        <div id="SEA" class="attraction-item" draggable="true">
             <span>SEA Aquarium</span>
-            <button>Add</button>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
         </div>
-        <div class="attraction-item">
+        <div id="BotanicalGardens" class="attraction-item" draggable="true">
             <span>Botanical Gardens</span>
-            <button>Add</button>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
         </div>
     </div>
 
     <button class="proceed-button">Proceed ></button>
+
+    <script>
+        let attractions = document.getElementsByClassName("attraction-item");
+        let targetBox = document.getElementById("targetAttractionsBox");
+        let popularBox = document.getElementById("popularAttractionsBox");
+
+        for (var attraction of attractions) {
+            attraction.addEventListener("dragstart", (e) => {
+                let selected = e.target;
+
+                popularBox.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                popularBox.addEventListener("drop", (e) => {
+                    targetBox.appendChild(selected);
+                    selected = null;
+                });
+
+                targetBox.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                targetBox.addEventListener("drop", (e) => {
+                    targetBox.appendChild(selected);
+                    selected = null;
+                });
+            })
+        }
+
+        function move(element) {
+            const attractionItem = element.parentNode;
+
+            if (attractionItem.parentNode.id == popularBox.id) {
+                targetBox.appendChild(attractionItem);
+                selected = null;
+                switchButton(element.id);
+            } else {
+                popularBox.appendChild(attractionItem);
+                selected = null;
+                switchButton(element.id);
+            }
+        }
+
+        function switchButton(id) {
+            document.getElementById(id).classList.toggle("btn-outline-danger");
+            document.getElementById(id).classList.toggle("btn-outline-primary");
+            document.getElementById(id).innerHTML == "Add" ? document.getElementById(id).innerHTML = "Remove" : document.getElementById(id).innerHTML = "Add";
+        }
+    </script>
 </div>
 {% endblock %}
