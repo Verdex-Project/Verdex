@@ -63,8 +63,9 @@
     #activityPanelFooter {
         display: flex;
         justify-content: space-between;
-        padding: 10px;
+        padding-top: 10px;
         margin: 8px;
+        width: 100%;
     }
 
     #deleteItinerary,#saveItinerary {
@@ -77,9 +78,9 @@
         padding-top: 8px;
         padding-right: 15px;
         border: 1px solid black;
-        border-radius: 20px;
-        background-color: green;
-        color: white;
+        border-radius: 25px;
+        background-color: white;
+        color: black;
         cursor: pointer;
     }
 
@@ -88,10 +89,16 @@
         padding-top: 8px;
         padding-left: 15px;
         border: 1px solid black;
-        border-radius: 20px;
-        background-color: green;
-        color: white;
+        border-radius: 25px;
+        background-color: white;
+        color: black;
         cursor: pointer;
+    }
+
+    #deleteItineraryButton:hover, #saveItineraryButton:hover{
+        background-color: green;
+        color:white;
+        transition: 1s;
     }
 
     #saveItineraryButton img{
@@ -138,10 +145,15 @@
     }
 
     #filterContent {
-        border: 2px solid green;
-        border-radius: 15px;
+        border: 2px solid black;
+        border-radius: 30px;
         padding: 5px;
         display: flex;
+    }
+
+    #filterContent:hover:only-child {
+        border-color: green;
+        transition: 1s;
     }
 
     #filterName, #filterNumber, #extendFilter {
@@ -156,16 +168,18 @@
     }
 
     #extendFilterButton {
-        background-color: white;
+        background-color: transparent;
         border: none;
     }
 
     #extendFilter:hover #extendedFilters {
         display: block;
-        right: 0;
+        right: -25px;
     }
 
     #extendedFilters {
+        border: 1px solid black;
+        border-radius: 10px;
         display: none;
         position: absolute;
         background-color: #f9f9f9;
@@ -187,7 +201,7 @@
         display: flex;
         flex-direction: column;
         border: 2px solid green;
-        border-radius: 15px;
+        border-radius: 25px;
         position: relative;
         margin-left: -15px;
     }
@@ -211,6 +225,17 @@
 
     #rating {
         display: flex;
+        border: 2px solid green;
+        border-radius: 30px;
+        padding-top: 5px;
+    }
+
+    #rating h6, #rating img{
+        padding: 5px;
+    }
+
+    #rating h6 {
+        padding-left: 10px;
     }
     
 </style>
@@ -460,9 +485,9 @@
 					<h5>Name<!--recomName--></h5>
 					<h6>Type<!--recomType--></h6>
 					<div id="rating">
-						<h6>4.7</h6><!--recomRating--> <img src="#" alt="#"> <!--star image-->
+						<h6 style="float: left;">4.7</h6><!--recomRating--> <img src="#" alt="#" style="float: right;"> <!--star image-->
 					</div>
-					<h4>${{ recomPrice }}/Pax</h4>
+					<h2>${{ recomPrice }}/Pax</h2>
 				</div>
 			</div>
             {% endfor %}

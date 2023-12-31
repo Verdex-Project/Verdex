@@ -3,14 +3,85 @@
 {% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
 
 {% block head %}
-<!-- style css -->
+<style>
+    #content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #header ,#beforeItineraryLabel{
+        display:flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        margin: 15px;
+    }
+
+    #completeItinerary {
+        margin: auto;
+        border: 2px solid green;
+        border-radius: 50px;
+        height: 450px;
+        width: 70%;
+    }
+
+    #completionFooter {
+        margin: auto;
+        margin-top: 20px;
+        width: 70%;
+    }
+
+    #share, #exit {
+        float: right;
+        text-align: center;
+        vertical-align: center;
+    }
+
+    .exitButton {
+        padding: 5px;
+        padding-top: 8px;
+        padding-left: 15px;
+        margin: 5px;
+        width: 100px;
+        border: 1px solid black;
+        border-radius: 30px;
+        background-color: white;
+        color: black;
+        cursor: pointer;
+    }
+
+    .shareForumButton {
+        padding: 5px;
+        padding-top: 8px;
+        padding-left: 15px;
+        margin: 5px;
+        width: 200px;
+        border: 1px solid black;
+        border-radius: 25px;
+        background-color: white;
+        color: black;
+        cursor: pointer;
+    }
+
+    .exitButton img, .shareForumButton img {
+        padding-top: 5px;
+    }
+
+    .exitButton:hover, .shareForumButton:hover {
+        background-color: green;
+        color: white;
+        transition: 1s;
+    }
+
+</style>
 {% endblock %}
 
 {% block body %}
 <div id="content">
 
     <div id="header"> <!--HEADER-->
-        <img src="#" alt="#"> <!--tick icon-->
+        <img id="tickIcon" src="#" alt="#"> <!--tick icon-->
         <h1>Hooray! You're Done!</h1> <!--Super Bold-->
     </div>
 
@@ -94,14 +165,14 @@
     </div>
 
     <div id="completionFooter">
-        <div id="buttonBlock"> <!--to right-->
-            <button class="exitButton" onclick="exitToHomepage()">
-                <h5>Exit</h5>
-                <img src="#" alt="#">
-            </button>
+        <div id="share">
             <button class="shareForumButton" onclick="shareForum()">
-                <h5>Exit To Forum</h5>
-                <img src="#" alt="#">
+                <h5 style="float: left;">Share To Forum</h5><img src="#" alt="#" style="float: right;">
+            </button>
+        </div>
+        <div id="exit">
+            <button class="exitButton" onclick="exitToHomepage()">
+                <h5 style="float: left;">Exit</h5><img src="#" alt="#" style="float: right;">
             </button>
         </div>
     </div>
