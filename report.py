@@ -1,40 +1,44 @@
 # Blueprint for report generation
 import os
-from flask import Blueprint, render_template, json, request, send_file
+from flask import Blueprint, render_template, json, request, send_file, flash, redirect, url_for
 
 
-report_display_page = Blueprint("report", __name__)
+reportBP = Blueprint("report", __name__)
 
 #Main report displaying webpage
-@report_display_page.route('/')
+@reportBP.route('/')
 def report():
     with open('test_data.json', 'r') as file:
         data = json.load(file)
     return render_template('report.html', data=data)
 
 #Report downloading feature
-@report_display_page.route('/download_report', methods=['POST'])
-def download_report():
+@reportBP.route('/report/<report_id>', methods=['POST'])
+def download_report(report_id):
     report_id = request.form['report_id']
 
     with open('reports/reportsInfo.json', 'r') as read_reportsInfo:
         loaded_json = json.load(read_reportsInfo)
     
     if report_id not in loaded_json:
-        return "ID not found in database, please try again."
+        flash("ERROR: The report ID is not found.")
+        return redirect(url_for('error'))
 
     report_id_variable = str(report_id)
 
-    report_folder_path = os.getcwd()
+    report_folder_path = os.getcwd() #Need to change this
     report_file_name = f"report_{report_id_variable}.txt"
     report_file_path = os.path.join(report_folder_path, 'reports', report_file_name)
 
     if not os.path.isfile(report_file_path):
-        return "The report file is not found in the database."
+        flash("ERROR: The report file path is not found.")
+        return redirect(url_for('error'))
     
     #For code reviewing and debugging purposes 
+    print("-----CONSOLE LOGGING-----")
     print(f"Report ID: {report_id}")
     print(f"Report File Path: {report_file_path}")
+    print("----------END------------")
 
     # Use send_file to send the corresponding report txt file back
     try:

@@ -1,3 +1,135 @@
-#verdextalks-header {
+.content {
+    font-family: 'Arial', sans-serif;
+}
+
+.list-of-all-filter-buttons-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.list-of-all-filter-buttons {
+    list-style-type: none;
+    padding: 0;
+}
+
+.filter-buttons {
+    display: inline-block;
+    margin-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: 2px solid #000;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.filter-buttons:hover {
+    box-shadow: 2px 2px 5px #888888;
+    transition: 0.2s;
+}
+
+.create-a-post-container {
+    margin: 20px;
+    margin-right: 10px;
+    border: 2px solid #000;
+    border-radius: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 50px;
+    padding-right: 50px;
+    float: left;
+}
+
+.create-a-post-button {
     text-align: center;
+    border: 2px solid #000;
+    border-radius: 15px;
+    padding-left: 70px; 
+    padding-right: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 130%;
+}
+
+.recent-itineraries-buttons {
+    display: block;
+    margin: 0;
+    padding: 8px 12px;
+    border: 2px solid #000;
+    border-radius: 20px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+}
+
+.post-section-container {
+    float: right;
+    margin: 20px;
+    margin-right: 40px;
+}
+
+.individual-posts {
+    border: 2px solid #000;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 20px;
+    padding-bottom: 70px;
+}
+
+.name-of-user-who-shared-post-header {
+    margin-bottom: 10px;
+    margin-right: 100px;
+    float: left;
+}
+
+.itinerary-header {
+    margin-top: 0;
+    margin-left: 100px;
+    float: right;
+}
+
+.post-reaction-buttons-container {
+    margin-top: 10px;
+}
+
+.list-of-reaction-buttons {
+    list-style-type: none;
+    padding: 0;
+}
+
+.reaction-buttons {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: 2px solid #000;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.or-separator {
+    text-align: center;
+    font-size: 130%;
+}
+
+.recent-itineraries-para {
+    font-size: 130%;
+}
+
+.image {
+    float: left;
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 10px;
+    margin-right: 100px;
+}
+
+.post-description {
+    float: right;
+    margin-left: 100px;
 }

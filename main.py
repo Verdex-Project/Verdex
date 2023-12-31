@@ -5,19 +5,13 @@ from models import *
 from dotenv import load_dotenv
 
 #Added these imports for report and forum blueprints
-from report import report_display_page
-from forum import verdextalks_page
+from report import reportBP
+from forum import forumBP
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-
-#Register blueprint for main report webpage
-app.register_blueprint(report_display_page, url_prefix="/report")
-
-#Register blueprint for VerdexTalks webpage
-app.register_blueprint(verdextalks_page, url_prefix="/verdextalks")
 
 app.secret_key = os.environ['AppSecretKey']
 
@@ -64,6 +58,8 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+    app.register_blueprint(reportBP, url_prefix="/report")
+    app.register_blueprint(forumBP, url_prefix="/verdextalks")
 
     ## Assets service
     from assets import assetsBP
@@ -74,6 +70,3 @@ if __name__ == '__main__':
     print("Booting Verdex...")
 
     app.run(port=8000, host='0.0.0.0')
-
-# if not os.path.isfile(os.path.join(os.getcwd(), "reports", "report-{}.txt".format(report_id))):
-#     return "ERROR: Report file was not found."
