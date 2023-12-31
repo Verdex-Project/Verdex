@@ -8,9 +8,9 @@ reportBP = Blueprint("report", __name__)
 #Main report displaying webpage
 @reportBP.route('/')
 def report():
-    with open('test_data.json', 'r') as file:
+    with open('templates/reportGen/test_data.json', 'r') as file:
         data = json.load(file)
-    return render_template('reportGeneration/report.html', data=data)
+    return render_template('reportGen/report.html', data=data)
 
 #Report downloading feature
 @reportBP.route('/report/<report_id>', methods=['POST'])
