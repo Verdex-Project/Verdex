@@ -3,11 +3,6 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
-
-#Added these imports for report and forum blueprints
-from templates.admin.report import reportBP
-from templates.forum.forum import forumBP
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -58,7 +53,10 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+    from templates.admin.report import reportBP
     app.register_blueprint(reportBP, url_prefix="/report")
+    
+    from templates.forum.forum import forumBP
     app.register_blueprint(forumBP, url_prefix="/verdextalks")
 
     ## Assets service
