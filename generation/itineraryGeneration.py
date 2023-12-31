@@ -3,5 +3,5 @@ from flask import Flask, Blueprint, render_template, url_for, request, redirect,
 itineraryGenBP = Blueprint('itineraryGen', __name__)
 
 @itineraryGenBP.route("/generate/targetLocations")
-def generate():
+def targetLocations():
     return render_template("generation/targetLocations.html")
