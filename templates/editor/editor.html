@@ -8,15 +8,24 @@
         display: flex;
     }
 
+/* EDITOR PANEL */
+
     #editorPanel {
         float: left;
-        width: 75%;
-        margin: 10px;
+        width: 65%;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 10px;
+    }
+    
+    #editorPanel-header {
+        margin-left: 8px;
     }
 
     #editorPanel-sub-header {
         display: flex;
         justify-content: space-between;
+        margin: 8px;
     }
 
     #sub-headder-box-left {
@@ -27,8 +36,13 @@
     #sub-headder-box-right {
         align-items: right;
     }
+
+    #changeDayArrowLeft button, #changeDayArrowRight button{
+        background-color: white;
+        border: none;
+    }
+
     #dayCount {
-        padding-top: 2px;
         padding-left: 4px;
         padding-right: 4px;
     }
@@ -43,12 +57,14 @@
         height: 70%;
         border: 2px solid black;
         border-radius: 40px;
+        margin: 8px;
     }
 
     #activityPanelFooter {
         display: flex;
         justify-content: space-between;
         padding: 10px;
+        margin: 8px;
     }
 
     #deleteItinerary,#saveItinerary {
@@ -93,11 +109,109 @@
         margin-right: 5px;
     }
 
+/* RECOMMENDATION PANEL */
+
     #recommendationsPanel {
         float: right;
         width: 25%;
+        margin: 10px;
     }
 
+    #recommendationsPanel-header{
+        margin-left: 8px;
+    }
+
+    #filters, #recommendations {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        margin: 15px;
+    }
+
+    /* FILTER 1 */
+
+    #filter2 {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #filterContent {
+        border: 2px solid green;
+        border-radius: 15px;
+        padding: 5px;
+        display: flex;
+    }
+
+    #filterName, #filterNumber, #extendFilter {
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 5px;
+    }
+
+    #extendFilter {
+        position: relative;
+        display: inline-block;
+    }
+
+    #extendFilterButton {
+        background-color: white;
+        border: none;
+    }
+
+    #extendFilter:hover #extendedFilters {
+        display: block;
+        right: 0;
+    }
+
+    #extendedFilters {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        padding: 12px 16px;
+        z-index: 1;
+    }
+
+    #filtersSelected {
+        width: 100%;
+        text-align: center;
+        font-weight: bolder;
+    }
+
+    #recom {
+        width: 100%;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid green;
+        border-radius: 15px;
+        position: relative;
+        margin-left: -15px;
+    }
+
+    #recomImage {
+        height: 250px;
+        width: 90%;
+        margin: 10px;
+    }
+
+    #addSign {
+        position: absolute;
+        right: 0;
+        top: 0;
+        margin:20px
+    }
+
+    #recomDescription {
+        text-align: center;
+    }
+
+    #rating {
+        display: flex;
+    }
     
 </style>
 {% endblock %}
@@ -269,7 +383,7 @@
 
     <div id="recommendationsPanel"> <!--RECOMMENDATION PANEL START-->
         <div id="recommendationsPanel-header"> <!--HEADER-->
-            Recommendations
+            <h1>Recommendations</h1>
         </div>
 
         <div id="filters"> <!--Filters-->
@@ -289,12 +403,12 @@
 							<p>{{ filtersSelectedCount }} Selected</p> <!--center-->
 						</div>
 						<div id="extendFilterContent-locations">
-							<h6>Locations:</h6>
+							<h6 style="font-weight: bolder;">Locations:</h6>
 							<label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
 							<input type="checkbox" id="location1" name="location1" value="Example">
 						</div>
 						<div id="extendFilterContent-Activities">
-							<h6>Activities:</h6>
+							<h6 style="font-weight: bolder;">Activities:</h6>
 							<label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
 							<input type="checkbox" id="location1" name="location1" value="Example">
 						</div>
@@ -302,20 +416,37 @@
 				</div>
             {% else %}
                 <div id="filter2">
-                    <div id="filterNumber">
-                        {{ filterTotalCount }}
-                    </div>
-                    <div id="filterName">
-                        <h5>Filters</h5>
+                    <div id="filterContent">
+                        <div id="filterNumber">
+                            {{ filterTotalCount }}
+                        </div>
+                        <div id="filterName">
+                            <h5>Filters</h5>
+                        </div>
+                        <div id="extendFilter">
+                            <button id="extendFilterButton">▼</button>
+                            <div id="extendedFilters">
+                                <div id="filtersSelected">
+                                    <p>{{ filtersSelectedCount }} Selected</p> <!--center-->
+                                </div>
+                                <div id="extendFilterContent-locations">
+                                    <h6 style="font-weight: bolder;">Locations:</h6>
+                                    <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                                    <input type="checkbox" id="location1" name="location1" value="Example">
+                                </div>
+                                <div id="extendFilterContent-Activities">
+                                    <h6 style="font-weight: bolder;">Activities:</h6>
+                                    <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                                    <input type="checkbox" id="location1" name="location1" value="Example">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-				<div id="extendFilter">
-					<button id="extendFilterButton">▼</button>
-				</div>
             {% endif %}
         </div>
 
-        <div id="Recommendations"> <!--Recommendations-->
+        <div id="recommendations"> <!--Recommendations-->
             {% for i in [recommendations] %}
 			<div id="recom"> <!--set dragable and scrolable-->
 				<div id="recomImage">
@@ -324,11 +455,12 @@
 				<div id="addSign">
 					<img src="#" alt="#">
 				</div>
+                <hr style="border: 2px solid green; width: 100%;">
 				<div id="recomDescription">
-					<h5>{{ recomName }}</h5>
-					<h6>{{ recomType }}</h6>
+					<h5>Name<!--recomName--></h5>
+					<h6>Type<!--recomType--></h6>
 					<div id="rating">
-						{{ getRating }} <img src="#" alt="#"> <!--star image-->
+						<h6>4.7</h6><!--recomRating--> <img src="#" alt="#"> <!--star image-->
 					</div>
 					<h4>${{ recomPrice }}/Pax</h4>
 				</div>
