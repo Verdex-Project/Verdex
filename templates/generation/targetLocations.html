@@ -92,7 +92,8 @@
                 });
 
                 popularBox.addEventListener("drop", (e) => {
-                    targetBox.appendChild(selected);
+                    popularBox.appendChild(selected);
+                    switchButton(attraction.firstElementChild.nextElementSibling)
                     selected = null;
                 });
 
@@ -102,6 +103,7 @@
 
                 targetBox.addEventListener("drop", (e) => {
                     targetBox.appendChild(selected);
+                    switchButton(attraction.firstElementChild.nextElementSibling)
                     selected = null;
                 });
             })
@@ -112,19 +114,11 @@
 
             if (attractionItem.parentNode.id == popularBox.id) {
                 targetBox.appendChild(attractionItem);
-                selected = null;
-                switchButton(element.id);
+                element.innerText = "Remove";
             } else {
                 popularBox.appendChild(attractionItem);
-                selected = null;
-                switchButton(element.id);
+                element.innerText = "Add";
             }
-        }
-
-        function switchButton(id) {
-            document.getElementById(id).classList.toggle("btn-outline-danger");
-            document.getElementById(id).classList.toggle("btn-outline-primary");
-            document.getElementById(id).innerHTML == "Add" ? document.getElementById(id).innerHTML = "Remove" : document.getElementById(id).innerHTML = "Add";
         }
     </script>
 </div>
