@@ -73,11 +73,21 @@ class DI:
                     return "Success"
                 
                 # Write data to local db file
-                with open("database.txt", "w") as f:
-                    json.dump(fetchedData, f)
-
-                # Load data into DI
-                DI.data = fetchedData
+                if fetchedData != None and fetchedData != {}:
+                    with open("database.txt", "w") as f:
+                        json.dump(fetchedData, f)
+                    
+                    # Load data into DI
+                    DI.data = fetchedData
+                else:
+                    # RTDB is empty and sample structure needs to be written
+                    response = FireRTDB.setRef(FireRTDB.translateForCloud(DI.sampleData))
+                    if response != True:
+                        print("DI-FIRERTDB SETREF ERROR: " + response)
+                        print("DI: Failed to set sample structure in RTDB. System will resort to local database but attempts to sync will continue.")
+                        with open("database.txt", "r") as f:
+                            DI.data = json.load(f)
+                        return "Success"
             else:
                 # Read data from local database file
                 with open("database.txt", "r") as f:
