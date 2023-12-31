@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
+from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -53,6 +53,11 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+    from templates.admin.report import reportBP
+    app.register_blueprint(reportBP, url_prefix="/report")
+    
+    from templates.forum.forum import forumBP
+    app.register_blueprint(forumBP, url_prefix="/verdextalks")
 
     ## Assets service
     from assets import assetsBP
