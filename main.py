@@ -59,6 +59,14 @@ if __name__ == '__main__':
     from forum.forum import forumBP
     app.register_blueprint(forumBP, url_prefix="/verdextalks")
 
+    ## Editor Page
+    from editor.editor import editorPage
+    app.register_blueprint(editorPage)
+
+    ## Completion Page
+    from editor.completion import completionPage
+    app.register_blueprint(completionPage)
+
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)
