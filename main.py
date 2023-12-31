@@ -12,7 +12,6 @@ app.secret_key = os.environ['AppSecretKey']
 
 @app.route('/')
 def homepage():
-    print(DI.data["itineraries"])
     return render_template('homepage.html')
 
 # Security pages
