@@ -1,6 +1,6 @@
 {% extends "baseNav.html" %}
 
-{% block title %}Verdex Sign In{% endblock %}
+{% block title %}Sign Up{% endblock %}
 
 {% block head %}
 <style>
@@ -16,7 +16,7 @@
         margin-bottom: 50px;
     }
 
-    #signuplink {
+    #signinlink {
         text-align: center;
         padding: 50px;
     }
@@ -28,7 +28,9 @@
     }
 
     #username,
-    #password {
+    #password,
+    #email,
+    #cfm-password {
         width: 100%;
         display: inline-block;
         border-radius: 5px;
@@ -37,8 +39,10 @@
     }
 
     #username > p,
-    #password > p {
-        margin-top: 20px;
+    #password > p,
+    #email > p,
+    #cfm-password > p {
+        margin-top: 15px;
     }
 
     input {
@@ -46,10 +50,12 @@
         width: 300px;
     }
 
-    #recover {
-        font-style: italic;
-        font-size: small;
-        margin-top: 10px;
+    input[type="submit"] {
+        margin-top: 20px;
+    }
+
+    #signUpButton {
+        margin-top: 15px;
     }
 
     #copyright {
@@ -60,7 +66,7 @@
 
 {% block body %}
 <div id="top">
-    <h1 id="heading">Sign In To Verdex</h1>
+    <h1 id="heading">Create Your Verdex Account</h1>
 </div>
 
 <div id="content">
@@ -69,27 +75,31 @@
             <p>Username</p>
             <input type="text" id="usernameInput" placeholder="Username">
         </div>
+        <div id="email">
+            <p>Email</p>
+            <input type="email" id="emailInput" placeholder="Email">
+        </div>
         <div id="password">
-        <p>Password</p>
-        <input type="password" id="passwordInput" placeholder="Password">
+            <p>Password</p>
+            <input type="password" id="passwordInput" placeholder="Password">
         </div>
-        <div id="recover">
-            <a href="#">
-                <p>Forgot username and password?</p>
-            </a>
-        </div>
+        <div id="cfm-password">
+            <p>Confirm Password</p>
+            <input type="password" id="confirmPasswordInput" placeholder="Password">
+        </div>        
+        <br>
         <div>
-            <button id="signInButton" onclick="signIn()">Sign In</button>
+            <button onclick="signUp()" id="signUpButton">Sign Up</button>
         </div>
     </div>
 </div>
 
-<div id="signuplink">
-    <p>New to Verdex? <a href="/templates/signup">Sign Up</a></p>
+<div id="signinlink">
+    <p>Already a Verdex user? <a href="/account/login">Sign In</a></p>
 </div>
 <br>
 <div id="copyright">
     <script src="/assets/copyright"></script>
 </div>
-<script src="/assets/login"></script>
+<script src="/assets/signupJS"></script>
 {% endblock %}

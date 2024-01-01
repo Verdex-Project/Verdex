@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint
+from flask import Flask, request, Blueprint, session
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -18,8 +18,8 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route("/api/loginAccount", methods = ['POST'])
-def loginaccount():
+@apiBP.route('/api/loginAccount', methods = ['POST'])
+def loginAccount():
 
     check = checkHeaders(request.headers)
     if check != True:
@@ -27,21 +27,21 @@ def loginaccount():
     
     if "password" not in request.json:
         return "ERROR: One or more rquired payload parameters not present."
-    if "usernameoremail" not in request.json:
+    if "usernameOrEmail" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     
     targetAccountID = None
     for accountID in DI.data["accounts"]:
-        if DI.data["accounts"]["accountID"]["username"] == request.json["usernameoremail"]:
+        if DI.data["accounts"][accountID]["username"] == request.json["usernameOrEmail"]:
             targetAccountID = accountID
             break
-        elif DI.data["accounts"]["accountID"]["email"] == request.json["usernameoremail"]:
+        elif DI.data["accounts"][accountID]["email"] == request.json["usernameOrEmail"]:
             targetAccountID = accountID
             break
     if targetAccountID == None:
         return "UERROR: Account does not exist!"
     
-    response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json[targetAccountID]["password"])
+    response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json["password"])
     if response == False:
         return "UERROR: Incorrect email/username or password. Please try again."
     
@@ -58,3 +58,29 @@ def createAccount():
     if check != True:
         return check
     
+    if "username" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "email" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "password" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+
+    # Check if the username or email is already in use
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+            return "UERROR: Username is already taken."
+
+        if DI.data["accounts"][accountID]["email"] == request.json["email"]:
+            return "UERROR: Email is already in use."
+
+    # Create a new account
+    newAccountID = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
+    DI.data["accounts"][newAccountID] = {
+        "username": request.json["username"],
+        "email": request.json["email"],
+        "password": request.json["password"],
+        "idToken": None
+    }
+    DI.save()
+
+    return "SUCCESS: Account created successfully"

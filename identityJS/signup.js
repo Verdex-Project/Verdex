@@ -40,7 +40,7 @@ function signUp() {
         url: '/api/createAccount',
         headers: {
             'Content-Type': 'application/json',
-            'VerdexAPIKey': 'verdex@G22023'
+            'VerdexAPIKey': '\{{ API_KEY }}'
         },
         data: {
             "username": usernameInput.value,
@@ -53,7 +53,7 @@ function signUp() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) { 
-                        console.log("Successful")
+                        location.href = `${origin}/account/info`;
                     } else {
                         alert("An unknown error occured in creating the account. Please try again. Check logs for more information.")
                         console.log("Unknown response received: " + response.data)

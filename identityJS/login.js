@@ -25,22 +25,23 @@ function signIn() {
 
     axios({
         method: 'post',
-        url: '/api/loginAccount',
+        url: `/api/loginAccount`,
         headers: {
             'Content-Type': 'application/json',
-            'VerdexAPIKey': 'verdex@G22023'
+            'VerdexAPIKey': '\{{ API_KEY }}'
         },
         data: {
-            "usernameoremail": usernameInput.value,
+            "usernameOrEmail": usernameInput.value,
             "password": passwordInput.value
         }
     })
     .then(response => {
+        // console.log("Response:", response);  // Add this line to print the response
         if (response.status == 200) {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
-                        console.log("Successful")
+                        location.href = `${origin}/account/info`;
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")
                         console.log("Unknown response received: " + response.data)

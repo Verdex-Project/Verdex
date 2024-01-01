@@ -25,10 +25,10 @@ def profileIcon():
 def copyright():
     return fileContent("assets/copyright.js")
 
-@assetsBP.route("/assets/login")
+@assetsBP.route("/assets/loginJS")
 def loginJS():
-    return send_file("assets/login.js")
+    return fileContent("identityJS/login.js", passAPIKey=True)
 
-@assetsBP.route("/assets/signup")
+@assetsBP.route("/assets/signupJS")
 def signupJS():
-    return send_file("assets/signup.js")
+    return fileContent("identityJS/signup.js", passAPIKey=True)

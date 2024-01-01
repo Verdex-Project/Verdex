@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint
+from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, session
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -13,14 +13,6 @@ app.secret_key = os.environ['AppSecretKey']
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
-
-@app.route('/templates/login')
-def loginpage():
-    return render_template('login.html')
-
-@app.route('/templates/signup')
-def signuppage():
-    return render_template('signup.html')
 
 # Security pages
 @app.route('/security/error')
@@ -61,6 +53,27 @@ if __name__ == '__main__':
         print("ADDONSMANAGER: Setup complete.")
 
     # Register routes
+
+    ## login route
+    from identity.login import loginPage
+    app.register_blueprint(loginPage)
+
+    ## SignUp route
+    from identity.signup import signUpPage
+    app.register_blueprint(signUpPage)
+
+    ## MyAccount route
+    @app.route("/account/info")
+    def myAccount():
+        if "idToken" not in session:
+            return redirect(url_for('unauthorised'), error="ERROR: Please sign in first.")
+        targetAccount = None
+
+        for accountID in DI.data["accounts"]:
+            if "idToken" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID] == session["idToken"]:
+                targetAccount = DI.data["accounts"][accountID]
+
+        return "Hi, {}".format(targetAccount["email"])
 
     ## Assets service
     from assets import assetsBP
