@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 config = {
-    "apikey": "AIzaSyBPoAKpx8kn3f2d7BzGcFzzDEAoM8Lxwt8",
-    "AuthDomain": "verdex-238ed.firebaseapp.com"
+    "apikey": os.environ["APIKey"],
+    "AuthDomain": os.environ["AuthDomain"]
 }
 
 class AddonsManager:
@@ -221,6 +221,10 @@ class FireStorage:
         return True
     
 class FireAuth:
+
+    firebase = None
+    signedInUser = None
+
     @staticmethod
     def connect():
         global firebase
@@ -232,30 +236,23 @@ class FireAuth:
             return False
     
     @staticmethod
-    def createuser(username, email, password, confirmpassword):
+    def createuser(email, password):
         global firebase
         global signedInUser
         auth = firebase.auth()
-        if password == confirmpassword:
-            user = auth.create_user_with_email_and_password(email, password)
-            user_data = {
-                "email": email,
-                "password": password
-            }
-            db.child("users").child(username).set(user_data)
-            return user
-        else:
-            return "ERROR: Passwords do not match"
+        signedInUser = auth.create_user_with_email_and_password(email, password)
+        return signedInUser
     
     @staticmethod
-    def login(username, password):
+    def login(email, password):
         global firebase
         global signedInUser
         auth = firebase.auth()
-        user_data = db.child("users").child(username).get().val()
-        if user_data:
-            email = user_data["email"]
-            user = auth.sign_in_with_email_and_password(email, password)
-            return user
-        else:
-            return "ERROR: User not found!"
+        signedInUser = auth.sign_in_with_email_and_password(email, password)
+        return signedInUser
+    
+    @staticmethod
+    def accountinfo():
+        auth = firebase.auth()
+        signedInUserInfo = auth.get_account_info(signedInUser["idToken"])
+        return signedInUserInfo

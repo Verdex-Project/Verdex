@@ -1,0 +1,60 @@
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+from flask import Flask, request, Blueprint
+from flask_cors import CORS
+from models import *
+from dotenv import load_dotenv
+load_dotenv()
+
+apiBP = Blueprint("api", __name__)
+
+def checkHeaders(headers):
+    for param in ["Content-Type", "VerdexAPIKey"]:
+        if param not in headers:
+            return "ERROR: One or more required headers not present."
+    if headers["Content-Type"] != "application/json":
+        return "ERROR: Wrong Content-Type header."
+    if headers["VerdexAPIKey"] != os.environ["API_KEY"]:
+        return "ERROR: Invalid API key."
+
+    return True
+
+@apiBP.route("/api/loginAccount", methods = ['POST'])
+def loginaccount():
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "password" not in request.json:
+        return "ERROR: One or more rquired payload parameters not present."
+    if "usernameoremail" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"]["accountID"]["username"] == request.json["usernameoremail"]:
+            targetAccountID = accountID
+            break
+        elif DI.data["accounts"]["accountID"]["email"] == request.json["usernameoremail"]:
+            targetAccountID = accountID
+            break
+    if targetAccountID == None:
+        return "UERROR: Account does not exist!"
+    
+    response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json[targetAccountID]["password"])
+    if response == False:
+        return "UERROR: Incorrect email/username or password. Please try again."
+    
+    DI.data["accounts"][targetAccountID]["idToken"] = response["idToken"]
+    DI.save()
+
+    return "SUCCESS: User logged in succesfully"
+
+
+@apiBP.route("/api/createAccount", methods = ['POST'])
+def createAccount():
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
