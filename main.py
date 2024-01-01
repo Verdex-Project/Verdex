@@ -52,6 +52,9 @@ if __name__ == '__main__':
     else:
         print("ADDONSMANAGER: Setup complete.")
 
+    ## Set up Logger
+    Logger.setup()
+
     # Register routes
     
     ## Generation routes
