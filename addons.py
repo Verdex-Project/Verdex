@@ -3,11 +3,6 @@ from firebase_admin import db, storage, credentials, initialize_app
 from dotenv import load_dotenv
 load_dotenv()
 
-config = {
-    "apikey": os.environ["APIKey"],
-    "AuthDomain": os.environ["AuthDomain"]
-}
-
 class AddonsManager:
     config = None
 
@@ -221,38 +216,70 @@ class FireStorage:
         return True
     
 class FireAuth:
+    auth = None
 
-    firebase = None
-    signedInUser = None
+    config = {
+        "apiKey": os.environ["FireAPIKey"],
+        "authDomain": os.environ["FireAuthDomain"],
+        "databaseURL": os.environ["RTDB_URL"],
+        "storageBucket": os.environ["STORAGE_URL"]
+    }
 
     @staticmethod
     def connect():
-        global firebase
         try:
-            firebase = pyrebase.initialize_app(config)
+            FireAuth.auth = pyrebase.initialize_app(FireAuth.config).auth()
             return True
         except Exception as e:
-            print(f"AUTHENTICATION ERROR: Failed to connect to Firebase; error: {e}")
+            print(f"FIREAUTH ERROR: Failed to connect to Firebase; error: {e}")
             return False
     
     @staticmethod
-    def createuser(email, password):
-        global firebase
-        global signedInUser
-        auth = firebase.auth()
-        signedInUser = auth.create_user_with_email_and_password(email, password)
-        return signedInUser
+    def createUser(email, password):
+        try:
+            signedInUser = FireAuth.auth.create_user_with_email_and_password(email, password)
+
+            responseObject = {}
+            responseObject["idToken"] = signedInUser["idToken"]
+            responseObject["refreshToken"] = signedInUser["refreshToken"]
+            responseObject["expiresIn"] = signedInUser["expiresIn"]
+
+            return responseObject
+        except Exception as e:
+            return "ERROR: Failed to create user; error response: {}".format(e)
     
     @staticmethod
     def login(email, password):
-        global firebase
-        global signedInUser
-        auth = firebase.auth()
-        signedInUser = auth.sign_in_with_email_and_password(email, password)
-        return signedInUser
+        try:
+            signedInUser = FireAuth.auth.sign_in_with_email_and_password(email, password)
+
+            responseObject = {}
+            responseObject["idToken"] = signedInUser["idToken"]
+            responseObject["refreshToken"] = signedInUser["refreshToken"]
+            responseObject["expiresIn"] = signedInUser["expiresIn"]
+
+            return responseObject
+        except Exception as e:
+            return "ERROR: Invalid credentials; error response: {}".format(e)
     
     @staticmethod
-    def accountinfo():
-        auth = firebase.auth()
-        signedInUserInfo = auth.get_account_info(signedInUser["idToken"])
-        return signedInUserInfo
+    def accountInfo(idToken, includePassHash=False):
+        try:
+            info = FireAuth.auth.get_account_info(idToken)
+
+            responseObject = {}
+
+            ## Extract account data
+            for parameter in info["users"][0]:
+                if includePassHash and parameter == "passwordHash":
+                    responseObject[parameter] = info["users"][0][parameter]
+                elif parameter == "providerUserInfo":
+                    for userInfoParam in info["users"][0][parameter][0]:
+                        if userInfoParam != "email":
+                            responseObject[userInfoParam] = info["users"][0][parameter][0][userInfoParam]
+                elif parameter != "passwordHash":
+                    responseObject[parameter] = info["users"][0][parameter]
+
+            return responseObject
+        except Exception as e:
+            return "ERROR: Invalid ID token; error response: {}".format(e)
