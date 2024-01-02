@@ -73,11 +73,21 @@ class DI:
                     return "Success"
                 
                 # Write data to local db file
-                with open("database.txt", "w") as f:
-                    json.dump(fetchedData, f)
-
-                # Load data into DI
-                DI.data = fetchedData
+                if fetchedData != None and fetchedData != {}:
+                    with open("database.txt", "w") as f:
+                        json.dump(fetchedData, f)
+                    
+                    # Load data into DI
+                    DI.data = fetchedData
+                else:
+                    # RTDB is empty and sample structure needs to be written
+                    response = FireRTDB.setRef(FireRTDB.translateForCloud(DI.sampleData))
+                    if response != True:
+                        print("DI-FIRERTDB SETREF ERROR: " + response)
+                        print("DI: Failed to set sample structure in RTDB. System will resort to local database but attempts to sync will continue.")
+                        with open("database.txt", "r") as f:
+                            DI.data = json.load(f)
+                        return "Success"
             else:
                 # Read data from local database file
                 with open("database.txt", "r") as f:
@@ -143,3 +153,114 @@ class Encryption:
     
 class Universal:
     systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
+
+class Logger:
+  @staticmethod
+  def checkPermission():
+      if "LoggingEnabled" in os.environ and os.environ["LoggingEnabled"] == 'True':
+          return True
+      else:
+          return False
+
+  @staticmethod
+  def setup():
+    if Logger.checkPermission():
+        try:
+            if not os.path.exists(os.path.join(os.getcwd(), "logs.txt")):
+                with open("logs.txt", "w") as f:
+                    f.write("{}UTC {}\n".format(datetime.datetime.now().utcnow().strftime(Universal.systemWideStringDatetimeFormat), "LOGGER: Logger database file setup complete."))
+        except Exception as e:
+            print("LOGGER SETUP ERROR: Failed to setup logs.txt database file. Setup permissions have been granted. Error: {}".format(e))
+
+    return
+
+  @staticmethod
+  def log(message):
+    if Logger.checkPermission():
+        try:
+            with open("logs.txt", "a") as f:
+                f.write("{}UTC {}\n".format(datetime.datetime.now().utcnow().strftime(Universal.systemWideStringDatetimeFormat), message))
+        except Exception as e:
+            print("LOGGER LOG ERROR: Failed to log message. Error: {}".format(e))
+        
+    return
+    
+  @staticmethod
+  def destroyAll():
+    try:
+        if os.path.exists(os.path.join(os.getcwd(), "logs.txt")):
+            os.remove("logs.txt")
+    except Exception as e:
+        print("LOGGER DESTROYALL ERROR: Failed to destroy logs.txt database file. Error: {}".format(e))
+
+  @staticmethod
+  def readAll():
+    if not Logger.checkPermission():
+        return "ERROR: Logging-related services do not have permission to operate."
+    try:
+        if os.path.exists(os.path.join(os.getcwd(), "logs.txt")):
+            with open("logs.txt", "r") as f:
+                logs = f.readlines()
+                for logIndex in range(len(logs)):
+                    logs[logIndex] = logs[logIndex].replace("\n", "")
+                return logs
+        else:
+            return []
+    except Exception as e:
+        print("LOGGER READALL ERROR: Failed to check and read logs.txt database file. Error: {}".format(e))
+        return "ERROR: Failed to check and read logs.txt database file. Error: {}".format(e)
+      
+  @staticmethod
+  def manageLogs():
+    permission = Logger.checkPermission()
+    if not permission:
+        print("LOGGER: Logging-related services do not have permission to operate. Set LoggingEnabled to True in .env file to enable logging.")
+        return
+    
+    print("LOGGER: Welcome to the Logging Management Console.")
+    while True:
+        print("""
+Commands:
+    read <number of lines, e.g 50 (optional)>: Reads the last <number of lines> of logs. If no number is specified, all logs will be displayed.
+    destroy: Destroys all logs.
+    exit: Exit the Logging Management Console.
+""")
+    
+        userChoice = input("Enter command: ")
+        userChoice = userChoice.lower()
+        while not userChoice.startswith("read") and (userChoice != "destroy") and (userChoice != "exit"):
+            userChoice = input("Invalid command. Enter command: ")
+            userChoice = userChoice.lower()
+    
+        if userChoice.startswith("read"):
+            allLogs = Logger.readAll()
+
+            userChoice = userChoice.split(" ")
+            logCount = 0
+            if len(userChoice) != 1:
+                try:
+                    logCount = int(userChoice[1])
+                    if logCount > len(allLogs):
+                        logCount = len(allLogs)
+                    elif logCount <= 0:
+                        raise Exception("Invalid log count. Must be a positive integer above 0 lower than or equal to the total number of logs.")
+                except Exception as e:
+                    print("LOGGER: Failed to read logs. Error: {}".format(e))
+                    continue
+            else:
+                logCount = len(allLogs)
+
+            targetLogs = allLogs[-logCount:]
+            print()
+            print("Displaying {} log entries:".format(logCount))
+            print()
+            for log in targetLogs:
+                print("\t{}".format(log))
+        elif userChoice == "destroy":
+            Logger.destroyAll()
+            print("LOGGER: All logs destroyed.")
+        elif userChoice == "exit":
+            print("LOGGER: Exiting Logging Management Console...")
+            break
+    
+    return

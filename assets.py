@@ -32,3 +32,11 @@ def loginJS():
 @assetsBP.route("/assets/signupJS")
 def signupJS():
     return fileContent("js/signup.js", passAPIKey=True)
+
+@assetsBP.route("/assets/editorJS")
+def editorJS():
+    return fileContent("js/editor.js")
+
+@assetsBP.route("/assets/completionJS")
+def completionJS():
+    return fileContent("js/completion.js")
