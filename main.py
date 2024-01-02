@@ -51,6 +51,14 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("ADDONSMANAGER: Setup complete.")
+
+    ## Set up FireAuth
+    response = FireAuth.connect()
+    if not response:
+        print("MAIN BOOT: Failed to establish FireAuth connection. Boot aborted.")
+        sys.exit(1)
+    else:
+        print("FIREAUTH: Setup complete.")
     
     ## Set up Logger
     Logger.setup()
@@ -77,9 +85,13 @@ if __name__ == '__main__':
     from editor.completion import completionPage
     app.register_blueprint(completionPage)
 
-    ## Accoount route
-    from identity.accounts import accounts
-    app.register_blueprint(accounts)
+    ## Account route
+    from identity.accounts import accountsBP
+    app.register_blueprint(accountsBP)
+
+    ## API routes
+    from api import apiBP
+    app.register_blueprint(apiBP)
 
     ## Assets service
     from assets import assetsBP

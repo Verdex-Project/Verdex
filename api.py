@@ -42,11 +42,15 @@ def loginAccount():
         return "UERROR: Account does not exist!"
     
     response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json["password"])
-    if response == False:
+    if isinstance(response, str):
         return "UERROR: Incorrect email/username or password. Please try again."
     
     DI.data["accounts"][targetAccountID]["idToken"] = response["idToken"]
+    DI.data["accounts"][targetAccountID]["refreshToken"] = response["refreshToken"]
+    DI.data["accounts"][targetAccountID]["tokenExpiry"] = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
     DI.save()
+
+    session["idToken"] = response["idToken"]
 
     return "SUCCESS: User logged in succesfully"
 
@@ -79,12 +83,17 @@ def createAccount():
 
     # Create a new account
     tokenInfo = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
-    DI.data["accounts"][tokenInfo] = {
+    if isinstance(tokenInfo, str):
+        return "UERROR: Account already exists."
+    
+    DI.data["accounts"][Universal.generateUniqueID()] = {
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],
         "idToken": tokenInfo['idToken']
     }
     DI.save()
+
+    session["idToken"] = tokenInfo["idToken"]
 
     return "SUCCESS: Account created successfully"

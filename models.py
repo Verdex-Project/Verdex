@@ -1,4 +1,4 @@
-import os, json, sys, random, datetime, copy, base64
+import os, json, sys, random, datetime, copy, base64, uuid
 from passlib.hash import sha256_crypt as sha
 from addons import *
 
@@ -153,6 +153,10 @@ class Encryption:
     
 class Universal:
     systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
+
+    @staticmethod
+    def generateUniqueID():
+        return uuid.uuid4().hex
 
 class Logger:
   @staticmethod
