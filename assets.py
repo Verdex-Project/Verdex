@@ -27,8 +27,8 @@ def copyright():
 
 @assetsBP.route("/assets/loginJS")
 def loginJS():
-    return fileContent("identityJS/login.js", passAPIKey=True)
+    return fileContent("js/login.js", passAPIKey=True)
 
 @assetsBP.route("/assets/signupJS")
 def signupJS():
-    return fileContent("identityJS/signup.js", passAPIKey=True)
+    return fileContent("js/signup.js", passAPIKey=True)

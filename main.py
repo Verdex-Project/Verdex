@@ -54,26 +54,9 @@ if __name__ == '__main__':
 
     # Register routes
 
-    ## login route
-    from identity.login import loginPage
-    app.register_blueprint(loginPage)
-
-    ## SignUp route
-    from identity.signup import signUpPage
-    app.register_blueprint(signUpPage)
-
-    ## MyAccount route
-    @app.route("/account/info")
-    def myAccount():
-        if "idToken" not in session:
-            return redirect(url_for('unauthorised'), error="ERROR: Please sign in first.")
-        targetAccount = None
-
-        for accountID in DI.data["accounts"]:
-            if "idToken" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID] == session["idToken"]:
-                targetAccount = DI.data["accounts"][accountID]
-
-        return "Hi, {}".format(targetAccount["email"])
+    ## Accoount route
+    from identity.accounts import accounts
+    app.register_blueprint(accounts)
 
     ## Assets service
     from assets import assetsBP

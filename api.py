@@ -72,14 +72,18 @@ def createAccount():
 
         if DI.data["accounts"][accountID]["email"] == request.json["email"]:
             return "UERROR: Email is already in use."
+        
+    # Check if password is min length of 6
+    if len(request.json["password"]) < 6:
+        return "UERROR: Password must be at least 6 characters long."
 
     # Create a new account
-    newAccountID = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
-    DI.data["accounts"][newAccountID] = {
+    tokenInfo = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
+    DI.data["accounts"][tokenInfo] = {
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],
-        "idToken": None
+        "idToken": tokenInfo['idToken']
     }
     DI.save()
 
