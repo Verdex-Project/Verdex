@@ -1,0 +1,125 @@
+{% extends "baseNav.html" %}
+
+{% block title %}test{% endblock %}
+
+{% block head %}
+<style>
+    .container {
+        width: 80%;
+        margin: auto;
+        margin-top: 3%;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    .attractions-box {
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .attraction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: grab;
+    }
+
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .proceed-button {
+        float: right;
+        background-color: #000;
+        color: #fff;
+    }
+
+    /* Additional styles will be needed to match the exact design from the image */
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>What do you want to see?</h1>
+    <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
+
+    <div id="targetAttractionsBox" class="attractions-box">
+        <h2>Target Attractions</h2>
+        <div id="MBS" class="attraction-item" draggable="true">
+            <span>Marina Bay Sands</span>
+            <button class="btn btn-outline-primary" onclick="move(this)">Remove</button>
+        </div>
+    </div>
+
+    <div id="popularAttractionsBox" class="attractions-box">
+        <h2>Popular Attractions</h2>
+        <div id="USS" class="attraction-item" draggable="true">
+            <span>Universal Studios Singapore</span>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
+        </div>
+        <div id="SEA" class="attraction-item" draggable="true">
+            <span>SEA Aquarium</span>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
+        </div>
+        <div id="BotanicalGardens" class="attraction-item" draggable="true">
+            <span>Botanical Gardens</span>
+            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
+        </div>
+    </div>
+
+    <button class="proceed-button">Proceed ></button>
+
+    <script>
+        let attractions = document.getElementsByClassName("attraction-item");
+        let targetBox = document.getElementById("targetAttractionsBox");
+        let popularBox = document.getElementById("popularAttractionsBox");
+
+        for (var attraction of attractions) {
+            attraction.addEventListener("dragstart", (e) => {
+                let selected = e.target;
+
+                popularBox.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                popularBox.addEventListener("drop", (e) => {
+                    popularBox.appendChild(selected);
+                    switchButton(attraction.firstElementChild.nextElementSibling)
+                    selected = null;
+                });
+
+                targetBox.addEventListener("dragover", (e) => {
+                    e.preventDefault();
+                });
+
+                targetBox.addEventListener("drop", (e) => {
+                    targetBox.appendChild(selected);
+                    switchButton(attraction.firstElementChild.nextElementSibling)
+                    selected = null;
+                });
+            })
+        }
+
+        function move(element) {
+            const attractionItem = element.parentNode;
+
+            if (attractionItem.parentNode.id == popularBox.id) {
+                targetBox.appendChild(attractionItem);
+                element.innerText = "Remove";
+            } else {
+                popularBox.appendChild(attractionItem);
+                element.innerText = "Add";
+            }
+        }
+    </script>
+</div>
+{% endblock %}
