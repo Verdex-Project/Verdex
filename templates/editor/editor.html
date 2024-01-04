@@ -28,11 +28,11 @@
             </div>
         </div>
 
-        <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+        <div id="activityLogBox" ondrop="drop(event)" ondragover="allowDrop(event)"> <!--ACTIVITY LOG--> <!--scrollable-->
             <!--get current day from dayCount-->
             {% for j in activities %}
                 {% if not loop.last %}
-                    <div id="activityBox" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div id="activityBox">
 
                         <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                             <div id="timestart">
