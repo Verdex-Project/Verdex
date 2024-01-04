@@ -202,3 +202,112 @@ body {
     margin-left: 20px; 
     text-align: center; 
 }
+
+/* Create post popup */
+#create-a-post-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 70%;
+    height: 70%;
+}
+
+#close-popup-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    margin-top: 7px;
+    margin-right: 15px;
+    padding: 8px 12px;
+    border: 3px solid red;
+    border-radius: 20px;
+    background-color: whitesmoke;
+    color: red;
+    transition: 0.2s ease;
+}
+
+#close-popup-button:hover {
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: red;
+    color: white;
+    transition: 0.2s ease;
+}
+
+#popup-header {
+    text-align: center;
+}
+
+#post-title {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+#post-description {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#post-it-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: #66BB69;
+    color: white;
+    float: right;
+    transition: transform 0.2s ease-in-out;
+    font-size: 130%;
+}
+
+#post-it-button:hover {
+    border: 3px solid #66BB69;
+    background-color: white;
+    color: #66BB69;
+    transform: translateY(-5px);
+}
+
+#tags-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 2px solid black;
+    border-radius: 20px;
+    background-color: whitesmoke;
+    margin-right: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#tags-button:hover {
+    border: 2px solid #529954;
+    transform: translateY(-5px);
+}
+
+#tags-button-container {
+    display: flex; 
+    justify-content: flex;
+    margin-bottom: 10px;
+    float: left;
+}

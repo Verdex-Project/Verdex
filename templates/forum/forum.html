@@ -2,6 +2,29 @@
     {% block title %}VerdexTalks{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
+    <script>
+        // Create post popup 
+    
+        // Function to open the popup
+        function createPostPopup() {
+            document.getElementById("create-a-post-popup").style.display = "block";
+        }
+    
+        // Function to close the popup
+        function closePopup() {
+            confirmation = confirm("Are you sure you'd like to discard all changes?")
+            if (confirmation == true){
+                document.getElementById("create-a-post-popup").style.display = "none";
+            }
+        }
+    
+        // Function to submit the post (you can customize this)
+        function submitPost() {
+            // Perform actions to submit the post
+            alert("Post submitted!");
+            closePopup(); // Close the popup after submission
+        }
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -15,7 +38,7 @@
             </ul>
         </div>
         <div class="create-a-post-container">
-            <button class="create-a-post-button">Create A Post!</button><br>
+            <button class="create-a-post-button" onclick="createPostPopup()">Create A Post!</button><br>
             <p class="or-separator">-----------------OR-----------------</p>
             <p class="recent-itineraries-para">Recent itineraries:</p><br>
             <button class="recent-itineraries-buttons">Sentosa</button><br>
@@ -52,6 +75,21 @@
                         <li class="reaction-buttons">Follow</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div id="create-a-post-popup">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="closePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header">Create A Post!</h2>
+                <textarea id="post-title" rows="1" cols="120" placeholder="Title: "></textarea><br>
+                <textarea id="post-description" rows="8" cols="100" placeholder="Write your post description here"></textarea><br>
+                <p>Suggested tags: </p>
+                <div id="tags-button-container">
+                    <button id="tags-button">#Scenery</button>
+                    <button id="tags-button">#Food</button>
+                    <button id="tags-button">#Island Hopping</button>
+                </div>
+                <button onclick="submitPost()" id="post-it-button">Post it!</button>
             </div>
         </div>
     </div>
