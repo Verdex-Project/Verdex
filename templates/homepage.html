@@ -7,7 +7,7 @@
     /* Create rulesets to align content to the centre of the screen. */
     #content {
         /* text-align: center; */
-        margin-top: 200px;
+        margin-top: 100px;
         margin-left: 50px;
         margin-right: 50px;
     }
@@ -41,6 +41,11 @@
         font-style: italic;
         text-decoration: underline;
     }
+
+    #getStartedButton {
+        font-weight: bold;
+        margin-top: 30px;
+    }
 </style>
 {% endblock %}
 
@@ -51,10 +56,11 @@
             <h1 id="heading">See the world in<br> <span id="emphasis">a green way.</span></h1>
             <h5 style="margin-bottom: 50px;">Re-imagine your trips with us.</h5>
             <p>Integrate sustainable activities in your itinerary and do things you would have never imagined otherwise.</p>
+            <button id="getStartedButton" type="button" class="btn btn-outline-success" onclick="location.href = '{{ url_for("itineraryGen.targetLocations") }}'">Get Started</button>
         </div>
         <div class="right">
             <img src="https://media.istockphoto.com/id/493084438/vector/green-earth.jpg?s=612x612&w=0&k=20&c=5O72nXxFVInQRTju6WyydCBdqwp14lWi25H6Aq-EZCA="
-                height="300" />
+                height="400px" />
         </div>
     </div>
 </div>

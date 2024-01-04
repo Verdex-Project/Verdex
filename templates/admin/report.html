@@ -1,0 +1,26 @@
+{% extends 'baseNav.html' %}
+{% block title %}Report{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='report.css') }}">
+{% endblock %}
+
+
+
+{% block body %}
+<div class="content">
+    <h2 class="generated-reports-header">Generated Reports</h2>
+    {% for report_id, report_data in data.items() %}
+    <div class="report-container">
+        <h3>Report #{{ report_id }}</h3>
+        <p class="report-data-content">Number of Sign-ins: <b>{{ report_data.sign_ins }}</b></p>
+        <p class="report-data-content">Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
+        <p class="report-data-content">Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
+        <p class="report-data-content">System Health: <b>{{ report_data.system_health }}</b></p>
+        <form action="{{ url_for('report.download_report', report_id=report_id) }}" method="post">
+            <input type="hidden" name="report_id" value="{{ report_id }}">
+            <button class="download-report-button" type="submit">Download Report</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

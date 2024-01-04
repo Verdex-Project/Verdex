@@ -1,0 +1,95 @@
+{% extends "baseNav.html" %}
+
+{% block title %}Verdex Sign In{% endblock %}
+
+{% block head %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    
+    #heading {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 3em;
+        font-weight: bold;
+        margin-bottom: 50px;
+    }
+
+    #signuplink {
+        text-align: center;
+        padding: 50px;
+    }
+
+    #left {
+        margin-top: 30px;
+        margin: auto;
+        text-align: center
+    }
+
+    #username,
+    #password {
+        width: 100%;
+        display: inline-block;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: large;
+    }
+
+    #username > p,
+    #password > p {
+        margin-top: 20px;
+    }
+
+    input {
+        height: 30px;
+        width: 300px;
+    }
+
+    #recover {
+        font-style: italic;
+        font-size: small;
+        margin-top: 10px;
+    }
+
+    #copyright {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="top">
+    <h1 id="heading">Sign In To Verdex</h1>
+</div>
+
+<div id="content">
+    <div id="left">
+        <div id="username">
+            <p>Username / Email</p>
+            <input type="text" id="usernameInput" placeholder="Username">
+        </div>
+        <div id="password">
+        <p>Password</p>
+        <input type="password" id="passwordInput" placeholder="Password">
+        </div>
+        <div id="recover">
+            <a href="#">
+                <p>Forgot username and password?</p>
+            </a>
+        </div>
+        <div>
+            <button id="signInButton" onclick="signIn()">Sign In</button>
+        </div>
+    </div>
+</div>
+
+<div id="signuplink">
+    <p>New to Verdex? <a href="/account/signup">Sign Up</a></p>
+</div>
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
+</div>
+<script src="/assets/loginJS"></script>
+{% endblock %}
