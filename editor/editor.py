@@ -5,4 +5,4 @@ editorPage = Blueprint("editorPageBP",__name__)
 
 @editorPage.route("/editor")
 def editor():
-    return render_template("editor/editor.html")
+    return render_template("editor/editorNew.html")

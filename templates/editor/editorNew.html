@@ -1,0 +1,67 @@
+{% extends "baseNav.html" %} <!--NAVBAR-->
+
+{% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
+
+{% block head %}
+<style>
+    #content {
+        text-align: center;
+        align-items: center;
+    }
+
+    #footer {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="content">
+    <div class="header"><h1>Itinerary Editor</h1></div>
+
+    <div id="dayBox">
+        <div class="dayLabel">
+        <!-- DAY BOX HERE (Label that shows day) -->
+        </div>
+
+        <div class="addDayButton">
+            <!--ADD DAY BUTTON HERE (+ button next to the day label which creates a new day)-->
+        </div>
+
+        <div class="deleteDayButton">
+            <!--DELETE DAY BUTTON HERE (Delete button next to create day button to remove the day (Return to homepage if only day was deleted))-->
+        </div>
+
+    </div>
+
+    <div class="activityLog">
+        <div class="activityList">
+            <div class="activity">
+            <!-- ACITIVITY NAME HERE (List of activities for the day with only name)-->
+            <!--EDIT BUTTON HERE (Edit button to change the activity)-->
+            </div>
+        </div>
+
+        <div class="addActivity">
+            <!--ADD ACTIVITY BUTTON (+ button to add activities (prompt))-->
+        </div>
+    </div>
+
+    <div id="footer"> <!--Footer-->
+
+        <div id="deleteItinerary">
+            <button id="deleteItineraryButton">
+                <img src="#" alt="#" style="float: left;"><h5 style="float: right;">Delete</h5> <!--DELETE ALL BUTTON HERE-->
+            </button>
+        </div>
+
+        <div id="saveItinerary">
+            <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
+                <h5  style="float: left">Proceed</h5><img src="#" alt="#" style="float: right;"> <!--Save button to itinerary page done-->
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
