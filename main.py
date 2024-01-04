@@ -34,10 +34,32 @@ def page_not_found(e):
     return render_template("error.html", error="404: Page not found.", originURL=request.host_url)
 
 if __name__ == '__main__':
+    # Boot pre-processing
+
+    ## Set up DatabaseInterface
+    response = DI.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up DI; error: " + response)
+        sys.exit(1)
+    else:
+        print("DI: Setup complete.")
+
+    ## Set up AddonsManager
+    response = AddonsManager.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up AddonsManager; error: " + response)
+        sys.exit(1)
+    else:
+        print("ADDONSMANAGER: Setup complete.")
+
     # Register routes
 
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)
 
-    app.run(port=8000, host='0.0.0.0', debug=True)
+    print()
+    print("All services online; boot pre-processing and setup complete.")
+    print("Booting Verdex...")
+
+    app.run(port=8000, host='0.0.0.0')
