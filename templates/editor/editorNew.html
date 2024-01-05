@@ -103,7 +103,7 @@ function deleteItinerary() {
             </div>
             <button class="mainAddButton" id="addButton_{{ day }}" onclick="toggleAddActivity('{{ day }}')">Add activity</button><!-- Add Button -->
             <div id="newActivityForm_{{ day }}" style="display: none;">
-                <form id="addActivityForm_{{ day }}" action="{{ url_for('editorPageBP.editor') }}" method="post">
+                <form class="addActivityForm" id="addActivityForm_{{ day }}" action="{{ url_for('editorPageBP.editor') }}" method="post">
                     <input type="hidden" name="day" value="{{ day }}">
                     <input type="text" id="newActivityPlaceholder" name="new_activity" placeholder="Enter new activity name">
                     <button type="submit" name="addNewActivity" id="addNewActivityButton">Add it!</button>
