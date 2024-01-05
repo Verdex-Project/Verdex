@@ -37,15 +37,16 @@ class Analytics:
     def setup():
         if not Analytics.checkPermissions():
             print("ANALYTICS: Analytics disabled as operation permission was not granted.")
-
         try:
             with open(Analytics.filePath, "r") as metrics:
                 Analytics.data = json.load(metrics)
-            print("ANALYTICS: Environment setup for analytics.")
+                print("ANALYTICS: Environment setup for analytics.")
         except FileNotFoundError:
             with open(Analytics.filePath, "w") as f:
                 json.dump(Analytics.sampleMetricsObject, f)
-    
+                print("ANALYTICS: Created a new analytics file.")
+        
+
     @staticmethod
     def load_metrics():
         if not Analytics.checkPermissions():
@@ -54,11 +55,19 @@ class Analytics:
         try:
             with open(Analytics.filePath, 'r') as metrics_file:
                 Analytics.data = json.load(metrics_file)
+                print("ANALYTICS LOAD_METRICS: Metrics loaded successfully.")
+                print("Loaded data:", Analytics.data)  # Print the loaded data
                 return True
+        except FileNotFoundError:
+            print("ANALYTICS LOAD_METRICS: File not found. Creating a new file.")
+            with open(Analytics.filePath, "w") as f:
+                json.dump(Analytics.sampleMetricsObject, f)
+            return True
         except Exception as e:
-            Logger.log("ANALYTICS LOAD_METRICS ERROR: Failed to load metrics from data file; error: {}".format(e))
+            Logger.log(f"ANALYTICS LOAD_METRICS ERROR: Failed to load metrics from data file; error: {e}")
             return False
-    
+ # Ensure the file is closed, whether an exception occurred or not
+
     @staticmethod
     def save_metrics():
         if not Analytics.checkPermissions():
@@ -96,9 +105,9 @@ class Analytics:
             Logger.log("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.")
             return "ERROR: Insufficient permissions to generate report."
         ## Check whether reports folder exists; if not, create using os.mkdir
-        path = 'reports'
-        if not os.path.exists(path):
-            os.mkdir(path)
+        reports_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "reports")
+        if not os.path.exists(reports_folder):
+            os.mkdir(reports_folder)
         ## Check whether analytics data has been loaded (Analytics.data != {})
         if Analytics.data !={}:
             return True
@@ -131,13 +140,14 @@ The matrices are shown below:
 -----------------------
 """
         ## Use open(os.path.join(os.getcwd(), "reports", "report-<UNIQUE STRING 4 CHARS LONG>.txt"), "w") to dump the massive report string into the report file
+        # Generate a different ID for reportsInfo.json creation
         unique_string = Analytics.generateRandomID(4)
-        with open(os.path.join(os.getcwd(), "reports", f"report-{unique_string}.txt"), "w") as report:
+        report_path = os.path.join(reports_folder, f"report-{unique_string}.txt")
+        with open(report_path, "w") as report:
             report.write(report_text)
         ## Check if reportsInfo.json exists; if not, create it
-        reports_info_path = os.path.join(os.getcwd(), "reports", "reportsInfo.json")
+        reports_info_path = os.path.join(reports_folder, "reportsInfo.json")
         if not os.path.exists(reports_info_path):
-            # Generate a different ID for reportsInfo.json creation
             with open(reports_info_path, "w") as reports_info_file:
                 json.dump({
                     unique_string: {
@@ -149,9 +159,9 @@ The matrices are shown below:
                         "sign_outs": 0,
                         "verdex_talks_posts": 0,
                     }
-                }, reports_info_file, indent=0)
+                }, reports_info_file, indent=2)
         else:
-            ## Update reportsInfo.json
+            # Update reportsInfo.json
             with open(reports_info_path, "r") as reports_info_file:
                 reports_info_data = json.load(reports_info_file)
             reports_info_data[unique_string] = {
@@ -168,3 +178,4 @@ The matrices are shown below:
                 json.dump(reports_info_data, reports_info_file, indent=0)
         ## Return success message
         return 'Successfully generated report.'
+Analytics.generateReport()

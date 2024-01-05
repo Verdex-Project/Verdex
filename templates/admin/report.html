@@ -12,10 +12,13 @@
     {% for report_id, report_data in data.items() %}
     <div class="report-container">
         <h3>Report #{{ report_id }}</h3>
-        <p class="report-data-content">Number of Sign-ins: <b>{{ report_data.sign_ins }}</b></p>
-        <p class="report-data-content">Number of Forum Posts: <b>{{ report_data.forum_posts }}</b></p>
-        <p class="report-data-content">Number of Users Banned: <b>{{ report_data.users_banned }}</b></p>
-        <p class="report-data-content">System Health: <b>{{ report_data.system_health }}</b></p>
+        <p class="report-data-content">Number of Get Requests: <b>{{ report_data.get_request }}</b></p>
+        <p class="report-data-content">Number of Post Requests: <b>{{ report_data.post_request }}</b></p>
+        <p class="report-data-content">Number of Total Requests: <b>{{ report_data.total_requests}}</b></p>
+        <p class="report-data-content">Total number of questions answered from contact form: <b>{{ report_data.question_answered }}</b></p>
+        <p class="report-data-content">Number of sign ins to the Verdex server: <b>{{ report_data.sign_ins }}</b></p>
+        <p class="report-data-content">Number of sign outs to the Verdex server: <b>{{ report_data.sign_outs }}</b></p>
+        <p class="report-data-content">Number of posts to the VerdexTalks: <b>{{ report_data.verdex_talks_posts }}</b></p>
         <form action="{{ url_for('report.download_report', report_id=report_id) }}" method="post">
             <input type="hidden" name="report_id" value="{{ report_id }}">
             <button class="download-report-button" type="submit">Download Report</button>
