@@ -29,7 +29,7 @@
     justify-content: center;
 }
 
-.addDayButton button, #saveItinerary button, #deleteItinerary button, .editButton, .mainAddButton, #addNewActivityButton, #deleteDayButton  {
+.addDayButton button, #saveItinerary button, #deleteItinerary button, .editButton, .mainAddButton, #addNewActivityButton, #deleteDayButton, #confirmButton {
     display: flex;
     justify-content: center;
     font-size: large;
@@ -41,7 +41,7 @@
     transition: 0.5s;
 }
 
-.addDayButton button:hover, #saveItinerary button:hover, #deleteItinerary button:hover, .editButton:hover, .mainAddButton:hover, #addNewActivityButton:hover, #deleteDayButton:hover {
+.addDayButton button:hover, #saveItinerary button:hover, #deleteItinerary button:hover, .editButton:hover, .mainAddButton:hover, #addNewActivityButton:hover, #deleteDayButton:hover, #confirmButton:hover {
     background-color: green;
     color: white;
     transition: 0.5s;
@@ -79,6 +79,8 @@
 #activityListItem {
     margin-bottom: 10px;
     justify-content: space-between;
+    display: flex;
+    flex-direction: column;
 }
 
 #deleteItinerary, #saveItineraryButton {
@@ -105,5 +107,9 @@
 }
 
 .addActivityForm {
+    display: flex;
+}
+
+.editForm {
     display: flex;
 }
