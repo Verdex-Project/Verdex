@@ -83,9 +83,14 @@
     flex-direction: column;
 }
 
-#deleteItinerary, #saveItineraryButton {
+#deleteItineraryButton, #saveItineraryButton {
     text-align: center;
     vertical-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#deleteItineraryButton h5, #saveItineraryButton h5 {
     padding-left: 5px;
     padding-right: 5px;
 }
