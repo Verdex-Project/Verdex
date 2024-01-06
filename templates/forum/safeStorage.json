@@ -1,0 +1,14 @@
+{
+    "1": {
+        "user_names": "Prakhar and Lincoln",
+        "likes": 5,
+        "post_description": "Hiking along Kranji marshes, and exploring Sungei Buloh's Nature Reserve was so fun!",
+        "post_title": "Nature Hiking"
+    },
+    "2": {
+        "user_names": "Jun han and Joshua",
+        "likes": 3,
+        "post_description": "Had a delightful experience indulging myself with Singapore's local delicacies. Highly reccomended for the foodies out there!",
+        "post_title": "Food Galore"
+    }
+}

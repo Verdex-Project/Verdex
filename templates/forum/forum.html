@@ -2,6 +2,7 @@
     {% block title %}VerdexTalks{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         // Create post popup 
     
@@ -9,21 +10,62 @@
         function createPostPopup() {
             document.getElementById("create-a-post-popup").style.display = "block";
         }
+
+        function itineraryShortcutButtonPopup(shortcut) {
+            document.getElementById("create-a-post-popup").style.display = "block";
+            document.getElementById("post-title").innerHTML = shortcut
+        }
     
         // Function to close the popup
-        function closePopup() {
-            confirmation = confirm("Are you sure you'd like to discard all changes?")
-            if (confirmation == true){
+        function closeCreatePopup() {
+            confirmation = confirm("Are you sure you'd like to discard all changes?");
+            if (confirmation == true) {
                 document.getElementById("create-a-post-popup").style.display = "none";
-                alert("Post discarded.")
+                document.getElementById("create-post-form").reset();
+                alert("Post discarded.");
+                return false;
             }
+            return false;
+        }
+
+        function closeEditPopup() {
+            confirmation = confirm("Are you sure you'd like to discard all changes?");
+            if (confirmation == true) {
+                document.getElementById("edit-post-popup").style.display = "none";
+                document.getElementById("edit-post-form").reset();
+                alert("Changes discarded.");
+                return false;
+            }
+            return false;
         }
     
         // Function to submit the post (you can customize this)
         function submitPost() {
-            // Perform actions to submit the post
-            alert("Post submitted!");
-            closePopup(); // Close the popup after submission
+            var createPostForm = document.getElementById("create-post-form");
+
+            if (createPostForm.checkValidity()) {
+                alert("Post submitted!");
+                document.getElementById("create-a-post-popup").style.display = "none";
+            } else {
+                createPostForm.reportValidity();
+                return false;
+            }
+        }
+
+        function editPost(){
+            document.getElementById("edit-post-popup").style.display = "block";
+        }
+
+        function submitEdit(){
+            var editPostForm = document.getElementById("edit-post-form");
+
+            if (editPostForm.checkValidity()) {
+                alert("Post editted!");
+                document.getElementById("edit-post-popup").style.display = "none";
+            } else {
+                editPostForm.reportValidity();
+                return false;
+            }
         }
     </script>
 {% endblock %}
@@ -42,55 +84,61 @@
             <button class="create-a-post-button" onclick="createPostPopup()">Create A Post!</button><br>
             <p class="or-separator">-----------------OR-----------------</p>
             <p class="recent-itineraries-para">Recent itineraries:</p><br>
-            <button class="recent-itineraries-buttons">Sentosa</button><br>
-            <button class="recent-itineraries-buttons">Singapore Islands</button><br>
-            <button class="recent-itineraries-buttons">Food Galore</button><br>
+            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">Trip to Sentosa</button><br>
+            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Islands')">Singapore Islands</button><br>
+            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Food Galore')">Food Galore</button><br>
         </div>
         <div class="post-section-container">
-            <div class="individual-posts">
-                <div class="post-content">
-                    <h3 class="name-of-user-who-shared-post-header">Amanda shared:</h3>
-                    <h2 class="itinerary-header">Itinerary for Sentosa</h2><br>
-                    <p class="image">Image here</p>
-                    <p class="post-description">Post description here</p>
+            {% for post_username, post_data in postsInfoJson.items() %}
+                <div class="individual-posts">
+                    <div class="post-content">
+                        <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                        <button class="edit-button" onclick="editPost()">Edit</button>
+                        <p class="post-description">{{ post_data.post_description }}</p>
+                    </div>
+                    <div class="post-reaction-buttons-container">
+                        <ul class="list-of-reaction-buttons">
+                            <li class="reaction-buttons">Like</li>
+                            <li class="reaction-buttons">Comment</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="post-reaction-buttons-container">
-                    <ul class="list-of-reaction-buttons">
-                        <li class="reaction-buttons">Like</li>
-                        <li class="reaction-buttons">Comment</li>
-                        <li class="reaction-buttons">Follow</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="individual-posts">
-                <div class="post-content">
-                    <h3 class="name-of-user-who-shared-post-header">Bobby shared:</h3>
-                    <h2 class="itinerary-header">Itinerary for Food Galore</h2>
-                    <p class="image">Image here</p>
-                    <p class="post-description">Post description here</p>
-                </div>
-                <div class="post-reaction-buttons-container">
-                    <ul class="list-of-reaction-buttons">
-                        <li class="reaction-buttons">Like</li>
-                        <li class="reaction-buttons">Comment</li>
-                        <li class="reaction-buttons">Follow</li>
-                    </ul>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <div id="create-a-post-popup">
             <div id="popup-content">
-                <button id="close-popup-button" onclick="closePopup()"><span>&#x274C;</span> Discard changes</button>
-                <h2 id="popup-header">Create A Post!</h2>
-                <textarea id="post-title" rows="1" cols="120" placeholder="Title: "></textarea><br>
-                <textarea id="post-description" rows="8" cols="100" placeholder="Write your post description here"></textarea><br>
-                <p>Suggested tags: </p>
-                <div id="tags-button-container">
-                    <button id="tags-button">#Scenery</button>
-                    <button id="tags-button">#Food</button>
-                    <button id="tags-button">#Island Hopping</button>
-                </div>
-                <button onclick="submitPost()" id="post-it-button">Post it!</button>
+                <form id="create-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
+                    <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                    <h2 id="popup-header">Create A Post!</h2>
+                    <textarea name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required="required"></textarea><br>
+                    <textarea name="post_title" id="post-title" rows="1" cols="120" placeholder="Title: " required="required"></textarea><br>
+                    <textarea name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"></textarea><br>
+                    <p>Suggested tags: </p>
+                    <div id="tags-button-container">
+                        <button id="tags-button">#Scenery</button>
+                        <button id="tags-button">#Food</button>
+                        <button id="tags-button">#Island Hopping</button>
+                    </div>
+                    <button type="submit" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
+                </form>
+            </div>
+        </div>
+        <div id="edit-post-popup">
+            <div id="popup-content">
+                <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
+                    <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
+                    <h2 id="popup-header">Edit post</h2>
+                    <textarea name="edit_user_names" id="user_names" rows="1" cols="80" required="required" placeholder="New name(s): "></textarea><br>
+                    <textarea name="edit_post_title" id="post-title" rows="1" cols="120" required="required" placeholder="New title: "></textarea><br>
+                    <textarea name="edit_post_description" id="post-description" rows="8" cols="100" required="required" placeholder="New description: "></textarea><br>
+                    <p>Suggested tags: </p>
+                    <div id="tags-button-container">
+                        <button id="tags-button">#Scenery</button>
+                        <button id="tags-button">#Food</button>
+                        <button id="tags-button">#Island Hopping</button>
+                    </div>
+                    <button type="submit" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
+                </form>
             </div>
         </div>
     </div>
