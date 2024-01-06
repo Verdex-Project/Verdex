@@ -67,6 +67,16 @@ def editor():
         with open('templates/editor/itinerary.json', 'w') as file:
                 json.dump(itinerary_data, file, indent=4)
 
+    if request.method == 'POST' and 'deleteActivity' in request.form:
+        day_to_delete = request.form['day']
+        activity_number_to_delete = request.form['activity_number']
+
+        if day_to_delete in itinerary_data and activity_number_to_delete in itinerary_data[day_to_delete]['activities']:
+            del itinerary_data[day_to_delete]['activities'][activity_number_to_delete]
+
+            with open('templates/editor/itinerary.json', 'w') as file:
+                json.dump(itinerary_data, file, indent=4)
+
     return render_template("editor/editorNew.html", itinerary_data=itinerary_data)
 
     # if request.method == 'GET':

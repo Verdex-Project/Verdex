@@ -123,6 +123,13 @@ function deleteItinerary() {
                             <li id="activityListItem">
                                 <div class="activityListTop">
                                     <span id="activityName_{{ day }}_{{ activity_number }}" class="activityName">{{ activity_info.name }}</span>
+                                    <!--Delete button here-->
+                                    <form method="post" action="{{ url_for('editorPageBP.editor') }}">
+                                        <input type="hidden" name="deleteActivity" value="true">
+                                        <input type="hidden" name="day" value="{{ day }}">
+                                        <input type="hidden" name="activity_number" value="{{ activity_number }}">
+                                        <button type="submit" class="deleteButton">Delete activity</button>
+                                    </form>
                                     <button type="button" id="editButton_{{ day }}_{{ activity_number }}" class="editButton" onclick="showEditForm('{{ day }}', '{{ activity_number }}')"  style="float: right;">Edit</button>
                                 </div>
                                 <div class="activityListBottom">
