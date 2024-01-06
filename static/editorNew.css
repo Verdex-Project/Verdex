@@ -35,7 +35,7 @@
     font-size: large;
     margin-bottom: 20px;
     background-color: white;
-    border-color: green;
+    border: 1px solid green;
     border-radius: 20px;
     color: green;
     transition: 0.5s;
@@ -48,8 +48,28 @@
     transition: 0.5s;
 }
 
+ #deleteItinerary button, #deleteDayButton, .deleteButton {
+    display: flex;
+    justify-content: center;
+    font-size: large;
+    margin-bottom: 20px;
+    background-color: white;
+    border: 1px solid red;
+    border-radius: 20px;
+    color: green;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+#deleteItinerary button:hover, #deleteDayButton:hover,.deleteButton:hover {
+    background-color: red;
+    color: white;
+    transition: 0.5s;
+}
+
+
 #saveItinerary button, #deleteItinerary button {
-    padding-top:3px;
+    padding-top:5px;
 }
 
 #dayBox {
@@ -138,4 +158,8 @@
 
 .activityName {
     font-size: large;
+}
+
+#newActivityPlaceholder, #newActivityNamePlaceholder {
+    border: 2px solid green;
 }
