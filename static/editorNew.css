@@ -133,5 +133,9 @@
 
 .deleteForm {
     display: inline-block;
-    
+    margin-left: 10px;
+}
+
+.activityName {
+    font-size: large;
 }

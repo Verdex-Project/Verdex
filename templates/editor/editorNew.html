@@ -98,7 +98,7 @@ function deleteItinerary() {
             <div class="deleteDayButton" onclick="deleteDay('{{day}}')">
                 <!--DELETE BUTTON HERE (Delete button next to create day button to remove the day (Return to homepage if only day was deleted))-->
                 <form method="post" action="{{ url_for('editorPageBP.editor') }}">
-                    <button type="submit" name="deleteDay" value="{{ day }}" id="deleteDayButton">Delete</button>
+                    <button type="submit" name="deleteDay" value="{{ day }}" id="deleteDayButton">Delete day</button>
                 </form><br>
             </div>
             <button class="mainAddButton" id="addButton_{{ day }}" onclick="toggleAddActivity('{{ day }}')">Add activity</button><!-- Add Button -->
