@@ -61,7 +61,7 @@
     background-color: white;
     border: 1px solid red;
     border-radius: 20px;
-    color: green;
+    color: red;
     transition: 0.5s;
     cursor: pointer;
 }
