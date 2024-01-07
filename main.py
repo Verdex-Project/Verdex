@@ -93,9 +93,6 @@ if __name__ == '__main__':
     from api import apiBP
     app.register_blueprint(apiBP)
 
-    from forum.forum import forumBP
-    app.register_blueprint(forumBP)
-
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)
