@@ -209,7 +209,17 @@ body {
     margin-bottom: 15px;
 }
 
-#create-a-post-popup {
+#comment_description {
+    text-align: left; 
+    margin-top:10px;
+    margin-bottom: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#create-a-post-popup, #comment-on-post-popup {
     display: none;
     position: fixed;
     top: 0;
@@ -276,7 +286,7 @@ body {
     margin-bottom: 15px;
 }
 
-#post-it-button {
+#post-it-button, #comment-button {
     cursor: pointer;
     padding: 8px 12px;
     padding-left: 20px;
@@ -290,7 +300,7 @@ body {
     font-size: 130%;
 }
 
-#post-it-button:hover {
+#post-it-button:hover, #comment-button:hover {
     border: 3px solid #66BB69;
     background-color: white;
     color: #66BB69;
@@ -329,4 +339,8 @@ body {
 
 #postTitle {
     color: #2d532e;
+}
+
+#comments-header {
+    color: #529954;
 }

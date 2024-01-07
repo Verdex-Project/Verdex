@@ -57,7 +57,7 @@ if __name__ == '__main__':
     app.register_blueprint(reportBP, url_prefix="/report")
     
     from templates.forum.forum import forumBP
-    app.register_blueprint(forumBP, url_prefix="/verdextalks")
+    app.register_blueprint(forumBP)
 
     ## Assets service
     from assets import assetsBP

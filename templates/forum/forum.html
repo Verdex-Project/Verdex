@@ -17,23 +17,25 @@
             confirmation = confirm("Are you sure you'd like to discard all changes?");
             if (confirmation == true) {
                 document.getElementById("create-a-post-popup").style.display = "none";
+                document.getElementById("comment-on-post-popup").style.display = "none";
                 document.getElementById("create-post-form").reset();
-                alert("Post discarded.");
-                return false;
-            }
-            return false;
-        }
-
-        function closeEditPopup() {
-            confirmation = confirm("Are you sure you'd like to discard all changes?");
-            if (confirmation == true) {
-                document.getElementById("edit-post-popup").style.display = "none";
-                document.getElementById("edit-post-form").reset();
+                document.getElementById("comment-post-form").reset();
                 alert("Changes discarded.");
                 return false;
             }
             return false;
         }
+
+        // function closeEditPopup() {
+        //     confirmation = confirm("Are you sure you'd like to discard all changes?");
+        //     if (confirmation == true) {
+        //         document.getElementById("edit-post-popup").style.display = "none";
+        //         document.getElementById("edit-post-form").reset();
+        //         alert("Changes discarded.");
+        //         return false;
+        //     }
+        //     return false;
+        // }
     
         function submitPost() {
             var createPostForm = document.getElementById("create-post-form");
@@ -46,6 +48,64 @@
                 return false;
             }
         }
+
+        function likePost(postId) {
+            // Use Axios to send a POST request to the server
+            axios.post('/like-post', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
+                .then(function (response) {
+                    // Update the like count on the client side
+                    const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
+                    likeButton.innerHTML = `Likes (${response.data.likes})`;
+                })
+                .catch(function (error) {
+                    console.error('Error liking post:', error);
+                });
+        }
+
+        function deletePost(postId){
+            confirmation = confirm("Are you sure you want to delete this post?")
+            if (confirmation){
+                // Use Axios to send a POST request to the server
+                axios.post('/delete-post', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
+                    .then(function (response) {
+                        window.location.reload();
+                    })
+                    .catch(function (error) {
+                        console.error('Error deleting post:', error);
+                    });
+            }
+        }
+
+        // function commentPost(){
+        //     document.getElementById("comment-on-post-popup").style.display = "block";
+        // }
+
+        // function submitComment(postId) {
+        //     event.preventDefault();  // Prevent the default form submission behavior
+
+        //     const commentDescription = document.getElementById("comment_description").value;
+
+        //     // Create an object with form data
+        //     const formData = {
+        //         postId: postId,
+        //         comment_description: commentDescription,
+        //     };
+
+        //     // Use Axios to send a POST request to the server with application/json content type
+        //     axios.post('/comment-post', formData, {
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //     })
+        //     .then(function (response) {
+        //         // Handle the response if needed
+        //     })
+        //     .catch(function (error) {
+        //         console.error('Error commenting on post:', error);
+        //     });
+
+        //     document.getElementById("comment-on-post-popup").style.display = "none";
+        // }
 
         // function editPost(postId) {
         //     document.getElementById('edit-post-id').value = postId;
@@ -85,16 +145,21 @@
         </div>
         <div class="post-section-container">
             {% for post_username, post_data in postsInfoJson.items() %}
-                <div class="individual-posts">
+                <div class="individual-posts" data-post-id="{{ post_data.postDateTimeId }}">
                     <div class="post-content">
                         <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
                         <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
+                        <!-- <h5 id="comments-header">Comments: </h5><br>
+                        <ol>
+                            <li><p class="post-comments">{{ post_data.post_comments }}</p></li>
+                        </ol> -->
                     </div>
                     <div class="post-reaction-buttons-container">
                         <ul class="list-of-reaction-buttons">
-                            <li class="reaction-buttons">Like</li>
-                            <li class="reaction-buttons">Comment</li>
+                            <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
+                            <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
+                            <!-- <li class="reaction-buttons" onclick='commentPost()'>Comment</li> -->
                         </ul>
                     </div>
                 </div>
@@ -118,6 +183,16 @@
                 </form>
             </div>
         </div>
+        <!-- <div id="comment-on-post-popup">
+            <div id="popup-content">
+                <form id="comment-post-form" method="post" action="/comment-post">
+                    <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                    <h2 id="popup-header">Add your comment!</h2>
+                    <textarea name="comment_description" id="comment_description" rows="8" cols="100" placeholder="Write your comment here" required="required"></textarea><br>
+                    <button type="submit" name="commentOnPost" id="comment-button" onclick='submitComment(event)'>Add comment!</button>
+                </form>
+            </div>
+        </div> -->
         <!-- <div id="edit-post-popup">
             <div id="popup-content">
                 <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
