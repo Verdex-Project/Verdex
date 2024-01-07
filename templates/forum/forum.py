@@ -1,5 +1,5 @@
 #Blueprint for VerdexTalks main forum page
-from flask import Blueprint, render_template, json, request, jsonify
+from flask import Blueprint, render_template, json, request, jsonify, redirect, url_for
 from main import Universal, DI
 import datetime
 
@@ -43,27 +43,10 @@ def verdextalks():
 
             with open('templates/forum/postsInfo.json', 'w') as file:
                 json.dump(postsInfoJson, file, indent=4)
-
-    # if request.method == 'POST' and 'editPost' in request.form:
-    #     edit_post_title = request.form.get('edit_post_title')
-    #     edit_post_description = request.form.get('edit_post_description')
-    #     edit_user_names = request.form.get('edit_user_names')
-
-    #     with open('templates/forum/postsInfo.json', 'r') as json_file:
-    #         postsInfoJson = json.load(json_file)
-
-    #     edited_post = {
-    #         "user_names": edit_user_names,
-    #         "post_title": edit_post_title,
-    #         "post_description": edit_post_description,
-    #         "likes": 0
-    #     }
-
-    #     postsInfoJson[] = edited_post
-
-    #     with open('templates/forum/postsInfo.json', 'w') as file:
-    #             json.dump(postsInfoJson, file, indent=4)
+                
+            return redirect(url_for('forum.verdextalks'))
 
     return render_template("forum/forum.html", postsInfoJson=postsInfoJson)
 
+# postsInfoJson=jsonify(DI.data["forum"])
 

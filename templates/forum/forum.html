@@ -4,9 +4,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        // Create post popup 
-    
-        // Function to open the popup
         function createPostPopup() {
             document.getElementById("create-a-post-popup").style.display = "block";
         }
@@ -16,7 +13,6 @@
             document.getElementById("post-title").innerHTML = shortcut
         }
     
-        // Function to close the popup
         function closeCreatePopup() {
             confirmation = confirm("Are you sure you'd like to discard all changes?");
             if (confirmation == true) {
@@ -39,7 +35,6 @@
             return false;
         }
     
-        // Function to submit the post (you can customize this)
         function submitPost() {
             var createPostForm = document.getElementById("create-post-form");
 
@@ -52,21 +47,21 @@
             }
         }
 
-        function editPost(){
-            document.getElementById("edit-post-popup").style.display = "block";
-        }
+        // function editPost(postId) {
+        //     document.getElementById('edit-post-id').value = postId;
+        //     document.getElementById("edit-post-popup").style.display = "block";
+        // }
 
-        function submitEdit(){
-            var editPostForm = document.getElementById("edit-post-form");
-
-            if (editPostForm.checkValidity()) {
-                alert("Post editted!");
-                document.getElementById("edit-post-popup").style.display = "none";
-            } else {
-                editPostForm.reportValidity();
-                return false;
-            }
-        }
+        // function submitEdit() {
+        //     var editPostForm = document.getElementById("edit-post-form");
+        //     if (editPostForm.checkValidity()) {
+        //         alert("Post edited!");
+        //         document.getElementById("edit-post-popup").style.display = "none";
+        //     } else {
+        //         editPostForm.reportValidity();
+        //         return false;
+        //     }
+        // }
     </script>
 {% endblock %}
 
@@ -93,7 +88,7 @@
                 <div class="individual-posts">
                     <div class="post-content">
                         <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                        <button class="edit-button" onclick="editPost()">Edit</button>
+                        <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
                     </div>
                     <div class="post-reaction-buttons-container">
@@ -123,7 +118,7 @@
                 </form>
             </div>
         </div>
-        <div id="edit-post-popup">
+        <!-- <div id="edit-post-popup">
             <div id="popup-content">
                 <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
                     <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
@@ -131,6 +126,7 @@
                     <textarea name="edit_user_names" id="user_names" rows="1" cols="80" required="required" placeholder="New name(s): "></textarea><br>
                     <textarea name="edit_post_title" id="post-title" rows="1" cols="120" required="required" placeholder="New title: "></textarea><br>
                     <textarea name="edit_post_description" id="post-description" rows="8" cols="100" required="required" placeholder="New description: "></textarea><br>
+                    <input type="hidden" name="edit_post_id" id="edit-post-id" value="">
                     <p>Suggested tags: </p>
                     <div id="tags-button-container">
                         <button id="tags-button">#Scenery</button>
@@ -140,6 +136,6 @@
                     <button type="submit" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
                 </form>
             </div>
-        </div>
+        </div> -->
     </div>
 {% endblock %}
