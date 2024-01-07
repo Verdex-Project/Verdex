@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session
+from flask import Flask, request, Blueprint, session, jsonify, redirect, url_for
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
@@ -97,3 +97,25 @@ def createAccount():
     session["idToken"] = tokenInfo["idToken"]
 
     return "SUCCESS: Account created successfully"
+
+@apiBP.route('/api/likePost', methods=['POST'])
+def like_post():
+    post_id = request.json.get('postId')
+
+    if post_id in DI.data["forum"]:
+        DI.data["forum"][post_id]["likes"] += 1
+        DI.save()
+
+        return jsonify({'likes': DI.data["forum"][post_id]["likes"]})
+    
+    return redirect(url_for("forum.verdextalks"))
+
+@apiBP.route('/api/deletePost', methods=['POST'])
+def delete_post():
+    post_id = request.json.get('postId')
+
+    if post_id in DI.data["forum"]:
+        DI.data["forum"].pop(post_id)
+        DI.save()
+    
+    return redirect(url_for("forum.verdextalks"))
