@@ -44,16 +44,20 @@ function showEditForm(day, activity_number) {
     document.getElementById("editButton_" + day + "_" + activity_number).style.display = "hidden";
 }
 
-function confirmEdit(day, activity_number) {
-    var newName = document.getElementById("editTextBox_" + day + "_" + activity_number).value;
+// function confirmEdit(day, activity_number) {
 
-    if (newName.trim() === "") {
-        alert("New activity name can't be empty.");
-        return false;
-    }
-    document.getElementById("editForm_" + day + "_" + activity_number).style.display = "hidden";
-    document.getElementById("editButton_" + day + "_" + activity_number).style.display = "block";
-}
+//     var confirmChanges = confirm("Valid changes will be saved. Confirm?");
+//     if (confirmChanges == true) {
+//         // Reset the form and hide the edit box
+//         document.getElementById("editForm_" + day + "_" + activity_number).reset();
+//         document.getElementById("editForm_" + day + "_" + activity_number).style.display = "none";
+//         document.getElementById("editButton_" + day + "_" + activity_number).style.display = "block";
+//         alert("Valid changes saved.");
+//         return false;
+//     }
+//     return true
+// }
+
 
 function deleteItinerary() {
     var isConfirmedDeleteItinerary = confirm(`Are you sure you want to delete your itinerary?`);
@@ -95,12 +99,6 @@ function deleteItinerary() {
         {% for day, itinerary_day in itinerary_data.items() %}
         <div class="day-header-container">
             <h2 id="dayNumber">Day {{ day }}</h2>
-            <div class="deleteDayButton" onclick="deleteDay('{{day}}')">
-                <!--DELETE BUTTON HERE (Delete button next to create day button to remove the day (Return to homepage if only day was deleted))-->
-                <form method="post" action="{{ url_for('editorPageBP.editor') }}">
-                    <button type="submit" name="deleteDay" value="{{ day }}" id="deleteDayButton">Delete day</button>
-                </form><br>
-            </div>
             <button class="mainAddButton" id="addButton_{{ day }}" onclick="toggleAddActivity('{{ day }}')">Add activity</button><!-- Add Button -->
             <div id="newActivityForm_{{ day }}" style="display: none;">
                 <form class="addActivityForm" id="addActivityForm_{{ day }}" action="{{ url_for('editorPageBP.editor') }}" method="post">
@@ -108,6 +106,12 @@ function deleteItinerary() {
                     <input type="text" id="newActivityPlaceholder" name="new_activity" placeholder="Enter new activity name">
                     <button type="submit" name="addNewActivity" id="addNewActivityButton">Add it!</button>
                 </form>
+            </div>
+            <div class="deleteDayButton" onclick="deleteDay('{{day}}')">
+                <!--DELETE BUTTON HERE (Delete button next to create day button to remove the day (Return to homepage if only day was deleted))-->
+                <form method="post" action="{{ url_for('editorPageBP.editor') }}">
+                    <button type="submit" name="deleteDay" value="{{ day }}" id="deleteDayButton">Delete day</button>
+                </form><br>
             </div>
         </div>
 
@@ -134,12 +138,12 @@ function deleteItinerary() {
                                     </div>
                                     <button type="button" id="editButton_{{ day }}_{{ activity_number }}" class="editButton" onclick="showEditForm('{{ day }}', '{{ activity_number }}')"  style="float: right;">Edit</button>
                                 </div>
-                                <div class="activityListBottom" >
+                                <div class="activityListBottom" id="editFormDiv">
                                     <form class="editForm" id="editForm_{{ day }}_{{ activity_number }}" style="display: none;" action="{{ url_for('editorPageBP.editor') }}" method="post">
                                         <input type="hidden" name="day" value="{{ day }}">
                                         <input type="hidden" name="activity_number" value="{{ activity_number }}">
                                         <input id="newActivityNamePlaceholder" type="text" name="new_name" placeholder="Enter new activity name">
-                                        <button type="submit" name="confirmEdit" id="confirmButton" style="float:right;">Confirm</button>
+                                        <button type="submit" name="confirmEdit" class="confirmButton" id="confirmButton_{{ day }}_{{ activity_number }}" style="float:right;">Confirm</button>
                                     </form>
                                 </div>
                             </li>
