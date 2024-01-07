@@ -46,7 +46,11 @@ class Analytics:
             with open(Analytics.filePath, "w") as f:
                 json.dump(Analytics.sampleMetricsObject, f)
                 print("ANALYTICS: Created a new analytics file.")
-        
+        if not os.path.isdir(Analytics.reportsFolderPath):
+            os.mkdir(Analytics.reportsFolderPath)
+            print("ANALYTICS: Created a new reports folder.")
+        else:
+            print("ANALYTICS: Loading Reports folder.")
 
     @staticmethod
     def load_metrics():
@@ -106,8 +110,6 @@ class Analytics:
             return "ERROR: Insufficient permissions to generate report."
         
         ## Check whether reports folder exists; if not, create using os.mkdir
-        if not os.path.isdir(Analytics.reportsFolderPath):
-            os.mkdir(Analytics.reportsFolderPath)
         
         ## Check whether analytics data has been loaded (Analytics.data != {})
         if Analytics.data == []:
@@ -172,20 +174,3 @@ The metrics are shown below:
         
         ## Return success message
         return 'Successfully generated report.'
-    @staticmethod
-    def delete_report(report_id):
-        for filename in os.listdir(Analytics.reportsFolderPath):
-            if filename[-8:-4] == report_id:
-                os.remove(os.path.join(Analytics.reportsFolderPath, filename))
-
-    @staticmethod
-    def delete_all_reports():
-        for filename in os.listdir(Analytics.reportsFolderPath):
-            if os.path.isfile(os.path.join(Analytics.reportsFolderPath, filename)):
-                os.remove(os.path.join(Analytics.reportsFolderPath, filename))
-        os.rmdir(Analytics.reportsFolderPath)
-    @staticmethod
-    def clear_data():
-        with open(Analytics.filePath, "w") as metrics:
-            Analytics.data = json.dump(Analytics.sampleMetricsObject, metrics)
-    

@@ -4,11 +4,17 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='report.css') }}">
 {% endblock %}
 
-
-
 {% block body %}
 <div class="content">
     <h2 class="generated-reports-header">Generated Reports</h2>
+    <form action="{{ url_for('report.delete_all_reports')}}">
+        <input type="hidden" name="report_id" value="{{ report_id }}">
+        <button class="delete-all-report-button" type="submit">Delete all Reports</button>
+    </form>
+    <form action="{{ url_for('report.clear_data')}}">
+        <input type="hidden" name="report_id" value="{{ report_id }}">
+        <button class="clear-data-button" type="submit">Clear Data</button>
+    </form>
     {% for report_id, report_data in data.items() %}
     <div class="report-container">
         <h3>Report #{{ report_id }}</h3>
@@ -23,6 +29,11 @@
             <input type="hidden" name="report_id" value="{{ report_id }}">
             <button class="download-report-button" type="submit">Download Report</button>
         </form>
+        <form action="{{ url_for('report.delete_report', report_id=report_id) }}" method="post">
+            <input type="hidden" name="report_id" value="{{ report_id }}">
+            <button class ="delete-report-button" type="submit">Delete Report</button>
+        </form>
+        
     </div>
     {% endfor %}
 </div>
