@@ -1,5 +1,6 @@
 # Blueprint for report generation
 import os
+from main import Logger
 from flask import Blueprint, render_template, json, request, send_file, flash, redirect, url_for
 
 
@@ -34,11 +35,7 @@ def download_report(report_id):
         flash("ERROR: The report file path is not found.")
         return redirect(url_for('error'))
     
-    #For code reviewing and debugging purposes 
-    print("-----CONSOLE LOGGING-----")
-    print(f"Report ID: {report_id}")
-    print(f"Report File Path: {report_file_path}")
-    print("----------END------------")
+    Logger.log("ADMIN DOWNLOAD_REPORT: Report with ID '{}' downloaded.".format(report_id))
 
     # Use send_file to send the corresponding report txt file back
     try:
