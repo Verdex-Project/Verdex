@@ -1,10 +1,10 @@
 import os, json, uuid, random, datetime
-from models import Logger
+from models import Logger, Universal
 from dotenv import load_dotenv
 load_dotenv()
     
 class Analytics:
-    data = {}
+    data = []
     filePath = os.path.join(os.getcwd(), "analytics.json")
 
     sampleMetricsObject = {
@@ -15,6 +15,7 @@ class Analytics:
         "sign_outs": 0,
         "verdex_talks_posts": 0,
     }
+    reportsFolderPath = os.path.join(os.getcwd(), "reports")
 
     @staticmethod
     def checkPermissions():
@@ -66,7 +67,6 @@ class Analytics:
         except Exception as e:
             Logger.log(f"ANALYTICS LOAD_METRICS ERROR: Failed to load metrics from data file; error: {e}")
             return False
- # Ensure the file is closed, whether an exception occurred or not
 
     @staticmethod
     def save_metrics():
@@ -104,15 +104,13 @@ class Analytics:
             print("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.")
             Logger.log("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.")
             return "ERROR: Insufficient permissions to generate report."
+        
         ## Check whether reports folder exists; if not, create using os.mkdir
-        reports_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "reports")
-        if not os.path.exists(reports_folder):
-            os.mkdir(reports_folder)
+        if not os.path.isdir(Analytics.reportsFolderPath):
+            os.mkdir(Analytics.reportsFolderPath)
+        
         ## Check whether analytics data has been loaded (Analytics.data != {})
-        if Analytics.data !={}:
-            return True
-        ## Generate your metrics
-        else:
+        if Analytics.data == []:
             print("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Logger.log("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Analytics.load_metrics()
@@ -120,16 +118,16 @@ class Analytics:
         ## Fill in metrics data into a massive string
         report_text = f"""VERDEX ANALYTICS REPORT
 -----------------------
-This report was generated on {datetime.datetime.now().strftime("%d/%m/%Y")} at {datetime.datetime.now().strftime("%H:%M:%S")}.
+This report was generated on {datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)} 
 -----------------------
-In this report a few matrices are shown. These matrices are:
+In this report a few metrics are shown. These matrices are:
 - Number of requests made to the Verdex Server
 - Number of questions answered from contact us form
 - Number of sign ins to the Verdex Server
 - Number of sign outs from the Verdex Server
 - Number of Verdex Talks posts
 -----------------------
-The matrices are shown below:
+The metrics are shown below:
 - Number of Get Requests: {Analytics.data['get_request']}
 - Number of Post Requests: {Analytics.data['post_request']}
 - Number of Total Requests: {Analytics.data['get_request'] + Analytics.data['post_request']}
@@ -141,30 +139,25 @@ The matrices are shown below:
 """
         ## Use open(os.path.join(os.getcwd(), "reports", "report-<UNIQUE STRING 4 CHARS LONG>.txt"), "w") to dump the massive report string into the report file
         # Generate a different ID for reportsInfo.json creation
-        unique_string = Analytics.generateRandomID(4)
-        report_path = os.path.join(reports_folder, f"report-{unique_string}.txt")
+
+        unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")  + Analytics.generateRandomID(customLength=4)
+        report_path = os.path.join(Analytics.reportsFolderPath, f"report-{unique_string}.txt")
         with open(report_path, "w") as report:
             report.write(report_text)
+        
         ## Check if reportsInfo.json exists; if not, create it
-        reports_info_path = os.path.join(reports_folder, "reportsInfo.json")
-        if not os.path.exists(reports_info_path):
+        reports_info_path = os.path.join(Analytics.reportsFolderPath, "reportsInfo.json")
+        if not os.path.isfile(reports_info_path):
             with open(reports_info_path, "w") as reports_info_file:
                 json.dump({
-                    unique_string: {
-                        "get_request": 0,
-                        "post_request": 0,
-                        "total_requests": 0,
-                        "question_answered": 0,
-                        "sign_ins": 0,
-                        "sign_outs": 0,
-                        "verdex_talks_posts": 0,
-                    }
-                }, reports_info_file, indent=2)
+                    unique_string: Analytics.sampleMetricsObject
+                }, reports_info_file)
         else:
             # Update reportsInfo.json
-            with open(reports_info_path, "r") as reports_info_file:
-                reports_info_data = json.load(reports_info_file)
-            reports_info_data[unique_string] = {
+            with open(reports_info_path, "r") as f:
+                reportsInfo = json.load(f)
+
+            reportsInfo[unique_string] = {
                 "get_request": Analytics.data['get_request'],
                 "post_request": Analytics.data['post_request'],
                 "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
@@ -174,8 +167,25 @@ The matrices are shown below:
                 "verdex_talks_posts": Analytics.data['verdex_talks_posts'],
             }
 
-            with open(reports_info_path, "w") as reports_info_file:
-                json.dump(reports_info_data, reports_info_file, indent=0)
+            with open(reports_info_path, "w") as f:
+                json.dump(reportsInfo, f)
+        
         ## Return success message
         return 'Successfully generated report.'
-Analytics.generateReport()
+    @staticmethod
+    def delete_report(report_id):
+        for filename in os.listdir(Analytics.reportsFolderPath):
+            if filename[-8:-4] == report_id:
+                os.remove(os.path.join(Analytics.reportsFolderPath, filename))
+
+    @staticmethod
+    def delete_all_reports():
+        for filename in os.listdir(Analytics.reportsFolderPath):
+            if os.path.isfile(os.path.join(Analytics.reportsFolderPath, filename)):
+                os.remove(os.path.join(Analytics.reportsFolderPath, filename))
+        os.rmdir(Analytics.reportsFolderPath)
+    @staticmethod
+    def clear_data():
+        with open(Analytics.filePath, "w") as metrics:
+            Analytics.data = json.dump(Analytics.sampleMetricsObject, metrics)
+    

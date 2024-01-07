@@ -2,7 +2,9 @@
 import os
 from main import Logger
 from flask import Blueprint, render_template, json, request, send_file, flash, redirect, url_for
+
 reportBP = Blueprint("report", __name__)
+
 #Main report displaying webpage
 @reportBP.route('/report')
 def report():
