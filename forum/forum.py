@@ -3,9 +3,7 @@ from flask import Blueprint, render_template, json, request, jsonify, redirect, 
 from main import Universal, DI
 import datetime
 
-
-forumBP = Blueprint("forum", __name__)   
-
+forumBP = Blueprint("forum", __name__)
 
 @forumBP.route('/verdextalks', methods=['GET', 'POST'])
 def verdextalks():
@@ -27,12 +25,6 @@ def verdextalks():
             }
 
             DI.data["forum"][postDateTimeId] = new_post
-
-            #JUST FOR TESTING, REMOVE ASAP.
-            print("-----DI-----") 
-            print(DI.data)
-            print("-----END-----")
-            # REMOVE ASAP.
 
             DI.save() 
             return redirect(url_for('forum.verdextalks'))
