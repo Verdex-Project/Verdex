@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Blueprint, session, redirect, url_for
 from flask_cors import CORS
-from models import *
+from main import DI, FireAuth, Universal, manageIDToken
 
 accountsBP = Blueprint("accounts",__name__)
 
@@ -20,6 +20,10 @@ def signUp():
 ## MyAccount route
 @accountsBP.route("/account/info")
 def myAccount():
+    authCheck = manageIDToken()
+    if authCheck != True:
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+
     if "idToken" not in session:
         return redirect(url_for('unauthorised', error="Please sign in first."))
     targetAccount = None

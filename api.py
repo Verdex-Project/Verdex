@@ -1,7 +1,7 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
+from main import DI, FireAuth, Universal, manageIDToken
 from flask_cors import CORS
-from models import *
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -18,9 +18,8 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route('/api/loginAccount', methods = ['POST'])
+@apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
-
     check = checkHeaders(request.headers)
     if check != True:
         return check

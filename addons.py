@@ -283,3 +283,11 @@ class FireAuth:
             return responseObject
         except Exception as e:
             return "ERROR: Invalid ID token; error response: {}".format(e)
+
+    @staticmethod
+    def refreshToken(refreshToken):
+        try:
+            responseObject = FireAuth.auth.refresh(refreshToken)
+            return responseObject
+        except Exception as e:
+            return "ERROR: Invalid refresh token; error response: {}".format(e)
