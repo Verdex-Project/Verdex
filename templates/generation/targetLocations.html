@@ -41,6 +41,10 @@
         float: right;
     }
 
+    .cancel-button {
+        float: left;
+    }
+
     #titleAndDescriptionBox {
         visibility: hidden;
         display: flex;
@@ -72,6 +76,7 @@
             </div>
         {% endfor %}
     </div>
+    <button id="cancelButton" class="btn btn-outline-danger cancel-button" onclick="window.location.href='/'">Cancel</button>
     <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
 
     <div id="titleAndDescriptionBox">

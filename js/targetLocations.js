@@ -2,6 +2,7 @@ const targetAttractionsBox = document.getElementById("targetAttractionsBox")
 const popularAttractionsBox = document.getElementById("popularAttractionsBox")
 var proceedButton = document.getElementById("proceedButton")
 var proceedButton2 = document.getElementById("proceedButton2")
+const cancelButton = document.getElementById("cancelButton")
 const titleInput = document.getElementById("titleInput")
 const descriptionInput = document.getElementById("descriptionInput")
 const titleAndDescriptionBox = document.getElementById("titleAndDescriptionBox")
@@ -20,6 +21,7 @@ function proceedToGeneration() {
         targetAttractionsBox.remove()
         popularAttractionsBox.remove()
         titleAndDescriptionBox.style.visibility = "visible"
+        cancelButton.remove()
         proceedButton.remove()
     } else {
         if (titleInput.value == "" || descriptionInput.value == "") {
