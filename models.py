@@ -26,14 +26,17 @@ class DI:
                 json.dump(DI.sampleData, f)
         
         if FireRTDB.checkPermissions():
-            print("DI: Firebase RTDB is enabled. Connecting to Firebase...")
             try:
-                response = FireConn.connect()
-                if response != True:
-                    print("DI FIRECONN ERROR: " + response)
-                    return "Error"
-                
-                print("DI: Connected to Firebase!")
+                if not FireConn.connected:
+                    print("DI-FIRECONN: Firebase connection not established. Attempting to connect...")
+                    response = FireConn.connect()
+                    if response != True:
+                        print("DI-FIRECONN: Failed to connect to Firebase. Aborting setup.")
+                        return "Error"
+                    else:
+                        print("DI-FIRECONN: Firebase connection established. Firebase RTDB is enabled.")
+                else:
+                    print("DI: Firebase RTDB is enabled.")
             except Exception as e:
                 print("DI FIRECONN ERROR: " + str(e))
                 return "Error"

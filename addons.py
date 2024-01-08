@@ -1,5 +1,6 @@
 import os, sys, json, datetime, copy, pyrebase
 from firebase_admin import db, storage, credentials, initialize_app
+from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -47,18 +48,16 @@ class AddonsManager:
             return "ERROR: Failed to delete config key; error: {}".format(e)
         
 class FireConn:
+    connected = False
+
     @staticmethod
     def checkPermissions():
-        enabledEnvVars = ["FireRTDBEnabled", "FireStorageEnabled"]
-        for envVar in enabledEnvVars:
-            if envVar in os.environ and os.environ[envVar] == 'True':
-                return True
-        return False
+        return ("FireConnEnabled" in os.environ and os.environ["FireConnEnabled"] == "True")
 
     @staticmethod
     def connect():
         if not FireConn.checkPermissions():
-            return "ERROR: No Firebase services are enabled in the .env file to grant permission to connect to Firebase."
+            return "ERROR: Firebase connection permissions are not granted."
         if not os.path.exists("serviceAccountKey.json"):
             return "ERROR: Failed to connect to Firebase. The file serviceAccountKey.json was not found. Please re-read instructions for the Firebase addon."
         else:
@@ -71,6 +70,7 @@ class FireConn:
                     'databaseURL': os.environ["RTDB_URL"],
                     "storageBucket": os.environ["STORAGE_URL"]
                 })
+                FireConn.connected = True
             except Exception as e:
                 return "ERROR: Error occurred in connecting to RTDB; error: {}".format(e)
             return True
@@ -183,9 +183,7 @@ class FireRTDB:
 class FireStorage:
     @staticmethod
     def checkPermissions():
-        if 'FireStorageEnabled' in os.environ and os.environ['FireStorageEnabled'] == 'True':
-            return True
-        return False
+        return ('FireStorageEnabled' in os.environ and os.environ['FireStorageEnabled'] == 'True')
 
     @staticmethod
     def uploadFile(localFilePath, filename=None):
@@ -283,3 +281,27 @@ class FireAuth:
             return responseObject
         except Exception as e:
             return "ERROR: Invalid ID token; error response: {}".format(e)
+
+    @staticmethod
+    def refreshToken(refreshToken):
+        try:
+            responseObject = FireAuth.auth.refresh(refreshToken)
+            return responseObject
+        except Exception as e:
+            return "ERROR: Invalid refresh token; error response: {}".format(e)
+        
+    @staticmethod
+    def deleteAccount(idToken):
+        '''Returns True upon successful account deletion.
+        
+        NOTE: This method uses firebase_admin rather than pyrebase unlike the other methods in this class. FireConn.connect() needs to be executed successfully prior to execution of this method.'''
+
+        if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
+            return "ERROR: Delete account requires a Firebase connection granted by explicit permission."
+        
+        try:
+            fireAuthUserID = FireAuth.accountInfo(idToken)["localId"]
+            adminAuth.delete_user(fireAuthUserID)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to delete account; error response: {}".format(e)
