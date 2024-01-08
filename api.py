@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory
-from main import DI, FireAuth, Universal, manageIDToken
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession
 from flask_cors import CORS
 from dotenv import load_dotenv
 load_dotenv()
@@ -122,3 +122,36 @@ def editUsername():
     DI.save()
 
     return "SUCCESS: Username updated."
+
+@apiBP.route('/api/logoutIdentity', methods=['POST'])
+def logoutIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    deleteSession(targetAccountID)
+    del session['idToken']
+
+    return "SUCCESS: User logged out."
+
+
+@apiBP.route('/api/deleteIdentity', methods=['POST'])
+def deleteIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    ## Delete account from DI
+    del DI.data["accounts"][targetAccountID]
+
+    
