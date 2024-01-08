@@ -3,7 +3,10 @@ html {
 }
 
 body {
-    background-image: url("Images/rainforest.png");
+    background-image: url("Images/newRainforest.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .content {
