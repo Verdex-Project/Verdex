@@ -1,5 +1,6 @@
 import os, sys, json, datetime, copy, pyrebase
 from firebase_admin import db, storage, credentials, initialize_app
+from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -291,3 +292,19 @@ class FireAuth:
             return responseObject
         except Exception as e:
             return "ERROR: Invalid refresh token; error response: {}".format(e)
+        
+    @staticmethod
+    def deleteAccount(idToken):
+        '''Returns True upon successful account deletion.
+        
+        NOTE: This method uses firebase_admin rather than pyrebase unlike the other methods in this class. FireConn.connect() needs to be executed successfully prior to execution of this method.'''
+
+        if not FireConn.checkPermissions():
+            return "ERROR: Delete account requires FireConn permission."
+        
+        try:
+            fireAuthUserID = FireAuth.accountInfo(idToken)["localId"]
+            adminAuth.delete_user(fireAuthUserID)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to delete account; error response: {}".format(e)
