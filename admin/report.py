@@ -32,7 +32,7 @@ def download_report(report_id):
         return redirect(url_for('error'))
 
     local_path = os.getcwd() #Need to change this
-    report_file_name = f"report_{report_id}.txt"
+    report_file_name = f"report-{report_id}.txt"
     full_report_file_path = os.path.join(local_path, 'reports', report_file_name)
 
     if not os.path.isfile(full_report_file_path):
@@ -73,19 +73,21 @@ def delete_report(report_id):
 def delete_all_reports():
     try:
         for filename in os.listdir(Analytics.reportsFolderPath):
-            if os.path.isfile(os.path.join(Analytics.reportsFolderPath, filename)):
+            if filename != "reportsInfo.json":
                 os.remove(os.path.join(Analytics.reportsFolderPath, filename))
-        os.rmdir(Analytics.reportsFolderPath)
+            else:
+                with open(Analytics.reportsInfoFilePath, "w") as f:
+                    json.dump({}, f)
+
         Logger.log("ADMIN DELETE_ALL_REPORTS: All reports deleted.")
-        flash("All reports deleted successfully.")
-        Analytics.setup()
-        return redirect(url_for('homepage'))
+        return redirect(url_for('report.report'))
     except Exception as e:
         return str(e)
+
 @reportBP.route('/report/clear', methods=['POST', 'GET'])
 def clear_data():
     with open(Analytics.filePath, "w") as metrics:
         Analytics.data = json.dump(Analytics.sampleMetricsObject, metrics)
     Logger.log("ADMIN CLEAR_DATA: Analytics data cleared.")
     flash("Analytics data cleared successfully.")
-    return redirect(url_for('report'))
+    return redirect(url_for('report.report'))

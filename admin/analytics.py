@@ -16,6 +16,7 @@ class Analytics:
         "verdex_talks_posts": 0,
     }
     reportsFolderPath = os.path.join(os.getcwd(), "reports")
+    reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
 
     @staticmethod
     def checkPermissions():
@@ -49,8 +50,11 @@ class Analytics:
         if not os.path.isdir(Analytics.reportsFolderPath):
             os.mkdir(Analytics.reportsFolderPath)
             print("ANALYTICS: Created a new reports folder.")
-        else:
-            print("ANALYTICS: Loading Reports folder.")
+        
+        if not os.path.isfile(Analytics.reportsInfoFilePath):
+            with open(Analytics.reportsInfoFilePath, "w") as f:
+                json.dump({}, f)
+                print("ANALYTICS: Created a new reportsInfo.json file.")
 
     @staticmethod
     def load_metrics():
@@ -142,35 +146,33 @@ The metrics are shown below:
         ## Use open(os.path.join(os.getcwd(), "reports", "report-<UNIQUE STRING 4 CHARS LONG>.txt"), "w") to dump the massive report string into the report file
         # Generate a different ID for reportsInfo.json creation
 
-        unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")  + Analytics.generateRandomID(customLength=4)
+        unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + Analytics.generateRandomID(customLength=4)
         report_path = os.path.join(Analytics.reportsFolderPath, f"report-{unique_string}.txt")
         with open(report_path, "w") as report:
             report.write(report_text)
         
         ## Check if reportsInfo.json exists; if not, create it
-        reports_info_path = os.path.join(Analytics.reportsFolderPath, "reportsInfo.json")
-        if not os.path.isfile(reports_info_path):
-            with open(reports_info_path, "w") as reports_info_file:
-                json.dump({
-                    unique_string: Analytics.sampleMetricsObject
-                }, reports_info_file)
-        else:
-            # Update reportsInfo.json
-            with open(reports_info_path, "r") as f:
-                reportsInfo = json.load(f)
+        if not os.path.isfile(Analytics.reportsInfoFilePath):
+            with open(Analytics.reportsInfoFilePath, "w") as reports_info_file:
+                json.dump({}, reports_info_file)
+        
+        # Update reportsInfo.json
+        with open(Analytics.reportsInfoFilePath, "r") as f:
+            reportsInfo = json.load(f)
 
-            reportsInfo[unique_string] = {
-                "get_request": Analytics.data['get_request'],
-                "post_request": Analytics.data['post_request'],
-                "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
-                "question_answered": Analytics.data['question_answered'],
-                "sign_ins": Analytics.data['sign_ins'],
-                "sign_outs": Analytics.data['sign_outs'],
-                "verdex_talks_posts": Analytics.data['verdex_talks_posts'],
-            }
+        reportsInfo[unique_string] = {
+            "report_id": unique_string,
+            "get_request": Analytics.data['get_request'],
+            "post_request": Analytics.data['post_request'],
+            "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
+            "question_answered": Analytics.data['question_answered'],
+            "sign_ins": Analytics.data['sign_ins'],
+            "sign_outs": Analytics.data['sign_outs'],
+            "verdex_talks_posts": Analytics.data['verdex_talks_posts'],
+        }
 
-            with open(reports_info_path, "w") as f:
-                json.dump(reportsInfo, f)
+        with open(Analytics.reportsInfoFilePath, "w") as f:
+            json.dump(reportsInfo, f)
         
         ## Return success message
         return 'Successfully generated report.'
