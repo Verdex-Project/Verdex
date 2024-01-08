@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .content {
     font-family: Arial, sans-serif;
     margin: 20px;

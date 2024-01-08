@@ -1,3 +1,11 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-image: url("Images/rainforest.png");
+}
+
 .content {
     font-family: 'Arial', sans-serif;
 }
@@ -10,41 +18,47 @@
 
 .list-of-all-filter-buttons {
     list-style-type: none;
-    padding: 0;
+    padding: 10px;
 }
 
 .filter-buttons {
+    color: #66BB69;
+    font-size: 120%;
     display: inline-block;
     margin-right: 30px;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 30px;
     padding-right: 30px;
-    border: 2px solid #000;
-    border-radius: 15px;
     cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    border: 3px solid rgb(185, 184, 184);
+    transition: 0.2s ease;
 }
 
 .filter-buttons:hover {
-    box-shadow: 2px 2px 5px #888888;
-    transition: 0.2s;
+    border: 3px solid white;
+    background-color: rgba(255, 255, 255, 0.7);
+    transition: 0.2s ease;
 }
 
 .create-a-post-container {
     margin: 20px;
     margin-right: 10px;
-    border: 2px solid #000;
+    border: 3px solid rgb(206, 206, 206);
     border-radius: 15px;
     padding-top: 15px;
     padding-bottom: 15px;
     padding-left: 50px;
     padding-right: 50px;
     float: left;
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 .create-a-post-button {
     text-align: center;
-    border: 2px solid #000;
+    border: 3px solid rgb(206, 206, 206);
     border-radius: 15px;
     padding-left: 70px; 
     padding-right: 70px;
@@ -52,84 +66,281 @@
     padding-bottom: 10px;
     margin-bottom: 15px;
     font-size: 130%;
+    background-color: #66BB69;
+    color: white;
+    transition: 0.2s ease;
+}
+
+.create-a-post-button:hover {
+    text-align: center;
+    border: 3px solid white;
+    border-radius: 15px;
+    padding-left: 70px; 
+    padding-right: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 130%;
+    background-color: #66BB69;
+    color: white;
+    transition: 0.2s ease;
 }
 
 .recent-itineraries-buttons {
     display: block;
     margin: 0;
     padding: 8px 12px;
-    border: 2px solid #000;
+    border: 3px solid rgb(206, 206, 206);
     border-radius: 20px;
     text-align: center;
     cursor: pointer;
     width: 100%;
+    background-color: #66BB69;
+    color: white;
+    transition: 0.2s ease;
+}
+
+.recent-itineraries-buttons:hover {
+    border: 3px solid white;
+    transition: 0.2s ease;
 }
 
 .post-section-container {
     float: right;
     margin: 20px;
-    margin-right: 40px;
+    width: 65%; 
 }
 
 .individual-posts {
-    border: 2px solid #000;
+    border: 3px solid rgb(206, 206, 206);
     border-radius: 15px;
-    margin-bottom: 20px;
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 20px;
-    padding-bottom: 70px;
+    margin-bottom: 20px; 
+    padding-left: 30px; 
+    padding-right: 30px; 
+    padding-top: 30px; 
+    padding-bottom: 0px; 
+    display: flex; 
+    flex-direction: column; 
+    background-color: white;
+    opacity: 0.9;
 }
 
 .name-of-user-who-shared-post-header {
-    margin-bottom: 10px;
     margin-right: 100px;
-    float: left;
+    margin-top: -10px;
+    color: #529954;
 }
 
 .itinerary-header {
     margin-top: 0;
     margin-left: 100px;
     float: right;
+    color: #529954;
 }
 
 .post-reaction-buttons-container {
+    display: flex; 
+    justify-content: flex; 
     margin-top: 10px;
 }
 
 .list-of-reaction-buttons {
     list-style-type: none;
     padding: 0;
+    display: flex;
+    margin-top: 10px;
 }
 
 .reaction-buttons {
     display: inline-block;
     margin-right: 10px;
     padding: 8px 12px;
-    border: 2px solid #000;
+    border: 3px solid rgb(195, 195, 195);
     border-radius: 20px;
     cursor: pointer;
+    background-color: #66BB69;
+    color: white;
+    transition: 0.2s ease;
+}
+
+.reaction-buttons:hover {
+    border: 3px solid #66BB69;
+    background-color: white;
+    color: #66BB69;
+    transition: 0.2s ease;
 }
 
 .or-separator {
     text-align: center;
     font-size: 130%;
+    color: #427b44;
 }
 
 .recent-itineraries-para {
     font-size: 130%;
+    color: #427b44;
 }
 
 .image {
     float: left;
-    border: 2px solid #000;
+    border: 2px solid #529954;
     border-radius: 20px;
     padding: 20px;
     margin-top: 10px;
-    margin-right: 100px;
+    margin-right: 20px; 
+    width: 300px; 
+    height: 200px; 
+    text-align: center; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
 }
 
 .post-description {
+    text-align: left; 
+    margin-top:10px;
+    margin-bottom: 30px;
+}
+
+#post-description {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#comment_description {
+    text-align: left; 
+    margin-top:10px;
+    margin-bottom: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#create-a-post-popup, #comment-on-post-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#edit-post-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 85%;
+    height: 85%;
+}
+
+#close-popup-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    margin-top: 7px;
+    margin-right: 15px;
+    padding: 8px 12px;
+    border: 3px solid red;
+    border-radius: 20px;
+    background-color: whitesmoke;
+    color: red;
+    transition: 0.2s ease;
+}
+
+#close-popup-button:hover {
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: red;
+    color: white;
+    transition: 0.2s ease;
+}
+
+#popup-header {
+    text-align: center;
+}
+
+#post-title {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#post-it-button, #comment-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: #66BB69;
+    color: white;
     float: right;
-    margin-left: 100px;
+    transition: transform 0.2s ease-in-out;
+    font-size: 130%;
+}
+
+#post-it-button:hover, #comment-button:hover {
+    border: 3px solid #66BB69;
+    background-color: white;
+    color: #66BB69;
+    transform: translateY(-5px);
+}
+
+#tags-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 2px solid black;
+    border-radius: 20px;
+    background-color: whitesmoke;
+    margin-right: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#tags-button:hover {
+    border: 2px solid #529954;
+    transform: translateY(-5px);
+}
+
+#tags-button-container {
+    display: flex; 
+    justify-content: flex;
+    margin-bottom: 10px;
+    float: left;
+}
+
+#user_names {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+#postTitle {
+    color: #2d532e;
+}
+
+#comments-header {
+    color: #529954;
 }
