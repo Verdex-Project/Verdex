@@ -27,7 +27,7 @@ def deleteSession(accountID):
     return True
 
 def manageIDToken():
-    '''Returns True if token is valid (will refresh if expiring soon) and a str error message if not valid.'''
+    '''Returns account ID if token is valid (will refresh if expiring soon) and a str error message if not valid.'''
 
     if "idToken" not in session:
         return "ERROR: Please sign in first."
@@ -61,7 +61,7 @@ def manageIDToken():
 
                 session["idToken"] = response["idToken"]
 
-            return True
+            return "SUCCESS: {}".format(accountID)
     
     # If we get here, the session is invalid as the ID token is not in the database
     del session["idToken"]

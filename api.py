@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory
 from main import DI, FireAuth, Universal, manageIDToken
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -10,6 +10,7 @@ apiBP = Blueprint("api", __name__)
 def checkHeaders(headers):
     for param in ["Content-Type", "VerdexAPIKey"]:
         if param not in headers:
+            print("Param not present: {}".format(param))
             return "ERROR: One or more required headers not present."
     if headers["Content-Type"] != "application/json":
         return "ERROR: Wrong Content-Type header."
@@ -89,10 +90,35 @@ def createAccount():
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],
-        "idToken": tokenInfo['idToken']
+        "idToken": tokenInfo['idToken'],
+        "refreshToken": tokenInfo['refreshToken'],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
     }
     DI.save()
 
     session["idToken"] = tokenInfo["idToken"]
 
     return "SUCCESS: Account created successfully"
+
+@apiBP.route("/api/editUsername", methods = ['POST'])
+def editUsername():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    
+    # # Check if the username or email is already in use
+    # for accountID in DI.data["accounts"]:
+    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+    #         return "UERROR: Username is already taken."
+
+    # Update the username in the data
+    DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
+    DI.save()
+
+    return "SUCCESS: Username updated."
