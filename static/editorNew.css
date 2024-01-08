@@ -178,3 +178,8 @@
     height: 40px;
     padding: 5px;
 }
+
+#footer {
+    display: flex;
+    justify-content: space-between;
+}
