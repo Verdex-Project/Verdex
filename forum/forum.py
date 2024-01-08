@@ -31,29 +31,6 @@ def verdextalks():
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
-@forumBP.route('/like-post', methods=['GET', 'POST'])
-def like_post():
-    post_id = request.json.get('postId')
-
-    if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] += 1
-        DI.save()
-
-        return jsonify({'likes': DI.data["forum"][post_id]["likes"]})
-    
-    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
-
-@forumBP.route('/delete-post', methods=['GET', 'POST'])
-def delete_post():
-    post_id = request.json.get('postId')
-    print(f"Post ID: {post_id}")
-
-    if post_id in DI.data["forum"]:
-        DI.data["forum"].pop(post_id)
-        DI.save()
-    
-    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
-
 
 # @forumBP.route('/comment-post', methods=['GET', 'POST'])
 # def comment_on_post():
