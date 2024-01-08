@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
+from admin.analytics import Analytics
 load_dotenv()
 
 app = Flask(__name__)
@@ -59,6 +60,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+    
+    ## Set up Analytics
+    Analytics.setup()
     
     ## Set up Logger
     Logger.setup()
