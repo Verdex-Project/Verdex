@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
+from admin.analytics import Analytics
 load_dotenv()
 
 app = Flask(__name__)
@@ -67,8 +68,15 @@ def manageIDToken():
     del session["idToken"]
     return "ERROR: Invalid credentials."
 
+@app.before_request
+def updateAnalytics():
+    Analytics.add_metrics('get_request' if request.method == "GET" else "post_request")
+    return
+
 @app.route('/')
 def homepage():
+    if "generateReport" in request.args and request.args["generateReport"] == "true":
+        Analytics.generateReport()
     return render_template('homepage.html')
 
 # Security pages
@@ -125,6 +133,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+    
+    ## Set up Analytics
+    Analytics.setup()
     
     ## Set up Logger
     Logger.setup()
