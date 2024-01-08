@@ -44,3 +44,7 @@ def editorJS():
 @assetsBP.route("/assets/completionJS")
 def completionJS():
     return fileContent("js/completion.js")
+
+@assetsBP.route("/assets/targetLocationsJS")
+def itineraryGenerationJS():
+    return fileContent("js/targetLocations.js", passAPIKey=True)
