@@ -53,7 +53,7 @@ function proceedToGeneration() {
                     if (!response.data.startsWith("ERROR:")) {
                         if (response.data.startsWith("SUCCESS:")) {
                             const newItineraryID = response.data.substring("SUCCESS: Itinerary ID: ".length)
-                            location.href = `${origin}/editor?itineraryID=${newItineraryID}`
+                            window.location.href = `${origin}/editor?itineraryID=${newItineraryID}`
                         } else {
                             alert("Something went wrong. Please try again.")
                             console.log("Non-success response received when submitting target locations; response: " + response.data)
