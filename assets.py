@@ -33,6 +33,10 @@ def loginJS():
 def signupJS():
     return fileContent("js/signup.js", passAPIKey=True)
 
+@assetsBP.route("/assets/viewAccountJS")
+def viewAccountJS():
+    return fileContent("js/viewAccount.js", passAPIKey=True)
+
 @assetsBP.route("/assets/editorJS")
 def editorJS():
     return fileContent("js/editor.js")

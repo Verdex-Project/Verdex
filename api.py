@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session
-from flask_cors import CORS
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from models import *
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
@@ -19,9 +19,8 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route('/api/loginAccount', methods = ['POST'])
+@apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
-
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -91,7 +90,9 @@ def createAccount():
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],
-        "idToken": tokenInfo['idToken']
+        "idToken": tokenInfo['idToken'],
+        "refreshToken": tokenInfo['refreshToken'],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
     }
     DI.save()
 
@@ -149,3 +150,92 @@ def generateItinerary():
     DI.save()
 
     return "SUCCESS: Itinerary ID: {}".format(newItinerary["id"])
+
+@apiBP.route("/api/editUsername", methods = ['POST'])
+def editUsername():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    
+    # # Check if the username or email is already in use
+    # for accountID in DI.data["accounts"]:
+    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+    #         return "UERROR: Username is already taken."
+
+    # Update the username in the data
+    DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
+    DI.save()
+
+    return "SUCCESS: Username updated."
+
+@apiBP.route('/api/logoutIdentity', methods=['POST'])
+def logoutIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    deleteSession(targetAccountID)
+    del session['idToken']
+
+    return "SUCCESS: User logged out."
+
+
+@apiBP.route('/api/deleteIdentity', methods=['POST'])
+def deleteIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    ## Delete account from DI
+    del DI.data["accounts"][targetAccountID]
+    DI.save()
+    Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
+
+    response = FireAuth.deleteAccount(session['idToken'])
+    if response != True:
+        Logger.log("API DELETEIDENTITY: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
+        return "ERROR: Something went wrong. Please try again."
+    else:
+        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
+
+    del session['idToken']
+
+    return "SUCCESS: Account deleted successfully."
+
+@apiBP.route('/api/likePost', methods=['POST'])
+def like_post():
+    post_id = request.json.get('postId')
+
+    if post_id in DI.data["forum"]:
+        DI.data["forum"][post_id]["likes"] += 1
+        DI.save()
+
+        return jsonify({'likes': DI.data["forum"][post_id]["likes"]})
+    
+    return redirect(url_for("forum.verdextalks"))
+
+@apiBP.route('/api/deletePost', methods=['POST'])
+def delete_post():
+    post_id = request.json.get('postId')
+
+    if post_id in DI.data["forum"]:
+        DI.data["forum"].pop(post_id)
+        DI.save()
+    
+    return redirect(url_for("forum.verdextalks"))

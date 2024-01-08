@@ -8,3 +8,4 @@ config.txt
 database.txt
 reports/
 logs.txt
+analytics.json

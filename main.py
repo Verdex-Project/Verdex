@@ -3,15 +3,80 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
+from admin.analytics import Analytics
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+## Configure app
 app.secret_key = os.environ['AppSecretKey']
+
+## Global methods
+def deleteSession(accountID):
+    if accountID not in DI.data["accounts"]:
+        return False
+    
+    if "idToken" in DI.data["accounts"][accountID]:
+        del DI.data["accounts"][accountID]["idToken"]
+    if "refreshToken" in DI.data["accounts"][accountID]:
+        del DI.data["accounts"][accountID]["refreshToken"]
+    if "tokenExpiry" in DI.data["accounts"][accountID]:
+        del DI.data["accounts"][accountID]["tokenExpiry"]
+    DI.save()
+
+    return True
+
+def manageIDToken():
+    '''Returns account ID if token is valid (will refresh if expiring soon) and a str error message if not valid.'''
+
+    if "idToken" not in session:
+        return "ERROR: Please sign in first."
+    
+    for accountID in DI.data["accounts"]:
+        if "idToken" not in DI.data["accounts"][accountID]:
+            # This account doesn't have an ID token, so
+            continue
+        elif DI.data["accounts"][accountID]["idToken"] == session["idToken"]:
+            delta = datetime.datetime.strptime(DI.data["accounts"][accountID]["tokenExpiry"], Universal.systemWideStringDatetimeFormat) - datetime.datetime.now()
+            if delta.total_seconds() < 0:
+                deleteSession(accountID)
+                del session["idToken"]
+                Logger.log("MANAGEIDTOKEN: Session expired for account with ID '{}'.".format(accountID))
+                return "ERROR: Your session has expired. Please sign in again."
+            elif delta.total_seconds() < 600:
+                # Refresh token if it's less than 10 minutes from expiring
+                response = FireAuth.refreshToken(DI.data["accounts"][accountID]["refreshToken"])
+                if isinstance(response, str):
+                    # Refresh token is invalid, delete session entirely
+                    deleteSession(accountID)
+                    del session["idToken"]
+                    return False
+                
+                DI.data["accounts"][accountID]["idToken"] = response["idToken"]
+                DI.data["accounts"][accountID]["refreshToken"] = response["refreshToken"]
+                DI.data["accounts"][accountID]["tokenExpiry"] = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+                DI.save()
+
+                Logger.log("MANAGEIDTOKEN: Refreshed token for account with ID '{}'.".format(accountID))
+
+                session["idToken"] = response["idToken"]
+
+            return "SUCCESS: {}".format(accountID)
+    
+    # If we get here, the session is invalid as the ID token is not in the database
+    del session["idToken"]
+    return "ERROR: Invalid credentials."
+
+@app.before_request
+def updateAnalytics():
+    Analytics.add_metrics('get_request' if request.method == "GET" else "post_request")
+    return
 
 @app.route('/')
 def homepage():
+    if "generateReport" in request.args and request.args["generateReport"] == "true":
+        Analytics.generateReport()
     return render_template('homepage.html')
 
 # Security pages
@@ -36,6 +101,15 @@ def page_not_found(e):
 if __name__ == '__main__':
     # Boot pre-processing
 
+    ## Set up FireConn
+    if FireConn.checkPermissions():
+        response = FireConn.connect()
+        if response != True:
+            print("MAIN BOOT: Error in setting up FireConn; error: " + response)
+            sys.exit(1)
+        else:
+            print("FIRECONN: Firebase connection established.")
+
     ## Set up DatabaseInterface
     response = DI.setup()
     if response != "Success":
@@ -59,6 +133,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+    
+    ## Set up Analytics
+    Analytics.setup()
     
     ## Set up Logger
     Logger.setup()
