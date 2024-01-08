@@ -10,7 +10,6 @@ apiBP = Blueprint("api", __name__)
 def checkHeaders(headers):
     for param in ["Content-Type", "VerdexAPIKey"]:
         if param not in headers:
-            print("Param not present: {}".format(param))
             return "ERROR: One or more required headers not present."
     if headers["Content-Type"] != "application/json":
         return "ERROR: Wrong Content-Type header."
