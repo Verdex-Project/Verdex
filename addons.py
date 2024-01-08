@@ -48,18 +48,16 @@ class AddonsManager:
             return "ERROR: Failed to delete config key; error: {}".format(e)
         
 class FireConn:
+    connected = False
+
     @staticmethod
     def checkPermissions():
-        enabledEnvVars = ["FireRTDBEnabled", "FireStorageEnabled"]
-        for envVar in enabledEnvVars:
-            if envVar in os.environ and os.environ[envVar] == 'True':
-                return True
-        return False
+        return ("FireConnEnabled" in os.environ and os.environ["FireConnEnabled"] == "True")
 
     @staticmethod
     def connect():
         if not FireConn.checkPermissions():
-            return "ERROR: No Firebase services are enabled in the .env file to grant permission to connect to Firebase."
+            return "ERROR: Firebase connection permissions are not granted."
         if not os.path.exists("serviceAccountKey.json"):
             return "ERROR: Failed to connect to Firebase. The file serviceAccountKey.json was not found. Please re-read instructions for the Firebase addon."
         else:
@@ -72,6 +70,7 @@ class FireConn:
                     'databaseURL': os.environ["RTDB_URL"],
                     "storageBucket": os.environ["STORAGE_URL"]
                 })
+                FireConn.connected = True
             except Exception as e:
                 return "ERROR: Error occurred in connecting to RTDB; error: {}".format(e)
             return True

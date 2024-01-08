@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from flask_cors import CORS
 from dotenv import load_dotenv
 load_dotenv()
@@ -153,5 +153,16 @@ def deleteIdentity():
     
     ## Delete account from DI
     del DI.data["accounts"][targetAccountID]
+    DI.save()
+    Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
 
-    
+    response = FireAuth.deleteAccount(session['idToken'])
+    if response != True:
+        Logger.log("API DELETEIDENTITY: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
+        return "ERROR: Something went wrong. Please try again."
+    else:
+        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
+
+    del session['idToken']
+
+    return "SUCCESS: Account deleted successfully."
