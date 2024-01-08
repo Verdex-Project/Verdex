@@ -93,6 +93,15 @@ def page_not_found(e):
 if __name__ == '__main__':
     # Boot pre-processing
 
+    ## Set up FireConn
+    if FireConn.checkPermissions():
+        response = FireConn.connect()
+        if response != True:
+            print("MAIN BOOT: Error in setting up FireConn; error: " + response)
+            sys.exit(1)
+        else:
+            print("FIRECONN: Firebase connection established.")
+
     ## Set up DatabaseInterface
     response = DI.setup()
     if response != "Success":

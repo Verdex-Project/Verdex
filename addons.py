@@ -183,9 +183,7 @@ class FireRTDB:
 class FireStorage:
     @staticmethod
     def checkPermissions():
-        if 'FireStorageEnabled' in os.environ and os.environ['FireStorageEnabled'] == 'True':
-            return True
-        return False
+        return ('FireStorageEnabled' in os.environ and os.environ['FireStorageEnabled'] == 'True')
 
     @staticmethod
     def uploadFile(localFilePath, filename=None):
@@ -298,8 +296,8 @@ class FireAuth:
         
         NOTE: This method uses firebase_admin rather than pyrebase unlike the other methods in this class. FireConn.connect() needs to be executed successfully prior to execution of this method.'''
 
-        if not FireConn.checkPermissions():
-            return "ERROR: Delete account requires FireConn permission."
+        if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
+            return "ERROR: Delete account requires a Firebase connection granted by explicit permission."
         
         try:
             fireAuthUserID = FireAuth.accountInfo(idToken)["localId"]
