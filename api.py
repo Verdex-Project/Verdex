@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from models import *
 from generation.itineraryGeneration import staticLocations
@@ -223,10 +223,10 @@ def like_post():
     post_id = request.json.get('postId')
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] += 1
+        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
 
-        return jsonify({'likes': DI.data["forum"][post_id]["likes"]})
+        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
     
     return redirect(url_for("forum.verdextalks"))
 

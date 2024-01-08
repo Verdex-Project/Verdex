@@ -91,6 +91,8 @@ class DI:
                         with open("database.txt", "r") as f:
                             DI.data = json.load(f)
                         return "Success"
+                    else:
+                        DI.data = DI.sampleData
             else:
                 # Read data from local database file
                 with open("database.txt", "r") as f:

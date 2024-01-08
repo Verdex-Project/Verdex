@@ -23,9 +23,6 @@ def editor():
             # Delete the day from the itinerary_data
             del itinerary_data[day_to_delete]
             # Convert keys to integers, sort them, and convert back to strings
-            sorted_keys = [map(int(), itinerary_data.keys()).sort()]
-            for i in itinerary_data:
-                itinerary_data = str(sorted_keys[i])
 
         with open('templates/editor/itinerary.json', 'w') as file:
             json.dump(itinerary_data, file, indent=4)
