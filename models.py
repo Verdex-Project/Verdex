@@ -32,7 +32,7 @@ class DI:
                     response = FireConn.connect()
                     if response != True:
                         print("DI-FIRECONN: Failed to connect to Firebase. Aborting setup.")
-                        return "Error"
+                        return response
                     else:
                         print("DI-FIRECONN: Firebase connection established. Firebase RTDB is enabled.")
                 else:
