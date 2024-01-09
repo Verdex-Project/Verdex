@@ -11,6 +11,39 @@ def fileContent(filePath, passAPIKey=False):
 
 # DatabaseInterface class
 class DI:
+    '''## INTRO
+    This class (DatabaseInterface) is to provide a simple interface to work with the database.
+
+    All you need to do is run the `setup` method and then you are good to go. `DI` will handle all the grunt work for you, especially if you have enabled Firebase RTDB. `DI.data` is a dictionary representing the database that you can freely manipulate.
+    
+    ## Usage:
+    ```
+    from models import DI
+    DI.setup()
+
+    ## Let's create a new account under the 'accounts' top-level key
+    DI.data["accounts"]["newAccountID"] = {"name": "John Appleseed"}
+
+    ## Saves the changes to both local and cloud (if enabled) databases
+    DI.save()
+    ```
+
+    ## ADVANCED:
+    Initially, `DI.data` is a list to indicate to DI itself that it is not set-up and that a database has not been loaded onto memory. Only after setup does it becomes a dictionary.
+
+    The `setup` method creates the database file if it does not exist, and loads the database file into memory. If enabled, it connects to Firebase Realtime Database via `FireRTDB` and loads the database from there instead.
+
+    DI makes loading a 'cloud-first' strategy; it over-writes the local database with the data it fetched from Firebase RTDB. However, DI carries out a 'local-first' strategy during save; it over-writes the cloud database with the data it has in memory. Auto-repair mechanisms are in place to minimise data loss.
+
+    ## INTEGRATING FIREBASE RTDB:
+    
+    DI uses `FireRTDB` to work with Firebase RTBD. In order to activate the cloud database integration, you need the following:
+    - `FireConnEnabled` set to `True` in the `.env` file
+    - `FireRTDBEnabled` set to `True` in the `.env` file
+    - `RTDB_URL` set to the URL of your Firebase RTDB in the `.env` file (obtain via going to Realtime Database on the Firebase console)
+    - `serviceAccountKey.json` file in the root directory of the project (obtain via going to Project Settings > Service Accounts on the Firebase console)
+    '''
+
     data = []
 
     sampleData = {
