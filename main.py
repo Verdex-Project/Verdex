@@ -133,6 +133,15 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Database Synchronisation with Firebase Auth accounts
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+
+        if previousCopy != DI.data["accounts"]:
+            print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
     
     ## Set up Analytics
     Analytics.setup()

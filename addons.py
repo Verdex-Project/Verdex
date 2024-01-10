@@ -477,7 +477,7 @@ class FireAuth:
             return "ERROR: Delete account requires a Firebase connection granted by explicit permission."
         
         try:
-            fireAuthUserID = FireAuth.accountInfo(idToken)["localId"]
+            fireAuthUserID = FireAuth.accountInfo(idToken)["uid"]
             adminAuth.delete_user(fireAuthUserID)
             return True
         except Exception as e:
