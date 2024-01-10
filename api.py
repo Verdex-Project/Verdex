@@ -86,7 +86,10 @@ def createAccount():
     if isinstance(tokenInfo, str):
         return "UERROR: Account already exists."
     
-    DI.data["accounts"][Universal.generateUniqueID()] = {
+    accID = Universal.generateUniqueID()
+    DI.data["accounts"][accID] = {
+        "id": accID,
+        "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],

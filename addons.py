@@ -1,4 +1,4 @@
-import os, sys, json, datetime, copy, pyrebase
+import os, sys, json, datetime, copy, pyrebase, uuid
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
@@ -359,6 +359,7 @@ class FireAuth:
             responseObject["idToken"] = signedInUser["idToken"]
             responseObject["refreshToken"] = signedInUser["refreshToken"]
             responseObject["expiresIn"] = signedInUser["expiresIn"]
+            responseObject["uid"] = signedInUser["localId"]
 
             return responseObject
         except Exception as e:
@@ -419,6 +420,8 @@ class FireAuth:
                     for userInfoParam in info["users"][0][parameter][0]:
                         if userInfoParam != "email":
                             responseObject[userInfoParam] = info["users"][0][parameter][0][userInfoParam]
+                elif parameter == "localId":
+                    responseObject["uid"] = info["users"][0][parameter]
                 elif parameter != "passwordHash":
                     responseObject[parameter] = info["users"][0][parameter]
 
@@ -479,3 +482,88 @@ class FireAuth:
             return True
         except Exception as e:
             return "ERROR: Failed to delete account; error response: {}".format(e)
+        
+    @staticmethod
+    def listUsers():
+        '''Returns a list of all users in Firebase Authentication.
+
+        Returns a `FirebaseAdmin.Auth.ExportedUserRecord` object for each user.
+
+        Usage:
+        ```
+        FireAuth.connect()
+        FireConn.connect()
+        users = FireAuth.listUsers()
+        if isinstance(users, str):
+            print(users)
+            exit()
+        for user in users:
+            print(user.uid)
+            print(user.email)
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
+            return "ERROR: List users requires a Firebase connection granted by explicit permission."
+        
+        users = []
+        try:
+            for user in adminAuth.list_users().iterate_all():
+                users.append(user)
+            return users
+        except Exception as e:
+            return "ERROR: Failed to list users; error response: {}".format(e)
+        
+    @staticmethod
+    def generateAccountsObject(fireAuthUsers, existingAccounts, strategy="add-only"):
+        '''## Intro
+        Returns an accounts object that can be used to update the accounts object in DI.
+
+        This method could be used for synchronisation purposes of the database with the account records on Firebase Authentication.
+        There are three strategies that can be used:
+        - `overwrite`: Overwrites the accounts object with the accounts data fetched from Firebase Authentication. Removes users not on Firebase and adds users on Firebase that are not in the accounts object.
+        - `add-only`: Adds users from Firebase Authentication that are not in the accounts object. This is the DEFAULT strategy and probably the safest one. However, always sticking to add-only will result in the accounts object being bloated with users that are not on Firebase Authentication.
+        - `remove-only`: Removes users from the accounts object that are not on Firebase Authentication.
+
+        ## SAMPLE Usage:
+        ```
+        FireAuth.connect()
+        FireConn.connect()
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+        ```
+
+        NOTE: This method does not directly use any Firebase connection. But, you may need to use the `FireAuth.listUsers()` method which requires that `FireConn.connect()` is executed successfully prior.
+        '''
+
+        if strategy not in ['overwrite', 'add-only', 'remove-only']:
+            return "ERROR: Invalid strategy."
+        
+        accounts = copy.deepcopy(existingAccounts)
+
+        existingAccountIDs = [accounts[localID]["fireAuthID"] for localID in accounts]
+        if strategy == 'overwrite' or strategy == 'add-only':
+            ## Add users on Firebase that are not in the accounts object
+            for fireUser in fireAuthUsers:
+                if fireUser.uid not in existingAccountIDs:
+                    newLocalID = uuid.uuid4().hex
+                    accounts[newLocalID] = {
+                        "id": newLocalID,
+                        "fireAuthID": fireUser.uid,
+                        "username": "Not Set",
+                        "email": fireUser.email,
+                        "password": "Not Set",
+                    }
+        
+        if strategy == 'overwrite' or strategy == 'remove-only':
+            ## Remove users from accounts object that are not on Firebase
+            for fireAuthID in existingAccountIDs:
+                if fireAuthID not in [fireUser.uid for fireUser in fireAuthUsers]:
+                    for localID in accounts:
+                        if accounts[localID]["fireAuthID"] == fireAuthID:
+                            del accounts[localID]
+                            break
+
+        return accounts
