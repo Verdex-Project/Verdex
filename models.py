@@ -302,10 +302,41 @@ Commands:
     
             if userChoice.startswith("read"):
                 allLogs = Logger.readAll()
+                targetLogs = []
 
                 userChoice = userChoice.split(" ")
-                logCount = 0
-                if len(userChoice) != 1:
+
+                # Log filtering feature
+                if len(userChoice) == 1:
+                    targetLogs = allLogs
+                elif userChoice[1] == ".filter":
+                    if len(userChoice) < 3:
+                        print("Invalid log filter. Format: read <number of lines> .filter <keywords>")
+                        continue
+                    else:
+                        try:
+                            keywords = userChoice[2:]
+                            for log in allLogs:
+                                logTags = log[23::]
+                                logTags = logTags[:logTags.find(":")].upper().split(" ")
+
+                                ## Check if log contains all keywords
+                                containsAllKeywords = True
+                                for keyword in keywords:
+                                    if keyword.upper() not in logTags:
+                                        containsAllKeywords = False
+                                        break
+                                
+                                if containsAllKeywords:
+                                    targetLogs.append(log)
+                                
+                            print("Filtered logs with keywords: {}".format(keywords))
+                            print()
+                        except Exception as e:
+                            print("LOGGER: Failed to parse and filter logs. Error: {}".format(e))
+                            continue
+                else:
+                    logCount = 0
                     try:
                         logCount = int(userChoice[1])
                         if logCount > len(allLogs):
@@ -315,10 +346,8 @@ Commands:
                     except Exception as e:
                         print("LOGGER: Failed to read logs. Error: {}".format(e))
                         continue
-                else:
-                    logCount = len(allLogs)
 
-                targetLogs = allLogs[-logCount:]
+                logCount = len(targetLogs)
                 print()
                 print("Displaying {} log entries:".format(logCount))
                 print()
