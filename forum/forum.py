@@ -24,7 +24,11 @@ def verdextalks():
                 "postDateTimeId": postDateTimeId,
                 "liked_status": False,
                 "tag": post_tag,
-                "comments": []
+                "comments":
+                    {
+                        "2024-01-12 22:19:01": "This is a comment",
+                        "2024-01-12 22:19:08": "This is another comment"
+                    }
             }
 
             DI.data["forum"][postDateTimeId] = new_post
@@ -45,10 +49,8 @@ def comment_on_post():
 
             if post_id and comment_description:
                 if post_id in DI.data["forum"]:
-                    # Make sure the 'comments' key exists for the post
                     if 'comments' not in DI.data["forum"][post_id]:
                         DI.data["forum"][post_id]['comments'] = []
-
                     DI.data["forum"][post_id]['comments'].append(comment_description)
                     DI.save()
     except Exception as e:

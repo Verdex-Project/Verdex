@@ -37,13 +37,13 @@
                         <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
                         <h5 id="comments-header">Comments: </h5><br>
-                        {% for comment in post_data.comments %}
-                            <div class="commentDiv">
-                                <ol id="list-of-comments">
-                                    <li id="comment">{{ comment }}</li>
-                                    <button>Delete comment</button>
-                                </ol>
-                            </div>
+                        {% for comment_id, comment_text in post_data.comments.items() %}
+                            <ol id="list-of-comments">
+                                <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                    <li id="comment">{{ comment_text }}</li>
+                                    <button id="delete-comment-button">Delete comment</button>
+                                </div>
+                            </ol>
                         {% endfor %}
                     </div>
                     <div class="post-reaction-buttons-container">
