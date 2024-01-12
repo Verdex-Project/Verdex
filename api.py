@@ -223,9 +223,8 @@ def deleteIdentity():
 
 @apiBP.route('/api/likePost', methods=['POST'])
 def like_post():
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
     
     post_id = request.json.get('postId')
 
@@ -239,9 +238,8 @@ def like_post():
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
     
     post_id = request.json.get('postId')
 
