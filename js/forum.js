@@ -156,3 +156,21 @@ function filterPosts(tagToDisplay){
         document.getElementById('Food').style.display = "block"
     }
 }
+
+function deleteComment(postId, commentId){
+    confirmation = confirm("Are you sure you want to delete this comment?")
+    if (confirmation){
+        // Use Axios to send a POST request to the server
+        axios.post('/api/deleteComment', {
+            postId: postId,
+            commentId: commentId
+        })
+        .then(response => {
+            console.log(response.data);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+}

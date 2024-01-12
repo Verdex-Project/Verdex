@@ -26,8 +26,7 @@ def verdextalks():
                 "tag": post_tag,
                 "comments":
                     {
-                        "2024-01-12 22:19:01": "This is a comment",
-                        "2024-01-12 22:19:08": "This is another comment"
+                        
                     }
             }
 
@@ -51,7 +50,8 @@ def comment_on_post():
                 if post_id in DI.data["forum"]:
                     if 'comments' not in DI.data["forum"][post_id]:
                         DI.data["forum"][post_id]['comments'] = []
-                    DI.data["forum"][post_id]['comments'].append(comment_description)
+                    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+                    DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
                     DI.save()
     except Exception as e:
         print(f"Error: {e}")

@@ -248,3 +248,17 @@ def delete_post():
         DI.save()
     
     return redirect(url_for("forum.verdextalks"))
+
+@apiBP.route('/api/deleteComment', methods=['POST'])
+def deleteComment():
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
+
+    post_id = request.json.get('postId')
+    comment_id = request.json.get('commentId')
+
+    if post_id in DI.data["forum"]:
+        del DI.data["forum"][post_id]["comments"][comment_id]
+        DI.save()
+    
+    return redirect(url_for("forum.verdextalks"))
