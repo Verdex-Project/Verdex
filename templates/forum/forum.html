@@ -30,7 +30,9 @@
                     <div class="post-content">
                         <div class="nameAndTagHeader">
                             <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                            <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                            {% if post_data.tag != "" %}
+                                <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                            {% endif %}
                         </div>
                         <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
@@ -58,7 +60,7 @@
                     <textarea name="post_title" id="post-title" rows="1" cols="120" placeholder="Title: " required="required"></textarea><br>
                     <textarea name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"></textarea><br>
                     <input type="hidden" name="post_tag" id="post-tag" value="">
-                    <p>Suggested tags: </p>
+                    <p>Suggested tags: (Optional)</p>
                     <div id="tags-button-container">
                         <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'islandhopping-tag-button')">#Scenery</button>
                         <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'islandhopping-tag-button')">#Food</button>
