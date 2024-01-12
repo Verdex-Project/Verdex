@@ -38,6 +38,12 @@ body {
     border-radius: 15px;
     border: 3px solid rgb(185, 184, 184);
     transition: 0.2s ease;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .filter-buttons:hover {
@@ -72,6 +78,12 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .create-a-post-button:hover {
@@ -101,6 +113,12 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .recent-itineraries-buttons:hover {
@@ -164,7 +182,6 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
-    
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
