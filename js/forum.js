@@ -62,14 +62,16 @@ function likePost(postId) {
 function deletePost(postId){
     confirmation = confirm("Are you sure you want to delete this post?")
     if (confirmation){
-        // Use Axios to send a POST request to the server
-        axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
-            .then(function (response) {
-                window.location.reload();
-            })
-            .catch(function (error) {
-                console.error('Error deleting post:', error);
-            });
+        axios.post('/api/deletePost', {
+            postId: postId,
+        })
+        .then(response => {
+            console.log(response.data);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error(error);
+        });
     }
 }
 

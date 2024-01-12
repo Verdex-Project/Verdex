@@ -34,16 +34,14 @@
                                 <h4 class="tag-display">#{{ post_data.tag }}</h4>
                             {% endif %}
                         </div>
-                        {% for post_id, post_data in postsInfoJson.items() %}
                         <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
                         <h5 id="comments-header">Comments: </h5><br>
-                            {% for comment_id, comment_text in post_data.comments.items() %}
-                                <div class="commentDiv" data-comment-id="{{ comment_id }}">
-                                    <li id="comment">{{ comment_text }}</li>
-                                    <button id="delete-comment-button" onclick="deleteComment('{{ post_id }}', '{{ comment_id }}')">Delete comment</button>
-                                </div>
-                            {% endfor %}
+                        {% for comment_id, comment_text in post_data.comments.items() %}
+                            <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                <li id="comment">{{ comment_text }}</li>
+                                <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTimeId }}', '{{ comment_id }}')">Delete comment</button>
+                            </div>
                         {% endfor %}
                     </div>
                     <div class="post-reaction-buttons-container">
