@@ -1,12 +1,15 @@
 html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 body {
-    background-image: url("Images/newRainforest.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: whitesmoke;
 }
 
 .content {
@@ -25,7 +28,7 @@ body {
 }
 
 .filter-buttons {
-    color: #66BB69;
+    color: white;
     font-size: 120%;
     display: inline-block;
     margin-right: 30px;
@@ -34,28 +37,24 @@ body {
     padding-left: 30px;
     padding-right: 30px;
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: #66BB69;
     border-radius: 15px;
     border: 3px solid rgb(185, 184, 184);
-    transition: 0.2s ease;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    transition: transform 0.2s ease-in-out;
 }
 
 .filter-buttons:hover {
-    border: 3px solid white;
-    background-color: rgba(255, 255, 255, 0.7);
+    border: 3px solid #66BB69;
+    background-color: whitesmoke;
     transition: 0.2s ease;
+    color: #66BB69;
+    transform: translateY(-5px);
 }
 
 .create-a-post-container {
     margin: 20px;
     margin-right: 10px;
-    border: 3px solid rgb(206, 206, 206);
+    border: 3px solid #66BB69;
     border-radius: 15px;
     padding-top: 15px;
     padding-bottom: 15px;
@@ -78,26 +77,13 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .create-a-post-button:hover {
-    text-align: center;
-    border: 3px solid white;
-    border-radius: 15px;
-    padding-left: 70px; 
-    padding-right: 70px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    border: 3px solid #66BB69;
     font-size: 130%;
-    background-color: #66BB69;
-    color: white;
+    background-color: white;
+    color: #66BB69;
     transition: 0.2s ease;
 }
 
@@ -113,17 +99,13 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .recent-itineraries-buttons:hover {
-    border: 3px solid white;
+    border: 3px solid #66BB69;
     transition: 0.2s ease;
+    color: #66BB69;
+    background-color: white;
 }
 
 .post-section-container {
@@ -133,7 +115,7 @@ body {
 }
 
 .individual-posts {
-    border: 3px solid rgb(206, 206, 206);
+    border: 3px solid #427b44;
     border-radius: 15px;
     margin-bottom: 20px; 
     padding-left: 30px; 
@@ -182,12 +164,6 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .reaction-buttons:hover {
@@ -345,7 +321,8 @@ body {
 }
 
 #tags-button:hover {
-    border: 2px solid #529954;
+    border: 2px solid #66BB69;
+    transition: 0.2s ease;
     transform: translateY(-5px);
 }
 

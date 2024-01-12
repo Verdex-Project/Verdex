@@ -21,6 +21,8 @@ def verdextalks():
                 "post_description": post_description,
                 "likes": "0",
                 "postDateTimeId": postDateTimeId,
+                "liked_status": False,
+                "tag": "",
                 # "comments": []
             }
 
