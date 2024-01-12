@@ -10,14 +10,8 @@ function itineraryShortcutButtonPopup(shortcut) {
 function closeCreatePopup() {
     confirmation = confirm("Are you sure you'd like to discard all changes?");
     if (confirmation == true) {
-        document.getElementById("create-a-post-popup").style.display = "none";
-        document.getElementById("comment-on-post-popup").style.display = "none";
-        document.getElementById("create-post-form").reset();
-        document.getElementById("comment-post-form").reset();
-        alert("Changes discarded.");
-        return false;
+        window.location.reload();
     }
-    return false;
 }
 
 // function closeEditPopup() {
