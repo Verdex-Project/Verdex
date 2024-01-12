@@ -12,9 +12,50 @@ function drop(event) {
     event.target.appendChild(document.getElementById(fetchData));
 }
 
-function saveItinerary() {
-    
-}
+function nextDay(){
+    var currentUrl = window.location.href;
+    var urlParts = currentUrl.split('/');
+    var dayCount = urlParts[urlParts.length - 1];
+    var itineraryId = urlParts[urlParts.length - 2];
+    var newDayCount= String(parseInt(dayCount) + 1);
+    var newDay;
+    axios({
+        method: 'post',
+        url: `/api/nextDay`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "nextDay": newDayCount,
+            "itineraryID" : itineraryId
+        }
+    })
+    .then(response => {
+        console.log("Response:", response);  // Add this line to print the response
+        if (response.status == 200) {
+            if (!response.data.startsWith("ERROR:")) {
+                if (response.data.startsWith("SUCCESS:")) {
+                    newDay = newDayCount
+                    location.href = `/editor/${itineraryId}/${newDay}`;
+                } else {
+                    alert("An unknown response was recieved from Verdex Servers.")
+                    console.log("Unknown response received: " + response.data)
+                }
+            } else {
+                alert("An error occured while directing you to next day. Please try again later.")
+                console.log("Error occured in directing to next day: " + response.data)
+            }
+        } else {
+            alert("An error occured while connecting to Verdex Servers. Please try again later.")
+            console.log("Non-200 responnse status code recieved from Verdex Servers.")
+        }
+    })
+    .catch(err => {
+        console.log("An error occured in connecting to Verdex Servers: " + err)
+        alert("An error occured while directing you to the next day. Please try again later or check you itinerary again.")
+    })
+    }
 
 
 // // Get the button element by its ID

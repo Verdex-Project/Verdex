@@ -86,13 +86,14 @@ if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
     }
     DI.save()
 
-@editorPage.route("/editor/<itineraryID>", methods=['GET', 'POST'])
-def editor(itineraryID):
+@editorPage.route("/editor/<itineraryID>/<day>", methods=['GET', 'POST'])
+def editor(itineraryID, day):
 
     if itineraryID not in DI.data["itineraries"]["id"]:
         return render_template("error.html")
     else:
         pass
+
 
     global itinerary_data 
 
@@ -166,7 +167,7 @@ def editor(itineraryID):
             with open('templates/editor/itinerary.json', 'w') as file:
                 json.dump(itinerary_data, file, indent=4)
 
-    return render_template("editor/editor.html", itineraryID = itineraryID, itinerary_data=DI.data)
+    return render_template("editor/editor.html", itineraryID = itineraryID, day = day, itinerary_data=DI.data)
 
     # if request.method == 'GET':
     #     day_to_delete = request.args.get("deleteDayButton")

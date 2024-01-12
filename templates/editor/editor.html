@@ -4,6 +4,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+    <script src="/assets/editorJS"></script>
 {% endblock %}
 
 {% block body %}
@@ -18,12 +19,12 @@
         <div id="editorPanel-sub-header"> <!--SUB HEADER-->
             <div id="sub-headder-box-left">
                 <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong> </button></div>
-                <div id="dayCount"><h4>Day {{ days }}</h4></div>
+                <div id="dayCount"><h4>Day {{ day }}</h4></div>
                 <div id="changeDayArrowRight" onclick="nextDay()"><button><strong>></strong></button></div>
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
-                    <h6>30.12.2023 Saturday<!--{{ [days][date] }}--></h6>
+                    <h6>{{ itinerary_data["itineraries"]["days"][day]["date"] }}</h6>
                 </div>
             </div>
         </div>

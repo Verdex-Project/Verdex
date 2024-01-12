@@ -242,3 +242,20 @@ def delete_post():
         DI.save()
     
     return redirect(url_for("forum.verdextalks"))
+
+@apiBP.route('/api/nextDay', methods=['POST'])
+def nextDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    nextDay = request.json['nextDay']
+    dayCountList = []
+
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
+    if str(nextDay) not in dayCountList:
+        return "ERROR: You are not directed to the next day!"
+    else:
+        return "SUCCESS: You are directed to the next day!"
+    
