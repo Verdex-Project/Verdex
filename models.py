@@ -244,7 +244,7 @@ class Logger:
     def log(message):
         if Logger.checkPermission():
             if "DebugMode" in os.environ and os.environ["DebugMode"] == 'True':
-                print("LOGGER LOG: {}".format(message))
+                print("LOG: {}".format(message))
             try:
                 with open("logs.txt", "a") as f:
                     f.write("{}UTC {}\n".format(datetime.datetime.now().utcnow().strftime(Universal.systemWideStringDatetimeFormat), message))
