@@ -3,24 +3,12 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block head %}
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        text-align: center;
-    }
-
-    #copyright {
-        text-align: center;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/static/viewAccount.css">
 {% endblock %}
 
 {% block body %}
 <div id="top">
-    <h1 id="heading">My Account</h1>
+    <h1 id="heading">My Accounts</h1>
 </div>
 
 <div id="content">
@@ -30,7 +18,7 @@
     </div>
     <div id="email">
         <p>Email: <span id="displayed-email">{{ email }}</span> 
-            <button id="edit-email-btn">Edit</button></p></p>
+            <button id="edit-email-btn" onclick="changeEmail()">Edit</button></p></p>
     </div>
     <!-- <div id="password">
 

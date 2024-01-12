@@ -166,7 +166,7 @@ def editUsername():
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     
-    # # Check if the username or email is already in use
+    # # Check if the username is already in use
     # for accountID in DI.data["accounts"]:
     #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
     #         return "UERROR: Username is already taken."
@@ -176,6 +176,29 @@ def editUsername():
     DI.save()
 
     return "SUCCESS: Username updated."
+
+@apiBP.route("/api/editEmail", methods = ['POST'])
+def editEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    
+    # # Check if the email is already in use
+    # for accountID in DI.data["accounts"]:
+    #     if DI.data["accounts"][accountID]["email"] == request.json["email"]:
+    #         return "UERROR: Email is already taken."
+
+    # Update the email in the data
+    DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
+    DI.save()
+
+    return "SUCCESS: Email updated."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():

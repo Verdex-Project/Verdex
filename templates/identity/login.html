@@ -3,59 +3,7 @@
 {% block title %}Verdex Sign In{% endblock %}
 
 {% block head %}
-<style>
-    * {
-        box-sizing: border-box;
-    }
-    
-    #heading {
-        text-align: center;
-        margin-top: 50px;
-        font-size: 3em;
-        font-weight: bold;
-        margin-bottom: 50px;
-    }
-
-    #signuplink {
-        text-align: center;
-        padding: 50px;
-    }
-
-    #left {
-        margin-top: 30px;
-        margin: auto;
-        text-align: center
-    }
-
-    #username,
-    #password {
-        width: 100%;
-        display: inline-block;
-        border-radius: 5px;
-        box-sizing: border-box;
-        font-size: large;
-    }
-
-    #username > p,
-    #password > p {
-        margin-top: 20px;
-    }
-
-    input {
-        height: 30px;
-        width: 300px;
-    }
-
-    #recover {
-        font-style: italic;
-        font-size: small;
-        margin-top: 10px;
-    }
-
-    #copyright {
-        text-align: center;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/static/login.css">
 {% endblock %}
 
 {% block body %}
@@ -72,6 +20,9 @@
         <div id="password">
         <p>Password</p>
         <input type="password" id="passwordInput" placeholder="Password">
+        </div>
+        <div id="statusLabel">
+            <h5></h5>
         </div>
         <div id="recover">
             <a href="#">
