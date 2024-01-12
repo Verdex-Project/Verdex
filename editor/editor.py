@@ -1,11 +1,12 @@
-from flask import Flask,render_template,Blueprint, Request
+from flask import Flask,render_template,Blueprint, request
 from main import DI, Universal
 import json, os, datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
 if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
-    DI.data["itineraries"][Universal.generateUniqueId()] = {
+    DI.data["itineraries"] = {
+        "id" : "abc123",
         "title" : "My Itinerary",
         "description" : "3 days itinerary in Singapore",
         "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
@@ -83,9 +84,16 @@ if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
             }
         }
     }
+    DI.save()
 
-@editorPage.route("/editor", methods=['GET', 'POST'])
-def editor():
+@editorPage.route("/editor/<itineraryID>", methods=['GET', 'POST'])
+def editor(itineraryID):
+
+    if itineraryID not in DI.data["itineraries"]["id"]:
+        return render_template("error.html")
+    else:
+        pass
+
     global itinerary_data 
 
     itinerary_data = itinerary_data if 'itinerary_data' in globals() else {}
@@ -158,7 +166,7 @@ def editor():
             with open('templates/editor/itinerary.json', 'w') as file:
                 json.dump(itinerary_data, file, indent=4)
 
-    return render_template("editor/editorNew.html", itinerary_data=itinerary_data)
+    return render_template("editor/editor.html", itineraryID = itineraryID, itinerary_data=DI.data)
 
     # if request.method == 'GET':
     #     day_to_delete = request.args.get("deleteDayButton")
