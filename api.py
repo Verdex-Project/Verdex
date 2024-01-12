@@ -1,7 +1,8 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, jsonify, redirect, url_for
-from flask_cors import CORS
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from models import *
+from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -18,9 +19,8 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route('/api/loginAccount', methods = ['POST'])
+@apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
-
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -86,11 +86,16 @@ def createAccount():
     if isinstance(tokenInfo, str):
         return "UERROR: Account already exists."
     
-    DI.data["accounts"][Universal.generateUniqueID()] = {
+    accID = Universal.generateUniqueID()
+    DI.data["accounts"][accID] = {
+        "id": accID,
+        "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
         "password": request.json["password"],
-        "idToken": tokenInfo['idToken']
+        "idToken": tokenInfo['idToken'],
+        "refreshToken": tokenInfo['refreshToken'],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
     }
     DI.save()
 
@@ -98,15 +103,133 @@ def createAccount():
 
     return "SUCCESS: Account created successfully"
 
+@apiBP.route("/api/generateItinerary", methods=["POST"])
+def generateItinerary():
+    headersCheck = checkHeaders(request.headers)
+    if headersCheck != True:
+        return headersCheck
+    
+    ## Check body
+    if "targetLocations" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if not isinstance(request.json["targetLocations"], list):
+        return "ERROR: One or more required payload parameters are invalid."
+    if "title" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "description" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    ## Generate itinerary object
+    newItinerary = {
+        "id": Universal.generateUniqueID(),
+        "title": request.json["title"].strip(),
+        "description": request.json["description"].strip(),
+        "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+        "days": {}
+    }
+
+    ## Generate days
+    allActivities = request.json["targetLocations"]
+    remainingActivities = [x for x in staticLocations if x not in allActivities]
+
+    ### Insert remaining activities into all activities at random indexes
+    for activity in remainingActivities:
+        allActivities.insert(random.randint(0, len(allActivities)), activity)
+
+    firstDayActivities = allActivities[:6]
+    secondDayActivities = allActivities[6:]
+    for day in range(1, 3):
+        newItinerary["days"][str(day)] = {
+            "activities": {}
+        }
+
+        for activityIndex in range(len((firstDayActivities if day == 1 else secondDayActivities))):
+            newItinerary["days"][str(day)]["activities"][str(activityIndex)] = {
+                "name": (firstDayActivities if day == 1 else secondDayActivities)[activityIndex]
+            }
+    
+    ## Save itinerary
+    DI.data["itineraries"][newItinerary["id"]] = newItinerary
+    DI.save()
+
+    return "SUCCESS: Itinerary ID: {}".format(newItinerary["id"])
+
+@apiBP.route("/api/editUsername", methods = ['POST'])
+def editUsername():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    
+    # # Check if the username or email is already in use
+    # for accountID in DI.data["accounts"]:
+    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+    #         return "UERROR: Username is already taken."
+
+    # Update the username in the data
+    DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
+    DI.save()
+
+    return "SUCCESS: Username updated."
+
+@apiBP.route('/api/logoutIdentity', methods=['POST'])
+def logoutIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    deleteSession(targetAccountID)
+    del session['idToken']
+
+    return "SUCCESS: User logged out."
+
+
+@apiBP.route('/api/deleteIdentity', methods=['POST'])
+def deleteIdentity():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    ## Delete account from DI
+    del DI.data["accounts"][targetAccountID]
+    DI.save()
+    Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
+
+    response = FireAuth.deleteAccount(session['idToken'])
+    if response != True:
+        Logger.log("API DELETEIDENTITY: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
+        return "ERROR: Something went wrong. Please try again."
+    else:
+        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
+
+    del session['idToken']
+
+    return "SUCCESS: Account deleted successfully."
+
 @apiBP.route('/api/likePost', methods=['POST'])
 def like_post():
     post_id = request.json.get('postId')
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] += 1
+        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
 
-        return jsonify({'likes': DI.data["forum"][post_id]["likes"]})
+        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
     
     return redirect(url_for("forum.verdextalks"))
 

@@ -71,10 +71,10 @@
     width: 120px;
     padding-top: 8px;
     padding-right: 15px;
-    border: 1px solid black;
+    border: 1px solid green;
     border-radius: 25px;
     background-color: white;
-    color: black;
+    color: green;
     cursor: pointer;
 }
 
@@ -82,10 +82,10 @@
     width: 145px;
     padding-top: 8px;
     padding-left: 15px;
-    border: 1px solid black;
+    border: 1px solid green;
     border-radius: 25px;
     background-color: white;
-    color: black;
+    color: green;
     cursor: pointer;
 }
 
@@ -139,7 +139,7 @@
 }
 
 #filterContent {
-    border: 2px solid black;
+    border: 2px solid green;
     border-radius: 30px;
     padding: 5px;
     display: flex;
@@ -154,6 +154,7 @@
     padding-left: 5px;
     padding-right: 5px;
     padding-top: 5px;
+    color: green;
 }
 
 #extendFilter {
@@ -220,8 +221,9 @@
 #rating {
     display: flex;
     border: 2px solid green;
+    color: green;
     border-radius: 30px;
-    padding-top: 5px;
+    padding-top: 6px;
 }
 
 #rating h6, #rating img{

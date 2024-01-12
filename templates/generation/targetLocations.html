@@ -39,11 +39,22 @@
 
     .proceed-button {
         float: right;
-        background-color: #000;
-        color: #fff;
     }
 
-    /* Additional styles will be needed to match the exact design from the image */
+    .cancel-button {
+        float: left;
+    }
+
+    #titleAndDescriptionBox {
+        visibility: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #titleAndDescriptionBox input, #titleAndDescriptionBox textarea {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 </style>
 {% endblock %}
 
@@ -54,60 +65,56 @@
 
     <div id="targetAttractionsBox" class="attractions-box">
         <h2>Target Attractions</h2>
-        <div id="MBS" class="attraction-item" draggable="true">
-            <span>Marina Bay Sands</span>
-            <button class="btn btn-outline-primary" onclick="move(this)">Remove</button>
-        </div>
     </div>
 
     <div id="popularAttractionsBox" class="attractions-box">
         <h2>Popular Attractions</h2>
-        <div id="USS" class="attraction-item" draggable="true">
-            <span>Universal Studios Singapore</span>
-            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
-        </div>
-        <div id="SEA" class="attraction-item" draggable="true">
-            <span>SEA Aquarium</span>
-            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
-        </div>
-        <div id="BotanicalGardens" class="attraction-item" draggable="true">
-            <span>Botanical Gardens</span>
-            <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
-        </div>
+        {% for location in popularLocations %}
+            <div id="{{ location.strip() }}" class="attraction-item">
+                <span>{{ location }}</span>
+                <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
+            </div>
+        {% endfor %}
     </div>
+    <button id="cancelButton" class="btn btn-outline-danger cancel-button" onclick="window.location.href='/'">Cancel</button>
+    <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
 
-    <button class="proceed-button">Proceed ></button>
+    <div id="titleAndDescriptionBox">
+        <input type="text" id="titleInput" placeholder="Title">
+        <textarea id="descriptionInput" placeholder="Description" style="height: 80px;"></textarea>
+        <button id="proceedButton2" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
+    </div>
 
     <script>
         let attractions = document.getElementsByClassName("attraction-item");
         let targetBox = document.getElementById("targetAttractionsBox");
         let popularBox = document.getElementById("popularAttractionsBox");
 
-        for (var attraction of attractions) {
-            attraction.addEventListener("dragstart", (e) => {
-                let selected = e.target;
+        // for (var attraction of attractions) {
+        //     attraction.addEventListener("dragstart", (e) => {
+        //         let selected = e.target;
 
-                popularBox.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                });
+        //         popularBox.addEventListener("dragover", (e) => {
+        //             e.preventDefault();
+        //         });
 
-                popularBox.addEventListener("drop", (e) => {
-                    popularBox.appendChild(selected);
-                    switchButton(attraction.firstElementChild.nextElementSibling)
-                    selected = null;
-                });
+        //         popularBox.addEventListener("drop", (e) => {
+        //             popularBox.appendChild(selected);
+        //             switchButton(attraction.firstElementChild.nextElementSibling)
+        //             selected = null;
+        //         });
 
-                targetBox.addEventListener("dragover", (e) => {
-                    e.preventDefault();
-                });
+        //         targetBox.addEventListener("dragover", (e) => {
+        //             e.preventDefault();
+        //         });
 
-                targetBox.addEventListener("drop", (e) => {
-                    targetBox.appendChild(selected);
-                    switchButton(attraction.firstElementChild.nextElementSibling)
-                    selected = null;
-                });
-            })
-        }
+        //         targetBox.addEventListener("drop", (e) => {
+        //             targetBox.appendChild(selected);
+        //             switchButton(attraction.firstElementChild.nextElementSibling)
+        //             selected = null;
+        //         });
+        //     })
+        // }
 
         function move(element) {
             const attractionItem = element.parentNode;
@@ -121,5 +128,6 @@
             }
         }
     </script>
+    <script src="/assets/targetLocationsJS"></script>
 </div>
 {% endblock %}
