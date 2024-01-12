@@ -120,7 +120,7 @@ class Analytics:
             print("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Logger.log("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Analytics.load_metrics()
-
+        
         ## Fill in metrics data into a massive string
         report_text = f"""VERDEX ANALYTICS REPORT
 -----------------------

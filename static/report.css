@@ -40,15 +40,72 @@ html {
 
 .download-report-button{
     float: right;
-    margin-top: -45px;
+    margin-top: -90px;
     margin-right: 70px;
     border-radius: 7px;
-    background-color: rgba(245, 245, 245, 0.596);
+    background-color: white;
+    color: green;
+    border: 2px solid green;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
     transition: 0.2s;
 }
-
-.download-report-button:hover {
-    background-color: rgba(245, 245, 245, 0.596);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+.delete-report-button{
+    float: right;
+    margin-top: -35px;
+    margin-right: 70px;
+    border-radius: 7px;
+    background-color: white;
+    color: green;
+    border: 2px solid green;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
     transition: 0.2s;
+}
+.download-report-button:hover,
+.delete-report-button:hover {
+    background-color: green;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.generate-report-button,
+.delete-all-report-button,
+.clear-data-button {
+    background-color: white;
+    color: green;
+    border: 2px solid green;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right:10px;
+}
+
+/* Styles when hovering over any button */
+.generate-report-button:hover,
+.delete-all-report-button:hover,
+.clear-data-button:hover {
+    background-color: green;
+    color: white;
+}
+
+/* Ensure that the border color remains green on hover for any button */
+.generate-report-button:hover,
+.delete-all-report-button:hover,
+.clear-data-button:hover {
+    border-color: green;
+}
+.button-container{
+    display:flex;
+    justify-content: center;
+    margin-top:-60px;
+    padding-bottom:100px;
 }

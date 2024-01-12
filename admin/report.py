@@ -1,8 +1,9 @@
 # Blueprint for report generation
-import os
+import os, datetime
 from main import Logger
 from flask import Blueprint, render_template, json, request, send_file, flash, redirect, url_for
-from admin.analytics import Analytics
+from analytics import Analytics
+from models import Universal
 
 reportBP = Blueprint("report", __name__)
 
@@ -11,8 +12,12 @@ reportBP = Blueprint("report", __name__)
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
-    return render_template('admin/report.html', data=data)
-
+    return render_template('admin/report.html', data=data, date = datetime.datetime.now().strftime("%d %B %I:%M %p"))
+#Report generation feature
+@reportBP.route('/report/generate', methods=['POST'])
+def generate_report():
+    Analytics.generateReport()
+    return redirect(url_for('report.report'))
 #Report downloading feature
 @reportBP.route('/report/<report_id>', methods=['POST'])
 def download_report(report_id):
@@ -86,8 +91,12 @@ def delete_all_reports():
 
 @reportBP.route('/report/clear', methods=['POST', 'GET'])
 def clear_data():
-    with open(Analytics.filePath, "w") as metrics:
-        Analytics.data = json.dump(Analytics.sampleMetricsObject, metrics)
+    with open(Analytics.filePath, "w") as metrics_file:
+        json.dump(Analytics.sampleMetricsObject, metrics_file)
+
+    Analytics.load_metrics()
     Logger.log("ADMIN CLEAR_DATA: Analytics data cleared.")
     flash("Analytics data cleared successfully.")
+
+    # Redirect to the report page after clearing data
     return redirect(url_for('report.report'))

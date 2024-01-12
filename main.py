@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from dotenv import load_dotenv
-from admin.analytics import Analytics
+from analytics import Analytics
 load_dotenv()
 
 app = Flask(__name__)
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     
     ## Set up Analytics
     Analytics.setup()
-    
+    Analytics.load_metrics()
     ## Set up Logger
     Logger.setup()
 
