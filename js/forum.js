@@ -31,7 +31,9 @@ function closeCreatePopup() {
 //     return false;
 // }
 
+let selectedTag = ""
 function submitPost() {
+    document.getElementById("post-tag").value = selectedTag;
     var createPostForm = document.getElementById("create-post-form");
 
     if (createPostForm.checkValidity()) {
@@ -116,3 +118,18 @@ function deletePost(postId){
 //         return false;
 //     }
 // }
+
+function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
+    selectedTag = tag
+    document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
+    document.getElementById(buttonToEnable).style.color = "white";
+
+    document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
+    document.getElementById(firstButtonToDisable).style.color = "black";
+
+    document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
+    document.getElementById(secondButtonToDisable).style.color = "black";
+
+    event.preventDefault();
+    event.stopPropagation();
+}

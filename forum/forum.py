@@ -12,6 +12,7 @@ def verdextalks():
             post_title = request.form.get('post_title')
             post_description = request.form.get('post_description')
             user_names = request.form.get('user_names')
+            post_tag = request.form.get('post_tag')
 
             postDateTimeId = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
 
@@ -22,7 +23,7 @@ def verdextalks():
                 "likes": "0",
                 "postDateTimeId": postDateTimeId,
                 "liked_status": False,
-                "tag": "",
+                "tag": post_tag,
                 # "comments": []
             }
 

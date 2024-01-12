@@ -130,7 +130,6 @@ body {
 
 .name-of-user-who-shared-post-header {
     margin-right: 100px;
-    margin-top: -10px;
     color: #529954;
 }
 
@@ -310,7 +309,7 @@ body {
     transform: translateY(-5px);
 }
 
-#tags-button {
+.tags-button {
     cursor: pointer;
     padding: 8px 12px;
     border: 2px solid black;
@@ -320,7 +319,7 @@ body {
     transition: transform 0.2s ease-in-out;
 }
 
-#tags-button:hover {
+.tags-button:hover {
     border: 2px solid #66BB69;
     transition: 0.2s ease;
     transform: translateY(-5px);
@@ -347,4 +346,13 @@ body {
 
 #comments-header {
     color: #529954;
+}
+
+.nameAndTagHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tag-display {
+    color: #66BB69;
 }
