@@ -231,6 +231,10 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+#comment-on-post-popup {
+    display: none;
+}
+
 #edit-post-popup {
     display: none;
     position: fixed;
@@ -346,6 +350,10 @@ body {
 
 #comments-header {
     color: #529954;
+}
+
+#list-of-comments {
+    list-style-type: none;
 }
 
 .nameAndTagHeader {

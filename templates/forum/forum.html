@@ -36,16 +36,21 @@
                         </div>
                         <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
-                        <!-- <h5 id="comments-header">Comments: </h5><br>
-                        <ol>
-                            <li><p class="post-comments">{{ post_data.post_comments }}</p></li>
-                        </ol> -->
+                        <h5 id="comments-header">Comments: </h5><br>
+                        {% for comment in post_data.comments %}
+                            <div class="commentDiv">
+                                <ol id="list-of-comments">
+                                    <li id="comment">{{ comment }}</li>
+                                    <button>Delete comment</button>
+                                </ol>
+                            </div>
+                        {% endfor %}
                     </div>
                     <div class="post-reaction-buttons-container">
                         <ul class="list-of-reaction-buttons">
                             <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
                             <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
-                            <!-- <li class="reaction-buttons" onclick='commentPost()'>Comment</li> -->
+                            <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTimeId }}")'>Comment</li>
                         </ul>
                     </div>
                 </div>
@@ -70,16 +75,16 @@
                 </form>
             </div>
         </div>
-        <!-- <div id="comment-on-post-popup">
+        <div id="comment-on-post-popup">
             <div id="popup-content">
-                <form id="comment-post-form" method="post" action="/comment-post">
-                    <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <form id="comment-post-form" method="post" action="{{ url_for('forum.comment_on_post') }}">
+                    <button id="close-popup-button" onclick="return closeCommentPopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Add your comment!</h2>
                     <textarea name="comment_description" id="comment_description" rows="8" cols="100" placeholder="Write your comment here" required="required"></textarea><br>
-                    <button type="submit" name="commentOnPost" id="comment-button" onclick='submitComment(event)'>Add comment!</button>
+                    <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
                 </form>
             </div>
-        </div> -->
+        </div>
         <!-- <div id="edit-post-popup">
             <div id="popup-content">
                 <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">

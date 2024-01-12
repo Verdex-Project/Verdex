@@ -8,8 +8,15 @@ function itineraryShortcutButtonPopup(shortcut) {
 }
 
 function closeCreatePopup() {
-    confirmation = confirm("Are you sure you'd like to discard all changes?");
-    if (confirmation == true) {
+    closeCreateConfirmation = confirm("Are you sure you'd like to discard all changes?");
+    if (closeCreateConfirmation == true) {
+        window.location.reload();
+    }
+}
+
+function closeCommentPopup(){
+    closeCommentConfirmation = confirm("Are you sure you'd like to discard all changes?");
+    if (closeCommentConfirmation == true) {
         window.location.reload();
     }
 }
@@ -66,36 +73,34 @@ function deletePost(postId){
     }
 }
 
-// function commentPost(){
-//     document.getElementById("comment-on-post-popup").style.display = "block";
-// }
+function commentPost(postId) {
+    document.getElementById("comment-on-post-popup").style.display = "block";
+    window.commentedPostId = postId;
+}
 
-// function submitComment(postId) {
-//     event.preventDefault();  // Prevent the default form submission behavior
+function submitComment() {
+    const commentDescription = document.getElementById("comment_description").value;
+    const postId = window.commentedPostId;
 
-//     const commentDescription = document.getElementById("comment_description").value;
+    if (commentDescription.trim() === "") {
+        alert("Please enter a valid comment.");
+        return;
+    }
 
-//     // Create an object with form data
-//     const formData = {
-//         postId: postId,
-//         comment_description: commentDescription,
-//     };
-
-//     // Use Axios to send a POST request to the server with application/json content type
-//     axios.post('/comment-post', formData, {
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     })
-//     .then(function (response) {
-//         // Handle the response if needed
-//     })
-//     .catch(function (error) {
-//         console.error('Error commenting on post:', error);
-//     });
-
-//     document.getElementById("comment-on-post-popup").style.display = "none";
-// }
+    axios.post('/comment_post', {
+        postId: postId,
+        comment_description: commentDescription
+    })
+    .then(response => {
+        console.log(response.data);
+        alert("Comment added");
+        document.getElementById("comment-on-post-popup").style.display = "none";
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
 
 // function editPost(postId) {
 //     document.getElementById('edit-post-id').value = postId;
