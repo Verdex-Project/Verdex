@@ -1,0 +1,53 @@
+{% extends "baseNav.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block head %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    #copyright {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="top">
+    <h1 id="heading">My Account</h1>
+</div>
+
+<div id="content">
+    <div id="username">
+        <p>Username: <span id="displayed-username">{{ username }}</span> 
+            <button id="edit-username-btn" onclick="changeUsername()">Edit</button></p>
+    </div>
+    <div id="email">
+        <p>Email: <span id="displayed-email">{{ email }}</span> 
+            <button id="edit-email-btn">Edit</button></p></p>
+    </div>
+    <!-- <div id="password">
+
+    </div> -->
+</div>
+
+<div id="logout">
+    <button id="logout-btn" onclick="logoutIdentity()">Logout</button>
+</div>
+<br>
+<div id="deleteAccount">
+    <button id="deleteAccount-btn" onclick="deleteIdentity()">Delete Account</button>
+</div>
+
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
+</div>
+<script src="/assets/viewAccountJS"></script>
+{% endblock %}

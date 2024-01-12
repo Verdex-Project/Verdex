@@ -1,0 +1,262 @@
+{% extends "baseNav.html" %} <!--NAVBAR-->
+
+{% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+{% endblock %}
+
+{% block body %}
+<div id="content">
+
+    <div id="editorPanel"> <!--EDITOR PANEL START-->
+
+        <div id="editorPanel-header"> <!--HEADER-->
+            <h1>Itinerary Editor</h1>
+        </div>
+
+        <div id="editorPanel-sub-header"> <!--SUB HEADER-->
+            <div id="sub-headder-box-left">
+                <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong> </button></div>
+                <div id="dayCount"><h4>Day {{ days }}</h4></div>
+                <div id="changeDayArrowRight" onclick="nextDay()"><button><strong>></strong></button></div>
+            </div>
+            <div id="sub-headder-box-right">
+                <div id="date">
+                    <h6>30.12.2023 Saturday<!--{{ [days][date] }}--></h6>
+                </div>
+            </div>
+        </div>
+
+        <div id="activityLogBox" ondrop="drop(event)" ondragover="allowDrop(event)"> <!--ACTIVITY LOG--> <!--scrollable-->
+            <!--get current day from dayCount-->
+            {% for j in activities %}
+                {% if not loop.last %}
+                    <div id="activityBox">
+
+                        <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                            <div id="timestart">
+                                <div>
+                                    <h3 id="startTime">{{ startTime }}</h3>
+                                </div>
+                                <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="divider">-</div>
+                            <div id="timeEnd">
+                                <div>
+                                    <h3 id="endTime">{{ endTime }}</h3>
+                                </div>
+                                <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                        <div id="activityFooter">
+                            <div id="acticityDescription"> <!--left-->
+                                <p>{{ location }} | {{ name }}</p>
+                            </div>
+                            <div id="deleteActivity"> <!--right-->
+                                <button id="deleteButton">
+                                    <img src="#" alt="Delete">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="transportBox">
+                        <div id="etaBox">
+                            <!--getETA-->
+                        </div>
+                        <div id="processArrow">
+                            <h1>↓</h1> <!--Or use image to replace-->
+                        </div>
+                        <div id="journeyBox">
+                            <div id="journeyBox-box">
+                                <div id="transportInfo">
+                                    <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                                </div>
+                                <div id="transportLogo">
+                                    <!--
+                                        If bus import busLogo
+                                        If train import trainLogo
+                                        ...
+                                    -->
+                                </div>
+                                <div id="transportDescription">
+                                    <p>From <!--get start location--> to <!--get end location--></p>
+                                </div>
+                                <div id="detailJourney">
+                                    <button id="detailJoutneyButton" onclick="detailedJourney()">
+                                        <img src="#" alt="#">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if loop.last %}
+                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                        <div id="timestart">
+                            <div>
+                                {{ startTime }}
+                            </div>
+                            <div id="timeDropdown">
+                                <button id="timeDropButton">▼</button>
+                                <div id="timeDropdownContent">
+                                    <!--time radio selection (interval:30minutes/1hour)-->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="divider">-</div>
+                        <div id="timeEnd">
+                            <div>
+                                {{ endTime }}
+                            </div>
+                            <div id="timeDropdown">
+                                <button id="timeDropButton">▼</button>
+                                <div id="timeDropdownContent">
+                                    <!--time radio selection (interval:30minutes/1hour)-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                        <div id="activityFooter">
+                            <div id="acticityDescription"> <!--left-->
+                                <p>Example | Example</p>
+                            </div>
+                            <div id="deleteActivity"> <!--right-->
+                                <button id="deleteButton">
+                                    <img src="#" alt="Delete">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="addExtra">
+                        <button id="addButton" onclick="addNewBlankActivity()"> <!--Add Button--> <!--Add drop area-->
+                            <img src="#" alt="Add Here">
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div id="activityPanelFooter"> <!--Footer-->
+            <div id="deleteItinerary">
+                <button id="deleteItineraryButton">
+                    <img src="#" alt="#" style="float: left;"><h5 style="float: right;">Delete</h5>
+                </button>
+            </div>
+
+            <div id="saveItinerary">
+                <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
+                    <h5  style="float: left">Proceed</h5><img src="#" alt="#" style="float: right;">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="borderLine"></div> <!--set height in style-->
+
+    <div id="recommendationsPanel"> <!--RECOMMENDATION PANEL START-->
+        <div id="recommendationsPanel-header"> <!--HEADER-->
+            <h1>Recommendations</h1>
+        </div>
+
+        <div id="filters"> <!--Filters-->
+            {% if selectedFilter == 1 %}
+                <div id="filter1">
+                    <div id="filterLogo">
+                        <img src="#" alt="#">
+                    </div>
+                    <div id="filterName">
+                        {{ filtername }}
+                    </div>
+                </div>
+                <div id="extendFilter">
+                    <button id="extendFilterButton">▼</button>
+                    <div id="extendFilterContent">
+                        <div id="filtersSelected">
+                            <p>{{ filtersSelectedCount }} Selected</p> <!--center-->
+                        </div>
+                        <div id="extendFilterContent-locations">
+                            <h6 style="font-weight: bolder;">Locations:</h6>
+                            <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                            <input type="checkbox" id="location1" name="location1" value="Example">
+                        </div>
+                        <div id="extendFilterContent-Activities">
+                            <h6 style="font-weight: bolder;">Activities:</h6>
+                            <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                            <input type="checkbox" id="location1" name="location1" value="Example">
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div id="filter2">
+                    <div id="filterContent">
+                        <div id="filterNumber">
+                            {{ filterTotalCount }}
+                        </div>
+                        <div id="filterName">
+                            <h5>Filters</h5>
+                        </div>
+                        <div id="extendFilter">
+                            <button id="extendFilterButton">▼</button>
+                            <div id="extendedFilters">
+                                <div id="filtersSelected">
+                                    <p>{{ filtersSelectedCount }} Selected</p> <!--center-->
+                                </div>
+                                <div id="extendFilterContent-locations">
+                                    <h6 style="font-weight: bolder;">Locations:</h6>
+                                    <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                                    <input type="checkbox" id="location1" name="location1" value="Example">
+                                </div>
+                                <div id="extendFilterContent-Activities">
+                                    <h6 style="font-weight: bolder;">Activities:</h6>
+                                    <label for="location1"><img src="#" alt="#">Example</label> <!--Filter Checkbox Example-->
+                                    <input type="checkbox" id="location1" name="location1" value="Example">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="recommendations"> <!--Recommendations-->
+            {% for i in [recommendations] %}
+            <div id="recom" draggable="true" ondragstart="drag(event)"> <!--set dragable and scrolable-->
+                <div id="recomImage">
+                    <img src="#" alt="#"> <!--get recommendation image-->
+                </div>
+                <div id="addSign">
+                    <img src="#" alt="#">
+                </div>
+                <hr style="border: 2px solid green; width: 100%;">
+                <div id="recomDescription">
+                    <h5>Name<!--recomName--></h5>
+                    <h6>Type<!--recomType--></h6>
+                    <div id="rating">
+                        <h6 style="float: left;">4.7</h6><!--recomRating--> <img src="#" alt="#" style="float: right;"> <!--star image-->
+                    </div>
+                    <h2>${{ recomPrice }}/Pax</h2>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

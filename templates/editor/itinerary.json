@@ -1,0 +1,66 @@
+{
+    "1": {
+        "activities": {
+            "1": {
+                "name": "Marina Bay Sands"
+            },
+            "2": {
+                "name": "Universal Studios Singapore"
+            },
+            "3": {
+                "name": "USS"
+            },
+            "4": {
+                "name": "Sentosa"
+            }
+        }
+    },
+    "2": {
+        "activities": {
+            "1": {
+                "name": "SEA Aquarium"
+            },
+            "2": {
+                "name": "Botanical Gardens"
+            },
+            "3": {
+                "name": "Singapore Islands"
+            }
+        }
+    },
+    "3": {
+        "activities": {
+            "1": {
+                "name": "Placeholder Activity"
+            }
+        }
+    },
+    "4": {
+        "activities": {
+            "1": {
+                "name": "hello joshua"
+            }
+        }
+    },
+    "5": {
+        "activities": {
+            "1": {
+                "name": "Placeholder Activity"
+            }
+        }
+    },
+    "6": {
+        "activities": {
+            "1": {
+                "name": "Placeholder Activity"
+            }
+        }
+    },
+    "7": {
+        "activities": {
+            "1": {
+                "name": "Placeholder Activity"
+            }
+        }
+    }
+}
