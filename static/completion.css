@@ -38,10 +38,10 @@
     padding-left: 15px;
     margin: 5px;
     width: 100px;
-    border: 1px solid black;
+    border: 1px solid green;
     border-radius: 30px;
     background-color: white;
-    color: black;
+    color: green;
     cursor: pointer;
 }
 
@@ -51,10 +51,10 @@
     padding-left: 15px;
     margin: 5px;
     width: 200px;
-    border: 1px solid black;
+    border: 1px solid green;
     border-radius: 25px;
     background-color: white;
-    color: black;
+    color: green;
     cursor: pointer;
 }
 

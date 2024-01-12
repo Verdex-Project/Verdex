@@ -19,7 +19,7 @@ def verdextalks():
                 "user_names": user_names,
                 "post_title": post_title,
                 "post_description": post_description,
-                "likes": 0,
+                "likes": "0",
                 "postDateTimeId": postDateTimeId,
                 # "comments": []
             }
