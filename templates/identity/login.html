@@ -8,37 +8,47 @@
 
 {% block body %}
 <div id="top">
-    <h1 id="heading">Sign In To Verdex</h1>
+    <h1 id="heading">Sign In To Verdexx</h1>
 </div>
 
 <div id="content">
     <div id="left">
-        <div id="username">
-            <p>Username / Email</p>
-            <input type="text" id="usernameInput" placeholder="Username">
+        <div id="left-content">
+            <div class="mb-3">
+                <label for="usernameInput" class="form-label">Username or Email</label>
+                <input type="text" class="form-control" id="usernameInput" placeholder="Username / Email">
+            </div>
+            <div class="mb-3">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password" class="form-control" id="passwordInput" placeholder="Password">
+            </div>
+            <div id="statusLabel">
+                <h5></h5>
+            </div>
+            <div id="recover">
+                <a href="#">
+                    <p>Forgot username and password?</p>
+                </a>
+            </div>
+            <div>
+                <button id="signInButton" onclick="signIn()">Sign In</button>
+            </div>
         </div>
-        <div id="password">
-        <p>Password</p>
-        <input type="password" id="passwordInput" placeholder="Password">
-        </div>
-        <div id="statusLabel">
-            <h5></h5>
-        </div>
-        <div id="recover">
-            <a href="#">
-                <p>Forgot username and password?</p>
-            </a>
-        </div>
-        <div>
-            <button id="signInButton" onclick="signIn()">Sign In</button>
-        </div>
+    </div>
+
+    <div id="middle">
+        <span id="or">OR</span>
+    </div>
+
+    <div id="right">
+        <button id="google">Sign In with Google</button>
+        <button id="apple">Sign In with Apple</button>
     </div>
 </div>
 
 <div id="signuplink">
     <p>New to Verdex? <a href="/account/signup">Sign Up</a></p>
 </div>
-<br>
 <div id="copyright">
     <script src="/assets/copyright"></script>
 </div>

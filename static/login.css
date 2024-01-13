@@ -10,45 +10,126 @@
     margin-bottom: 50px;
 }
 
-#signuplink {
-    text-align: center;
-    padding: 50px;
+#content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #left {
-    margin-top: 30px;
-    margin: auto;
-    text-align: center
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 475px;
 }
 
-#username,
-#password {
-    width: 100%;
-    display: inline-block;
+#right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 475px;
+}
+
+#middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: 2 / 3;
+    width: 50px;
+}
+
+#statusLabel {
+    visibility: hidden;
+    font-size: smaller;
+    margin-left: 5px;
+    color: red;
+}
+
+#signInButton {
+    width: 100px;
+    padding: 5px;
+    font-size: 0.8em;
+    cursor: pointer;
+    border: 2px solid rgb(50, 190, 50);
     border-radius: 5px;
-    box-sizing: border-box;
-    font-size: large;
+    margin-left: 100px;
 }
 
-#username > p,
-#password > p {
-    margin-top: 20px;
+#signInButton:hover {
+    background-color: rgb(50, 190, 50);
+    color: white;
+    transition: 0.5s;
 }
 
-input {
+#signInButton:not(:hover){
+    background-color: white;
+    transition: 0.5s;
+}
+
+.form-control {
     height: 30px;
     width: 300px;
+}
+
+.mb-3 > label {
+    margin-left: 5px;
 }
 
 #recover {
     font-style: italic;
     font-size: small;
     margin-top: 10px;
+    margin-left: 5px;
 }
 
-#statusLabel {
-    visibility: hidden;
-    margin-top: 10px;
+#google,
+#apple {
+    padding: 20px;
+    width: 300px;
+    max-height: 80px;
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#google {
+    margin-bottom: 30px;
+}
+
+#google:hover {
+    font-size: 16px;
+    transition: 0.5s, smooth;
+}
+
+#google:not(:hover) {
+    font-size: 15px;
+    transition: 0.5s, smooth;
+}
+
+#apple:hover {
+    font-size: 16px;
+    transition: 0.5s, smooth;
+}
+
+#apple:not(:hover) {
+    font-size: 15px;
+    transition: 0.5s, smooth;
+}
+
+#or {
+    font-size: large;
+    font-weight: 500;
+}
+
+#signuplink {
+    text-align: center;
+    padding: 10px;
+    margin-top: 50px;
 }
 
 #copyright {
