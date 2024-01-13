@@ -1,5 +1,6 @@
 #content {
     display: flex;
+    height: 650px
 }
 
 /* EDITOR PANEL */
@@ -36,6 +37,11 @@
     border: none;
 }
 
+#changeDayArrowLeft button:hover, #changeDayArrowRight button:hover {
+    color: rgb(196, 196, 196);
+    transition: 0.5s;
+}
+
 #dayCount {
     padding-left: 4px;
     padding-right: 4px;
@@ -48,11 +54,12 @@
 
 #activityLogBox {
     width: 100%;
-    height: 70%;
+    height: 98%;
     border: 2px solid black;
     border-radius: 40px;
     margin: 8px;
     padding: 30px;
+    overflow: scroll;
 }
 
 /*ADD EVERYTHING HERE!!!!!!*/
@@ -63,16 +70,27 @@
 #timeStart, #timeEnd {
     display: flex;
     margin: 15px;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
 }
 
 #timeDropButton {
-    padding-top: 2px;
+    padding-top: 4px;
     margin-left: 5px;
     margin-right: 5px;
+    background: none;
+    border: none;
+}
+
+#timeDropButton:hover {
+    color:  rgb(196, 196, 196);
+    transition: 0.5s;
 }
 
 #divider {
-    padding-top: 5px;
+    padding-top: 10px;
 }
 
 #activityBox {
@@ -93,6 +111,11 @@
 #activityPicture, #activityPicture img{
     width: 100% ;
     height: auto;
+}
+
+#activityPicture img {
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
 }
 
 #activityFooter {
@@ -202,12 +225,19 @@
 #addExtra {
     margin: auto;
     text-align: center;
-    align-items: center;
+    height: 28px;
 }
 
 #addButton {
     background: none;
     border: none;
+    color: green;
+}
+
+#addButton :hover {
+    padding: 2px 2px 2px 2px;
+    color: rgb(1, 180, 1);
+    transition: 0.5s;
 }
 
 #activityPanelFooter {
@@ -227,10 +257,10 @@
     width: 120px;
     padding-top: 8px;
     padding-right: 15px;
-    border: 1px solid green;
+    border: 1px solid red;
     border-radius: 25px;
     background-color: white;
-    color: green;
+    color: red;
     cursor: pointer;
 }
 
@@ -245,10 +275,16 @@
     cursor: pointer;
 }
 
-#deleteItineraryButton:hover, #saveItineraryButton:hover{
+#saveItineraryButton:hover{
     background-color: green;
     color:white;
-    transition: 1s;
+    transition: 0.5s;
+}
+
+#deleteItineraryButton:hover{
+    background-color: red;
+    color: white;
+    transition: 0.5s;
 }
 
 #saveItineraryButton img{
