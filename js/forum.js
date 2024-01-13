@@ -150,31 +150,43 @@ function submitEdit() {
     });
 }
 
-function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
-    selectedTag = tag
-    document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
-    document.getElementById(buttonToEnable).style.color = "white";
+function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable) {
+    if (selectedTag === tag) {
+        selectedTag = "";
+        document.getElementById(buttonToEnable).style.backgroundColor = "white";
+        document.getElementById(buttonToEnable).style.color = "black";
+    } else {
+        selectedTag = tag;
+        document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
+        document.getElementById(buttonToEnable).style.color = "white";
 
-    document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
-    document.getElementById(firstButtonToDisable).style.color = "black";
+        document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(firstButtonToDisable).style.color = "black";
 
-    document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
-    document.getElementById(secondButtonToDisable).style.color = "black";
+        document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(secondButtonToDisable).style.color = "black";
+    }
 
     event.preventDefault();
     event.stopPropagation();
 }
 
-function editSelectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
-    editedSelectedTag = tag
-    document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
-    document.getElementById(buttonToEnable).style.color = "white";
+function editSelectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable) {
+    if (editedSelectedTag === tag) {
+        editedSelectedTag = "";
+        document.getElementById(buttonToEnable).style.backgroundColor = "white";
+        document.getElementById(buttonToEnable).style.color = "black";
+    } else {
+        editedSelectedTag = tag;
+        document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
+        document.getElementById(buttonToEnable).style.color = "white";
 
-    document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
-    document.getElementById(firstButtonToDisable).style.color = "black";
+        document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(firstButtonToDisable).style.color = "black";
 
-    document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
-    document.getElementById(secondButtonToDisable).style.color = "black";
+        document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(secondButtonToDisable).style.color = "black";
+    }
 
     event.preventDefault();
     event.stopPropagation();
