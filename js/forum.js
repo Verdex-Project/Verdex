@@ -21,16 +21,16 @@ function closeCommentPopup(){
     }
 }
 
-// function closeEditPopup() {
-//     confirmation = confirm("Are you sure you'd like to discard all changes?");
-//     if (confirmation == true) {
-//         document.getElementById("edit-post-popup").style.display = "none";
-//         document.getElementById("edit-post-form").reset();
-//         alert("Changes discarded.");
-//         return false;
-//     }
-//     return false;
-// }
+function closeEditPopup() {
+    confirmation = confirm("Are you sure you'd like to discard all changes?");
+    if (confirmation == true) {
+        document.getElementById("edit-post-popup").style.display = "none";
+        document.getElementById("edit-post-form").reset();
+        alert("Changes discarded.");
+        return false;
+    }
+    return false;
+}
 
 let selectedTag = ""
 function submitPost() {
@@ -104,21 +104,48 @@ function submitComment() {
     });
 }
 
-// function editPost(postId) {
-//     document.getElementById('edit-post-id').value = postId;
-//     document.getElementById("edit-post-popup").style.display = "block";
-// }
+function editPost(postId) {
+    document.getElementById("edit-post-popup").style.display = "block";
+    window.editPostId = postId;
+}
 
-// function submitEdit() {
-//     var editPostForm = document.getElementById("edit-post-form");
-//     if (editPostForm.checkValidity()) {
-//         alert("Post edited!");
-//         document.getElementById("edit-post-popup").style.display = "none";
-//     } else {
-//         editPostForm.reportValidity();
-//         return false;
-//     }
-// }
+let editedSelectedTag = ""
+function submitEdit() {
+    document.getElementById("edit-post-tag").value = editedSelectedTag;
+    const editUserNames = document.getElementById("edit_user_names").value;
+    const editPostTitle = document.getElementById("edit-post-title").value;
+    const editPostDescription = document.getElementById("edit-post-description").value;
+    const postId = window.editPostId;
+
+    if (editUserNames.trim() === "") {
+        alert("Please enter valid name(s).");
+        return;
+    }
+    else if (editPostTitle.trim() === "") {
+        alert("Please enter a valid title.");
+        return;
+    }
+    else if (editPostDescription.trim() === "") {
+        alert("Please enter a valid description.");
+        return;
+    }
+
+    axios.post('/edit_post', {
+        postId: postId,
+        edit_user_names: editUserNames,
+        edit_post_title: editPostTitle,
+        edit_post_description: editPostDescription
+    })
+    .then(response => {
+        console.log(response.data);
+        alert("Post edited");
+        document.getElementById("edit-post-popup").style.display = "none";
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
 
 function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
     selectedTag = tag

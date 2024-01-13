@@ -34,7 +34,6 @@
                                 <h4 class="tag-display">#{{ post_data.tag }}</h4>
                             {% endif %}
                         </div>
-                        <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
                         <p class="post-description">{{ post_data.post_description }}</p>
                         <h5 id="comments-header">Comments: </h5><br>
                         {% for comment_id, comment_text in post_data.comments.items() %}
@@ -44,12 +43,15 @@
                             </div>
                         {% endfor %}
                     </div>
-                    <div class="post-reaction-buttons-container">
-                        <ul class="list-of-reaction-buttons">
-                            <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
-                            <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
-                            <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTimeId }}")'>Comment</li>
-                        </ul>
+                    <div class="lower-row-buttons-container">
+                        <div class="post-reaction-buttons-container">
+                            <ul class="list-of-reaction-buttons">
+                                <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
+                                <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
+                                <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTimeId }}")'>Comment</li>
+                            </ul>
+                        </div>
+                        <button id="edit-button" onclick="editPost('{{ post_data.postDateTimeId }}')">Edit post</button>
                     </div>
                 </div>
             {% endfor %}
@@ -83,24 +85,24 @@
                 </form>
             </div>
         </div>
-        <!-- <div id="edit-post-popup">
+        <div id="edit-post-popup">
             <div id="popup-content">
-                <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
+                <form id="edit-post-form" method="post" action="{{ url_for('forum.edit_post') }}">
                     <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Edit post</h2>
-                    <textarea name="edit_user_names" id="user_names" rows="1" cols="80" required="required" placeholder="New name(s): "></textarea><br>
-                    <textarea name="edit_post_title" id="post-title" rows="1" cols="120" required="required" placeholder="New title: "></textarea><br>
-                    <textarea name="edit_post_description" id="post-description" rows="8" cols="100" required="required" placeholder="New description: "></textarea><br>
-                    <input type="hidden" name="edit_post_id" id="edit-post-id" value="">
+                    <textarea name="edit_user_names" id="edit_user_names" rows="1" cols="80" required="required" placeholder="New name(s): "></textarea><br>
+                    <textarea name="edit_post_title" id="edit-post-title" rows="1" cols="120" required="required" placeholder="New title: "></textarea><br>
+                    <textarea name="edit_post_description" id="edit-post-description" rows="8" cols="100" required="required" placeholder="New description: "></textarea><br>
+                    <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
                     <p>Suggested tags: </p>
                     <div id="tags-button-container">
-                        <button id="tags-button">#Scenery</button>
-                        <button id="tags-button">#Food</button>
-                        <button id="tags-button">#Nature</button>
+                        <button class="tags-button">#Scenery</button>
+                        <button class="tags-button">#Food</button>
+                        <button class="tags-button">#Nature</button>
                     </div>
                     <button type="submit" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
                 </form>
             </div>
-        </div> -->
+        </div>
     </div>
 {% endblock %}

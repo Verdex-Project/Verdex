@@ -58,3 +58,27 @@ def comment_on_post():
         return jsonify({"error": "Internal Server Error"}), 500
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
+
+@forumBP.route('/edit_post', methods=['POST'])
+def edit_post():
+    try:
+        if request.is_json:
+            post_id = request.get_json().get('postId')
+            edit_user_names = request.get_json().get('edit_user_names')
+            edit_post_title = request.get_json().get('edit_post_title')
+            edit_post_description = request.get_json().get('edit_post_description')
+
+            if post_id and edit_user_names and edit_post_title and edit_post_description:
+                if post_id in DI.data["forum"]:
+                    DI.data["forum"][post_id]["user_names"] = edit_user_names
+                    DI.data["forum"][post_id]["post_title"] = edit_post_title
+                    DI.data["forum"][post_id]["post_description"] = edit_post_description
+                    DI.save()
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
+    
+
+
