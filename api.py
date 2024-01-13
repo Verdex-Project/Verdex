@@ -236,8 +236,6 @@ def like_post():
         DI.save()
 
         return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
-    
-    return redirect(url_for("forum.verdextalks"))
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
@@ -253,7 +251,7 @@ def delete_post():
         DI.data["forum"].pop(post_id)
         DI.save()
     
-    return redirect(url_for("forum.verdextalks"))
+    return "SUCCESS: Post was successfully removed from the system."
 
 @apiBP.route('/api/deleteComment', methods=['POST'])
 def deleteComment():
@@ -272,4 +270,4 @@ def deleteComment():
         del DI.data["forum"][post_id]["comments"][comment_id]
         DI.save()
     
-    return redirect(url_for("forum.verdextalks"))
+    return "SUCCESS: Comment was successfully removed from the post in the system."

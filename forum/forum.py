@@ -24,10 +24,7 @@ def verdextalks():
                 "postDateTimeId": postDateTimeId,
                 "liked_status": False,
                 "tag": post_tag,
-                "comments":
-                    {
-                        
-                    }
+                "comments": {}
             }
 
             DI.data["forum"][postDateTimeId] = new_post
