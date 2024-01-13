@@ -12,6 +12,14 @@ function closeCreatePopup() {
     if (closeCreateConfirmation == true) {
         document.getElementById("create-a-post-popup").style.display = "none";
         document.getElementById("create-post-form").reset();
+        selectedTag = ""
+
+        document.getElementById('scenery-tag-button').style.backgroundColor = "white";
+        document.getElementById('scenery-tag-button').style.color = "black";
+        document.getElementById('food-tag-button').style.backgroundColor = "white";
+        document.getElementById('food-tag-button').style.color = "black";
+        document.getElementById('nature-tag-button').style.backgroundColor = "white";
+        document.getElementById('nature-tag-button').style.color = "black";
     }
 }
 
@@ -28,6 +36,14 @@ function closeEditPopup() {
         document.getElementById("edit-post-popup").style.display = "none";
         document.getElementById("edit-post-form").reset();
         editedSelectedTag = ""
+
+        document.getElementById('edit-scenery-tag-button').style.backgroundColor = "white";
+        document.getElementById('edit-scenery-tag-button').style.color = "black";
+        document.getElementById('edit-food-tag-button').style.backgroundColor = "white";
+        document.getElementById('edit-food-tag-button').style.color = "black";
+        document.getElementById('edit-nature-tag-button').style.backgroundColor = "white";
+        document.getElementById('edit-nature-tag-button').style.color = "black";
+
         alert("Changes discarded.");
         return false;
     }

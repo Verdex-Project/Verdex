@@ -55,7 +55,7 @@ def comment_on_post():
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
-@forumBP.route('/edit_post', methods=['POST'])
+@forumBP.route('/edit_post', methods=['GET', 'POST'])
 def edit_post():
     try:
         if request.is_json:
