@@ -166,7 +166,6 @@ function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButto
 }
 
 function editSelectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
-    console.log("function call success")
     editedSelectedTag = tag
     document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
     document.getElementById(buttonToEnable).style.color = "white";

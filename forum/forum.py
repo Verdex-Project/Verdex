@@ -74,13 +74,9 @@ def edit_post():
                     DI.data["forum"][post_id]["user_names"] = edit_user_names
                     DI.data["forum"][post_id]["post_title"] = edit_post_title
                     DI.data["forum"][post_id]["post_description"] = edit_post_description
-                    DI.save()
                     if edit_post_tag:
                         DI.data["forum"][post_id]["tag"] = edit_post_tag
-                        DI.save()
-                    elif not edit_post_tag:
-                        DI.data["forum"][post_id]["tag"] = ""
-                        DI.save()
+                    DI.save()
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
