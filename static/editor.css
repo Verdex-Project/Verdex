@@ -97,8 +97,37 @@
 
 #activityFooter {
     display: flex;
-    justify-content:space-around;
+    justify-content:space-between;
     margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#activityDescription {
+    margin-left: 15px;
+    display: flex;
+}
+
+#activityDescription p{
+    padding-top: 14px;
+}
+
+#editActivityButton {
+    background: none;
+    border: none;
+}
+
+#editActivityButton img {
+    width: 30px;
+    height: 30px;
+}
+
+#editActivityButton img:hover {
+    padding: 2px 2px 2px 2px;
+    transition: 0.5s;
+}
+
+#deleteActivity{
+    margin-top: 4px;
 }
 
 #deleteButton {
@@ -106,6 +135,25 @@
     border: 2px solid red;
     border-radius: 10px;
     color: red;
+    padding-top: 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-right: 15px;
+}
+
+#deleteButton:hover {
+    padding-left: 22px;
+    padding-right: 22px;
+    border-color: red;
+    background: red;
+    color: white;
+    transition: 0.5s;
+}
+
+#deleteButton img {
+    color: red;
+    width: 32px;
+    height: 32px;
 }
 
 #journeyBox-box {
@@ -227,10 +275,18 @@
 }
 
 #recommendationsPanel-header{
-    margin-left: 8px;
+    margin: auto;
+    text-align: center;
+    align-items: center;
 }
 
-#filters, #recommendations {
+#filters {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#recommendations {
     width: 100%;
     justify-content: center;
     align-items: center;
