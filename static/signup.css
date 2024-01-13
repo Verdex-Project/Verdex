@@ -52,9 +52,12 @@ input[type="submit"] {
     margin-top: 15px;
 }
 
-#statusLabel {
+#usernameMsg,
+#emailMsg,
+#passwordMsg,
+#cfmPasswordMsg {
     visibility: hidden;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 #copyright {
