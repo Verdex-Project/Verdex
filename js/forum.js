@@ -26,6 +26,7 @@ function closeEditPopup() {
     if (confirmation == true) {
         document.getElementById("edit-post-popup").style.display = "none";
         document.getElementById("edit-post-form").reset();
+        editedSelectedTag = ""
         alert("Changes discarded.");
         return false;
     }
@@ -115,6 +116,7 @@ function submitEdit() {
     const editUserNames = document.getElementById("edit_user_names").value;
     const editPostTitle = document.getElementById("edit-post-title").value;
     const editPostDescription = document.getElementById("edit-post-description").value;
+    const editPostTag = document.getElementById("edit-post-tag").value;
     const postId = window.editPostId;
 
     if (editUserNames.trim() === "") {
@@ -134,7 +136,8 @@ function submitEdit() {
         postId: postId,
         edit_user_names: editUserNames,
         edit_post_title: editPostTitle,
-        edit_post_description: editPostDescription
+        edit_post_description: editPostDescription,
+        edit_post_tag: editPostTag
     })
     .then(response => {
         console.log(response.data);
@@ -149,6 +152,22 @@ function submitEdit() {
 
 function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
     selectedTag = tag
+    document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
+    document.getElementById(buttonToEnable).style.color = "white";
+
+    document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
+    document.getElementById(firstButtonToDisable).style.color = "black";
+
+    document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
+    document.getElementById(secondButtonToDisable).style.color = "black";
+
+    event.preventDefault();
+    event.stopPropagation();
+}
+
+function editSelectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
+    console.log("function call success")
+    editedSelectedTag = tag
     document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
     document.getElementById(buttonToEnable).style.color = "white";
 

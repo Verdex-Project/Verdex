@@ -67,6 +67,7 @@ def edit_post():
             edit_user_names = request.get_json().get('edit_user_names')
             edit_post_title = request.get_json().get('edit_post_title')
             edit_post_description = request.get_json().get('edit_post_description')
+            edit_post_tag = request.get_json().get('edit_post_tag')
 
             if post_id and edit_user_names and edit_post_title and edit_post_description:
                 if post_id in DI.data["forum"]:
@@ -74,6 +75,12 @@ def edit_post():
                     DI.data["forum"][post_id]["post_title"] = edit_post_title
                     DI.data["forum"][post_id]["post_description"] = edit_post_description
                     DI.save()
+                    if edit_post_tag:
+                        DI.data["forum"][post_id]["tag"] = edit_post_tag
+                        DI.save()
+                    elif not edit_post_tag:
+                        DI.data["forum"][post_id]["tag"] = ""
+                        DI.save()
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
