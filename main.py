@@ -149,6 +149,89 @@ if __name__ == '__main__':
     #     if previousCopy != DI.data["accounts"]:
     #         print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
     
+    if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
+        DI.data["itineraries"] = {
+            "id" : "abc123",
+            "title" : "My Itinerary",
+            "description" : "3 days itinerary in Singapore",
+            "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+            "days" : {
+                "1" : {
+                    "date" : "2024-01-01",
+                    "activities" : {
+                        "0" : {
+                            "name" : "Marina Bay Sands",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "123.456", "long" : "321.654"},
+                            "startTime" : "0800",
+                            "endTime" : "1000"
+                        },
+                        "1" : {
+                            "name" : "Universal Studios Singapore",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "135.579", "long" : "579.135"},
+                            "startTime" : "1000",
+                            "endTime" : "1800"
+                        },
+                        "2" : {
+                            "name" : "Sentosa",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "246.680", "long" : "246.468"},
+                            "startTime" : "1800",
+                            "endTime" : "2200"
+                        }
+                    }
+                },
+                "2" : {
+                    "date" : "2024-01-02",
+                    "activities" : {
+                        "0" : {
+                            "name" : "SEA Aquarium",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "112.223", "long" : "223.334"},
+                            "startTime" : "0800",
+                            "endTime" : "1200"
+                        },
+                        "1" : {
+                            "name" : "Botanical Gardens",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "334.445", "long" : "445.556"},
+                            "startTime" : "1200",
+                            "endTime" : "1600"
+                        },
+                        "2" : {
+                            "name" : "Orchard Raod",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "556.667", "long" : "667.778"},
+                            "startTime" : "1600",
+                            "endTime" : "2200"
+                        }
+                    }
+                },
+                "3" : {
+                    "date" : "2024-01-03",
+                    "activities" : {
+                        "0" : {
+                            "name" : "Singapore Island",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
+                            "startTime" : "1000",
+                            "endTime" : "1800"
+                        },
+                        "1" : {
+                            "name" : "Bukit Merah",
+                            "location" : "Singapore",
+                            "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
+                            "startTime" : "1800",
+                            "endTime" : "2100"
+                        }
+                    }
+                }
+            }
+        }
+        DI.save()
+        print("Sample itinerary Set!")
+
     # Register routes
     
     ## Generation routes

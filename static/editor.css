@@ -52,6 +52,114 @@
     border: 2px solid black;
     border-radius: 40px;
     margin: 8px;
+    padding: 30px;
+}
+
+/*ADD EVERYTHING HERE!!!!!!*/
+#activityTimeline {
+    display:flex;
+}
+
+#timeStart, #timeEnd {
+    display: flex;
+    margin: 15px;
+}
+
+#timeDropButton {
+    padding-top: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#divider {
+    padding-top: 5px;
+}
+
+#activityBox {
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+#transportBox{
+    display: flex;
+    justify-content: center;
+}
+
+#activityBox, #transportBox, #addExtra {
+    width: 90%;
+    margin: auto;
+}
+
+#activityPicture, #activityPicture img{
+    width: 100% ;
+    height: auto;
+}
+
+#activityFooter {
+    display: flex;
+    justify-content:space-around;
+    margin-top: 10px;
+}
+
+#deleteButton {
+    background: none;
+    border: 2px solid red;
+    border-radius: 10px;
+    color: red;
+}
+
+#journeyBox-box {
+    display: flex;
+    justify-content: space-around;
+}
+
+#detailJoutneyButton {
+    background: none;
+    border: none;
+    border-radius: 8px;
+}
+
+#detailJoutneyButton:hover {
+    background-color: rgb(196, 196, 196);
+    transition: 0.5s;
+}
+
+#detailJoutneyButton img {
+    height: 30px;
+    width: 30px;
+}
+
+#etaBox {
+    padding-top: 14px;
+    margin: 0 10px 0 10px;
+}
+
+#journeyBox-box {
+    border: 2px solid black;
+    border-radius: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#processArrow {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#transportDescription, #transportLogo,#transportInfo {
+    height: 28px;
+    padding: 0 5px 0 5px;
+}
+
+#addExtra {
+    margin: auto;
+    text-align: center;
+    align-items: center;
+}
+
+#addButton {
+    background: none;
+    border: none;
 }
 
 #activityPanelFooter {
