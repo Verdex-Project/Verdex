@@ -229,7 +229,7 @@ def like_post():
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters were not provided."
 
-    post_id = request.json['postId'] or request.json.get('postId')
+    post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
         DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
@@ -245,7 +245,7 @@ def delete_post():
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters were not provided."
 
-    post_id = request.json['postId'] or request.json.get('postId')
+    post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
         DI.data["forum"].pop(post_id)
@@ -263,8 +263,8 @@ def deleteComment():
     if 'commentId' not in request.json:
         return "ERROR: One or more payload parameters were not provided."
     
-    post_id = request.json['postId'] or request.json.get('postId')
-    comment_id = request.json['commentId'] or request.json.get('commentId')
+    post_id = request.json['postId']
+    comment_id = request.json['commentId']
 
     if post_id in DI.data["forum"]:
         del DI.data["forum"][post_id]["comments"][comment_id]

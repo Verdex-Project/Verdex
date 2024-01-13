@@ -35,14 +35,13 @@ def verdextalks():
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
 
-@forumBP.route('/comment_post', methods=['GET', 'POST'])
+@forumBP.route('/comment_post', methods=['POST'])
 def comment_on_post():
     try:
         if request.is_json:
             json_data = request.get_json()
             post_id = json_data.get('postId')
             comment_description = json_data.get('comment_description')
-
             if post_id and comment_description:
                 if post_id in DI.data["forum"]:
                     if 'comments' not in DI.data["forum"][post_id]:
@@ -52,7 +51,7 @@ def comment_on_post():
                     DI.save()
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        return "ERROR: An error has occured."
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
@@ -76,7 +75,7 @@ def edit_post():
                     DI.save()
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        return "ERROR: An error has occured."
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
     

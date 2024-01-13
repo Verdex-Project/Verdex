@@ -10,7 +10,8 @@ function itineraryShortcutButtonPopup(shortcut) {
 function closeCreatePopup() {
     closeCreateConfirmation = confirm("Are you sure you'd like to discard all changes?");
     if (closeCreateConfirmation == true) {
-        window.location.reload();
+        document.getElementById("create-a-post-popup").style.display = "none";
+        document.getElementById("create-post-form").reset();
     }
 }
 
