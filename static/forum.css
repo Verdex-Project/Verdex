@@ -114,7 +114,7 @@ body {
     width: 65%; 
 }
 
-.individual-posts {
+#individual-posts {
     border: 3px solid #427b44;
     border-radius: 15px;
     margin-bottom: 20px; 

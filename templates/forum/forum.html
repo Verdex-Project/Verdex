@@ -12,7 +12,7 @@
             <ul class="list-of-all-filter-buttons">
                 <li class="filter-buttons" onclick="filterPosts('All')">All</li>
                 <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
-                <li class="filter-buttons" onclick="filterPosts('Island Hopping')">#Island Hopping</li>
+                <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
                 <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
             </ul>
         </div>
@@ -26,7 +26,7 @@
         </div>
         <div class="post-section-container">
             {% for post_username, post_data in postsInfoJson.items() %}
-                <div class="individual-posts" data-post-id="{{ post_data.postDateTimeId }}" id="{{ post_data.tag }}">
+            <div id="individual-posts" data-post-id="{{ post_data.postDateTimeId }}" class="{{ post_data.tag }}">
                     <div class="post-content">
                         <div class="nameAndTagHeader">
                             <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
@@ -65,9 +65,9 @@
                     <input type="hidden" name="post_tag" id="post-tag" value="">
                     <p>Suggested tags: (Optional)</p>
                     <div id="tags-button-container">
-                        <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'islandhopping-tag-button')">#Scenery</button>
-                        <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'islandhopping-tag-button')">#Food</button>
-                        <button id="islandhopping-tag-button" class="tags-button" onclick="selectTag('Island Hopping', event, 'islandhopping-tag-button', 'scenery-tag-button', 'food-tag-button')">#Island Hopping</button>
+                        <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'nature-tag-button')">#Scenery</button>
+                        <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'nature-tag-button')">#Food</button>
+                        <button id="nature-tag-button" class="tags-button" onclick="selectTag('Nature', event, 'nature-tag-button', 'scenery-tag-button', 'food-tag-button')">#Nature</button>
                     </div>
                     <button type="submit" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
                 </form>
@@ -96,7 +96,7 @@
                     <div id="tags-button-container">
                         <button id="tags-button">#Scenery</button>
                         <button id="tags-button">#Food</button>
-                        <button id="tags-button">#Island Hopping</button>
+                        <button id="tags-button">#Nature</button>
                     </div>
                     <button type="submit" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
                 </form>

@@ -135,28 +135,18 @@ function selectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButto
     event.stopPropagation();
 }
 
-function filterPosts(tagToDisplay){
-    if (tagToDisplay == 'Scenery'){
-        document.getElementById(tagToDisplay).style.display = "block"
-        document.getElementById('Island Hopping').style.display = "none"
-        document.getElementById('Food').style.display = "none"
+function filterPosts(tagToDisplay) {
+    var allPosts = document.querySelectorAll('.post-section-container > #individual-posts');
 
-    }
-    else if (tagToDisplay == 'Island Hopping'){
-        document.getElementById(tagToDisplay).style.display = "block"
-        document.getElementById('Scenery').style.display = "none"
-        document.getElementById('Food').style.display = "none"
-    }
-    else if (tagToDisplay == 'Food'){
-        document.getElementById(tagToDisplay).style.display = "block"
-        document.getElementById('Island Hopping').style.display = "none"
-        document.getElementById('Scenery').style.display = "none"
-    }
-    else if (tagToDisplay == 'All'){
-        document.getElementById('Scenery').style.display = "block"
-        document.getElementById('Island Hopping').style.display = "block"
-        document.getElementById('Food').style.display = "block"
-    }
+    allPosts.forEach(function(post) {
+        var postTag = post.classList[0]; 
+        if (tagToDisplay == 'All' || postTag == tagToDisplay) {
+            post.style.display = "block";
+        } else {
+            post.style.display = "none";
+        }
+    });
+    console.log(allPosts)
 }
 
 function deleteComment(postId, commentId){
