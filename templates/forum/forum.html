@@ -35,13 +35,15 @@
                             {% endif %}
                         </div>
                         <p class="post-description">{{ post_data.post_description }}</p>
-                        <h5 id="comments-header">Comments: </h5><br>
-                        {% for comment_id, comment_text in post_data.comments.items() %}
-                            <div class="commentDiv" data-comment-id="{{ comment_id }}">
-                                <li id="comment">{{ comment_text }}</li>
-                                <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTimeId }}', '{{ comment_id }}')">Delete comment</button>
-                            </div>
-                        {% endfor %}
+                        {% if post_data.comments != {} %}
+                            <h5 id="comments-header">Comments: </h5><br>
+                            {% for comment_id, comment_text in post_data.comments.items() %}
+                                <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                    <li id="comment">{{ comment_text }}</li>
+                                    <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTimeId }}', '{{ comment_id }}')">Delete comment</button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div class="lower-row-buttons-container">
                         <div class="post-reaction-buttons-container">
@@ -62,7 +64,7 @@
                     <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Create A Post!</h2>
                     <textarea name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required="required"></textarea><br>
-                    <textarea name="post_title" id="post-title" rows="1" cols="120" placeholder="Title: " required="required"></textarea><br>
+                    <textarea name="post_title" id="post-title" rows="1" cols="100" placeholder="Title: " required="required"></textarea><br>
                     <textarea name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"></textarea><br>
                     <input type="hidden" name="post_tag" id="post-tag" value="">
                     <p>Suggested tags: (Optional)</p>
@@ -91,7 +93,7 @@
                     <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Edit post</h2>
                     <textarea name="edit_user_names" id="edit_user_names" rows="1" cols="80" required="required" placeholder="Enter new name(s): "></textarea><br>
-                    <textarea name="edit_post_title" id="edit-post-title" rows="1" cols="120" required="required" placeholder="Enter new title: "></textarea><br>
+                    <textarea name="edit_post_title" id="edit-post-title" rows="1" cols="100" required="required" placeholder="Enter new title: "></textarea><br>
                     <textarea name="edit_post_description" id="edit-post-description" rows="8" cols="100" required="required" placeholder="Enter new description: "></textarea><br>
                     <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
                     <p>Suggested tags: </p>
