@@ -73,7 +73,8 @@
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
                                 <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
+                                '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
@@ -148,7 +149,8 @@
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
                                 <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
+                                '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">

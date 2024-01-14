@@ -343,3 +343,18 @@ def deleteItinerary():
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
+
+@apiBP.route("/api/newActivityStartEndTime", methods = ['POST'])
+def newActivityStartEndTime():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    day = request.json["day"]
+    activityId = request.json["activityId"]
+    
+    DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = request.json["newActivityStartTime"]
+    DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = request.json["newActivityEndTime"]
+    DI.save()
+
+    return "SUCCESS: New activity start time and end time updated."
