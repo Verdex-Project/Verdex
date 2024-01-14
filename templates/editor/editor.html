@@ -39,24 +39,23 @@
                                 <div>
                                     <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <div id="divider"><h1>-</h1></div>
                             <div id="timeEnd">
                                 <div>
                                     <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                        <time radio selection (interval:30minutes/1hour)
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -112,24 +111,24 @@
                                 <div>
                                     <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                        time radio selection (interval:30minutes/1hour)
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <div id="divider"><h1>-</h1></div>
                             <div id="timeEnd">
                                 <div>
                                     <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                        time radio selection (interval:30minutes/1hour)
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
@@ -159,13 +158,13 @@
         <div id="activityPanelFooter"> <!--Footer-->
             <div id="deleteItinerary">
                 <button id="deleteItineraryButton">
-                    <img src="#" alt="#" style="float: left;"><h5 style="float: right;">Delete</h5>
+                    <h5>Delete Itinerary</h5>
                 </button>
             </div>
 
             <div id="saveItinerary">
                 <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
-                    <h5  style="float: left">Proceed</h5><img src="#" alt="#" style="float: right;">
+                    <h5>Proceed</h5>
                 </button>
             </div>
         </div>
