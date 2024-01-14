@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, flash
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from models import *
 from generation.itineraryGeneration import staticLocations
@@ -227,7 +227,8 @@ def like_post():
     #     return checkHeaders(request.headers)
     
     if 'postId' not in request.json:
-        return "ERROR: One or more payload parameters were not provided."
+        flash("ERROR: The post ID is not found.")
+        return redirect(url_for('error'))
 
     post_id = request.json['postId']
 
@@ -243,7 +244,8 @@ def delete_post():
     #     return checkHeaders(request.headers)
     
     if 'postId' not in request.json:
-        return "ERROR: One or more payload parameters were not provided."
+        flash("ERROR: The post ID is not found.")
+        return redirect(url_for('error'))
 
     post_id = request.json['postId']
 
@@ -259,9 +261,11 @@ def deleteComment():
     #     return checkHeaders(request.headers)
 
     if 'postId' not in request.json:
-        return "ERROR: One or more payload parameters were not provided."
+        flash("ERROR: The post ID is not found.")
+        return redirect(url_for('error'))
     if 'commentId' not in request.json:
-        return "ERROR: One or more payload parameters were not provided."
+        flash("ERROR: The comment ID is not found.")
+        return redirect(url_for('error'))
     
     post_id = request.json['postId']
     comment_id = request.json['commentId']

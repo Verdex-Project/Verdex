@@ -1,5 +1,5 @@
 #Blueprint for VerdexTalks main forum page
-from flask import Blueprint, render_template, json, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, json, request, jsonify, redirect, url_for, flash
 from main import Universal, DI
 import datetime
 
@@ -51,7 +51,8 @@ def comment_on_post():
                     DI.save()
     except Exception as e:
         print(f"Error: {e}")
-        return "ERROR: An error has occured."
+        flash("ERROR: A system error has occured. Most likely due to an invalid request format.")
+        return redirect(url_for('error'))
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
@@ -75,7 +76,8 @@ def edit_post():
                     DI.save()
     except Exception as e:
         print(f"Error: {e}")
-        return "ERROR: An error has occured."
+        flash("ERROR: A system error has occured. Most likely due to an invalid request format.")
+        return redirect(url_for('error'))
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
     
