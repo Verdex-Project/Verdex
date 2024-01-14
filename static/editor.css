@@ -35,6 +35,7 @@
 #changeDayArrowLeft button, #changeDayArrowRight button{
     background-color: white;
     border: none;
+    transition: 0.5s ease-out;
 }
 
 #changeDayArrowLeft button:hover, #changeDayArrowRight button:hover {
@@ -158,11 +159,13 @@
 #editActivityButton {
     background: none;
     border: none;
+
 }
 
 #editActivityButton img {
     width: 30px;
     height: 30px;
+    transition: 0.5s ease-out;
 }
 
 #editActivityButton img:hover {
@@ -184,6 +187,7 @@
     padding-left: 20px;
     padding-right: 20px;
     margin-right: 15px;
+    transition: 0.5s ease-out;
 }
 
 #deleteButton:hover {
@@ -206,18 +210,19 @@
     justify-content: space-around;
 }
 
-#detailJoutneyButton {
+#detailJourneyButton {
     background: none;
     border: none;
     border-radius: 8px;
+    transition: 0.5s ease-out;
 }
 
-#detailJoutneyButton:hover {
+#detailJourneyButton:hover {
     background-color: rgb(196, 196, 196);
     transition: 0.5s;
 }
 
-#detailJoutneyButton img {
+#detailJourneyButton img {
     height: 30px;
     width: 30px;
 }
@@ -255,6 +260,7 @@
     background: none;
     border: none;
     color: green;
+    transition: 0.5s ease-out;
 }
 
 #addButton :hover {
@@ -284,6 +290,7 @@
     background-color: white;
     color: red;
     cursor: pointer;
+    transition: 0.5s ease-out;
 }
 
 #saveItineraryButton {
@@ -294,6 +301,7 @@
     background-color: white;
     color: green;
     cursor: pointer;
+    transition: 0.5s ease-out;
 }
 
 #saveItineraryButton:hover{
