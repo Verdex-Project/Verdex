@@ -48,3 +48,7 @@ def completionJS():
 @assetsBP.route("/assets/targetLocationsJS")
 def itineraryGenerationJS():
     return fileContent("js/targetLocations.js", passAPIKey=True)
+
+@assetsBP.route("/assets/forumJS")
+def forumJS():
+    return fileContent("js/forum.js")

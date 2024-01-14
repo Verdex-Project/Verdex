@@ -223,25 +223,35 @@ def deleteIdentity():
 
 @apiBP.route('/api/likePost', methods=['POST'])
 def like_post():
-    post_id = request.json.get('postId')
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
+    
+    if 'postId' not in request.json:
+        return "ERROR: One or more payload parameters were not provided."
+
+    post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
         DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
 
         return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
-    
-    return redirect(url_for("forum.verdextalks"))
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
-    post_id = request.json.get('postId')
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
+    
+    if 'postId' not in request.json:
+        return "ERROR: One or more payload parameters were not provided."
+
+    post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
         DI.data["forum"].pop(post_id)
         DI.save()
     
-    return redirect(url_for("forum.verdextalks"))
+    return "SUCCESS: Post was successfully removed from the system."
 
 @apiBP.route('/api/nextDay', methods=['POST'])
 def nextDay():
@@ -274,4 +284,22 @@ def previousDay():
         return "ERROR: You are not directed to the previous day!"
     else:
         return "SUCCESS: You are directed to the previous day!"
+
+@apiBP.route('/api/deleteComment', methods=['POST'])
+def deleteComment():
+    # if checkHeaders(request.headers) != True:
+    #     return checkHeaders(request.headers)
+
+    if 'postId' not in request.json:
+        return "ERROR: One or more payload parameters were not provided."
+    if 'commentId' not in request.json:
+        return "ERROR: One or more payload parameters were not provided."
     
+    post_id = request.json['postId']
+    comment_id = request.json['commentId']
+
+    if post_id in DI.data["forum"]:
+        del DI.data["forum"][post_id]["comments"][comment_id]
+        DI.save()
+    
+    return "SUCCESS: Comment was successfully removed from the post in the system."
