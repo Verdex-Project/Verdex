@@ -144,7 +144,7 @@
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <p>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</p><button id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <p>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</p><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">
@@ -155,7 +155,7 @@
                     </div>
 
                     <div id="addExtra">
-                        <button id="addButton" onclick="addNewBlankActivity()"> 
+                        <button id="addButton" onclick="addNewActivity()"> 
                             <h1>+</h1>
                         </button>
                     </div>
