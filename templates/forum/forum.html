@@ -8,6 +8,14 @@
 
 {% block body %}
     <div class="content">
+        <div class="list-of-all-filter-buttons-container">
+            <ul class="list-of-all-filter-buttons">
+                <li class="filter-buttons" onclick="filterPosts('All')">All</li>
+                <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
+                <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
+                <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
+            </ul>
+        </div>
         <div class="create-a-post-button" onclick="createPostPopup()">
             <div id="plus-icon-container">
                 <span class="plus-icon">+</span>
@@ -66,14 +74,6 @@
                     </div>
                 </div>
             {% endfor %}
-            <div class="list-of-all-filter-buttons-container">
-                <ul class="list-of-all-filter-buttons">
-                    <li class="filter-buttons" onclick="filterPosts('All')">All</li>
-                    <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
-                    <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
-                    <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
-                </ul>
-            </div>
         </div>
         <div id="create-a-post-popup">
             <div id="popup-content">
