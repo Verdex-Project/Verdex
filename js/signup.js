@@ -42,6 +42,7 @@ function signUp() {
     if (!usernameInput.value || usernameInput.value == "" || !emailInput.value || emailInput.value == "" || !passwordInput.value || passwordInput.value == "" || !confirmPasswordInput.value || confirmPasswordInput.value == "") {
         // alert("One or more fields is empty. Please try again.")
         cfmPasswordMsg.style.visibility = 'visible'
+        cfmPasswordMsg.style.color = 'red'
         cfmPasswordMsg.innerHTML = "Please fill in all the fields."
         return
     }
@@ -49,6 +50,7 @@ function signUp() {
     if (passwordInput.value !== confirmPasswordInput.value) {
         // alert("Passwords do not match.")
         cfmPasswordMsg.style.visibility = 'visible'
+        cfmPasswordMsg.style.color = 'red'
         cfmPasswordMsg.innerHTML = "Passwords do not match."
         return
     }
@@ -72,8 +74,12 @@ function signUp() {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) { 
                         cfmPasswordMsg.style.visibility = 'visible'
+                        cfmPasswordMsg.style.color = "green";
                         cfmPasswordMsg.innerHTML = "Creating account..."
-                        location.href = `${origin}/account/info`;
+                        setTimeout(() => {
+                            cfmPasswordMsg.innerHTML = "Account created! Redirecting now..."
+                            location.href = `${origin}/account/info`;
+                        }, 2000)
                     } else {
                         alert("An unknown error occured in creating the account. Please try again. Check logs for more information.")
                         console.log("Unknown response received: " + response.data)
@@ -83,14 +89,17 @@ function signUp() {
                     console.log("User error occured: " + response.data)
                     if (response.data == "UERROR: Username is already taken.") {
                         usernameMsg.style.visibility = 'visible'
+                        usernameMsg.style.color = 'red'
                         usernameMsg.innerHTML = "Username is already taken."
                     }
                     else if (response.data == "UERROR: Email is already in use.") {
                         emailMsg.style.visibility = 'visible'
+                        emailMsg.style.color = 'red'
                         emailMsg.innerHTML = "Email is already in use."
                     }
                     else if (response.data == "UERROR: Password must be at least 6 characters long.") {
                         passwordMsg.style.visibility = 'visible'
+                        passwordMsg.style.color = 'red'
                         passwordMsg.innerHTML = "Password must be at least 6 characters."
                     }
                 }
