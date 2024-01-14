@@ -252,6 +252,9 @@ if __name__ == '__main__':
 
     from admin.contact_form import contactBP
     app.register_blueprint(contactBP)
+
+    from admin.home import adminHomeBP
+    app.register_blueprint(adminHomeBP)
     
     ## Forum routes
     from forum.forum import forumBP

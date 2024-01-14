@@ -1,0 +1,200 @@
+/* styles.css */
+
+* {
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: white;
+    display: flex;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar {
+    box-sizing: border-box;
+    background: white;
+    width: 225px;
+    height: 100%;
+    padding: 20px 0;
+    transition: all 0.5s ease;
+    border-right: 2px solid black;
+}
+
+.wrapper .sidebar .profile {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.wrapper .sidebar .profile img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.wrapper .sidebar .profile h3 {
+    color: black;
+    margin: 10px 0 5px;
+}
+
+.wrapper .sidebar .profile p {
+    color: black;
+    font-size: 14px;
+}
+
+.wrapper .sidebar ul li a {
+    display: block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid black;
+    color: black;
+    font-size: 16px;
+}
+
+.wrapper .sidebar ul li a:hover,
+.wrapper .sidebar ul li a.active {
+    color: black;
+    font-weight: bold;
+    background: white;
+    border-right: 2px solid black;
+}
+
+.wrapper .sidebar ul li a:hover:before,
+.wrapper .sidebar ul li a.active:before {
+    display: block;
+}
+
+/* Add style for the last item */
+.wrapper .sidebar ul li:last-child a {
+    border-bottom: 1px solid black;
+}
+.content h2{
+    text-align: center;
+}
+.report{
+    margin-top:40px;
+}
+.report-container {
+    border: 2px solid #333;
+    border-radius: 10px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    padding: 40px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.generated-reports-header {
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    padding-right:20px;
+    padding-top:5px;
+    padding-bottom: 15px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.report-data-content {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.download-report-button{
+    float: right;
+    margin-top: -105px;
+    margin-right:10px;
+    border-radius: 7px;
+    background-color: white;
+    color: green;
+    border: 2px solid green;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.delete-report-button{
+    float: right;
+    margin-top: -60px;
+    margin-right: 10px;
+    border-radius: 7px;
+    background-color: white;
+    color: red;
+    border: 2px solid red;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.download-report-button:hover{
+    background-color: green;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.delete-report-button:hover{
+    background-color: red;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.generate-report-button{
+    background-color: white;
+    color: green;
+    border: 2px solid green;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right:10px;
+}
+.delete-all-report-button,
+.clear-data-button{
+    background-color: white;
+    color: red;
+    border: 2px solid red;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right:10px;
+}
+.generate-report-button:hover{
+    background-color: green;
+    color: white;
+    border-color: green;
+}
+.delete-all-report-button:hover,
+.clear-data-button:hover{
+    background-color: red;
+    color: white;
+    border-color: red;
+}
+
+.button-container{
+    display:flex;
+    justify-content: center;
+    margin-top:60px;
+    padding-bottom:60px;
+}
