@@ -16,9 +16,10 @@ def editor(itineraryID, day):
     for activity in DI.data["itineraries"]["days"][day]["activities"].values():
         name = activity.get('name')
         location = activity.get('location')
+        imageURL = activity.get('imageURL')
         startTime = activity.get('startTime')
         endTime = activity.get('endTime')
-        activitiesInfo.append({"name": name, "location": location, "startTime": startTime, "endTime": endTime})
+        activitiesInfo.append({"name": name, "location": location, "imageURL": imageURL, "startTime": startTime, "endTime": endTime})
 
     dayCountList = []
     for key in DI.data["itineraries"]["days"]:

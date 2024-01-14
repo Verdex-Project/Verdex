@@ -64,14 +64,14 @@
                                         <time radio selection (interval:30minutes/1hour)
                                     </div>
                                 </div> -->
-                            </div>
+                            </div>  
                         </div>
 
-                        <div id="activityPicture"><img src="/static/Images/mbsSingapore.webp" alt="#"></div> <!--Image Box-->
+                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div>
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">
@@ -140,7 +140,7 @@
                             </div>
                         </div>
 
-                        <div id="activityPicture"><img src="/static/Images/mbsSingapore.webp" alt="#"></div> <!--Image Box-->
+                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div> <!--Image Box-->
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
