@@ -253,6 +253,38 @@ def delete_post():
     
     return "SUCCESS: Post was successfully removed from the system."
 
+@apiBP.route('/api/nextDay', methods=['POST'])
+def nextDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    nextDay = request.json['nextDay']
+    dayCountList = []
+
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
+    if str(nextDay) not in dayCountList:
+        return "ERROR: You are not directed to the next day!"
+    else:
+        return "SUCCESS: You are directed to the next day!"
+    
+@apiBP.route('/api/previousDay', methods=['POST'])
+def previousDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    previousDay = request.json['previousDay']
+    dayCountList = []
+
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
+    if str(previousDay) not in dayCountList:
+        return "ERROR: You are not directed to the previous day!"
+    else:
+        return "SUCCESS: You are directed to the previous day!"
+
 @apiBP.route('/api/deleteComment', methods=['POST'])
 def deleteComment():
     # if checkHeaders(request.headers) != True:

@@ -1,5 +1,6 @@
 #content {
     display: flex;
+    height: 650px
 }
 
 /* EDITOR PANEL */
@@ -36,6 +37,17 @@
     border: none;
 }
 
+#changeDayArrowLeft button:hover, #changeDayArrowRight button:hover {
+    color: green;
+    transition: 0.5s;
+}
+
+#changeDayArrowRight-no button, #changeDayArrowLeft-no button {
+    color:rgb(196, 196, 196);
+    background-color: white;
+    border: none;
+}
+
 #dayCount {
     padding-left: 4px;
     padding-right: 4px;
@@ -48,10 +60,207 @@
 
 #activityLogBox {
     width: 100%;
-    height: 70%;
+    height: 90%;
     border: 2px solid black;
     border-radius: 40px;
     margin: 8px;
+    padding: 30px;
+    overflow: scroll;
+    background-color: greenyellow;
+}
+
+/*ADD EVERYTHING HERE!!!!!!*/
+#activityTimeline {
+    display:flex;
+    justify-content: center;
+}
+
+#timeStart, #timeEnd {
+    display: flex;
+    margin: 15px;
+    background-color: white;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-right: 10px;
+}
+
+#timeDropButton {
+    padding-top: 4px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background: none;
+    border: none;
+}
+
+#timeDropButton:hover {
+    color:  rgb(196, 196, 196);
+    transition: 0.5s;
+}
+
+#divider {
+    padding-top: 22px;
+}
+
+#activityBox {
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+#transportBox{
+    display: flex;
+    justify-content: center;
+}
+
+#activityBox, #transportBox, #addExtra {
+    width: 90%;
+    margin: auto;
+}
+
+#activityBox {
+    background: white;
+}
+
+#activityPicture {
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+#activityPicture img{
+    width: 60% ;
+    height: auto;
+}
+
+#activityPicture img {
+    border: 2px solid black;
+}
+
+#activityFooter {
+    display: flex;
+    justify-content:space-between;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-top: 2px solid black;
+    padding-top: 10px;
+}
+
+#activityDescription {
+    margin-left: 15px;
+    display: flex;
+}
+
+#activityDescription h5{
+    padding-top: 12px;
+}
+
+#editActivityButton {
+    background: none;
+    border: none;
+}
+
+#editActivityButton img {
+    width: 30px;
+    height: 30px;
+}
+
+#editActivityButton img:hover {
+    padding: 2px 2px 2px 2px;
+    transition: 0.5s;
+}
+
+#deleteActivity{
+    margin-top: 4px;
+}
+
+#deleteButton {
+    background: none;
+    border: 2px solid red;
+    border-radius: 10px;
+    background: white;
+    color: red;
+    padding-top: 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-right: 15px;
+}
+
+#deleteButton:hover {
+    padding-left: 22px;
+    padding-right: 22px;
+    border-color: red;
+    background: red;
+    color: white;
+    transition: 0.5s;
+}
+
+#deleteButton img {
+    color: red;
+    width: 32px;
+    height: 32px;
+}
+
+#journeyBox-box {
+    display: flex;
+    justify-content: space-around;
+}
+
+#detailJoutneyButton {
+    background: none;
+    border: none;
+    border-radius: 8px;
+}
+
+#detailJoutneyButton:hover {
+    background-color: rgb(196, 196, 196);
+    transition: 0.5s;
+}
+
+#detailJoutneyButton img {
+    height: 30px;
+    width: 30px;
+}
+
+#etaBox {
+    padding-top: 14px;
+    margin: 0 10px 0 10px;
+}
+
+#journeyBox-box {
+    border: 2px solid black;
+    border-radius: 10px;
+    background: white;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#processArrow {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#transportDescription, #transportLogo,#transportInfo {
+    height: 28px;
+    padding: 0 5px 0 5px;
+}
+
+#addExtra {
+    margin: auto;
+    text-align: center;
+    height: 28px;
+}
+
+#addButton {
+    background: none;
+    border: none;
+    color: green;
+}
+
+#addButton :hover {
+    padding: 2px 2px 2px 2px;
+    color: rgb(1, 180, 1);
+    transition: 0.5s;
 }
 
 #activityPanelFooter {
@@ -68,43 +277,39 @@
 }
 
 #deleteItineraryButton {
-    width: 120px;
+    width: 200px;
     padding-top: 8px;
-    padding-right: 15px;
-    border: 1px solid green;
-    border-radius: 25px;
+    border: 2px solid red;
+    border-radius: 10px;
     background-color: white;
-    color: green;
+    color: red;
     cursor: pointer;
 }
 
 #saveItineraryButton {
     width: 145px;
     padding-top: 8px;
-    padding-left: 15px;
-    border: 1px solid green;
-    border-radius: 25px;
+    border: 2px solid green;
+    border-radius: 10px;
     background-color: white;
     color: green;
     cursor: pointer;
 }
 
-#deleteItineraryButton:hover, #saveItineraryButton:hover{
+#saveItineraryButton:hover{
     background-color: green;
     color:white;
-    transition: 1s;
+    transition: 0.5s;
 }
 
-#saveItineraryButton img{
-    padding: 5px;
-}
-
-#deleteItineraryButton img  {
-    padding: 4px;
+#deleteItineraryButton:hover{
+    background-color: red;
+    color: white;
+    transition: 0.5s;
 }
 
 #borderLine {
-    height: 100vh;
+    height: 93vh;
     border-left: 5px solid green;
     margin-left: 5px;
     margin-right: 5px;
@@ -119,10 +324,18 @@
 }
 
 #recommendationsPanel-header{
-    margin-left: 8px;
+    margin: auto;
+    text-align: center;
+    align-items: center;
 }
 
-#filters, #recommendations {
+#filters {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#recommendations {
     width: 100%;
     justify-content: center;
     align-items: center;
