@@ -269,8 +269,8 @@ class Logger:
         return
 
     @staticmethod
-    def log(message):
-        if "DebugMode" in os.environ and os.environ["DebugMode"] == 'True':
+    def log(message, debugPrintExplicitDeny=False):
+        if "DebugMode" in os.environ and os.environ["DebugMode"] == 'True' and (not debugPrintExplicitDeny):
             print("LOG: {}".format(message))
         if Logger.checkPermission():
             try:
