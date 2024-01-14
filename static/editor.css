@@ -253,19 +253,22 @@
 #addExtra {
     margin: auto;
     text-align: center;
-    height: 28px;
+    transition: 0.5s ease-out;
 }
 
 #addButton {
+    padding: none;
     background: none;
     border: none;
     color: green;
     transition: 0.5s ease-out;
+    font-size: 40px;
 }
 
-#addButton :hover {
+#addButton:hover {
     padding: 2px 2px 2px 2px;
-    color: rgb(1, 180, 1);
+    font-size: 50px;
+    color: rgb(0, 210, 0);
     transition: 0.5s;
 }
 
