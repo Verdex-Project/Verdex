@@ -8,21 +8,21 @@
 
 {% block body %}
     <div class="content">
-        <div class="list-of-all-filter-buttons-container">
-            <ul class="list-of-all-filter-buttons">
-                <li class="filter-buttons" onclick="filterPosts('All')">All</li>
-                <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
-                <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
-                <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
-            </ul>
+        <div class="create-a-post-button" onclick="createPostPopup()">
+            <div id="plus-icon-container">
+                <span class="plus-icon">+</span>
+            </div>
+            <div class="text-container">
+                <h3 class="header">Create a post</h3><br>
+                <p class="text">Share your memories with friends</p>
+            </div>
         </div>
         <div class="create-a-post-container">
-            <button class="create-a-post-button" onclick="createPostPopup()">Create A Post!</button><br>
-            <p class="or-separator">-----------------OR-----------------</p>
-            <p class="recent-itineraries-para">Recent itineraries:</p><br>
-            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">Trip to Sentosa</button><br>
-            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Islands')">Singapore Islands</button><br>
-            <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Food Galore')">Food Galore</button><br>
+            <div id="recent-itineraries-container">
+                <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">Trip to Sentosa</button><br>
+                <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Islands')">Singapore Islands</button><br>
+                <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Food Galore')">Food Galore</button><br>
+            </div>
         </div>
         <div class="post-section-container">
             {% for post_username, post_data in postsInfoJson.items() %}
@@ -57,6 +57,14 @@
                     </div>
                 </div>
             {% endfor %}
+            <div class="list-of-all-filter-buttons-container">
+                <ul class="list-of-all-filter-buttons">
+                    <li class="filter-buttons" onclick="filterPosts('All')">All</li>
+                    <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
+                    <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
+                    <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
+                </ul>
+            </div>
         </div>
         <div id="create-a-post-popup">
             <div id="popup-content">

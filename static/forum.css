@@ -9,11 +9,14 @@ html {
 }
 
 body {
-    background-color: whitesmoke;
+    background-color: white;
 }
 
 .content {
     font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .list-of-all-filter-buttons-container {
@@ -53,44 +56,76 @@ body {
 
 .create-a-post-container {
     margin: 20px;
-    margin-right: 10px;
-    border: 3px solid #66BB69;
-    border-radius: 15px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 50px;
-    padding-right: 50px;
-    float: left;
+    padding: 15px;
     background-color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    border-radius: 15px;
+    border: 3px solid #66BB69;
+    width: 40%;
 }
 
 .create-a-post-button {
-    text-align: center;
-    border: 3px solid rgb(206, 206, 206);
-    border-radius: 15px;
-    padding-left: 70px; 
-    padding-right: 70px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    font-size: 130%;
-    background-color: #66BB69;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
     color: white;
     transition: 0.2s ease;
+    width: 40%;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .create-a-post-button:hover {
-    border: 3px solid #66BB69;
-    font-size: 130%;
-    background-color: white;
+    background-color: whitesmoke;
     color: #66BB69;
     transition: 0.2s ease;
 }
 
-.recent-itineraries-buttons {
-    display: block;
+.plus-icon {
+    font-size: 24px;
+    color: #66BB69;
+}
+
+#plus-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; 
+    height: 40px; 
+    background-color: #ccffcd; 
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.text-container {
+    color: #427b44;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+}
+
+.text {
     margin: 0;
-    padding: 8px 12px;
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: -25px;
+}
+
+
+.header {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px; 
+}
+
+.recent-itineraries-buttons {
+    display: inline-block; 
+    margin-right: 10px;
+    padding: 7px;
     border: 3px solid rgb(206, 206, 206);
     border-radius: 20px;
     text-align: center;
@@ -99,6 +134,7 @@ body {
     background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
+    height: 30%;
 }
 
 .recent-itineraries-buttons:hover {
@@ -109,9 +145,8 @@ body {
 }
 
 .post-section-container {
-    float: right;
     margin: 20px;
-    width: 65%; 
+    width: 65%;
 }
 
 #individual-posts {
@@ -170,17 +205,6 @@ body {
     background-color: white;
     color: #66BB69;
     transition: 0.2s ease;
-}
-
-.or-separator {
-    text-align: center;
-    font-size: 130%;
-    color: #427b44;
-}
-
-.recent-itineraries-para {
-    font-size: 130%;
-    color: #427b44;
 }
 
 .image {
@@ -425,4 +449,9 @@ body {
     border: 1px solid black;
     border-radius: 10px;
     padding: 10px;
+}
+
+#recent-itineraries-container {
+    display: flex;
+    justify-content: space-between;
 }
