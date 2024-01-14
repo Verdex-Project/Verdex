@@ -176,6 +176,58 @@ function editActivity(activityId, location, name) {
     }
 }
 
+function deleteActivity(activityId) {
+    var currentUrl = window.location.href;
+    var urlParts = currentUrl.split('/');
+    var dayCount = urlParts[urlParts.length - 1];
+    deleteStatus = false
+    while (deleteStatus == false ){
+    deleteStatus = confirm("Are you sure you want to delete this activity?")
+        if (deleteStatus = true) {
+            axios({
+                method: 'post',
+                url: `/api/deleteActivity`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'VerdexAPIKey': '\{{ API_KEY }}'
+                },
+                data: {
+                    "day" : dayCount,
+                    "activityId": activityId
+                }
+            })
+            .then(response => {
+                console.log("Response:", response);  // Add this line to print the response
+                if (response.status == 200) {
+                    if (!response.data.startsWith("ERROR:")) {
+                        if (response.data.startsWith("SUCCESS:")) {
+                            alert("This activity is deleted successfully!");
+                            window.location.reload();
+                        } else {
+                            alert("An unknown response was recieved from Verdex Servers.")
+                            console.log("Unknown response received: " + response.data)
+                        }
+                    } else {
+                        alert("An error occured while deleting your activity. Please try again later.")
+                        console.log("Error occured deleting your activity: " + response.data)
+                    }
+                } else {
+                    alert("An error occured while connecting to Verdex Servers. Please try again later.")
+                    console.log("Non-200 responnse status code recieved from Verdex Servers.")
+                }
+            })
+            .catch(err => {
+                console.log("An error occured in connecting to Verdex Servers: " + err)
+                alert("An error occured while deleting your activity. Please try again later.")
+            })
+            break;
+        }
+        else {
+            break;
+        }
+    }
+}
+
 // // Get the button element by its ID
 // const myButton = document.getElementById('myButton');
 

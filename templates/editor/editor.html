@@ -76,7 +76,7 @@
                                 <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
-                                <button id="deleteButton">
+                                <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
                                     <h5>Delete</h5>
                                 </button>
                             </div>
@@ -151,7 +151,7 @@
                                 <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
-                                <button id="deleteButton">
+                                <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
                                     <h5>Delete</h5>
                                 </button>
                             </div>

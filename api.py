@@ -318,3 +318,17 @@ def newActivityLocationName():
     DI.save()
 
     return "SUCCESS: New activity location and name updated."
+
+@apiBP.route('/api/deleteActivity', methods=['POST'])
+def deleteActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["day"]
+    activityId = request.json["activityId"]
+
+    DI.data["itineraries"]["days"][day]["activities"].pop(activityId)
+    DI.save()
+    
+    return "SUCCESS: Post was successfully removed from the system."
