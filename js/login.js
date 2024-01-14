@@ -22,6 +22,7 @@ function signIn() {
     statusLabel.style.visibility = 'visible'
 
     if (!usernameInput.value || usernameInput.value == "" || !passwordInput.value || passwordInput.value == "") {
+        statusLabel.style.color = "red";
         statusLabel.innerHTML = "Please fill in all the fields."
         return
     }
@@ -44,8 +45,10 @@ function signIn() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
+                        statusLabel.style.color = "green";
                         statusLabel.innerHTML = "Logging you in..."
                         setTimeout(() => {
+                            statusLabel.style.color = "green";
                             statusLabel.innerHTML = "Logged in! Redirecting now..."
                             location.href = `${origin}/account/info`;
                         }, 2000)

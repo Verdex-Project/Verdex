@@ -27,7 +27,7 @@ def deleteSession(accountID):
 
     return True
 
-def manageIDToken():
+def manageIDToken(checkIfAdmin=False):
     '''Returns account ID if token is valid (will refresh if expiring soon) and a str error message if not valid.'''
 
     if "idToken" not in session:
@@ -51,7 +51,7 @@ def manageIDToken():
                     # Refresh token is invalid, delete session entirely
                     deleteSession(accountID)
                     del session["idToken"]
-                    return False
+                    return "ERROR: Your session expired. Please sign in again."
                 
                 DI.data["accounts"][accountID]["idToken"] = response["idToken"]
                 DI.data["accounts"][accountID]["refreshToken"] = response["refreshToken"]
@@ -61,6 +61,10 @@ def manageIDToken():
                 Logger.log("MANAGEIDTOKEN: Refreshed token for account with ID '{}'.".format(accountID))
 
                 session["idToken"] = response["idToken"]
+
+                if checkIfAdmin:
+                    if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
+                        return "ERROR: Access forbidden due to insufficient permissions."
 
             return "SUCCESS: {}".format(accountID)
     
