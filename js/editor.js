@@ -168,13 +168,31 @@ function editActivity(activityId, location, name, startTime, endTime) {
             let currentActivityId = activityId
             let currentActivityStartTime = startTime;
             let currentActivityEndTime = endTime;
-            let newActivityStartTime = prompt("Enter a new activity start time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
-            if (newActivityStartTime == "") {
-                newActivityStartTime = currentActivityStartTime
-            };
-            let newActivityEndTime = prompt("Enter a new activity end time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
-            if (newActivityEndTime == "") {
-                newActivityEndTime = currentActivityEndTime
+            let newActivityStartTime = ""
+            while (newActivityStartTime == "") {
+            newActivityStartTime = prompt("Enter a new activity start time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
+                if (newActivityStartTime == "") {
+                    newActivityStartTime = currentActivityStartTime;
+                    break;
+                } else if (isNaN(newActivityStartTime)) {
+                    alert("Invalid input. Please enter a valid number for the start time.");
+                    newActivityStartTime = "";
+                } else {
+                    break;
+                }
+            }
+            let newActivityEndTime = ""
+            while(newActivityEndTime == "") {
+            newActivityEndTime = prompt("Enter a new activity end time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
+                if (newActivityEndTime == "") {
+                    newActivityEndTime = currentActivityEndTime
+                    break;
+                } else if (isNaN(newActivityEndTime)) {
+                    alert("Invalid input. Please enter a valid number for the end time");
+                    newActivityEndTime = "";
+                } else {
+                    break;
+                }
             }
             axios({
                 method: 'post',
