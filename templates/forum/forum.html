@@ -3,136 +3,17 @@
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        function createPostPopup() {
-            document.getElementById("create-a-post-popup").style.display = "block";
-        }
-
-        function itineraryShortcutButtonPopup(shortcut) {
-            document.getElementById("create-a-post-popup").style.display = "block";
-            document.getElementById("post-title").innerHTML = shortcut
-        }
-    
-        function closeCreatePopup() {
-            confirmation = confirm("Are you sure you'd like to discard all changes?");
-            if (confirmation == true) {
-                document.getElementById("create-a-post-popup").style.display = "none";
-                document.getElementById("comment-on-post-popup").style.display = "none";
-                document.getElementById("create-post-form").reset();
-                document.getElementById("comment-post-form").reset();
-                alert("Changes discarded.");
-                return false;
-            }
-            return false;
-        }
-
-        // function closeEditPopup() {
-        //     confirmation = confirm("Are you sure you'd like to discard all changes?");
-        //     if (confirmation == true) {
-        //         document.getElementById("edit-post-popup").style.display = "none";
-        //         document.getElementById("edit-post-form").reset();
-        //         alert("Changes discarded.");
-        //         return false;
-        //     }
-        //     return false;
-        // }
-    
-        function submitPost() {
-            var createPostForm = document.getElementById("create-post-form");
-
-            if (createPostForm.checkValidity()) {
-                alert("Post submitted!");
-                document.getElementById("create-a-post-popup").style.display = "none";
-            } else {
-                createPostForm.reportValidity();
-                return false;
-            }
-        }
-
-        function likePost(postId) {
-            // Use Axios to send a POST request to the server
-            axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
-                .then(function (response) {
-                    // Update the like count on the client side
-                    const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-                    likeButton.innerHTML = `Likes (${response.data.likes})`;
-                })
-                .catch(function (error) {
-                    console.error('Error liking post:', error);
-                });
-        }
-
-        function deletePost(postId){
-            confirmation = confirm("Are you sure you want to delete this post?")
-            if (confirmation){
-                // Use Axios to send a POST request to the server
-                axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
-                    .then(function (response) {
-                        window.location.reload();
-                    })
-                    .catch(function (error) {
-                        console.error('Error deleting post:', error);
-                    });
-            }
-        }
-
-        // function commentPost(){
-        //     document.getElementById("comment-on-post-popup").style.display = "block";
-        // }
-
-        // function submitComment(postId) {
-        //     event.preventDefault();  // Prevent the default form submission behavior
-
-        //     const commentDescription = document.getElementById("comment_description").value;
-
-        //     // Create an object with form data
-        //     const formData = {
-        //         postId: postId,
-        //         comment_description: commentDescription,
-        //     };
-
-        //     // Use Axios to send a POST request to the server with application/json content type
-        //     axios.post('/comment-post', formData, {
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //     })
-        //     .then(function (response) {
-        //         // Handle the response if needed
-        //     })
-        //     .catch(function (error) {
-        //         console.error('Error commenting on post:', error);
-        //     });
-
-        //     document.getElementById("comment-on-post-popup").style.display = "none";
-        // }
-
-        // function editPost(postId) {
-        //     document.getElementById('edit-post-id').value = postId;
-        //     document.getElementById("edit-post-popup").style.display = "block";
-        // }
-
-        // function submitEdit() {
-        //     var editPostForm = document.getElementById("edit-post-form");
-        //     if (editPostForm.checkValidity()) {
-        //         alert("Post edited!");
-        //         document.getElementById("edit-post-popup").style.display = "none";
-        //     } else {
-        //         editPostForm.reportValidity();
-        //         return false;
-        //     }
-        // }
-    </script>
+    <script src="/assets/forumJS"></script>
 {% endblock %}
 
 {% block body %}
     <div class="content">
         <div class="list-of-all-filter-buttons-container">
             <ul class="list-of-all-filter-buttons">
-                <li class="filter-buttons">All</li>
-                <li class="filter-buttons">#Attractions</li>
-                <li class="filter-buttons">#Island Hopping</li>
-                <li class="filter-buttons">#Food</li>
+                <li class="filter-buttons" onclick="filterPosts('All')">All</li>
+                <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
+                <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
+                <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
             </ul>
         </div>
         <div class="create-a-post-container">
@@ -145,22 +26,34 @@
         </div>
         <div class="post-section-container">
             {% for post_username, post_data in postsInfoJson.items() %}
-                <div class="individual-posts" data-post-id="{{ post_data.postDateTimeId }}">
+            <div id="individual-posts" data-post-id="{{ post_data.postDateTimeId }}" class="{{ post_data.tag }}">
                     <div class="post-content">
-                        <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                        <!-- <button class="edit-button" onclick="editPost('{{ post_id }}')">Edit</button> -->
+                        <div class="nameAndTagHeader">
+                            <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                            {% if post_data.tag != "" %}
+                                <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                            {% endif %}
+                        </div>
                         <p class="post-description">{{ post_data.post_description }}</p>
-                        <!-- <h5 id="comments-header">Comments: </h5><br>
-                        <ol>
-                            <li><p class="post-comments">{{ post_data.post_comments }}</p></li>
-                        </ol> -->
+                        {% if post_data.comments != {} %}
+                            <h5 id="comments-header">Comments: </h5><br>
+                            {% for comment_id, comment_text in post_data.comments.items() %}
+                                <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                    <li id="comment">{{ comment_text }}</li>
+                                    <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTimeId }}', '{{ comment_id }}')">Delete comment</button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
-                    <div class="post-reaction-buttons-container">
-                        <ul class="list-of-reaction-buttons">
-                            <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
-                            <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
-                            <!-- <li class="reaction-buttons" onclick='commentPost()'>Comment</li> -->
-                        </ul>
+                    <div class="lower-row-buttons-container">
+                        <div class="post-reaction-buttons-container">
+                            <ul class="list-of-reaction-buttons">
+                                <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTimeId }}")'>Likes ({{ post_data.likes }})</li>
+                                <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTimeId }}")'>Delete post</li>
+                                <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTimeId }}")'>Comment</li>
+                            </ul>
+                        </div>
+                        <button id="edit-button" onclick="editPost('{{ post_data.postDateTimeId }}')">Edit post</button>
                     </div>
                 </div>
             {% endfor %}
@@ -171,46 +64,47 @@
                     <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Create A Post!</h2>
                     <textarea name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required="required"></textarea><br>
-                    <textarea name="post_title" id="post-title" rows="1" cols="120" placeholder="Title: " required="required"></textarea><br>
+                    <textarea name="post_title" id="post-title" rows="1" cols="100" placeholder="Title: " required="required"></textarea><br>
                     <textarea name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"></textarea><br>
-                    <p>Suggested tags: </p>
+                    <input type="hidden" name="post_tag" id="post-tag" value="">
+                    <p>Suggested tags: (Optional)</p>
                     <div id="tags-button-container">
-                        <button id="tags-button">#Scenery</button>
-                        <button id="tags-button">#Food</button>
-                        <button id="tags-button">#Island Hopping</button>
+                        <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'nature-tag-button')">#Scenery</button>
+                        <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'nature-tag-button')">#Food</button>
+                        <button id="nature-tag-button" class="tags-button" onclick="selectTag('Nature', event, 'nature-tag-button', 'scenery-tag-button', 'food-tag-button')">#Nature</button>
                     </div>
                     <button type="submit" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
                 </form>
             </div>
         </div>
-        <!-- <div id="comment-on-post-popup">
+        <div id="comment-on-post-popup">
             <div id="popup-content">
-                <form id="comment-post-form" method="post" action="/comment-post">
-                    <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <form id="comment-post-form" method="post" action="{{ url_for('forum.comment_on_post') }}">
+                    <button id="close-popup-button" onclick="return closeCommentPopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Add your comment!</h2>
                     <textarea name="comment_description" id="comment_description" rows="8" cols="100" placeholder="Write your comment here" required="required"></textarea><br>
-                    <button type="submit" name="commentOnPost" id="comment-button" onclick='submitComment(event)'>Add comment!</button>
+                    <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
                 </form>
             </div>
-        </div> -->
-        <!-- <div id="edit-post-popup">
+        </div>
+        <div id="edit-post-popup">
             <div id="popup-content">
-                <form id="edit-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
+                <form id="edit-post-form" method="post" action="{{ url_for('forum.edit_post') }}">
                     <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
                     <h2 id="popup-header">Edit post</h2>
-                    <textarea name="edit_user_names" id="user_names" rows="1" cols="80" required="required" placeholder="New name(s): "></textarea><br>
-                    <textarea name="edit_post_title" id="post-title" rows="1" cols="120" required="required" placeholder="New title: "></textarea><br>
-                    <textarea name="edit_post_description" id="post-description" rows="8" cols="100" required="required" placeholder="New description: "></textarea><br>
-                    <input type="hidden" name="edit_post_id" id="edit-post-id" value="">
+                    <textarea name="edit_user_names" id="edit_user_names" rows="1" cols="80" required="required" placeholder="Enter new name(s): "></textarea><br>
+                    <textarea name="edit_post_title" id="edit-post-title" rows="1" cols="100" required="required" placeholder="Enter new title: "></textarea><br>
+                    <textarea name="edit_post_description" id="edit-post-description" rows="8" cols="100" required="required" placeholder="Enter new description: "></textarea><br>
+                    <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
                     <p>Suggested tags: </p>
                     <div id="tags-button-container">
-                        <button id="tags-button">#Scenery</button>
-                        <button id="tags-button">#Food</button>
-                        <button id="tags-button">#Island Hopping</button>
+                        <button id="edit-scenery-tag-button" class="tags-button" onclick="editSelectTag('Scenery', event, 'edit-scenery-tag-button', 'edit-food-tag-button', 'edit-nature-tag-button')">#Scenery</button>
+                        <button id="edit-food-tag-button" class="tags-button" onclick="editSelectTag('Food', event, 'edit-food-tag-button', 'edit-scenery-tag-button', 'edit-nature-tag-button')">#Food</button>
+                        <button id="edit-nature-tag-button" class="tags-button" onclick="editSelectTag('Nature', event, 'edit-nature-tag-button', 'edit-scenery-tag-button', 'edit-food-tag-button')">#Nature</button>
                     </div>
                     <button type="submit" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
                 </form>
             </div>
-        </div> -->
+        </div>
     </div>
 {% endblock %}

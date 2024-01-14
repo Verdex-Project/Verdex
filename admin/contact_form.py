@@ -1,7 +1,6 @@
 from flask import  render_template, request, redirect, url_for, Blueprint
-from models import Universal
-import uuid, os, json
-import datetime
+from main import Universal
+import uuid, os, json, datetime
 contactBP = Blueprint("faq", __name__)
 
 @contactBP.route('/faq')
