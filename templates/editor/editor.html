@@ -39,13 +39,14 @@
 
         <div id="activityLogBox" ondrop="drop(event)" ondragover="allowDrop(event)"> <!--ACTIVITY LOG--> <!--scrollable-->
             <!--get current day from dayCount-->
-            {% for activityInfo in activitiesInfo %}
+            {% for activityId in activityCountList %}
                 {% if not loop.last %}
                     <div id="activityBox">
                         <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                             <div id="timeStart">
                                 <div>
-                                    <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
+                                    <span hidden id="activityId">{{ activityId }}</span>
+                                    <h3 id="startTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["startTime"] }}</h3>
                                 </div>
                                 <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
@@ -56,7 +57,7 @@
                             <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                             <div id="timeEnd">
                                 <div>
-                                    <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
+                                    <h3 id="endTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["endTime"] }}</h3>
                                 </div>
                                 <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
@@ -67,11 +68,12 @@
                             </div>  
                         </div>
 
-                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div>
+                        <div id="activityPicture"><img src="{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">
@@ -117,7 +119,8 @@
                         <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                             <div id="timeStart">
                                 <div>
-                                    <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
+                                    <span hidden id="activityId">{{ activityId }}</span>
+                                    <h3 id="startTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["startTime"] }}</h3>
                                 </div>
                                 <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
@@ -129,7 +132,7 @@
                             <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                             <div id="timeEnd">
                                 <div>
-                                    <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
+                                    <h3 id="endTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["endTime"] }}</h3>
                                 </div>
                                 <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
@@ -140,11 +143,12 @@
                             </div>
                         </div>
 
-                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div> <!--Image Box-->
+                        <div id="activityPicture"><img src="{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div> <!--Image Box-->
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">

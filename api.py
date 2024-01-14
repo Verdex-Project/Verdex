@@ -303,3 +303,18 @@ def deleteComment():
         DI.save()
     
     return "SUCCESS: Comment was successfully removed from the post in the system."
+
+@apiBP.route("/api/newActivityLocationName", methods = ['POST'])
+def newActivityLocationName():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    day = request.json["day"]
+    activityId = request.json["activityId"]
+    
+    DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = request.json["newActivityName"]
+    DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = request.json["newActivityLocation"]
+    DI.save()
+
+    return "SUCCESS: New activity location and name updated."

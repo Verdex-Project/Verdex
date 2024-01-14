@@ -25,6 +25,10 @@ def editor(itineraryID, day):
     for key in DI.data["itineraries"]["days"]:
         dayCountList.append(str(key))
 
+    activityCountList = []
+    for key2 in DI.data["itineraries"]["days"][day]["activities"]:
+        activityCountList.append(str(key2))
+
     global itinerary_data 
 
     itinerary_data = itinerary_data if 'itinerary_data' in globals() else {}
@@ -103,7 +107,9 @@ def editor(itineraryID, day):
         day = day, 
         itinerary_data = DI.data, 
         activitiesInfo = activitiesInfo,
-        dayCountList = dayCountList)
+        dayCountList = dayCountList,
+        activityCountList = activityCountList
+        )
 
     # if request.method == 'GET':
     #     day_to_delete = request.args.get("deleteDayButton")
