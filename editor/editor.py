@@ -20,6 +20,9 @@ def editor(itineraryID, day):
         endTime = activity.get('endTime')
         activitiesInfo.append({"name": name, "location": location, "startTime": startTime, "endTime": endTime})
 
+    dayCountList = []
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
 
     global itinerary_data 
 
@@ -93,7 +96,13 @@ def editor(itineraryID, day):
             with open('templates/editor/itinerary.json', 'w') as file:
                 json.dump(itinerary_data, file, indent=4)
 
-    return render_template("editor/editor.html", itineraryID = itineraryID, day = day, itinerary_data=DI.data, activitiesInfo=activitiesInfo)
+    return render_template(
+        "editor/editor.html", 
+        itineraryID = itineraryID, 
+        day = day, 
+        itinerary_data = DI.data, 
+        activitiesInfo = activitiesInfo,
+        dayCountList = dayCountList)
 
     # if request.method == 'GET':
     #     day_to_delete = request.args.get("deleteDayButton")

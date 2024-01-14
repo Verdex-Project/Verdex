@@ -18,9 +18,17 @@
 
         <div id="editorPanel-sub-header"> <!--SUB HEADER-->
             <div id="sub-headder-box-left">
-                <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong> </button></div>
+                {% if day != dayCountList[0] %}
+                <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong></button></div>
+                {% else %}
+                <div id="changeDayArrowLeft-no"><button><strong><</strong></button></div>
+                {% endif %}
                 <div id="dayCount"><h4>Day {{ day }}</h4></div>
+                {% if day != dayCountList[-1] %}
                 <div id="changeDayArrowRight" onclick="nextDay()"><button><strong>></strong></button></div>
+                {% else %}
+                <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
+                {% endif %}
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
