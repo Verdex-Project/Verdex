@@ -12,6 +12,11 @@ function drop(event) {
     event.target.appendChild(document.getElementById(fetchData));
 }
 
+function capitalizeEachWord(str) {
+    return str.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+}
+
+
 function nextDay(){
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
@@ -113,14 +118,32 @@ function editActivity(activityId, location, name, startTime, endTime) {
             let currentActivityId = activityId
             let currentActivityLocation = location;
             let currentActivityName = name;
-            let newActivityLocation = prompt("Enter a new activity Location (Exp. Singapore):\n\nLeave here blank if you don't want to change ");
-            if (newActivityLocation == "") {
-                newActivityLocation = currentActivityLocation
-            };
-            let newActivityName = prompt("Enter a new activity name (Exp. Marina Bay Sands):\n\nLeave here blank if you don't want to change ");
-            if (newActivityName == "") {
-                newActivityName = currentActivityName
-            };
+            let newActivityLocation = ""
+            while (newActivityLocation == "") {
+            newActivityLocation = prompt("Enter a new activity Location (Exp. Singapore):\nNOTE: LENGTH IS NOT MORE THAN 10 WORDS\n\nLeave here blank if you don't want to change ");
+                if (newActivityLocation == "") {
+                    newActivityLocation = currentActivityLocation;
+                } else if (newActivityLocation.length >10){
+                    alert("Invalid input.\n\nInput LESS THAN 10 WORDS are accepted only");
+                    newActivityLocation = "";
+                } else {
+                    newActivityLocation = capitalizeEachWord(newActivityLocation);
+                    break;
+                }
+            }
+            let newActivityName = ""
+            while (newActivityName == "") {
+            newActivityName = prompt("Enter a new activity name (Exp. Marina Bay Sands):\nNOTE: LENGTH IS NOT MORE THAN 25 WORDS\n\nLeave here blank if you don't want to change ");
+                if (newActivityName == "") {
+                    newActivityName = currentActivityName
+                } else if (newActivityName.length >25){
+                    alert("Invalid input.\n\nInput LESS THAN 25 WORDS are accepted only");
+                    newActivityName = "";
+                } else {
+                    newActivityName = capitalizeEachWord(newActivityName);
+                    break;
+                }
+            }
             axios({
                 method: 'post',
                 url: `/api/newActivityLocationName`,
@@ -174,8 +197,8 @@ function editActivity(activityId, location, name, startTime, endTime) {
                 if (newActivityStartTime == "") {
                     newActivityStartTime = currentActivityStartTime;
                     break;
-                } else if (isNaN(newActivityStartTime)) {
-                    alert("Invalid input. Please enter a valid number for the start time.");
+                } else if (isNaN(newActivityStartTime) || newActivityStartTime.length !== 4) {
+                    alert("Invalid input.\n\nPlease enter a valid number for the start time.\n\nOR\n\nPlease enter a 4 DIGIT number to represent the time");
                     newActivityStartTime = "";
                 } else {
                     break;
@@ -187,8 +210,8 @@ function editActivity(activityId, location, name, startTime, endTime) {
                 if (newActivityEndTime == "") {
                     newActivityEndTime = currentActivityEndTime
                     break;
-                } else if (isNaN(newActivityEndTime)) {
-                    alert("Invalid input. Please enter a valid number for the end time");
+                } else if (isNaN(newActivityEndTime) || newActivityStartTime.length !== 4) {
+                    alert("Invalid input.\n\nPlease enter a valid number for the start time.\n\nOR\n\nPlease enter a 4 DIGIT number to represent the time");
                     newActivityEndTime = "";
                 } else {
                     break;
