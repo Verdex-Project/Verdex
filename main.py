@@ -158,8 +158,10 @@ if __name__ == '__main__':
     ## Admin routes
     from admin.report import reportBP
     app.register_blueprint(reportBP)
-    from contact_form import contactBP
+
+    from admin.contact_form import contactBP
     app.register_blueprint(contactBP)
+    
     ## Forum routes
     from forum.forum import forumBP
     app.register_blueprint(forumBP)

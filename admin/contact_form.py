@@ -31,11 +31,11 @@ def faq():
         "answer": "Absolutely! VerdexTalks facilitates connections between users who share similar interests in sustainable travel. Users can organize meetups or join group activities to explore eco-friendly attractions together."
       }
     ]
-    return render_template('Misc/faq.html', faq_data=faq_data)
+    return render_template('misc/faq.html', faq_data=faq_data)
 
 @contactBP.route('/form', endpoint='contact_form')
 def contact_form():
-    return render_template('Misc/contact.html')
+    return render_template('misc/contact.html')
 
 @contactBP.route('/success', methods=['POST'], endpoint='contact_success')
 def success():
@@ -61,4 +61,4 @@ def success():
         # Write the updated data back to the JSON file
         with open(json_file_path, 'w') as file:
             json.dump(existing_data, file)
-        return render_template('Misc/success.html')
+        return render_template('misc/success.html')
