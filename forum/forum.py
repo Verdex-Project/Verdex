@@ -14,20 +14,20 @@ def verdextalks():
             user_names = request.form.get('user_names')
             post_tag = request.form.get('post_tag')
 
-            postDateTimeId = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+            postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
 
             new_post = {
                 "user_names": user_names,
                 "post_title": post_title,
                 "post_description": post_description,
                 "likes": "0",
-                "postDateTimeId": postDateTimeId,
+                "postDateTime": postDateTime,
                 "liked_status": False,
                 "tag": post_tag,
                 "comments": {}
             }
 
-            DI.data["forum"][postDateTimeId] = new_post
+            DI.data["forum"][postDateTime] = new_post
 
             DI.save() 
             return redirect(url_for('forum.verdextalks'))
@@ -39,9 +39,8 @@ def verdextalks():
 def comment_on_post():
     try:
         if request.is_json:
-            json_data = request.get_json()
-            post_id = json_data.get('postId')
-            comment_description = json_data.get('comment_description')
+            post_id = request.json['postId']
+            comment_description = request.json['comment_description']
             if post_id and comment_description:
                 if post_id in DI.data["forum"]:
                     if 'comments' not in DI.data["forum"][post_id]:
@@ -60,11 +59,11 @@ def comment_on_post():
 def edit_post():
     try:
         if request.is_json:
-            post_id = request.get_json().get('postId')
-            edit_user_names = request.get_json().get('edit_user_names')
-            edit_post_title = request.get_json().get('edit_post_title')
-            edit_post_description = request.get_json().get('edit_post_description')
-            edit_post_tag = request.get_json().get('edit_post_tag')
+            post_id = request.json['postId']
+            edit_user_names = request.json['edit_user_names']
+            edit_post_title = request.json['edit_post_title']
+            edit_post_description = request.json['edit_post_description']
+            edit_post_tag = request.json['edit_post_tag']
 
             if post_id and edit_user_names and edit_post_title and edit_post_description:
                 if post_id in DI.data["forum"]:

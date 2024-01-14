@@ -104,7 +104,7 @@ body {
 .recent-itineraries-buttons:hover {
     border: 3px solid #66BB69;
     transition: 0.2s ease;
-    color: #c3c3c3;
+    color: #66BB69;
     background-color: white;
 }
 
