@@ -331,4 +331,15 @@ def deleteActivity():
     DI.data["itineraries"]["days"][day]["activities"].pop(activityId)
     DI.save()
     
-    return "SUCCESS: Post was successfully removed from the system."
+    return "SUCCESS: Activity is deleted."
+
+@apiBP.route('/api/deleteItinerary', methods=['POST'])
+def deleteItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    del DI.data["itineraries"]
+    DI.save()
+    
+    return "SUCCESS: Itinerarty is deleted."

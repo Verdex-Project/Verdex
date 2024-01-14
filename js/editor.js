@@ -228,6 +228,55 @@ function deleteActivity(activityId) {
     }
 }
 
+function deleteItinerary() {
+    let deleteItineraryStatus = false;
+    while (deleteItineraryStatus == false ){
+    deleteItineraryStatus = confirm("Are you sure you want to delete your itinerary?")
+        if (deleteItineraryStatus == true) {
+            axios({
+                method: 'post',
+                url: `/api/deleteItinerary`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'VerdexAPIKey': '\{{ API_KEY }}'
+                },
+                data: {
+                }
+            })
+            .then(response => {
+                console.log("Response:", response);  // Add this line to print the response
+                if (response.status == 200) {
+                    if (!response.data.startsWith("ERROR:")) {
+                        if (response.data.startsWith("SUCCESS:")) {
+                            alert("Your Itinerary is deleted successfully!");
+                            window.location.reload()
+                            window.location.href='/';
+                        } else {
+                            alert("An unknown response was recieved from Verdex Servers.")
+                            console.log("Unknown response received: " + response.data)
+                        }
+                    } else {
+                        alert("An error occured while deleting your itinerary. Please try again later.")
+                        console.log("Error occured deleting your itinerary: " + response.data)
+                    }
+                } else {
+                    alert("An error occured while connecting to Verdex Servers. Please try again later.")
+                    console.log("Non-200 responnse status code recieved from Verdex Servers.")
+                }
+            })
+            .catch(err => {
+                console.log("An error occured in connecting to Verdex Servers: " + err)
+                alert("An error occured while deleting your itinerary. Please try again later.")
+            })
+            break;
+        }
+        else {
+            break;
+        }
+    }
+}
+
+
 // // Get the button element by its ID
 // const myButton = document.getElementById('myButton');
 
