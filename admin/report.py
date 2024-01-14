@@ -1,9 +1,8 @@
 # Blueprint for report generation
 import os, datetime
-from main import Logger
+from main import Logger, Universal
 from flask import Blueprint, render_template, json, request, send_file, flash, redirect, url_for
 from analytics import Analytics
-from models import Universal
 
 reportBP = Blueprint("report", __name__)
 
