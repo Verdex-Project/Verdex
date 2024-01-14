@@ -183,7 +183,7 @@ function deleteActivity(activityId) {
     deleteStatus = false
     while (deleteStatus == false ){
     deleteStatus = confirm("Are you sure you want to delete this activity?")
-        if (deleteStatus = true) {
+        if (deleteStatus == true) {
             axios({
                 method: 'post',
                 url: `/api/deleteActivity`,
