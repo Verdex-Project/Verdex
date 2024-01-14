@@ -1,4 +1,4 @@
-import os, sys, json, datetime, copy, pyrebase, uuid
+import os, sys, json, datetime, copy, pyrebase, uuid, re
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
@@ -474,7 +474,7 @@ class FireAuth:
         '''
 
         if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
-            return "ERROR: Delete account requires a Firebase connection granted by explicit permission."
+            return "ERROR: Delete account requires a Firebase Admin connection granted by explicit permission."
         
         try:
             fireAuthUserID = FireAuth.accountInfo(idToken)["uid"]
@@ -505,8 +505,8 @@ class FireAuth:
         NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
         '''
 
-        if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
-            return "ERROR: List users requires a Firebase connection granted by explicit permission."
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: List users requires a Firebase Admin connection granted by explicit permission."
         
         users = []
         try:
@@ -515,6 +515,36 @@ class FireAuth:
             return users
         except Exception as e:
             return "ERROR: Failed to list users; error response: {}".format(e)
+    
+    @staticmethod
+    def changeUserEmail(fireAuthID, newEmail):
+        '''Returns True upon a successful email update.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.changeUserEmail(fireAuthID="sampleFirebaseUserID", newEmail="newEmail@domain.com")
+        if response != True:
+            print(response)
+        else:
+            print("Changed email!")
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", newEmail) == None:
+            return "ERROR: Invalid email address."
+        
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Change user email requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, email=newEmail)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to change user email; error response: {}".format(e)
         
     @staticmethod
     def generateAccountsObject(fireAuthUsers, existingAccounts, strategy="add-only"):
