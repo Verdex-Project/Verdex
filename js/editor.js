@@ -257,7 +257,7 @@ function editActivity(activityId, location, name, startTime, endTime) {
             })   
             break;            
         }
-        if (value == "3") {
+        if (value == "3" || value == null) {
             break;
         }
         else {

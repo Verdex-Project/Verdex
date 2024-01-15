@@ -130,8 +130,15 @@
 }
 
 #activityPicture img{
+    width: 58% ;
+    height: auto;
+    transition: 0.5s ease-out;
+}
+
+#activityPicture img:hover{
     width: 60% ;
     height: auto;
+    transition: 0.5s;
 }
 
 #activityPicture img {
@@ -286,7 +293,7 @@
 }
 
 #deleteItineraryButton {
-    width: 200px;
+    width: 190px;
     padding-top: 8px;
     border: 2px solid red;
     border-radius: 10px;
@@ -297,7 +304,7 @@
 }
 
 #saveItineraryButton {
-    width: 145px;
+    width: 135px;
     padding-top: 8px;
     border: 2px solid green;
     border-radius: 10px;
@@ -308,12 +315,14 @@
 }
 
 #saveItineraryButton:hover{
+    width: 145px;
     background-color: green;
     color:white;
     transition: 0.5s;
 }
 
 #deleteItineraryButton:hover{
+    width: 200px;
     background-color: red;
     color: white;
     transition: 0.5s;
