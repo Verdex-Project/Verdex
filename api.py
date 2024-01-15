@@ -223,8 +223,9 @@ def deleteIdentity():
 
 @apiBP.route('/api/likePost', methods=['POST'])
 def like_post():
-    # if checkHeaders(request.headers) != True:
-    #     return checkHeaders(request.headers)
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
     
     if 'postId' not in request.json:
         flash("ERROR: The post ID is not found.")
@@ -240,8 +241,9 @@ def like_post():
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
-    # if checkHeaders(request.headers) != True:
-    #     return checkHeaders(request.headers)
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
     
     if 'postId' not in request.json:
         flash("ERROR: The post ID is not found.")
@@ -257,8 +259,9 @@ def delete_post():
 
 @apiBP.route('/api/deleteComment', methods=['POST'])
 def deleteComment():
-    # if checkHeaders(request.headers) != True:
-    #     return checkHeaders(request.headers)
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
 
     if 'postId' not in request.json:
         flash("ERROR: The post ID is not found.")

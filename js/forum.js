@@ -66,7 +66,7 @@ function submitPost() {
 
 function likePost(postId) {
     // Use Axios to send a POST request to the server
-    axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
+    axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             // Update the like count on the client side
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
@@ -80,9 +80,7 @@ function likePost(postId) {
 function deletePost(postId){
     confirmation = confirm("Are you sure you want to delete this post?")
     if (confirmation){
-        axios.post('/api/deletePost', {
-            postId: postId,
-        })
+        axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
             console.log(response.data);
             window.location.reload();
@@ -227,10 +225,7 @@ function deleteComment(postId, commentId){
     confirmation = confirm("Are you sure you want to delete this comment?")
     if (confirmation){
         // Use Axios to send a POST request to the server
-        axios.post('/api/deleteComment', {
-            postId: postId,
-            commentId: commentId
-        })
+        axios.post('/api/deleteComment', { postId: postId, commentId: commentId}, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
             console.log(response.data);
             window.location.reload();
