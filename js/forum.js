@@ -81,6 +81,11 @@ function submitPost() {
         }
     })
     .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("API KEY ERROR. Please try again.")
+            return;
+        }
         if (response.data.startsWith("SUCCESS:")){
             console.log(response.data)
             window.location.reload();
@@ -95,7 +100,11 @@ function likePost(postId) {
     // Use Axios to send a POST request to the server
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
-            // Update the like count on the client side
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("API KEY ERROR. Please try again.")
+                return;
+            }
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
             likeButton.innerHTML = `Likes (${response.data.likes})`;
         })
@@ -109,6 +118,11 @@ function deletePost(postId){
     if (confirmation){
         axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("API KEY ERROR. Please try again.")
+                return;
+            }
             console.log(response.data);
             window.location.reload();
         })
@@ -145,6 +159,11 @@ function submitComment() {
         }
     })
     .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("API KEY ERROR. Please try again.")
+            return;
+        }
         if (response.data.startsWith("SUCCESS:")){
             console.log(response.data)
             window.location.reload();
@@ -198,6 +217,11 @@ function submitEdit() {
         }
     })
     .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("API KEY ERROR. Please try again.")
+            return;
+        }
         if (response.data.startsWith("SUCCESS:")){
             console.log(response.data)
             window.location.reload();
@@ -270,6 +294,11 @@ function deleteComment(postId, commentId){
         // Use Axios to send a POST request to the server
         axios.post('/api/deleteComment', { postId: postId, commentId: commentId}, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("API KEY ERROR. Please try again.")
+                return;
+            }
             console.log(response.data);
             window.location.reload();
         })
