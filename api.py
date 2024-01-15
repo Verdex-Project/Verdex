@@ -92,10 +92,10 @@ def createAccount():
         "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
-        "password": request.json["password"],
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
-        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "disabled": False
     }
     DI.save()
 

@@ -676,7 +676,7 @@ class FireAuth:
                         "fireAuthID": fireUser.uid,
                         "username": "Not Set",
                         "email": fireUser.email,
-                        "password": "Not Set",
+                        "disabled": fireUser.disabled
                     }
         
         if strategy == 'overwrite' or strategy == 'remove-only':
