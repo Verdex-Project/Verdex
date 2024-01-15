@@ -9,8 +9,8 @@
 {% block body %}
     <div class="content">
         <div class="sidebar">
+            <h3 class="filter-posts-header">Filter posts:</h3>
             <div class="list-of-all-filter-buttons-container">
-                
                 <ul class="list-of-all-filter-buttons">
                     <li class="filter-buttons" onclick="filterPosts('All')">All</li>
                     <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
@@ -30,6 +30,7 @@
                 </div>
             </div>
             <div class="create-a-post-container">
+                <h3 class="recent-itineraries-header">Recent itineraries:</h3><br>
                 <div id="recent-itineraries-container">
                     <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">
                         <img src="static/Images/Sentosa darkened.jpg" alt="Sentosa">

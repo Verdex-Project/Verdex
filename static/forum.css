@@ -23,15 +23,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: 140%;
+    box-sizing: border-box;
 }
 
 .list-of-all-filter-buttons-container {
     display: flex;
     justify-content: center;
     margin: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
+    margin-top: 0;
 }
 
 .list-of-all-filter-buttons {
@@ -60,7 +60,7 @@ body {
     background-color: whitesmoke;
     transition: 0.2s ease;
     color: #66BB69;
-    transform: translateY(-5px);
+    transform: translateX(5px);
 }
 
 .create-a-post-container {
@@ -482,5 +482,19 @@ body {
 }
 
 .sidebar {
-    margin-top: 90px;
+    margin-top: 105px;
+    margin-left: 20px;
+    width: 30%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    height: 30%;
+}
+
+.filter-posts-header, .recent-itineraries-header {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-top:20px;
+    margin-bottom: 0;
+    color: #427b44;
 }
