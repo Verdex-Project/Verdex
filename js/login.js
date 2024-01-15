@@ -12,12 +12,19 @@
 //     });
 // });
 
+document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            signIn();
+        }
+    });
+});
 
 function signIn() {
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
     const statusLabel = document.getElementById("statusLabel")
-    // const signInButton = document.getElementById("signInButton");
 
     statusLabel.style.visibility = 'visible'
 

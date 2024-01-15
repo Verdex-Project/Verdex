@@ -18,6 +18,15 @@
 //     });
 // });
 
+document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            signUp();
+        }
+    });
+});
+
 function signUp() {
     const usernameInput = document.getElementById("usernameInput");
     const emailInput = document.getElementById("emailInput");
