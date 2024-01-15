@@ -278,3 +278,45 @@ def deleteComment():
         DI.save()
     
     return "SUCCESS: Comment was successfully removed from the post in the system."
+
+@apiBP.route('/api/submitPost', methods=['POST'])
+def submitPost():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if 'user_names' not in request.json:
+        flash("ERROR: The user names are not found.")
+        return redirect(url_for('error'))
+    if 'post_title' not in request.json:
+        flash("ERROR: The post title is not found.")
+        return redirect(url_for('error'))
+    if 'post_description' not in request.json:
+        flash("ERROR: The post description is not found.")
+        return redirect(url_for('error'))
+    if 'post_tag' not in request.json:
+        flash("ERROR: The post tag is not found.")
+        return redirect(url_for('error'))
+    
+    user_names = request.json['user_names']
+    post_title = request.json['post_title']
+    post_description = request.json['post_description']
+    post_tag = request.json['post_tag']
+
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+    new_post = {
+        "user_names": user_names,
+        "post_title": post_title,
+        "post_description": post_description,
+        "likes": "0",
+        "postDateTime": postDateTime,
+        "liked_status": False,
+        "tag": post_tag,
+        "comments": {}
+    }
+
+    DI.data["forum"][postDateTime] = new_post
+    DI.save()
+    return "SUCCESS: Post was successfully submitted to the system."
+
+    

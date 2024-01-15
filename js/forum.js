@@ -53,15 +53,47 @@ function closeEditPopup() {
 let selectedTag = ""
 function submitPost() {
     document.getElementById("post-tag").value = selectedTag;
-    var createPostForm = document.getElementById("create-post-form");
+    const user_names = document.getElementById("user_names");
+    const post_title = document.getElementById("post-title");
+    const post_description = document.getElementById("post-description");
+    const post_tag = document.getElementById("post-tag");
 
-    if (createPostForm.checkValidity()) {
-        alert("Post submitted!");
-        document.getElementById("create-a-post-popup").style.display = "none";
-    } else {
-        createPostForm.reportValidity();
-        return false;
+    if (user_names.value.trim() === ""){
+        alert("Please enter valid name(s)")
+        return;
     }
+    if (post_title.value.trim() === ""){
+        alert("Please enter a valid post title")
+        return;
+    }
+    if (post_description.value.trim() === ""){
+        alert("Please enter a valid post desription")
+        return;
+    }
+
+    axios({
+        method: 'post',
+        url: `/api/submitPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "user_names": user_names.value,
+            "post_title": post_title.value,
+            "post_description": post_description.value,
+            "post_tag": post_tag.value
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("SUCCESS:")){
+            console.log(response.data)
+            window.location.reload();
+        }
+    })
+    .catch(function (error) {
+        console.error('Error creating post:', error);
+    });
 }
 
 function likePost(postId) {

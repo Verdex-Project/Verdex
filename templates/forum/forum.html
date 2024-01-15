@@ -82,21 +82,19 @@
         </div>
         <div id="create-a-post-popup">
             <div id="popup-content">
-                <form id="create-post-form" method="post" action="{{ url_for('forum.verdextalks') }}">
-                    <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
-                    <h2 id="popup-header">Create A Post!</h2>
-                    <textarea name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required="required"></textarea><br>
-                    <textarea name="post_title" id="post-title" rows="1" cols="100" placeholder="Title: " required="required"></textarea><br>
-                    <textarea name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"></textarea><br>
-                    <input type="hidden" name="post_tag" id="post-tag" value="">
-                    <p>Suggested tags: (Optional)</p>
-                    <div id="tags-button-container">
-                        <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'nature-tag-button')">#Scenery</button>
-                        <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'nature-tag-button')">#Food</button>
-                        <button id="nature-tag-button" class="tags-button" onclick="selectTag('Nature', event, 'nature-tag-button', 'scenery-tag-button', 'food-tag-button')">#Nature</button>
-                    </div>
-                    <button type="submit" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
-                </form>
+                <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header">Create A Post!</h2>
+                <input type="text" name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required="required"><br>
+                <input type="text" name="post_title" id="post-title" rows="1" cols="100" placeholder="Title: " required="required"><br>
+                <input type="text" name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required="required"><br>
+                <input type="hidden" name="post_tag" id="post-tag" value="">
+                <p>Suggested tags: (Optional)</p>
+                <div id="tags-button-container">
+                    <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'nature-tag-button')">#Scenery</button>
+                    <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'nature-tag-button')">#Food</button>
+                    <button id="nature-tag-button" class="tags-button" onclick="selectTag('Nature', event, 'nature-tag-button', 'scenery-tag-button', 'food-tag-button')">#Nature</button>
+                </div>
+                <button type="submit" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
             </div>
         </div>
         <div id="comment-on-post-popup">
