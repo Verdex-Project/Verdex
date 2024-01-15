@@ -171,3 +171,15 @@ function deleteIdentity() {
         alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
     })
 }
+
+// function resendEmail() {
+//     axios({
+//         method: 'post',
+//         url: `/api/deleteIdentity`,
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'VerdexAPIKey': '\{{ API_KEY }}'
+//         },
+//         data: {}
+//     })
+// }

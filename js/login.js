@@ -53,7 +53,8 @@ function signIn() {
                             location.href = `${origin}/account/info`;
                         }, 2000)
                     } else {
-                        alert("An unknown response was recieved from Verdex Servers.")
+                        statusLabel.style.color = "red";
+                        statusLabel.innerText = "An unknown response was recieved from Verdex Servers."
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
@@ -62,20 +63,20 @@ function signIn() {
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                statusLabel.style.visibility = 'hidden'
-                alert("An error occured in logging you in. Please try again or check logs for more information.")
+                statusLabel.style.color = "red";
+                statusLabel.innerText = "An error occured in logging you in. Please try again later."
                 console.log("Error occured in making login request: " + response.data)
             }
         } else {
-            statusLabel.style.visibility = 'hidden'
-            alert("An error occured while connecting to Verdex Servers. Please try again later.")
+            statusLabel.style.color = "red";
+            statusLabel.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
     })
     .catch(err => {
-        statusLabel.style.visibility = 'hidden'
+        statusLabel.style.color = "red";
+        statusLabel.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
     })
 
 }
