@@ -2,7 +2,7 @@ from flask import Blueprint,Flask, render_template, request, redirect, url_for, 
 import json, os, datetime
 adminHomeBP = Blueprint("admin", __name__)
 
-@adminHomeBP.route('/admin')
+@adminHomeBP.route('/admin/dashboard')
 def home():
     return render_template('admin/home.html')
 @adminHomeBP.route('/user_management')

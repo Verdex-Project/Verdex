@@ -1,6 +1,12 @@
+{% extends "baseAdminNav.html" %}
 
+{% block title %}Reports{% endblock %}
+
+{% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+{% endblock %}
 
+{% block body %}
 <div class="wrapper">
     <div class="sidebar">
         <div class="profile">
@@ -37,44 +43,48 @@
         </ul>
     </div>
 </div>
-<!-- <div class="content"> -->
+<div class="content">
     <h2>Welcome Kate Gibson to Verdex Admin Page</h2>
-<div class="report">
-<h2 class="generated-reports-header">Generated Reports</h2>
-        <div class ='button-container'>
-        <form action="{{ url_for('report.generate_report')}}" method = 'post'>
-            <input type="hidden" name="report_id" value="{{ report_id }}">
-            <button class="generate-report-button" type="submit">Generate Report</button>
-        </form>
-        <form action="{{ url_for('report.delete_all_reports')}}">
-            <input type="hidden" name="report_id" value="{{ report_id }}">
-            <button class="delete-all-report-button" type="submit">Delete all Reports</button>
-        </form>
-        <form action="{{ url_for('report.clear_data')}}">
-            <input type="hidden" name="report_id" value="{{ report_id }}">
-            <button class="clear-data-button" type="submit">Clear Data</button>
-        </form>
+    <div class="report">
+        <h2 class="generated-reports-header">Weekly Reports</h2>
+        <p class="explain">Click on the generate report button to generate a report that has collected data from Verdex</p>
+        <p class="explain">Click on the delete all report button to delete all the reports that has been generated</p>
+        <p class="explain">Click on the clear data button to clear all the data that has been collected</p>
+            <div class ='button-container'>
+            <form action="{{ url_for('report.generate_report')}}" method = 'post'>
+                <input type="hidden" name="report_id" value="{{ report_id }}">
+                <button class="generate-report-button" type="submit">Generate Report</button>
+            </form>
+            <form action="{{ url_for('report.delete_all_reports')}}">
+                <input type="hidden" name="report_id" value="{{ report_id }}">
+                <button class="delete-all-report-button" type="submit">Delete all Reports</button>
+            </form>
+            <form action="{{ url_for('report.clear_data')}}">
+                <input type="hidden" name="report_id" value="{{ report_id }}">
+                <button class="clear-data-button" type="submit">Clear Data</button>
+            </form>
+            </div>
+            {% for report_id, report_data in data.items() %}
+            <div class="report-container">
+                <h3>Report #{{ report_id }}</h3>
+                <h4>{{ date }}</h4>
+                <p class="report-data-content">Number of Get Requests: <b>{{ report_data.get_request }}</b></p>
+                <p class="report-data-content">Number of Post Requests: <b>{{ report_data.post_request }}</b></p>
+                <p class="report-data-content">Number of Total Requests: <b>{{ report_data.total_requests}}</b></p>
+                <p class="report-data-content">Number of Contact form questions answered: <b>{{ report_data.question_answered }}</b></p>
+                <p class="report-data-content">Number of Sign ins to the Verdex: <b>{{ report_data.sign_ins }}</b></p>
+                <p class="report-data-content">Number of Sign outs to the Verdex: <b>{{ report_data.sign_outs }}</b></p>
+                <p class="report-data-content">Number of Posts to VerdexTalks: <b>{{ report_data.verdex_talks_posts }}</b></p>
+            <form action="{{ url_for('report.download_report', report_id=report_id) }}" method="post">
+                <input type="hidden" name="report_id" value="{{ report_id }}">
+                <button class="download-report-button" type="submit">Download Report</button>
+            </form>
+            <form action="{{ url_for('report.delete_report', report_id=report_id) }}" method="post">
+                <input type="hidden" name="report_id" value="{{ report_id }}">
+                <button class ="delete-report-button" type="submit">Delete Report</button>
+            </form>
         </div>
-        {% for report_id, report_data in data.items() %}
-        <div class="report-container">
-            <h3>Report #{{ report_id }}</h3>
-            <h4>{{ date }}</h4>
-            <p class="report-data-content">Number of Get Requests: <b>{{ report_data.get_request }}</b></p>
-            <p class="report-data-content">Number of Post Requests: <b>{{ report_data.post_request }}</b></p>
-            <p class="report-data-content">Number of Total Requests: <b>{{ report_data.total_requests}}</b></p>
-            <p class="report-data-content">Number of Contact form questions answered: <b>{{ report_data.question_answered }}</b></p>
-            <p class="report-data-content">Number of Sign ins to the Verdex: <b>{{ report_data.sign_ins }}</b></p>
-            <p class="report-data-content">Number of Sign outs to the Verdex: <b>{{ report_data.sign_outs }}</b></p>
-            <p class="report-data-content">Number of Posts to VerdexTalks: <b>{{ report_data.verdex_talks_posts }}</b></p>
-        </div>
-        <form action="{{ url_for('report.download_report', report_id=report_id) }}" method="post">
-            <input type="hidden" name="report_id" value="{{ report_id }}">
-            <button class="download-report-button" type="submit">Download Report</button>
-        </form>
-        <form action="{{ url_for('report.delete_report', report_id=report_id) }}" method="post">
-            <input type="hidden" name="report_id" value="{{ report_id }}">
-            <button class ="delete-report-button" type="submit">Delete Report</button>
-        </form>
-        {% endfor %}
+            {% endfor %}
     </div>
-<!-- </div> -->
+</div>
+{% endblock %}

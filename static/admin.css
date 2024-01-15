@@ -15,12 +15,9 @@ html, body {
 
 body {
     background: white;
-    display: flex;
 }
 
 .wrapper {
-    display: flex;
-    flex-direction: column;
     height: 100%;
 }
 
@@ -28,15 +25,20 @@ body {
     box-sizing: border-box;
     background: white;
     width: 225px;
-    height: 100%;
-    padding: 20px 0;
+    height: 120%;
+    margin-top: -58px;
+    padding-top: 70px;
     transition: all 0.5s ease;
     border-right: 2px solid black;
+    position: fixed;
+    overflow: hidden;
+    z-index: -1;
 }
 
 .wrapper .sidebar .profile {
     margin-bottom: 30px;
     text-align: center;
+    margin-left:30px;
 }
 
 .wrapper .sidebar .profile img {
@@ -45,25 +47,29 @@ body {
     height: 100px;
     border-radius: 50%;
     margin: 0 auto;
+    align-items: center;
 }
 
 .wrapper .sidebar .profile h3 {
     color: black;
     margin: 10px 0 5px;
+    text-align: center;
 }
 
 .wrapper .sidebar .profile p {
     color: black;
     font-size: 14px;
+    text-align: center;
 }
 
 .wrapper .sidebar ul li a {
     display: block;
     padding-top: 10px;
     padding-bottom: 10px;
-    border-top: 1px solid black;
     color: black;
     font-size: 16px;
+    text-align: center;
+    text-decoration:none;
 }
 
 .wrapper .sidebar ul li a:hover,
@@ -79,15 +85,20 @@ body {
     display: block;
 }
 
-/* Add style for the last item */
-.wrapper .sidebar ul li:last-child a {
-    border-bottom: 1px solid black;
+.content {
+    margin-left:250px;
+    margin-top:-700px;
 }
-.content h2{
-    text-align: center;
+.content h2{  
+    z-index:-1;
 }
 .report{
     margin-top:40px;
+    margin-left:50px;
+}
+.explain{
+    font-size:20px;
+    font-family: 'Open Sans',sans-serif
 }
 .report-container {
     border: 2px solid #333;
@@ -97,6 +108,9 @@ body {
     padding: 40px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left:-30px;
+    justify-content: center;
+    width: 550px;
 }
 
 .generated-reports-header {
@@ -117,7 +131,7 @@ body {
 
 .download-report-button{
     float: right;
-    margin-top: -105px;
+    margin-top: -70px;
     margin-right:10px;
     border-radius: 7px;
     background-color: white;
@@ -132,7 +146,7 @@ body {
 }
 .delete-report-button{
     float: right;
-    margin-top: -60px;
+    margin-top: -20px;
     margin-right: 10px;
     border-radius: 7px;
     background-color: white;

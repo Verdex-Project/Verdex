@@ -13,6 +13,9 @@ h1 {
     outline: none;
     box-shadow: none;
     padding: 10px 15px;
+    margin-left:75px;
+    margin-right:75px;
+    width:90%;
 }
 
 .accordion-item {
@@ -20,19 +23,20 @@ h1 {
     border: none;
     border-radius: 5px;
     margin-bottom: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .accordion-body {
     background-color: white;
     color: #000000;
     padding: 15px; 
+    margin-left:75px;
+    margin-right:75px;
+    width:90%;
 }
 
 .accordion-header {
     margin-bottom: 0;
 }
-
 h2.accordion-header {
     color: #333;
     text-align: center;
@@ -81,7 +85,7 @@ textarea {
 input[type="submit"] {
     border: none;
     border-radius: 5px;
-    background-color: #4caf50;
+    background-color: #198754;
     color: #fff;
     padding: 10px 20px;
     text-align: center;
@@ -95,7 +99,7 @@ textarea{
     resize: none;
 }
 input[type="submit"]:hover {
-    background-color: #45a049;
+    background-color: #198754;
 }
 .success{
     font-size:25px;
