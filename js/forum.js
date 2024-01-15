@@ -7,7 +7,7 @@ function createPostPopup() {
 
 function itineraryShortcutButtonPopup(shortcut) {
     document.getElementById("create-a-post-popup").style.display = "block";
-    document.getElementById("post-title").innerHTML = shortcut
+    document.getElementById("post-title").value = shortcut
 }
 
 function closeCreatePopup() {
@@ -28,21 +28,8 @@ function closeCommentPopup(){
 function closeEditPopup() {
     confirmation = confirm("Are you sure you'd like to discard all changes?");
     if (confirmation == true) {
-        document.getElementById("edit-post-popup").style.display = "none";
-        document.getElementById("edit-post-form").reset();
-        editedSelectedTag = ""
-
-        document.getElementById('edit-scenery-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-scenery-tag-button').style.color = "black";
-        document.getElementById('edit-food-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-food-tag-button').style.color = "black";
-        document.getElementById('edit-nature-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-nature-tag-button').style.color = "black";
-
-        alert("Changes discarded.");
-        return false;
+        window.location.reload();
     }
-    return false;
 }
 
 let selectedTag = ""
@@ -100,11 +87,6 @@ function likePost(postId) {
     // Use Axios to send a POST request to the server
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
-            if (response.data.startsWith("ERROR:")){
-                console.log(response.data)
-                alert("API KEY ERROR. Please try again.")
-                return;
-            }
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
             likeButton.innerHTML = `Likes (${response.data.likes})`;
         })
