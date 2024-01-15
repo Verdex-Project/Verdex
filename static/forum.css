@@ -73,6 +73,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     width: 65%;
     height: auto;
+    
 }
 
 .create-a-post-button {
@@ -253,7 +254,7 @@ body {
 }
 
 #post-description {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -263,7 +264,7 @@ body {
     text-align: left; 
     margin-top:10px;
     margin-bottom: 30px;
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -298,12 +299,13 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    width: 85%;
-    height: 85%;
+    width: 70%;
+    height: 70%;
+    z-index: 2;
 }
 
 #close-popup-button {
@@ -331,10 +333,13 @@ body {
 
 #popup-header {
     text-align: center;
+    font-size: 25px;
+    color: #427b44;
+    margin-bottom: 20px;
 }
 
 #post-title {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -385,7 +390,7 @@ body {
 }
 
 #user_names {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -470,15 +475,19 @@ body {
 }
 
 #edit_user_names, #edit-post-title, #edit-post-description {
-    border: 1px solid black;
+    border: 2px solid #427b44;
+    margin-bottom: 15px;
     border-radius: 10px;
     padding: 10px;
 }
 
+
+
 #recent-itineraries-container {
     display: flex;
     justify-content: center;
-    margin: 0; 
+    margin: 0;
+    z-index: 1;
 }
 
 .sidebar {

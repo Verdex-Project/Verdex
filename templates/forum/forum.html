@@ -84,10 +84,10 @@
         <div id="create-a-post-popup">
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
-                <h2 id="popup-header">Create A Post!</h2>
-                <input type="text" name="user_names" id="user_names" rows="1" cols="80" placeholder="Name(s): " required><br>
-                <input type="text" name="post_title" id="post-title" rows="1" cols="100" placeholder="Title: " required><br>
-                <input type="text" name="post_description" id="post-description" rows="8" cols="100" placeholder="Write your post description here" required><br>
+                <h2 id="popup-header"><b>Create A Post!</b></h2>
+                <input type="text" name="user_names" id="user_names" size="50" placeholder="Name(s): " required><br>
+                <input type="text" name="post_title" id="post-title" size="70" placeholder="Title: " required><br>
+                <textarea name="post_description" id="post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
                 <input type="hidden" name="post_tag" id="post-tag" value="">
                 <p>Suggested tags: (Optional)</p>
                 <div id="tags-button-container">
@@ -101,18 +101,18 @@
         <div id="comment-on-post-popup">
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeCommentPopup()"><span>&#x274C;</span> Discard changes</button>
-                <h2 id="popup-header">Add your comment!</h2>
-                <input type="text" name="comment_description" id="comment_description" rows="8" cols="100" placeholder="Write your comment here" required><br>
+                <h2 id="popup-header"><b>Add your comment!</b></h2>
+                <textarea name="comment_description" id="comment_description" rows="5" cols="80" placeholder="Write your comment here" required></textarea><br>
                 <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
             </div>
         </div>
         <div id="edit-post-popup">
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
-                <h2 id="popup-header">Edit post</h2>
-                <input type="text" name="edit_user_names" id="edit_user_names" rows="1" cols="80" required placeholder="Enter new name(s): "><br>
-                <input type="text" name="edit_post_title" id="edit-post-title" rows="1" cols="100" required placeholder="Enter new title: "><br>
-                <input type="text" name="edit_post_description" id="edit-post-description" rows="8" cols="100" required placeholder="Enter new description: "><br>
+                <h2 id="popup-header"><b>Edit post</b></h2>
+                <input type="text" name="edit_user_names" id="edit_user_names" size="50" required placeholder="Enter new name(s): "><br>
+                <input type="text" name="edit_post_title" id="edit-post-title" size="70" required placeholder="Enter new title: "><br>
+                <textarea name="edit_post_description" id="edit-post-description" rows="5" cols="80" required placeholder="Enter new description: "></textarea><br>
                 <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
                 <p>Suggested tags: </p>
                 <div id="tags-button-container">
