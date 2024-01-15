@@ -1,3 +1,6 @@
+var commentedPostId = null
+var editPostId = null
+
 function createPostPopup() {
     document.getElementById("create-a-post-popup").style.display = "block";
 }
@@ -125,36 +128,44 @@ function deletePost(postId){
 
 function commentPost(postId) {
     document.getElementById("comment-on-post-popup").style.display = "block";
-    window.commentedPostId = postId;
+    commentedPostId = postId;
 }
 
 function submitComment() {
-    const commentDescription = document.getElementById("comment_description").value;
-    const postId = window.commentedPostId;
+    const commentDescription = document.getElementById("comment_description");
+    const postId = commentedPostId;
 
-    if (commentDescription.trim() === "") {
-        alert("Please enter a valid comment.");
-        return;
+    if (!commentDescription.value || commentDescription.value == "") {
+        alert("Please enter a comment.")
+        return
     }
 
-    axios.post('/comment_post', {
-        postId: postId,
-        comment_description: commentDescription
+    axios({
+        method: 'post',
+        url: `/api/commentPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "post_id": postId,
+            "comment_description": commentDescription.value
+        }
     })
-    .then(response => {
-        console.log(response.data);
-        alert("Comment added");
-        document.getElementById("comment-on-post-popup").style.display = "none";
-        window.location.reload();
+    .then(function (response) {
+        if (response.data.startsWith("SUCCESS:")){
+            console.log(response.data)
+            window.location.reload();
+        }
     })
-    .catch(error => {
-        console.error(error);
+    .catch(function (error) {
+        console.error('Error commenting on post:', error);
     });
 }
 
 function editPost(postId) {
     document.getElementById("edit-post-popup").style.display = "block";
-    window.editPostId = postId;
+    editPostId = postId;
 }
 
 let editedSelectedTag = ""
@@ -164,7 +175,7 @@ function submitEdit() {
     const editPostTitle = document.getElementById("edit-post-title").value;
     const editPostDescription = document.getElementById("edit-post-description").value;
     const editPostTag = document.getElementById("edit-post-tag").value;
-    const postId = window.editPostId;
+    const postId = editPostId;
 
     if (editUserNames.trim() === "") {
         alert("Please enter valid name(s).");

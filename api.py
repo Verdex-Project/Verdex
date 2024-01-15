@@ -319,4 +319,26 @@ def submitPost():
     DI.save()
     return "SUCCESS: Post was successfully submitted to the system."
 
+@apiBP.route('/api/commentPost', methods=['POST'])
+def commentPost():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
     
+    if "post_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "comment_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    post_id = request.json['post_id']
+    comment_description = request.json['comment_description']
+
+    if post_id in DI.data["forum"]:
+        if 'comments' not in DI.data["forum"][post_id]:
+            DI.data["forum"][post_id]['comments'] = {}
+        postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+        DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
+        DI.save()
+        return "SUCCESS: Comment successfully made."
+    else:
+        return "ERROR: Post ID not found."

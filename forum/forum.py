@@ -5,29 +5,8 @@ import datetime
 
 forumBP = Blueprint("forum", __name__)
 
-@forumBP.route('/verdextalks', methods=['GET', 'POST'])
+@forumBP.route('/verdextalks')
 def verdextalks():
-
-    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
-
-
-@forumBP.route('/comment_post', methods=['POST'])
-def comment_on_post():
-    try:
-        if request.is_json:
-            post_id = request.json['postId']
-            comment_description = request.json['comment_description']
-            if post_id and comment_description:
-                if post_id in DI.data["forum"]:
-                    if 'comments' not in DI.data["forum"][post_id]:
-                        DI.data["forum"][post_id]['comments'] = []
-                    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-                    DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
-                    DI.save()
-    except Exception as e:
-        print(f"Error: {e}")
-        flash("ERROR: A system error has occured. Most likely due to an invalid request format.")
-        return redirect(url_for('error'))
 
     return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
 
