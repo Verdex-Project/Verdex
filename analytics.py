@@ -8,7 +8,7 @@ class Analytics:
     filePath = os.path.join(os.getcwd(), "analytics.json")
     reportsFolderPath = os.path.join(os.getcwd(), "reports")
     reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
-
+    report_timestamp = None
     sampleMetricsObject = {
         "get_request": 0,
         "post_request": 0,
@@ -160,6 +160,8 @@ The metrics are shown below:
         # Generate a different ID for reportsInfo.json creation
 
         unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + Analytics.generateRandomID(customLength=4)
+        report_timestamp = datetime.datetime.now().strftime("%d %B %I:%M %p")
+        Analytics.report_timestamp = report_timestamp
         report_path = os.path.join(Analytics.reportsFolderPath, f"report-{unique_string}.txt")
         with open(report_path, "w") as report:
             report.write(report_text)
@@ -175,6 +177,7 @@ The metrics are shown below:
 
         reportsInfo[unique_string] = {
             "report_id": unique_string,
+            "timestamp": report_timestamp,
             "get_request": Analytics.data['get_request'],
             "post_request": Analytics.data['post_request'],
             "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
@@ -188,4 +191,4 @@ The metrics are shown below:
             json.dump(reportsInfo, f)
         
         ## Return success message
-        return 'Successfully generated report.'
+        return report_timestamp

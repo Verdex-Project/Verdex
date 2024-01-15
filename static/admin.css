@@ -87,7 +87,7 @@ body {
 
 .content {
     margin-left:250px;
-    margin-top:-700px;
+    margin-top:-1000px;
 }
 .content h2{  
     z-index:-1;
@@ -105,12 +105,13 @@ body {
     border-radius: 10px;
     margin-top: 0px;
     margin-bottom: 10px;
+    margin-right:30px;
     padding: 40px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-left:-30px;
     justify-content: center;
-    width: 550px;
+    width: auto;
 }
 
 .generated-reports-header {

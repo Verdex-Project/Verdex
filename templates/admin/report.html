@@ -44,12 +44,8 @@
     </div>
 </div>
 <div class="content">
-    <h2>Welcome Kate Gibson to Verdex Admin Page</h2>
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>
-        <p class="explain">Click on the generate report button to generate a report that has collected data from Verdex</p>
-        <p class="explain">Click on the delete all report button to delete all the reports that has been generated</p>
-        <p class="explain">Click on the clear data button to clear all the data that has been collected</p>
             <div class ='button-container'>
             <form action="{{ url_for('report.generate_report')}}" method = 'post'>
                 <input type="hidden" name="report_id" value="{{ report_id }}">
@@ -67,7 +63,7 @@
             {% for report_id, report_data in data.items() %}
             <div class="report-container">
                 <h3>Report #{{ report_id }}</h3>
-                <h4>{{ date }}</h4>
+                <h4>{{ report_data.timestamp }}</h4>
                 <p class="report-data-content">Number of Get Requests: <b>{{ report_data.get_request }}</b></p>
                 <p class="report-data-content">Number of Post Requests: <b>{{ report_data.post_request }}</b></p>
                 <p class="report-data-content">Number of Total Requests: <b>{{ report_data.total_requests}}</b></p>
