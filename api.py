@@ -165,11 +165,14 @@ def editUsername():
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
+    ## Check body
+    if "username" not in request.json:
+        return "ERROR: One or more payload not present."
     
-    # # Check if the username is already in use
-    # for accountID in DI.data["accounts"]:
-    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
-    #         return "UERROR: Username is already taken."
+    # Check if the username is already in use
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+            return "UERROR: Username is already taken."
 
     # Update the username in the data
     DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
@@ -187,18 +190,24 @@ def editEmail():
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
-    
-    
-    # # Check if the email is already in use
-    # for accountID in DI.data["accounts"]:
-    #     if DI.data["accounts"][accountID]["email"] == request.json["email"]:
-    #         return "UERROR: Email is already taken."
 
-    # Update the email in the data
-    DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
-    DI.save()
-
-    return "SUCCESS: Email updated."
+    ## Check body
+    if "email" not in request.json:
+        return "ERROR: One or more payload not present."
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == request.json["email"]:
+            return "UERROR: Email is already taken."
+    
+    # Success case
+    response = FireAuth.changeUserEmail(fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"], newEmail = request.json["email"])
+    if response != True:
+        Logger.log("API EDITEMAIL ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(targetAccountID, response))
+        return "ERROR: Failed to change email."
+    else:
+        # Update the email in the data
+        DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
+        DI.save()
+        return "SUCCESS: Email updated."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
