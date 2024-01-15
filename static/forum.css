@@ -281,6 +281,20 @@ body {
     z-index: 2;
 }
 
+#comment-popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 70%;
+    height: 35%;
+    z-index: 2;
+}
+
 #comment-on-post-popup {
     display: none;
 }
@@ -346,7 +360,7 @@ body {
     margin-bottom: 15px;
 }
 
-#post-it-button, #comment-button {
+#post-it-button {
     cursor: pointer;
     padding: 8px 12px;
     padding-left: 20px;
@@ -358,6 +372,22 @@ body {
     float: right;
     transition: transform 0.2s ease-in-out;
     font-size: 130%;
+}
+
+#comment-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: #66BB69;
+    color: white;
+    float: right;
+    transition: transform 0.2s ease-in-out;
+    font-size: 130%;
+    margin-top: -75px;
+    margin-right: 2px;
 }
 
 #post-it-button:hover, #comment-button:hover {
