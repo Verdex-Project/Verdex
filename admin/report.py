@@ -7,20 +7,19 @@ from analytics import Analytics
 reportBP = Blueprint("report", __name__)
 
 #Main report displaying webpage
-@reportBP.route('/report')
+@reportBP.route('/report', methods=['POST', 'GET'])
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
     return render_template('admin/report.html', data=data, date = datetime.datetime.now().strftime("%d %B %I:%M %p"))
 #Report generation feature
-@reportBP.route('/report/generate', methods=['POST'])
+@reportBP.route('/report/generate', methods=['POST', 'GET'])
 def generate_report():
     Analytics.generateReport()
     return redirect(url_for('report.report'))
 #Report downloading feature
-@reportBP.route('/report/<report_id>', methods=['POST'])
+@reportBP.route('/report/<report_id>', methods=['POST', 'GET'])
 def download_report(report_id):
-    report_id = request.form['report_id']
 
     #Checks if reportsInfo.json file exists, added this after merging
     reportsInfoPath = os.path.join(os.getcwd(), "reports", "reportsInfo.json")

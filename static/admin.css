@@ -135,9 +135,6 @@ body {
     margin-top: -70px;
     margin-right:10px;
     border-radius: 7px;
-    background-color: white;
-    color: green;
-    border: 2px solid green;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -150,9 +147,6 @@ body {
     margin-top: -20px;
     margin-right: 10px;
     border-radius: 7px;
-    background-color: white;
-    color: red;
-    border: 2px solid red;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -160,20 +154,7 @@ body {
     cursor: pointer;
     transition: 0.2s;
 }
-.download-report-button:hover{
-    background-color: green;
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-.delete-report-button:hover{
-    background-color: red;
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
 .generate-report-button{
-    background-color: white;
-    color: green;
-    border: 2px solid green;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -184,9 +165,6 @@ body {
 }
 .delete-all-report-button,
 .clear-data-button{
-    background-color: white;
-    color: red;
-    border: 2px solid red;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -195,17 +173,7 @@ body {
     cursor: pointer;
     margin-right:10px;
 }
-.generate-report-button:hover{
-    background-color: green;
-    color: white;
-    border-color: green;
-}
-.delete-all-report-button:hover,
-.clear-data-button:hover{
-    background-color: red;
-    color: white;
-    border-color: red;
-}
+
 
 .button-container{
     display:flex;

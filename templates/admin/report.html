@@ -4,6 +4,57 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<script>
+    function downloadReport(reportId) {
+        const downloadUrl = `{{ url_for('report.download_report', report_id='') }}${reportId}`;
+        console.log(downloadUrl)
+        window.location.href = downloadUrl;
+    }
+
+    function deleteReport(reportId) {
+        const deleteUrl = `{{ url_for('report.delete_report', report_id='') }}${reportId}`;
+        window.location.href = deleteUrl;
+    }
+    function showConfirmation(buttonId, reportId = null) {
+        // Define confirmation messages based on button IDs
+        const confirmationMessages = {
+            'generateReportButton': 'Are you sure you want to generate the report?',
+            'deleteAllReportsButton': 'Are you sure you want to delete all reports?',
+            'clearDataButton': 'Are you sure you want to clear the data?',
+            'downloadReportButton': 'Are you sure you want to download the report?',
+            'deleteReportButton': 'Are you sure you want to delete the report?'
+        };
+
+        // Get the confirmation message based on the button ID
+        const confirmationMessage = confirmationMessages[buttonId];
+
+        // Show the confirmation dialog
+        if (confirm(confirmationMessage) == true) {
+            // Trigger the corresponding Flask route based on the button ID
+            switch (buttonId) {
+                case 'generateReportButton':
+                    window.location.href = "{{ url_for('report.generate_report') }}";
+                    break;
+                case 'deleteAllReportsButton':
+                    window.location.href = "{{ url_for('report.delete_all_reports') }}";
+                    break;
+                case 'clearDataButton':
+                    window.location.href = "{{ url_for('report.clear_data') }}";
+                    break;
+                case 'downloadReportButton':
+                    downloadReport(reportId);
+                    console.log(reportId)
+                    break;
+                case 'deleteReportButton':
+                    deleteReport(reportId);
+                    break;
+                default:
+                    // Handle unknown button IDs
+                    break;
+            }
+        }
+    }
+</script>
 {% endblock %}
 
 {% block body %}
@@ -16,7 +67,7 @@
         </div>
         <ul>
             <li>
-                <a href="home.html" class="active">
+                <a href="home.html">
                     <span class="item">Home</span>
                 </a>
             </li>
@@ -26,7 +77,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="active">
                     <span class="item">Weekly Report</span>
                 </a>
             </li>
@@ -46,19 +97,15 @@
 <div class="content">
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>
-            <div class ='button-container'>
-            <form action="{{ url_for('report.generate_report')}}" method = 'post'>
-                <input type="hidden" name="report_id" value="{{ report_id }}">
-                <button class="generate-report-button" type="submit">Generate Report</button>
-            </form>
-            <form action="{{ url_for('report.delete_all_reports')}}">
-                <input type="hidden" name="report_id" value="{{ report_id }}">
-                <button class="delete-all-report-button" type="submit">Delete all Reports</button>
-            </form>
-            <form action="{{ url_for('report.clear_data')}}">
-                <input type="hidden" name="report_id" value="{{ report_id }}">
-                <button class="clear-data-button" type="submit">Clear Data</button>
-            </form>
+            <div class="button-container">
+                <!-- Generate Report Button -->
+                <button class="btn btn-success generate-report-button" type="button" onclick="showConfirmation('generateReportButton')">Generate Report</button>
+    
+                <!-- Delete All Reports Button -->
+                <button class="btn btn-danger delete-all-report-button" type="button" onclick="showConfirmation('deleteAllReportsButton')">Delete all Reports</button>
+    
+                <!-- Clear Data Button -->
+                <button class="btn btn-danger clear-data-button" type="button" onclick="showConfirmation('clearDataButton')">Clear Data</button>
             </div>
             {% for report_id, report_data in data.items() %}
             <div class="report-container">
@@ -71,14 +118,9 @@
                 <p class="report-data-content">Number of Sign ins to the Verdex: <b>{{ report_data.sign_ins }}</b></p>
                 <p class="report-data-content">Number of Sign outs to the Verdex: <b>{{ report_data.sign_outs }}</b></p>
                 <p class="report-data-content">Number of Posts to VerdexTalks: <b>{{ report_data.verdex_talks_posts }}</b></p>
-            <form action="{{ url_for('report.download_report', report_id=report_id) }}" method="post">
-                <input type="hidden" name="report_id" value="{{ report_id }}">
-                <button class="download-report-button" type="submit">Download Report</button>
-            </form>
-            <form action="{{ url_for('report.delete_report', report_id=report_id) }}" method="post">
-                <input type="hidden" name="report_id" value="{{ report_id }}">
-                <button class ="delete-report-button" type="submit">Delete Report</button>
-            </form>
+                <button id="downloadReportButton" class="btn btn-success download-report-button" type="button" onclick="showConfirmation('downloadReportButton', '{{ report_id }}')">Download Report</button>
+
+                <button class="btn btn-danger delete-report-button" type="button" onclick="showConfirmation('deleteReportButton', '{{ report_id }}')">Delete Report</button>
         </div>
             {% endfor %}
     </div>
