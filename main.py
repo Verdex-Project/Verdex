@@ -2,6 +2,7 @@ import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from models import *
+from emailer import Emailer
 from dotenv import load_dotenv
 from admin.analytics import Analytics
 load_dotenv()
@@ -137,6 +138,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Get Emailer to check context
+    Emailer.checkContext()
     
     ## Set up Analytics
     Analytics.setup()

@@ -1,7 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
-from models import *
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Universal
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -98,6 +97,31 @@ def createAccount():
         "disabled": False
     }
     DI.save()
+
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
+
+    altText = f"""
+    Dear {request.json["username"]},
+    
+    Thank you for Thank you for signing up with Verdex! To finish signing up, please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/createAccountEmail.html",
+        username = request.json["username"],
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(request.json["email"], "Welcome To Verdex", altText, html)
+    # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
 
