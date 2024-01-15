@@ -73,9 +73,53 @@
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
                                 <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
-                                '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
+
+                            <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit This Activity! (Click on the elements that you want to choose)</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+                                                <!--get current day from dayCount-->
+                                                <div id="activityBox">
+                                                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                                                        <div id="timeStart">
+                                                            <div>
+                                                                <span hidden id="activityId">{{ activityId }}</span>
+                                                                <h3 id="startTimeModal" contenteditable="true" onclick="editStartTime()">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                                                        <div id="timeEnd">
+                                                            <div>
+                                                                <h3 id="endTimeModal" contenteditable="true" onclick="editEndTime()">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                                                            </div>
+                                                        </div>  
+                                                    </div>
+                            
+                                                    <div id="activityPicture"><img src="{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                            
+                                                    <div id="activityFooterModal">
+                                                        <div id="activityDescriptionModal"> <!--left-->
+                                                            <h5 id="activityLocationModal" contenteditable="true">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityNameModal" contenteditable="true">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Save Edits</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
                                     <h5>Delete</h5>
@@ -148,9 +192,52 @@
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button id="editActivityButton" onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
-                                '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}')"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                            </div>
+
+                            <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit This Activity! (Click on the elements that you want to choose)</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+                                                <!--get current day from dayCount-->
+                                                <div id="activityBox">
+                                                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                                                        <div id="timeStart">
+                                                            <div>
+                                                                <span hidden id="activityId">{{ activityId }}</span>
+                                                                <h3 id="startTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                                                            </div>
+                                                        </div>
+                                                        <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                                                        <div id="timeEnd">
+                                                            <div>
+                                                                <h3 id="endTime">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                                                            </div>
+                                                        </div>  
+                                                    </div>
+                            
+                                                    <div id="activityPicture"><img src="{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                            
+                                                    <div id="activityFooterModal">
+                                                        <div id="activityDescriptionModal"> <!--left-->
+                                                            <h5 id="activityLocationModal">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityNameModal">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Save Edits</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
@@ -273,3 +360,7 @@
     </div>
 </div>
 {% endblock %}
+
+
+<!-- onclick="editActivity('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
+                                '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}') -->
