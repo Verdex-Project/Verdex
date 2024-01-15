@@ -42,9 +42,6 @@
     width: 50px;
 }
 
-#usernameMsg, 
-#emailMsg,
-#passwordMsg,
 #cfmPasswordMsg {
     visibility: hidden;
     font-size: smaller;

@@ -23,21 +23,8 @@ function signUp() {
     const emailInput = document.getElementById("emailInput");
     const passwordInput = document.getElementById("passwordInput");
     const confirmPasswordInput = document.getElementById("confirmPasswordInput");
-    const usernameMsg = document.getElementById("usernameMsg");
-    const emailMsg = document.getElementById("emailMsg");
-    const passwordMsg = document.getElementById("passwordMsg");
     const cfmPasswordMsg = document.getElementById("cfmPasswordMsg");
 //  const signUpButton = document.getElementById("signUpButton");
-
-    // Reset all to hidden
-    usernameMsg.style.visibility = 'hidden';
-    usernameMsg.innerHTML = '';
-    emailMsg.style.visibility = 'hidden';
-    emailMsg.innerHTML = '';
-    passwordMsg.style.visibility = 'hidden';
-    passwordMsg.innerHTML = '';
-    cfmPasswordMsg.style.visibility = 'hidden';
-    cfmPasswordMsg.innerHTML = '';
 
     if (!usernameInput.value || usernameInput.value == "" || !emailInput.value || emailInput.value == "" || !passwordInput.value || passwordInput.value == "" || !confirmPasswordInput.value || confirmPasswordInput.value == "") {
         // alert("One or more fields is empty. Please try again.")
@@ -54,6 +41,10 @@ function signUp() {
         cfmPasswordMsg.innerHTML = "Passwords do not match."
         return
     }
+    
+    cfmPasswordMsg.style.visibility = 'visible'
+    cfmPasswordMsg.style.color = "green";
+    cfmPasswordMsg.innerHTML = "Creating account..."
 
     axios({
         method: 'post',
@@ -72,49 +63,36 @@ function signUp() {
         if (response.status == 200) {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
-                    if (response.data.startsWith("SUCCESS:")) { 
-                        cfmPasswordMsg.style.visibility = 'visible'
-                        cfmPasswordMsg.style.color = "green";
-                        cfmPasswordMsg.innerHTML = "Creating account..."
+                    if (response.data.startsWith("SUCCESS:")) {
                         setTimeout(() => {
                             cfmPasswordMsg.innerHTML = "Account created! Redirecting now..."
                             location.href = `${origin}/account/info`;
                         }, 2000)
                     } else {
-                        alert("An unknown error occured in creating the account. Please try again. Check logs for more information.")
+                        cfmPasswordMsg.style.color = 'red'
+                        cfmPasswordMsg.innerText = "An unknown error occured in creating the account. Please try again."
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    // alert("User error occured. Check logs for more information.")
                     console.log("User error occured: " + response.data)
-                    if (response.data == "UERROR: Username is already taken.") {
-                        usernameMsg.style.visibility = 'visible'
-                        usernameMsg.style.color = 'red'
-                        usernameMsg.innerHTML = "Username is already taken."
-                    }
-                    else if (response.data == "UERROR: Email is already in use.") {
-                        emailMsg.style.visibility = 'visible'
-                        emailMsg.style.color = 'red'
-                        emailMsg.innerHTML = "Email is already in use."
-                    }
-                    else if (response.data == "UERROR: Password must be at least 6 characters long.") {
-                        passwordMsg.style.visibility = 'visible'
-                        passwordMsg.style.color = 'red'
-                        passwordMsg.innerHTML = "Password must be at least 6 characters."
-                    }
+                    cfmPasswordMsg.style.color = 'red'
+                    cfmPasswordMsg.innerText = response.data.substring("UERROR: ".length)
                 }
             } else {
-                alert("An error occured in creating your account. Please try again or check logs for more information.")
+                cfmPasswordMsg.style.color = 'red'
+                cfmPasswordMsg.innerText = "An error occured in creating your account. Please try again."
                 console.log("Error occured in making login request: " + response.data)
             }
         } else {
-            alert("An error occured while connecting to Verdex Servers. Please try again later.")
+            cfmPasswordMsg.style.color = 'red'
+            cfmPasswordMsg.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        cfmPasswordMsg.style.color = 'red'
+        cfmPasswordMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later or check logs for more information."
     })
 
 }
