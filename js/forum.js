@@ -13,16 +13,8 @@ function itineraryShortcutButtonPopup(shortcut) {
 function closeCreatePopup() {
     closeCreateConfirmation = confirm("Are you sure you'd like to discard all changes?");
     if (closeCreateConfirmation == true) {
-        document.getElementById("create-a-post-popup").style.display = "none";
-        document.getElementById("create-post-form").reset();
+        window.location.reload();
         selectedTag = ""
-
-        document.getElementById('scenery-tag-button').style.backgroundColor = "white";
-        document.getElementById('scenery-tag-button').style.color = "black";
-        document.getElementById('food-tag-button').style.backgroundColor = "white";
-        document.getElementById('food-tag-button').style.color = "black";
-        document.getElementById('nature-tag-button').style.backgroundColor = "white";
-        document.getElementById('nature-tag-button').style.color = "black";
     }
 }
 
@@ -135,8 +127,8 @@ function submitComment() {
     const commentDescription = document.getElementById("comment_description");
     const postId = commentedPostId;
 
-    if (!commentDescription.value || commentDescription.value == "") {
-        alert("Please enter a comment.")
+    if (!commentDescription.value || commentDescription.value == "" || commentDescription.value.trim() == "") {
+        alert("Please enter a valid comment.")
         return
     }
 
@@ -190,21 +182,29 @@ function submitEdit() {
         return;
     }
 
-    axios.post('/edit_post', {
-        postId: postId,
-        edit_user_names: editUserNames,
-        edit_post_title: editPostTitle,
-        edit_post_description: editPostDescription,
-        edit_post_tag: editPostTag
+    axios({
+        method: 'post',
+        url: `/api/editPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "post_id": postId,
+            "edit_user_names": editUserNames,
+            "edit_post_title": editPostTitle,
+            "edit_post_description": editPostDescription,
+            "edit_post_tag": editPostTag
+        }
     })
-    .then(response => {
-        console.log(response.data);
-        alert("Post edited");
-        document.getElementById("edit-post-popup").style.display = "none";
-        window.location.reload();
+    .then(function (response) {
+        if (response.data.startsWith("SUCCESS:")){
+            console.log(response.data)
+            window.location.reload();
+        }
     })
-    .catch(error => {
-        console.error(error);
+    .catch(function (error) {
+        console.error('Error editing post:', error);
     });
 }
 

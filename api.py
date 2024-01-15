@@ -342,3 +342,36 @@ def commentPost():
         return "SUCCESS: Comment successfully made."
     else:
         return "ERROR: Post ID not found."
+    
+@apiBP.route('/api/editPost', methods=['POST'])
+def editPost():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "post_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "edit_user_names" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "edit_post_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "edit_post_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "edit_post_tag" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    post_id = request.json['post_id']
+    edit_user_names = request.json['edit_user_names']
+    edit_post_title = request.json['edit_post_title']
+    edit_post_description = request.json['edit_post_description']
+    edit_post_tag = request.json['edit_post_tag']
+
+    if post_id in DI.data["forum"]:
+        DI.data["forum"][post_id]["user_names"] = edit_user_names
+        DI.data["forum"][post_id]["post_title"] = edit_post_title
+        DI.data["forum"][post_id]["post_description"] = edit_post_description
+        DI.data["forum"][post_id]["tag"] = edit_post_tag
+        DI.save()
+        return "SUCCESS: Post successfully edited."
+    else:
+        return "ERROR: Post ID not found."
