@@ -53,21 +53,8 @@
 }
 
 #signUpButton {
-    width: 100px;
-    padding: 5px;
-    font-size: 0.8em;
-    font-weight: 500;
-    cursor: pointer;
-    border: 2px solid rgb(50, 190, 50);
-    border-radius: 5px;
-    color: rgb(50, 190, 50);
-    transition-duration: 0.5s;
-    background-color: white;
-}
-
-#signUpButton:hover {
-    background-color: rgb(50, 190, 50);
-    color: white;
+    display: flex;
+    justify-content: center;
 }
 
 .form-control {
