@@ -232,6 +232,45 @@ def editEmail():
         DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
         DI.save()
         return "SUCCESS: Email updated."
+    
+@apiBP.route('/api/resendEmail', methods=['POST'])
+def resendEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+    # destEmail, subject, altText, html
+    return "SUCCESS: Email verification sent."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
