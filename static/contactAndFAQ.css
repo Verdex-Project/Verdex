@@ -45,8 +45,6 @@ textarea {
 input[type="submit"] {
     border: none;
     border-radius: 5px;
-    background-color: #198754;
-    color: #fff;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -57,9 +55,6 @@ input[type="submit"] {
 }
 textarea{
     resize: none;
-}
-input[type="submit"]:hover {
-    background-color: #198754;
 }
 .success{
     font-size:25px;
