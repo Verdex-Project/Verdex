@@ -228,7 +228,7 @@ def like_post():
         return check
     
     if 'postId' not in request.json:
-        return "ERROR: The post ID is not found."
+        return "ERROR: One or more payload parameters are missing."
 
     post_id = request.json['postId']
 
@@ -236,6 +236,8 @@ def like_post():
         DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
         return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+    elif post_id not in DI.data["forum"]:
+        return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
@@ -244,15 +246,16 @@ def delete_post():
         return check
     
     if 'postId' not in request.json:
-        return "ERROR: The post ID is not found."
+        return "ERROR: One or more payload parameters are missing."
 
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
         DI.data["forum"].pop(post_id)
         DI.save()
-    
-    return "SUCCESS: Post was successfully removed from the system."
+        return "SUCCESS: Post was successfully removed from the system."
+    elif post_id not in DI.data["forum"]:
+        return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/deleteComment', methods=['POST'])
 def deleteComment():
@@ -261,9 +264,9 @@ def deleteComment():
         return check
 
     if 'postId' not in request.json:
-        return "ERROR: The post ID is not found."
+        return "ERROR: One or more payload parameters are missing."
     if 'commentId' not in request.json:
-        return "ERROR: The comment ID is not found."
+        return "ERROR: One or more payload parameters are missing."
     
     post_id = request.json['postId']
     comment_id = request.json['commentId']
@@ -271,8 +274,9 @@ def deleteComment():
     if post_id in DI.data["forum"]:
         del DI.data["forum"][post_id]["comments"][comment_id]
         DI.save()
-    
-    return "SUCCESS: Comment was successfully removed from the post in the system."
+        return "SUCCESS: Comment was successfully removed from the post in the system."
+    elif post_id not in DI.data["forum"]:
+        return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/submitPost', methods=['POST'])
 def submitPost():
@@ -281,13 +285,13 @@ def submitPost():
         return check
     
     if 'user_names' not in request.json:
-        return "ERROR: The user names are not found."
+        return "ERROR: One or more payload parameters are missing."
     if 'post_title' not in request.json:
-        return "ERROR: The post title is not found."
+        return "ERROR: One or more payload parameters are missing."
     if 'post_description' not in request.json:
-        return "ERROR: The post description is not found."
+        return "ERROR: One or more payload parameters are missing."
     if 'post_tag' not in request.json:
-        return "ERROR: The post tag is not found."
+        return "ERROR: One or more payload parameters are missing."
     
     user_names = request.json['user_names']
     post_title = request.json['post_title']
@@ -331,8 +335,8 @@ def commentPost():
         DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
-    else:
-        return "ERROR: Post ID not found."
+    elif post_id not in DI.data["forum"]:
+        return "ERROR: Post ID not found in system."
     
 @apiBP.route('/api/editPost', methods=['POST'])
 def editPost():
@@ -364,5 +368,5 @@ def editPost():
         DI.data["forum"][post_id]["tag"] = edit_post_tag
         DI.save()
         return "SUCCESS: Post successfully edited."
-    else:
-        return "ERROR: Post ID not found."
+    elif post_id not in DI.data["forum"]:
+        return "ERROR: Post ID not found in system."
