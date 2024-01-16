@@ -76,7 +76,7 @@ function changeEmail() {
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    alert("User error occured. Check logs for more information.")
+                    alert("Email already exists!")
                     console.log("User error occured: " + response.data)
                 }
             } else {

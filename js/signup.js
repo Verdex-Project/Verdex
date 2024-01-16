@@ -33,7 +33,7 @@ function signUp() {
     const passwordInput = document.getElementById("passwordInput");
     const confirmPasswordInput = document.getElementById("confirmPasswordInput");
     const cfmPasswordMsg = document.getElementById("cfmPasswordMsg");
-//  const signUpButton = document.getElementById("signUpButton");
+    const signUpButton = document.getElementById("signUpButton");
 
     if (!usernameInput.value || usernameInput.value == "" || !emailInput.value || emailInput.value == "" || !passwordInput.value || passwordInput.value == "" || !confirmPasswordInput.value || confirmPasswordInput.value == "") {
         // alert("One or more fields is empty. Please try again.")
@@ -54,6 +54,7 @@ function signUp() {
     cfmPasswordMsg.style.visibility = 'visible'
     cfmPasswordMsg.style.color = "green";
     cfmPasswordMsg.innerHTML = "Creating account..."
+    signUpButton.disabled = true
 
     axios({
         method: 'post',

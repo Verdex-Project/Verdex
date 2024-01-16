@@ -49,7 +49,7 @@
     margin-top: 5px;
 }
 
-#signUpButton {
+#signUpButtonDiv {
     display: flex;
     justify-content: center;
 }
