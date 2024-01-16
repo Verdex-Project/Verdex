@@ -235,7 +235,6 @@ def like_post():
     if post_id in DI.data["forum"]:
         DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
-
         return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
 
 @apiBP.route('/api/deletePost', methods=['POST'])

@@ -85,9 +85,12 @@ function likePost(postId) {
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-            likeButton.innerHTML = `Likes (${response.data.likes})`;
-            if (response.data.startsWith("ERROR:")){
+            if (!response.data.startsWith("ERROR:")){
+                likeButton.innerHTML = `Likes (${response.data.likes})`;
+            }
+            else if (response.data.startsWith("ERROR:")){
                 alert("An error occured while liking post. Please try again.")
+                return;
             }
         })
         .catch(function (error) {
