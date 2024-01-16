@@ -1,5 +1,5 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, flash
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
 from models import *
 from generation.itineraryGeneration import staticLocations
@@ -228,8 +228,7 @@ def like_post():
         return check
     
     if 'postId' not in request.json:
-        flash("ERROR: The post ID is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post ID is not found."
 
     post_id = request.json['postId']
 
@@ -246,8 +245,7 @@ def delete_post():
         return check
     
     if 'postId' not in request.json:
-        flash("ERROR: The post ID is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post ID is not found."
 
     post_id = request.json['postId']
 
@@ -264,11 +262,9 @@ def deleteComment():
         return check
 
     if 'postId' not in request.json:
-        flash("ERROR: The post ID is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post ID is not found."
     if 'commentId' not in request.json:
-        flash("ERROR: The comment ID is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The comment ID is not found."
     
     post_id = request.json['postId']
     comment_id = request.json['commentId']
@@ -286,17 +282,13 @@ def submitPost():
         return check
     
     if 'user_names' not in request.json:
-        flash("ERROR: The user names are not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The user names are not found."
     if 'post_title' not in request.json:
-        flash("ERROR: The post title is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post title is not found."
     if 'post_description' not in request.json:
-        flash("ERROR: The post description is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post description is not found."
     if 'post_tag' not in request.json:
-        flash("ERROR: The post tag is not found.")
-        return redirect(url_for('error'))
+        return "ERROR: The post tag is not found."
     
     user_names = request.json['user_names']
     post_title = request.json['post_title']

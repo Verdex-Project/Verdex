@@ -70,13 +70,11 @@ function submitPost() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
-            alert("API KEY ERROR. Please try again.")
+            alert("An error occured while submitting post. Please try again.")
             return;
         }
-        if (response.data.startsWith("SUCCESS:")){
-            console.log(response.data)
-            window.location.reload();
-        }
+        console.log(response.data)
+        window.location.reload();
     })
     .catch(function (error) {
         console.error('Error creating post:', error);
@@ -84,11 +82,13 @@ function submitPost() {
 }
 
 function likePost(postId) {
-    // Use Axios to send a POST request to the server
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
             likeButton.innerHTML = `Likes (${response.data.likes})`;
+            if (response.data.startsWith("ERROR:")){
+                alert("An error occured while liking post. Please try again.")
+            }
         })
         .catch(function (error) {
             console.error('Error liking post:', error);
@@ -102,7 +102,7 @@ function deletePost(postId){
         .then(response => {
             if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
-                alert("API KEY ERROR. Please try again.")
+                alert("An error occured while deleting post. Please try again.")
                 return;
             }
             console.log(response.data);
@@ -143,13 +143,11 @@ function submitComment() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
-            alert("API KEY ERROR. Please try again.")
+            alert("An error occured while commenting on post. Please try again.")
             return;
         }
-        if (response.data.startsWith("SUCCESS:")){
-            console.log(response.data)
-            window.location.reload();
-        }
+        console.log(response.data)
+        window.location.reload();
     })
     .catch(function (error) {
         console.error('Error commenting on post:', error);
@@ -201,13 +199,11 @@ function submitEdit() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
-            alert("API KEY ERROR. Please try again.")
+            alert("An error occured while submitting edits. Please try again.")
             return;
         }
-        if (response.data.startsWith("SUCCESS:")){
-            console.log(response.data)
-            window.location.reload();
-        }
+        console.log(response.data)
+        window.location.reload();
     })
     .catch(function (error) {
         console.error('Error editing post:', error);
@@ -273,12 +269,11 @@ function filterPosts(tagToDisplay) {
 function deleteComment(postId, commentId){
     confirmation = confirm("Are you sure you want to delete this comment?")
     if (confirmation){
-        // Use Axios to send a POST request to the server
         axios.post('/api/deleteComment', { postId: postId, commentId: commentId}, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
             if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
-                alert("API KEY ERROR. Please try again.")
+                alert("An error occured while deleting comment. Please try again.")
                 return;
             }
             console.log(response.data);
