@@ -407,7 +407,7 @@ class FireAuth:
             if "ERROR" in responseObject:
                 print(responseObject)
                 exit()
-            ### Parameters in responseObject (of type `dict` in success case): localId, email, emailVerified, displayName, photoUrl, passwordHash, passwordUpdatedAt, validSince, disabled, lastLoginAt, createdAt, customAuth, providerUserInfo, lastRefreshAt
+            ### Parameters in responseObject (of type `dict` in success case): uid, email, emailVerified, passwordUpdatedAt, providerId, federatedId, rawId, validSince, lastLoginAt, createdAt, lastRefreshAt
         ```
         '''
 

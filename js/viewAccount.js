@@ -1,6 +1,10 @@
 function changeUsername() {
     var newUsername = prompt("What is your new username?")
     newUsername = newUsername.trim()
+    const editUsernameButton = document.getElementById("editUsernameButton")
+
+    editUsernameButton.disabled = true
+
     if (!newUsername || newUsername == "") {
         alert("Please provide a valid username.")
         return
@@ -28,11 +32,11 @@ function changeUsername() {
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    alert("User error occured. Check logs for more information.")
+                    alert("Username is already taken.")
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                alert("An error occured in logging you in. Please try again or check logs for more information.")
+                alert("An error occured while changing your username. Please try again later.")
                 console.log("Error occured in making username update request: " + response.data)
             }
         } else {
@@ -42,13 +46,17 @@ function changeUsername() {
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        alert("An error occured in connecting to Verdex Servers. Please try again later.")
     })
 }
 
 function changeEmail() {
     var newEmail = prompt("What is your new email?")
     newEmail = newEmail.trim()
+    const editEmailButton = document.getElementById("editEmailButton")
+
+    editEmailButton.disabled = true
+
     if (!newEmail || newEmail == "") {
         alert("Please provide a valid email.")
         return
@@ -80,7 +88,7 @@ function changeEmail() {
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                alert("An error occured in logging you in. Please try again or check logs for more information.")
+                alert("An error occured while changing your email. Please try again later.")
                 console.log("Error occured in making username update request: " + response.data)
             }
         } else {
@@ -90,7 +98,7 @@ function changeEmail() {
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        alert("An error occured in connecting to Verdex Servers. Please try again later.")
     })
 }
 
@@ -119,7 +127,7 @@ function logoutIdentity() {
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                alert("An error occured in logging you in. Please try again or check logs for more information.")
+                alert("An error occured in logging you out. Please try again later.")
                 console.log("Error occured in making username update request: " + response.data)
             }
         } else {
@@ -129,7 +137,7 @@ function logoutIdentity() {
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        alert("An error occured in connecting to Verdex Servers. Please try again later.")
     })
 }
 
@@ -168,7 +176,7 @@ function deleteIdentity() {
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        alert("An error occured in connecting to Verdex Servers. Please try again later.")
     })
 }
 
@@ -196,7 +204,7 @@ function resendEmail() {
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                alert("An error occured in deleting your account. Please try again.")
+                alert("An error occured in resending the email verification. Please try again.")
                 console.log("Error occured in resending email verification: " + response.data)
             }
         } else {
@@ -206,6 +214,6 @@ function resendEmail() {
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        alert("An error occured in connecting to Verdex Servers. Please try again later.")
     })
 }

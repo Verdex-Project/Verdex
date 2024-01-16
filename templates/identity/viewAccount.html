@@ -14,13 +14,13 @@
 <div id="content">
     <div id="username">
         <p>Username: <span id="displayed-username">{{ username }}</span> 
-            <button type="button" class="btn btn-outline-dark" onclick="changeUsername()">Edit</button>
+            <button id="editUsernameButton" type="button" class="btn btn-outline-dark" onclick="changeUsername()">Edit</button>
         </p>
     </div>
 
     <div id="email">
         <p>Email: <span id="displayed-email">{{ email }}</span> 
-            <button type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
+            <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
         </p>
         <div id="unverifiedEmail">
             <p>Your Email has not been verified.
