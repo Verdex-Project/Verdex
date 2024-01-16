@@ -2,8 +2,27 @@
     box-sizing: border-box;
 }
 
-body {
+#heading {
     text-align: center;
+    margin-top: 50px;
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+
+#content {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#unverifiedEmail {
+    display: none;
+}
+
+.button-container {
+    display: inline-block;
+    margin-right: 15px;
 }
 
 #copyright {

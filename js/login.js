@@ -25,6 +25,7 @@ function signIn() {
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
     const statusLabel = document.getElementById("statusLabel")
+    const signInButton = document.getElementById("signInButton")
 
     statusLabel.style.visibility = 'visible'
 
@@ -33,6 +34,10 @@ function signIn() {
         statusLabel.innerHTML = "Please fill in all the fields."
         return
     }
+
+    statusLabel.innerText = "Logging you in..."
+    statusLabel.style.color = 'green'
+    signInButton.disabled = true
 
     axios({
         method: 'post',
@@ -52,13 +57,8 @@ function signIn() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
-                        statusLabel.style.color = "green";
-                        statusLabel.innerHTML = "Logging you in..."
-                        setTimeout(() => {
-                            statusLabel.style.color = "green";
-                            statusLabel.innerHTML = "Logged in! Redirecting now..."
-                            location.href = `${origin}/account/info`;
-                        }, 2000)
+                        statusLabel.innerHTML = "Logged in! Redirecting now..."
+                        location.href = `${origin}/account/info`;
                     } else {
                         statusLabel.style.color = "red";
                         statusLabel.innerText = "An unknown response was recieved from Verdex Servers."
@@ -79,11 +79,13 @@ function signIn() {
             statusLabel.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
+        signInButton.disabled = false
     })
     .catch(err => {
         statusLabel.style.color = "red";
         statusLabel.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
         console.log("An error occured in connecting to Verdex Servers: " + err)
+        signInButton.disabled = false
     })
 
 }

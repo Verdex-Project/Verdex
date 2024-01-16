@@ -48,7 +48,7 @@
     margin-left: 5px;
 }
 
-#signInButton {
+#signInButtonDiv {
     display: flex;
     justify-content: center;
 }
