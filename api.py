@@ -231,8 +231,9 @@ def editEmail():
         # Update the email in the data
         DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
         DI.save()
+        FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
         return "SUCCESS: Email updated."
-    
+
 @apiBP.route('/api/resendEmail', methods=['POST'])
 def resendEmail():
     check = checkHeaders(request.headers)
@@ -243,6 +244,11 @@ def resendEmail():
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    token = DI.data["accounts"][targetAccountID]["idToken"]
+    verified = FireAuth.accountInfo(token)["emailVerified"]
+    if verified != False:
+        return "ERROR: Email already verified!"
 
     username = DI.data["accounts"][targetAccountID]["username"]
     email = DI.data["accounts"][targetAccountID]["email"]
@@ -269,7 +275,6 @@ def resendEmail():
     )
 
     Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
-    # destEmail, subject, altText, html
     return "SUCCESS: Email verification sent."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])

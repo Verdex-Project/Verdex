@@ -17,7 +17,12 @@
 }
 
 #unverifiedEmail {
-    display: none;
+    width: fit-content;
+}
+
+#resendEmailBtn {
+    font-size: small;
+    margin-left: 20px;
 }
 
 .button-container {

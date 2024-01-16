@@ -23,9 +23,12 @@
             <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
         </p>
         <div id="unverifiedEmail">
-            <p>Your Email has not been verified.
-                <button type="button" class="btn btn-outline-success" onclick="resendEmail()">Resend Email Verification</button>
-            </p>
+            {% if emailNotVerified %}
+            <div class="alert alert-warning" role="alert">
+                Your Email has NOT been verified. 
+                <button id="resendEmailBtn" type="button" class="btn btn-outline-success" onclick="resendEmail()">Resend Email Verification</button>
+            </div>
+            {% endif %}
         </div>
     </div>
 
