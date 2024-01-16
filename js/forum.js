@@ -70,6 +70,7 @@ function submitPost() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
+            alert("An error occured while submitting post. Please try again.")
             return;
         }
         else if (response.data.startsWith("UERROR:")){
@@ -94,6 +95,7 @@ function likePost(postId) {
             }
             else if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
+                alert("An error occured while liking post. Please try again.")
                 return;
             }
             else if (response.data.startsWith("UERROR:")){
@@ -114,6 +116,7 @@ function deletePost(postId){
         .then(response => {
             if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
+                alert("An error occured while deleting post. Please try again.")
                 return;
             }
             else if (response.data.startsWith("UERROR:")){
@@ -159,6 +162,7 @@ function submitComment() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
+            alert("An error occured while commenting on post. Please try again.")
             return;
         }
         else if (response.data.startsWith("UERROR:")){
@@ -219,6 +223,7 @@ function submitEdit() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
+            alert("An error occured while editing post. Please try again.")
             return;
         }
         else if (response.data.startsWith("UERROR:")){
@@ -297,11 +302,12 @@ function deleteComment(postId, commentId){
         .then(response => {
             if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
+                alert("An error occured while deleting comment. Please try again.")
                 return;
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("An error occured while submitting post. Please try again.")
+                alert("An error occured while deleting comment. Please try again.")
                 return;
             }
             console.log(response.data);
