@@ -99,6 +99,9 @@ def createAccount():
     DI.save()
 
     verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
 
     altText = f"""
     Dear {request.json["username"]},
@@ -227,12 +230,48 @@ def editEmail():
     if response != True:
         Logger.log("API EDITEMAIL ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(targetAccountID, response))
         return "ERROR: Failed to change email."
-    else:
-        # Update the email in the data
-        DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
-        DI.save()
-        FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
-        return "SUCCESS: Email updated."
+    
+    verification = FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
+    if verification != True:
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email; response: {}".format(response))
+        return "ERROR: Update email failed."
+
+    ## Generate email verification link
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = request.json["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(response))
+        return "ERROR: Email verification link generation failed."
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    ## Dispatch email with link via Emailer
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+
+    # Update the email in the data
+    DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
+    DI.save()
+    
+    return "SUCCESS: Email updated and verification sent!"
 
 @apiBP.route('/api/resendEmail', methods=['POST'])
 def resendEmail():
@@ -253,6 +292,9 @@ def resendEmail():
     username = DI.data["accounts"][targetAccountID]["username"]
     email = DI.data["accounts"][targetAccountID]["email"]
     verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
 
     altText = f"""
     Dear {username},
