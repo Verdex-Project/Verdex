@@ -83,7 +83,8 @@ def createAccount():
     # Create a new account
     tokenInfo = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
     if isinstance(tokenInfo, str):
-        return "UERROR: Account already exists."
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Account creation failed; response: {}".format(tokenInfo))
+        return "UERROR: Please enter a valid Email."
     
     accID = Universal.generateUniqueID()
     DI.data["accounts"][accID] = {

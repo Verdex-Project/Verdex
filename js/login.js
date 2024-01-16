@@ -1,17 +1,3 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//     const usernameInput = document.getElementById("usernameInput");
-//     const passwordInput = document.getElementById("passwordInput");
-//     const signInButton = document.getElementById("signInButton");
-
-//     signInButton.addEventListener("click", function () {
-//         const username = usernameInput.value;
-//         const password = passwordInput.value;
-        
-//         console.log("Username:", username);
-//         console.log("Password:", password);
-//     });
-// });
-
 document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
@@ -35,9 +21,8 @@ function signIn() {
         return
     }
 
-    statusLabel.innerText = "Logging you in..."
-    statusLabel.style.color = 'green'
     signInButton.disabled = true
+    signInButton.innerText = "Logging you in..."
 
     axios({
         method: 'post',
@@ -57,7 +42,7 @@ function signIn() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
-                        statusLabel.innerHTML = "Logged in! Redirecting now..."
+                        signInButton.innerText = "Logged in! Redirecting now..."
                         location.href = `${origin}/account/info`;
                     } else {
                         statusLabel.style.color = "red";
@@ -80,12 +65,14 @@ function signIn() {
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
         signInButton.disabled = false
+        signInButton.innerText = "Sign In"
     })
     .catch(err => {
         statusLabel.style.color = "red";
         statusLabel.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
         console.log("An error occured in connecting to Verdex Servers: " + err)
         signInButton.disabled = false
+        signInButton.innerText = "Sign In"
     })
 
 }

@@ -4,6 +4,7 @@ function changeUsername() {
     const editUsernameButton = document.getElementById("editUsernameButton")
 
     editUsernameButton.disabled = true
+    editUsernameButton.innerText = "Changing Username..."
 
     if (!newUsername || newUsername == "") {
         alert("Please provide a valid username.")
@@ -43,10 +44,14 @@ function changeUsername() {
             alert("An error occured while connecting to Verdex Servers. Please try again later.")
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
+        editUsernameButton.disabled = false
+        editUsernameButton.innerText = "Edit"
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
         alert("An error occured in connecting to Verdex Servers. Please try again later.")
+        editUsernameButton.disabled = false
+        editUsernameButton.innerText = "Edit"
     })
 }
 
@@ -55,12 +60,13 @@ function changeEmail() {
     newEmail = newEmail.trim()
     const editEmailButton = document.getElementById("editEmailButton")
 
-    editEmailButton.disabled = true
-
     if (!newEmail || newEmail == "") {
         alert("Please provide a valid email.")
         return
     }
+
+    editEmailButton.disabled = true
+    editEmailButton.innerText = "Changing Email..."
 
     axios({
         method: 'post',
@@ -95,10 +101,14 @@ function changeEmail() {
             alert("An error occured while connecting to Verdex Servers. Please try again later.")
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
+        editEmailButton.disabled = false
+        editEmailButton.innerText = "Edit"
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
         alert("An error occured in connecting to Verdex Servers. Please try again later.")
+        editEmailButton.disabled = false
+        editEmailButton.innerText = "Edit"
     })
 }
 
