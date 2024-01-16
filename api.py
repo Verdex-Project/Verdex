@@ -260,6 +260,10 @@ def nextDay():
         return check
     
     nextDay = request.json['nextDay']
+
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
     dayCountList = []
 
     for key in DI.data["itineraries"]["days"]:
@@ -276,6 +280,10 @@ def previousDay():
         return check
     
     previousDay = request.json['previousDay']
+
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
     dayCountList = []
 
     for key in DI.data["itineraries"]["days"]:
@@ -328,6 +336,11 @@ def deleteActivity():
     day = request.json["day"]
     activityId = request.json["activityId"]
 
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
     DI.data["itineraries"]["days"][day]["activities"].pop(activityId)
     DI.save()
     
@@ -371,6 +384,19 @@ def editActivityModal():
     endTime = request.json["newEndTime"]
     location = request.json["newLocation"]
     name = request.json["newName"]
+
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'startTime' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'endTime' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'location' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'name' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
     activityIdList = []
