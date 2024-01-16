@@ -79,6 +79,10 @@ def homepage():
         Analytics.generateReport()
     return render_template('homepage.html')
 
+@app.route("/test")
+def test():
+    return render_template("test.html", embedHTML=GoogleMapsService.generateMapEmbedHTML("place", "roadmap", width="90%", height="90%", placeQuery="Marina Bay Sands"))
+
 # Security pages
 @app.route('/security/error')
 def error():
@@ -133,6 +137,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Set up GoogleMapsService
+    GoogleMapsService.checkContext()
     
     ## Set up Analytics
     Analytics.setup()
