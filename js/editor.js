@@ -451,7 +451,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 
     if (!checkEndTime(newEndTime, newStartTime)) {
-        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits!"
+        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and must not be earlier than START TIME"
         return
     } else {
         errorDisplayModal.innerHTML = ""
