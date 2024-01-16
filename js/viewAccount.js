@@ -191,6 +191,11 @@ function deleteIdentity() {
 }
 
 function resendEmail() {
+    const resendEmailBtn = document.getElementById("resendEmailBtn")
+
+    resendEmailBtn.disabled = true
+    resendEmailBtn.innerText = "Resending Email..."
+
     axios({
         method: 'post',
         url: `/api/resendEmail`,
@@ -205,25 +210,40 @@ function resendEmail() {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
                         console.log("Email verification sent!")
+                        resendEmailBtn.innerText = "Email Resent!"
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")
                         console.log("Unknown response received: " + response.data)
+                        resendEmailBtn.disabled = false
+                        resendEmailBtn.innerText = "Resend Verification Email"
                     }
                 } else {
                     alert("User error occured. Check logs for more information.")
                     console.log("User error occured: " + response.data)
+                    resendEmailBtn.disabled = false
+                    resendEmailBtn.innerText = "Resend Verification Email"
                 }
             } else {
+                if (response.data == "ERROR: Email already verified!") {
+                    location.reload()
+                    return
+                }
                 alert("An error occured in resending the email verification. Please try again.")
                 console.log("Error occured in resending email verification: " + response.data)
+                resendEmailBtn.disabled = false
+                resendEmailBtn.innerText = "Resend Verification Email"
             }
         } else {
             alert("An error occured while connecting to Verdex Servers. Please try again later.")
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
+            resendEmailBtn.disabled = false
+            resendEmailBtn.innerText = "Resend Verification Email"
         }
     })
     .catch(err => {
         console.log("An error occured in connecting to Verdex Servers: " + err)
         alert("An error occured in connecting to Verdex Servers. Please try again later.")
+        resendEmailBtn.disabled = false
+        resendEmailBtn.innerText = "Resend Verification Email"
     })
 }
