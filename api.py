@@ -266,16 +266,19 @@ def deleteComment():
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if 'commentId' not in request.json:
-        return "ERROR: One or more payload parameters are missing."
+        return "ERROR: One or more payload parameters were not provided."
     
     post_id = request.json['postId']
     comment_id = request.json['commentId']
 
     if post_id in DI.data["forum"]:
-        del DI.data["forum"][post_id]["comments"][comment_id]
-        DI.save()
-        return "SUCCESS: Comment was successfully removed from the post in the system."
-    elif post_id not in DI.data["forum"]:
+        if comment_id in DI.data["forum"][post_id]["comments"]:
+            del DI.data["forum"][post_id]["comments"][comment_id]
+            DI.save()
+            return "SUCCESS: Comment was successfully removed from the post in the system."
+        else:
+            return "ERROR: Comment ID not found in system."
+    else:
         return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/submitPost', methods=['POST'])

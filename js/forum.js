@@ -75,7 +75,7 @@ function submitPost() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("An error occured while submitting post. Please try again.")
+            alert("UERROR: Post failed to submit.")
             return;
         }
         console.log(response.data)
@@ -100,7 +100,7 @@ function likePost(postId) {
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("An error occured while liking post. Please try again.")
+                alert("UERROR: Failed to like post.")
                 return;
             }
         })
@@ -121,7 +121,7 @@ function deletePost(postId){
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("An error occured while deleting post. Please try again.")
+                alert("UERROR: Failed to delete post.")
                 return;
             }
             console.log(response.data);
@@ -167,7 +167,7 @@ function submitComment() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("An error occured while commenting on post. Please try again.")
+            alert("UERROR: Comment failed to submit.")
             return;
         }
         console.log(response.data)
@@ -228,7 +228,7 @@ function submitEdit() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("An error occured while editing post. Please try again.")
+            alert("UERROR: Edits failed to submit.")
             return;
         }
         console.log(response.data)
@@ -307,7 +307,7 @@ function deleteComment(postId, commentId){
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("An error occured while deleting comment. Please try again.")
+                alert("UERROR: Failed to delete comment.")
                 return;
             }
             console.log(response.data);

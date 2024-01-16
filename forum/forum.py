@@ -8,5 +8,5 @@ forumBP = Blueprint("forum", __name__)
 @forumBP.route('/verdextalks')
 def verdextalks():
 
-    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"])
+    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"])
     
