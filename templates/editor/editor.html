@@ -73,7 +73,7 @@
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
                                 <h5 id="activityLocation">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["location"] }}</h5> <h5> &nbsp | &nbsp  </h5><h5 id="activityName">{{ itinerary_data["itineraries"]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
 
                             <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -117,7 +117,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary" onclick="saveActivityEdits('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
+                                            <button type="button" class="btn btn-primary"
+                                            onclick="saveActivityEdits('{{ activityId }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['location'] }}', '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['name'] }}',
                                             '{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['startTime'] }}','{{ itinerary_data['itineraries']['days'][day]['activities'][activityId]['endTime'] }}')">Save Edits</button>
                                         </div>
                                     </div>

@@ -538,3 +538,31 @@
 #rating h6 {
     padding-left: 10px;
 }
+
+.btn.btn-primary {
+    background: none;
+    color: blue;
+    transition: 0.2s ease-out;
+}
+
+.btn.btn-primary:hover {
+    padding-left: 14px;
+    padding-right: 14px;
+    background: blue;
+    color :white;
+    transition: 0.2s;
+}
+
+.btn.btn-secondary{
+    background: none;
+    color: grey;
+    transition: 0.2s ease-out;
+}
+
+.btn.btn.btn-secondary:hover {
+    padding-left: 14px;
+    padding-right: 14px;
+    background: grey;
+    color :white;
+    transition: 0.2s;
+}
