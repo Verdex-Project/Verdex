@@ -226,7 +226,6 @@ def like_post():
     check = checkHeaders(request.headers)
     if check != True:
         return check
-    
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
 

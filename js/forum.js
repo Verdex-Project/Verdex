@@ -75,7 +75,7 @@ function submitPost() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("UERROR: Post failed to submit.")
+            alert(response.data.substring("UERROR: ".length))
             return;
         }
         console.log(response.data)
@@ -100,7 +100,7 @@ function likePost(postId) {
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("UERROR: Failed to like post.")
+                alert(response.data.substring("UERROR: ".length))
                 return;
             }
         })
@@ -121,7 +121,7 @@ function deletePost(postId){
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("UERROR: Failed to delete post.")
+                alert(response.data.substring("UERROR: ".length))
                 return;
             }
             console.log(response.data);
@@ -167,7 +167,7 @@ function submitComment() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("UERROR: Comment failed to submit.")
+            alert(response.data.substring("UERROR: ".length))
             return;
         }
         console.log(response.data)
@@ -228,7 +228,7 @@ function submitEdit() {
         }
         else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
-            alert("UERROR: Edits failed to submit.")
+            alert(response.data.substring("UERROR: ".length))
             return;
         }
         console.log(response.data)
@@ -307,7 +307,7 @@ function deleteComment(postId, commentId){
             }
             else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
-                alert("UERROR: Failed to delete comment.")
+                alert(response.data.substring("UERROR: ".length))
                 return;
             }
             console.log(response.data);
