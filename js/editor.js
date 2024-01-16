@@ -463,7 +463,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         return
     } else {
         errorDisplayModal.innerHTML = "" 
-        newLocation = newLocation
+        newLocation = capitalizeEachWord(newLocation)
     }
 
     if (!checkName(newName)) {
@@ -471,7 +471,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         return
     } else {
         errorDisplayModal.innerHTML = ""
-        newName = newName
+        newName = capitalizeEachWord(newName)
     }
 
 
