@@ -2,7 +2,7 @@
 
 {% block tabTitle %}Successfully submited form{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,7 @@
     <p class="success">Thank you for your submission.</p>
     <p class="success">We will get back to your question by the email you provided</p>
     <a href="{{ url_for ('faq.faq') }}">
-        <p>Go back to Faq page</p>
+        <p>Go back to FAQ page</p>
     </a>
     <script src="/assets/copyright"></script>
 </div>

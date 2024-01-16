@@ -5,52 +5,12 @@ html {
 h1 {
     color: #333;
 }
-
-.accordion-button {
-    background-color: #198754;
-    color: white;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    padding: 10px 15px;
-    margin-left:75px;
-    margin-right:75px;
-    width:90%;
-}
-
-.accordion-item {
-    background-color: white;
-    border: none;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.accordion-body {
-    background-color: white;
-    color: #000000;
-    padding: 15px; 
-    margin-left:75px;
-    margin-right:75px;
-    width:90%;
-}
-
-.accordion-header {
-    margin-bottom: 0;
-}
-h2.accordion-header {
-    color: #333;
+.faq{
     text-align: center;
-    margin-top: 20px;
-    font-family: Arial, sans-serif;
+    margin-bottom:30px;
+    margin-top:30px;
 }
 
-.accordion-item:not(.collapsed) .accordion-button {
-    background-color: #198754 !important;
-    color: white !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
 form {
     max-width: 400px;
     margin: 20px auto;
@@ -113,4 +73,13 @@ input[type="submit"]:hover {
 }
 #contact{
     margin-left:10px;
+}
+.link{
+    text-align: center;
+}
+.here{
+    font-size:20px;
+}
+.contact{
+    text-align: center;
 }

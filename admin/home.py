@@ -1,11 +1,12 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, flash, session, Blueprint
 import json, os, datetime
+from models import  Universal
 adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin/dashboard')
 def home():
     return render_template('admin/home.html')
-@adminHomeBP.route('/user_management')
+@adminHomeBP.route('/admin/user_management')
 def user_management():
     return render_template('admin/user_management.html')
 @adminHomeBP.route('/admin/report')

@@ -1,12 +1,12 @@
 {% extends 'baseNav.html' %}
 {% block title %}Contact Us{% endblock %}
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
     <title>Contact Us</title>
 {% endblock %}
 
 {% block body %}
-    <h2>Contact Us</h2>
+    <h2 class="contact">Contact Us</h2>
 
     <form id="contactForm" method="post" action ="{{ url_for('faq.contact_success') }}">
         <label for="name">Name:</label>

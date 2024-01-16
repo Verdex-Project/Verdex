@@ -11,7 +11,7 @@ reportBP = Blueprint("report", __name__)
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
-    return render_template('admin/report.html', data=data, date = datetime.datetime.now().strftime("%d %B %I:%M %p"))
+    return render_template('admin/report.html', data=data)
 #Report generation feature
 @reportBP.route('/report/generate', methods=['POST', 'GET'])
 def generate_report():
@@ -54,7 +54,6 @@ def download_report(report_id):
 @reportBP.route('/report/delete/<report_id>', methods=['POST', 'GET'])
 def delete_report(report_id):
     report_file_path = os.path.join(Analytics.reportsFolderPath, f'report-{report_id}.txt')
-    Logger.log(report_file_path)
     if not os.path.isfile(report_file_path):
         flash("ERROR: The report file path is not found.")
         return redirect(url_for('error'))

@@ -87,7 +87,7 @@ body {
 
 .content {
     margin-left:250px;
-    margin-top:-1000px;
+    margin-top:-100vh;
 }
 .content h2{  
     z-index:-1;
