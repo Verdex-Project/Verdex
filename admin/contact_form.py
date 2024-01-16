@@ -1,5 +1,5 @@
 from flask import  render_template, request, redirect, url_for, Blueprint
-from main import Universal
+from models import *
 import uuid, os, json, datetime
 contactBP = Blueprint("faq", __name__)
 
@@ -42,22 +42,21 @@ def success():
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
-        unique_id = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")+ str(uuid.uuid4().hex)[:4]
+        # sample = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+        # loaded = datetime.datetime.strptime(sample, Universal.systemWideStringDatetimeFormat)
+        # toShowUser = datetime.datetime.strftime(loaded, "%d %b %Y %I:%M %p")
+        time = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+        loaded = datetime.datetime.strptime(time, Universal.systemWideStringDatetimeFormat)
+        toShowUser = datetime.datetime.strftime(loaded, "%Y%m%dT%H%M%S")
+        unique_id = toShowUser+ str(uuid.uuid4().hex)[:4]
         form_data ={
             'id': unique_id,
             'name': name,
             'email': email,
             'message': message
         }
-        json_file_path = 'form_data.json'
-        try:
-            with open(json_file_path, 'r') as file:
-                existing_data = json.load(file)
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
-            existing_data = {}
-        # Append the new form data to the existing data
-        existing_data[unique_id] = form_data
-        # Write the updated data back to the JSON file
-        with open(json_file_path, 'w') as file:
-            json.dump(existing_data, file)
+        if "contact_form" not in DI.data["admin"]:
+            DI.data["admin"]["contact_form"] = {}
+        DI.data["admin"]["contact_form"][unique_id]= form_data
+        DI.save()
         return render_template('misc/success.html')

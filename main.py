@@ -248,9 +248,6 @@ if __name__ == '__main__':
     app.register_blueprint(itineraryGenBP)
     
     ## Admin routes
-    # from admin.report import reportBP
-    # app.register_blueprint(reportBP)
-
     from admin.contact_form import contactBP
     app.register_blueprint(contactBP)
 
