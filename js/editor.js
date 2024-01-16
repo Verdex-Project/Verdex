@@ -503,12 +503,17 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
             console.log("Response:", response);  // Add this line to print the response
             if (response.status == 200) {
                 if (!response.data.startsWith("ERROR:")) {
-                    if (response.data.startsWith("SUCCESS:")) {
-                        alert("Your Itinerary is edited successfully!");
-                        window.location.reload();
+                    if (!response.data.startsWith("UERROR")) {
+                        if (response.data.startsWith("SUCCESS:")) {
+                            alert("Your Itinerary is edited successfully!");
+                            window.location.reload();
+                        } else {
+                            alert("An unknown response was recieved from Verdex Servers.")
+                            console.log("Unknown response received: " + response.data)
+                        }
                     } else {
-                        alert("An unknown response was recieved from Verdex Servers.")
-                        console.log("Unknown response received: " + response.data)
+                        alert("User error occured. Check for user inputs and try again")
+                        console.log("User error occurred; error: " + response.data)
                     }
                 } else {
                     alert("An error occured while updating your edits for your activity. Please try again later.")
