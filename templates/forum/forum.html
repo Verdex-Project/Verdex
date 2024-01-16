@@ -47,8 +47,11 @@
                 </div>
             </div>
             <div class="post-section-container">
+                {% if postsInfoJson.items()|length == 0 %}
+                    <h4 id="no-posts-header">It's quiet here...</h4>
+                {% endif %}
                 {% for post_username, post_data in postsInfoJson.items() %}
-                <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
+                    <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
                         <div class="post-content">
                             <div class="nameAndTagHeader">
                                 <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>

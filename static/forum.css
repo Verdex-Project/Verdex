@@ -538,3 +538,8 @@ body {
     margin-bottom: 0;
     color: #427b44;
 }
+
+#no-posts-header {
+    text-align: center;
+    color: #427b44;
+}
