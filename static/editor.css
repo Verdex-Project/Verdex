@@ -84,13 +84,13 @@
     padding-right: 10px;
 }
 
-#startTimeModal, #endTimeModal{
+[id^="startTimeModal"], [id^="endTimeModal"]{
     cursor: pointer;
     transition: 0.5s;
 }
 
 
-#startTimeModal:hover, #endTimeModal:hover{
+[id^="startTimeModal"]:hover, [id^="endTimeModal"]:hover{
     cursor: pointer;
     border: 2px solid black;
     border-radius: 10px;
@@ -99,7 +99,7 @@
     cursor: text;
 }
 
-#startTimeModal:focus, #endTimeModal:focus{
+[id^="startTimeModal"]:focus, [id^="endTimeModal"]:focus{
     cursor: pointer;
     border: 2px solid black;
     border-radius: 10px;
@@ -145,7 +145,7 @@
     background: white;
 }
 
-#activityPicture {
+[id^="activityPicture"] {
     width: 100%;
     height: auto;
     justify-content: center;
@@ -153,19 +153,19 @@
     align-items: center;
 }
 
-#activityPicture img{
+[id^="activityPicture"] img{
     width: 58% ;
     height: auto;
     transition: 0.5s ease-out;
 }
 
-#activityPicture img:hover{
+[id^="activityPicture"] img:hover{
     width: 60% ;
     height: auto;
     transition: 0.5s;
 }
 
-#activityPicture img {
+[id^="activityPicture"] img {
     border: 2px solid black;
 }
 
@@ -191,12 +191,12 @@
     padding-top: 10px;
 }
 
-#activityLocationModal, #activityNameModal{
+[id^="activityLocationModal"], [id^="activityNameModal"]{
     padding: 12px 10px 12px 10px;
     transition: 0.5s ease-out;
 }
 
-#activityLocationModal:hover, #activityNameModal:hover {
+[id^="activityLocationModal"]:hover, [id^="activityNameModal"]:hover {
     border: 2px solid black;
     border-radius: 10px;
     padding: 14px 12px 14px 12px;
@@ -204,12 +204,19 @@
     cursor: text;
 }
 
-#activityLocationModal:focus, #activityNameModal:focus {
+[id^="activityLocationModal"]:focus, [id^="activityNameModal"]:focus {
     border: 2px solid black;
     border-radius: 10px;
     padding: 14px 12px 14px 12px;
     transition: 0.5s;
     cursor: text;
+}
+
+[id^="errorDisplayModal"] {
+    text-align: center;
+    color: red;
+    padding-top: 25px;
+    font-weight: bold;
 }
 
 #activityDescription {

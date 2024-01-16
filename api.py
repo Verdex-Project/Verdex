@@ -358,3 +358,59 @@ def newActivityStartEndTime():
     DI.save()
 
     return "SUCCESS: New activity start time and end time updated."
+
+@apiBP.route("/api/editActivityModal", methods = ['POST'])
+def editActivityModal():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["dayCount"]
+    activityId = request.json["activityId"]
+    startTime = request.json["newStartTime"]
+    endTime = request.json["newEndTime"]
+    location = request.json["newLocation"]
+    name = request.json["newName"]
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "ERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "ERROR: Activity ID not found!"
+    
+    if not startTime.isnumeric():
+        return "ERROR: Start Time is not a numeric value"
+
+    if not endTime.isnumeric():
+        return "ERROR: End Time is not a numeric value"
+
+    if len(startTime) != 4:
+        return "ERROR: Start Time Format is not correct"
+    else:
+        DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = startTime
+    
+    # timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) < int(startTime) + 30 :
+        return "ERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
+    else:
+        DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = endTime
+
+    if len(location) > 10:
+        return "ERROR: Activity Location should be less than 10 characters!"
+    else:
+        DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = location
+
+    if len(name) > 25:
+        return "ERROR: Activity name should be less than 25 characters!"
+    else:
+        DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = name
+
+    DI.save()
+    return "SUCCESS: Activity edits is saved successfully"
