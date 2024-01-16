@@ -339,7 +339,7 @@ def deleteItinerary():
     if check != True:
         return check
 
-    del DI.data["itineraries"]
+    DI.data["itineraries"] = {}
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
