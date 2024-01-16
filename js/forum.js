@@ -70,6 +70,10 @@ function submitPost() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
             alert("An error occured while submitting post. Please try again.")
             return;
         }
@@ -85,10 +89,15 @@ function likePost(postId) {
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-            if (!response.data.startsWith("ERROR:")){
+            if (typeof response.data !== "string"){
                 likeButton.innerHTML = `Likes (${response.data.likes})`;
             }
             else if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
                 alert("An error occured while liking post. Please try again.")
                 return;
             }
@@ -104,6 +113,10 @@ function deletePost(postId){
         axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
             if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
                 console.log(response.data)
                 alert("An error occured while deleting post. Please try again.")
                 return;
@@ -145,6 +158,10 @@ function submitComment() {
     })
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
             console.log(response.data)
             alert("An error occured while commenting on post. Please try again.")
             return;
@@ -202,7 +219,11 @@ function submitEdit() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
-            alert("An error occured while submitting edits. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert("An error occured while editing post. Please try again.")
             return;
         }
         console.log(response.data)
@@ -276,7 +297,11 @@ function deleteComment(postId, commentId){
         .then(response => {
             if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
-                alert("An error occured while deleting comment. Please try again.")
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
+                alert("An error occured while submitting post. Please try again.")
                 return;
             }
             console.log(response.data);
