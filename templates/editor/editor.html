@@ -4,6 +4,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+    <script src="/assets/editorJS"></script>
 {% endblock %}
 
 {% block body %}
@@ -17,58 +18,64 @@
 
         <div id="editorPanel-sub-header"> <!--SUB HEADER-->
             <div id="sub-headder-box-left">
-                <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong> </button></div>
-                <div id="dayCount"><h4>Day {{ days }}</h4></div>
+                {% if day != dayCountList[0] %}
+                <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong></button></div>
+                {% else %}
+                <div id="changeDayArrowLeft-no"><button><strong><</strong></button></div>
+                {% endif %}
+                <div id="dayCount"><h4>Day {{ day }}</h4></div>
+                {% if day != dayCountList[-1] %}
                 <div id="changeDayArrowRight" onclick="nextDay()"><button><strong>></strong></button></div>
+                {% else %}
+                <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
+                {% endif %}
             </div>
             <div id="sub-headder-box-right">
                 <div id="date">
-                    <h6>30.12.2023 Saturday<!--{{ [days][date] }}--></h6>
+                    <h6>{{ itinerary_data["itineraries"]["days"][day]["date"] }}</h6>
                 </div>
             </div>
         </div>
 
         <div id="activityLogBox" ondrop="drop(event)" ondragover="allowDrop(event)"> <!--ACTIVITY LOG--> <!--scrollable-->
             <!--get current day from dayCount-->
-            {% for j in activities %}
+            {% for activityInfo in activitiesInfo %}
                 {% if not loop.last %}
                     <div id="activityBox">
-
                         <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
-                            <div id="timestart">
+                            <div id="timeStart">
                                 <div>
-                                    <h3 id="startTime">{{ startTime }}</h3>
+                                    <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
-                            <div id="divider">-</div>
+                            <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                             <div id="timeEnd">
                                 <div>
-                                    <h3 id="endTime">{{ endTime }}</h3>
+                                    <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
                                 </div>
-                                <div id="timeDropdown">
+                                <!-- <div id="timeDropdown">
                                     <button id="timeDropButton">▼</button>
                                     <div id="timeDropdownContent">
-                                        <!--time radio selection (interval:30minutes/1hour)-->
+                                        <time radio selection (interval:30minutes/1hour)
                                     </div>
-                                </div>
-                            </div>
+                                </div> -->
+                            </div>  
                         </div>
 
-                        <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div>
 
                         <div id="activityFooter">
-                            <div id="acticityDescription"> <!--left-->
-                                <p>{{ location }} | {{ name }}</p>
+                            <div id="activityDescription"> <!--left-->
+                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">
-                                    <img src="#" alt="Delete">
+                                    <h5>Delete</h5>
                                 </button>
                             </div>
                         </div>
@@ -76,7 +83,7 @@
 
                     <div id="transportBox">
                         <div id="etaBox">
-                            <!--getETA-->
+                            <p>30 mins</p><!--getETA-->
                         </div>
                         <div id="processArrow">
                             <h1>↓</h1> <!--Or use image to replace-->
@@ -98,7 +105,7 @@
                                 </div>
                                 <div id="detailJourney">
                                     <button id="detailJoutneyButton" onclick="detailedJourney()">
-                                        <img src="#" alt="#">
+                                        <img src="/static//Images/expandButton.png" alt="#">
                                     </button>
                                 </div>
                             </div>
@@ -106,48 +113,50 @@
                     </div>
                 {% endif %}
                 {% if loop.last %}
-                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
-                        <div id="timestart">
-                            <div>
-                                {{ startTime }}
-                            </div>
-                            <div id="timeDropdown">
-                                <button id="timeDropButton">▼</button>
-                                <div id="timeDropdownContent">
-                                    <!--time radio selection (interval:30minutes/1hour)-->
+                    <div id="activityBox">
+                        <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                            <div id="timeStart">
+                                <div>
+                                    <h3 id="startTime">{{ activityInfo['startTime'] }}</h3>
                                 </div>
+                                <!-- <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        time radio selection (interval:30minutes/1hour)
+                                    </div>
+                                </div> -->
+                            </div>
+                            <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                            <div id="timeEnd">
+                                <div>
+                                    <h3 id="endTime">{{ activityInfo['endTime'] }}</h3>
+                                </div>
+                                <!-- <div id="timeDropdown">
+                                    <button id="timeDropButton">▼</button>
+                                    <div id="timeDropdownContent">
+                                        time radio selection (interval:30minutes/1hour)
+                                    </div>
+                                </div> -->
                             </div>
                         </div>
-                        <div id="divider">-</div>
-                        <div id="timeEnd">
-                            <div>
-                                {{ endTime }}
-                            </div>
-                            <div id="timeDropdown">
-                                <button id="timeDropButton">▼</button>
-                                <div id="timeDropdownContent">
-                                    <!--time radio selection (interval:30minutes/1hour)-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="activityPicture"><img src="#" alt="#"></div> <!--Image Box-->
+
+                        <div id="activityPicture"><img src="{{ activityInfo['imageURL'] }}" alt="#"></div> <!--Image Box-->
 
                         <div id="activityFooter">
-                            <div id="acticityDescription"> <!--left-->
-                                <p>Example | Example</p>
+                            <div id="activityDescription"> <!--left-->
+                                <h5>{{ activityInfo['location'] }} | {{ activityInfo['name'] }}</h5><button id="editActivityButton" onclick="editActivity()"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
                             <div id="deleteActivity"> <!--right-->
                                 <button id="deleteButton">
-                                    <img src="#" alt="Delete">
+                                    <h5>Delete</h5>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <div id="addExtra">
-                        <button id="addButton" onclick="addNewBlankActivity()"> <!--Add Button--> <!--Add drop area-->
-                            <img src="#" alt="Add Here">
+                        <button id="addButton" onclick="addNewActivity()"> 
+                            <h1>+</h1>
                         </button>
                     </div>
                 {% endif %}
@@ -157,13 +166,13 @@
         <div id="activityPanelFooter"> <!--Footer-->
             <div id="deleteItinerary">
                 <button id="deleteItineraryButton">
-                    <img src="#" alt="#" style="float: left;"><h5 style="float: right;">Delete</h5>
+                    <h5>Delete Itinerary</h5>
                 </button>
             </div>
 
             <div id="saveItinerary">
                 <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
-                    <h5  style="float: left">Proceed</h5><img src="#" alt="#" style="float: right;">
+                    <h5>Proceed</h5>
                 </button>
             </div>
         </div>

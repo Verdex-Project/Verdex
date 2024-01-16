@@ -1,11 +1,30 @@
 from flask import Flask,render_template,Blueprint, request
-from flask_cors import CORS
-import json
+from main import DI, Universal
+import json, os, datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
-@editorPage.route("/editor", methods=['GET', 'POST'])
-def editor():
+@editorPage.route("/editor/<itineraryID>/<day>", methods=['GET', 'POST'])
+def editor(itineraryID, day):
+
+    if itineraryID not in DI.data["itineraries"]["id"]:
+        return render_template("error.html")
+    else:
+        pass
+
+    activitiesInfo = []
+    for activity in DI.data["itineraries"]["days"][day]["activities"].values():
+        name = activity.get('name')
+        location = activity.get('location')
+        imageURL = activity.get('imageURL')
+        startTime = activity.get('startTime')
+        endTime = activity.get('endTime')
+        activitiesInfo.append({"name": name, "location": location, "imageURL": imageURL, "startTime": startTime, "endTime": endTime})
+
+    dayCountList = []
+    for key in DI.data["itineraries"]["days"]:
+        dayCountList.append(str(key))
+
     global itinerary_data 
 
     itinerary_data = itinerary_data if 'itinerary_data' in globals() else {}
@@ -78,7 +97,13 @@ def editor():
             with open('templates/editor/itinerary.json', 'w') as file:
                 json.dump(itinerary_data, file, indent=4)
 
-    return render_template("editor/editorNew.html", itinerary_data=itinerary_data)
+    return render_template(
+        "editor/editor.html", 
+        itineraryID = itineraryID, 
+        day = day, 
+        itinerary_data = DI.data, 
+        activitiesInfo = activitiesInfo,
+        dayCountList = dayCountList)
 
     # if request.method == 'GET':
     #     day_to_delete = request.args.get("deleteDayButton")

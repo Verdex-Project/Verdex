@@ -6,6 +6,8 @@ load_dotenv()
 class Analytics:
     data = []
     filePath = os.path.join(os.getcwd(), "analytics.json")
+    reportsFolderPath = os.path.join(os.getcwd(), "reports")
+    reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
 
     sampleMetricsObject = {
         "get_request": 0,
@@ -15,8 +17,6 @@ class Analytics:
         "sign_outs": 0,
         "verdex_talks_posts": 0,
     }
-    reportsFolderPath = os.path.join(os.getcwd(), "reports")
-    reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
 
     @staticmethod
     def checkPermissions():
@@ -39,38 +39,47 @@ class Analytics:
     def setup():
         if not Analytics.checkPermissions():
             print("ANALYTICS: Analytics disabled as operation permission was not granted.")
-        try:
-            with open(Analytics.filePath, "r") as metrics:
-                Analytics.data = json.load(metrics)
-                print("ANALYTICS: Environment setup for analytics.")
-        except FileNotFoundError:
-            with open(Analytics.filePath, "w") as f:
-                json.dump(Analytics.sampleMetricsObject, f)
-                print("ANALYTICS: Created a new analytics file.")
-        if not os.path.isdir(Analytics.reportsFolderPath):
-            os.mkdir(Analytics.reportsFolderPath)
-            print("ANALYTICS: Created a new reports folder.")
+            return True
         
-        if not os.path.isfile(Analytics.reportsInfoFilePath):
-            with open(Analytics.reportsInfoFilePath, "w") as f:
-                json.dump({}, f)
-                print("ANALYTICS: Created a new reportsInfo.json file.")
+        try:
+            ## Create analytics data file if it does not exist
+            if not os.path.isfile(Analytics.filePath):
+                with open(Analytics.filePath, "w") as f:
+                    json.dump(Analytics.sampleMetricsObject, f)
+            else:
+                with open(Analytics.filePath, "r") as metrics:
+                    Analytics.data = json.load(metrics)
+
+            ## Create reports folder if it does not exist
+            if not os.path.isdir(Analytics.reportsFolderPath):
+                os.mkdir(Analytics.reportsFolderPath)
+            
+            ## Create reportsInfo.json in reports folder if it does not exist
+            if not os.path.isfile(Analytics.reportsInfoFilePath):
+                with open(Analytics.reportsInfoFilePath, "w") as f:
+                    json.dump({}, f)
+
+            print("ANALYTICS: Analytics setup completed.")
+            return True
+        except Exception as e:
+            Logger.log("ANALYTICS SETUP ERROR: Failed to setup environment for analytics; error: {}".format(e))
+            return False
 
     @staticmethod
     def load_metrics():
         if not Analytics.checkPermissions():
             Logger.log("ANALYTICS LOAD_METRICS: Permission not granted to load metrics from data file.")
             return False
+        
         try:
-            with open(Analytics.filePath, 'r') as metrics_file:
-                Analytics.data = json.load(metrics_file)
-                print("ANALYTICS LOAD_METRICS: Metrics loaded successfully.")
-                print("Loaded data:", Analytics.data)  # Print the loaded data
-                return True
-        except FileNotFoundError:
-            print("ANALYTICS LOAD_METRICS: File not found. Creating a new file.")
-            with open(Analytics.filePath, "w") as f:
-                json.dump(Analytics.sampleMetricsObject, f)
+            ## Create analytics data file if it does not exist
+            if not os.path.isfile(Analytics.filePath):
+                with open(Analytics.filePath, "w") as f:
+                    json.dump(Analytics.sampleMetricsObject, f)
+            else:
+                with open(Analytics.filePath, "r") as metrics:
+                    Analytics.data = json.load(metrics)
+            
             return True
         except Exception as e:
             Logger.log(f"ANALYTICS LOAD_METRICS ERROR: Failed to load metrics from data file; error: {e}")
@@ -80,12 +89,16 @@ class Analytics:
     def save_metrics():
         if not Analytics.checkPermissions():
             Logger.log("ANALYTICS SAVE_METRICS: Permission not granted to save metrics to data file.")
+            return False
+        
         try:
             with open(Analytics.filePath, "w") as f:
                 json.dump(Analytics.data, f)
+            
             return True
         except Exception as e:
             Logger.log("ANALYTICS SAVE_METRICS ERROR: Failed to save metrics; error: {}".format(e))
+            return False
     
     @staticmethod
     def add_metrics(event_type: str):
@@ -110,7 +123,7 @@ class Analytics:
         ## Check for permission
         if not Analytics.checkPermissions():
             print("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.")
-            Logger.log("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.")
+            Logger.log("ANALYTICS GENERATEREPORT: Generate report attempt ignored due to insufficient permissions.", debugPrintExplicitDeny=True)
             return "ERROR: Insufficient permissions to generate report."
         
         ## Check whether reports folder exists; if not, create using os.mkdir
@@ -120,7 +133,7 @@ class Analytics:
             print("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Logger.log("ANALYTICS GENERATEREPORT: Analytics data not loaded; Loading now.")
             Analytics.load_metrics()
-
+        
         ## Fill in metrics data into a massive string
         report_text = f"""VERDEX ANALYTICS REPORT
 -----------------------

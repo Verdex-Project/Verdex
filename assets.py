@@ -39,7 +39,7 @@ def viewAccountJS():
 
 @assetsBP.route("/assets/editorJS")
 def editorJS():
-    return fileContent("js/editorNew.js")
+    return fileContent("js/editor.js", passAPIKey=True)
 
 @assetsBP.route("/assets/completionJS")
 def completionJS():
