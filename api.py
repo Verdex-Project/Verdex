@@ -443,9 +443,9 @@ def editActivityModal():
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
-    # timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) <= int(startTime) + 30 :
-        return "UERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
+    timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+        return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
