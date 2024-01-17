@@ -1,16 +1,16 @@
-function allowDrop(event) {
-    event.preventDefault();
-}
+// function allowDrop(event) {
+//     event.preventDefault();
+// }
 
-function drag(event) {
-    event.dataTransfer.setData("text", event.target.id);
-}
+// function drag(event) {
+//     event.dataTransfer.setData("text", event.target.id);
+// }
 
-function drop(event) {
-    event.preventDefault();
-    var fetchData = event.dataTransfer.getData("text");
-    event.target.appendChild(document.getElementById(fetchData));
-}
+// function drop(event) {
+//     event.preventDefault();
+//     var fetchData = event.dataTransfer.getData("text");
+//     event.target.appendChild(document.getElementById(fetchData));
+// }
 
 function capitalizeEachWord(str) {
     str = String(str).toLowerCase()
@@ -477,7 +477,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
 
     console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime) && checkLocation(newLocation) && checkName(newName))
     console.log(checkStartTime(newStartTime))
-    console.log(checkEndTime(newEndTime))
+    console.log(checkEndTime(newEndTime, newStartTime))
     console.log(checkLocation(newLocation))
     console.log(checkName(newName))
 

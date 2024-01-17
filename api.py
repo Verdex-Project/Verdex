@@ -261,7 +261,7 @@ def nextDay():
     
     nextDay = request.json['nextDay']
 
-    if 'day' not in request.json:
+    if 'nextDay' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
@@ -281,7 +281,7 @@ def previousDay():
     
     previousDay = request.json['previousDay']
 
-    if 'day' not in request.json:
+    if 'previousDay' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
@@ -312,20 +312,20 @@ def deleteComment():
     
     return "SUCCESS: Comment was successfully removed from the post in the system."
 
-@apiBP.route("/api/newActivityLocationName", methods = ['POST'])
-def newActivityLocationName():
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
+# @apiBP.route("/api/newActivityLocationName", methods = ['POST'])
+# def newActivityLocationName():
+#     check = checkHeaders(request.headers)
+#     if check != True:
+#         return check
 
-    day = request.json["day"]
-    activityId = request.json["activityId"]
+#     day = request.json["day"]
+#     activityId = request.json["activityId"]
     
-    DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = request.json["newActivityName"]
-    DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = request.json["newActivityLocation"]
-    DI.save()
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = request.json["newActivityName"]
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = request.json["newActivityLocation"]
+#     DI.save()
 
-    return "SUCCESS: New activity location and name updated."
+#     return "SUCCESS: New activity location and name updated."
 
 @apiBP.route('/api/deleteActivity', methods=['POST'])
 def deleteActivity():
@@ -357,20 +357,20 @@ def deleteItinerary():
     
     return "SUCCESS: Itinerarty is deleted."
 
-@apiBP.route("/api/newActivityStartEndTime", methods = ['POST'])
-def newActivityStartEndTime():
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
+# @apiBP.route("/api/newActivityStartEndTime", methods = ['POST'])
+# def newActivityStartEndTime():
+#     check = checkHeaders(request.headers)
+#     if check != True:
+#         return check
 
-    day = request.json["day"]
-    activityId = request.json["activityId"]
+#     day = request.json["day"]
+#     activityId = request.json["activityId"]
     
-    DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = request.json["newActivityStartTime"]
-    DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = request.json["newActivityEndTime"]
-    DI.save()
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = request.json["newActivityStartTime"]
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = request.json["newActivityEndTime"]
+#     DI.save()
 
-    return "SUCCESS: New activity start time and end time updated."
+#     return "SUCCESS: New activity start time and end time updated."
 
 @apiBP.route("/api/editActivityModal", methods = ['POST'])
 def editActivityModal():
@@ -385,17 +385,25 @@ def editActivityModal():
     location = request.json["newLocation"]
     name = request.json["newName"]
 
-    if 'day' not in request.json:
+    print(request.json)
+
+    if "dayCount" not in request.json:
+        print("false1")
         return "ERROR: One or more required payload parameters not provided."
-    if 'activityId' not in request.json:
+    if "activityId" not in request.json:
+        print("false2")
         return "ERROR: One or more required payload parameters not provided."
-    if 'startTime' not in request.json:
+    if "newStartTime" not in request.json:
+        print("false3")
         return "ERROR: One or more required payload parameters not provided."
-    if 'endTime' not in request.json:
+    if "newEndTime" not in request.json:
+        print("false4")
         return "ERROR: One or more required payload parameters not provided."
-    if 'location' not in request.json:
+    if "newLocation" not in request.json:
+        print("false5")
         return "ERROR: One or more required payload parameters not provided."
-    if 'name' not in request.json:
+    if "newName" not in request.json:
+        print("false6")
         return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
