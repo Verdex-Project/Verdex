@@ -78,3 +78,12 @@ textarea{
 .contact{
     text-align: center;
 }
+
+h2.accordion-header{
+    padding-right:0;
+}
+
+.accordion {
+    margin: auto;
+    width: 60%;
+}
