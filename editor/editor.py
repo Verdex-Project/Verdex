@@ -16,7 +16,10 @@ def editorHome(itineraryID):
 def editorDay(itineraryID, day):
 
     if itineraryID not in DI.data["itineraries"]:
-        return redirect(url_for("error",error="Itinerary Not Found"))
+        return redirect(url_for("error",error="Itinerary Not Found!"))
+
+    if day not in DI.data["itineraries"][itineraryID]["days"]:
+        return redirect(url_for("error",error="Day Not Found!"))
 
     # activitiesInfo = []
     # for activity in DI.data["itineraries"]["days"][day]["activities"].values():
