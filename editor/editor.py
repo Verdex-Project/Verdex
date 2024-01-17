@@ -1,16 +1,22 @@
-from flask import Flask,render_template,Blueprint, request
+from flask import Flask,render_template,Blueprint, request,redirect,url_for
 from main import DI, Universal
 import json, os, datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
-@editorPage.route("/editor/<itineraryID>/<day>", methods=['GET', 'POST'])
-def editor(itineraryID, day):
+@editorPage.route("/editor/<itineraryID>")
+def editorHome(itineraryID):
 
     if itineraryID not in DI.data["itineraries"]:
-        return render_template("error.html")
-    else:
-        pass
+        return redirect(url_for("error",error="Itinerary Not Found"))
+
+    return redirect(url_for("editorPageBP.editorDay", itineraryID=itineraryID, day=1))
+
+@editorPage.route("/editor/<itineraryID>/<day>", methods=['GET', 'POST'])
+def editorDay(itineraryID, day):
+
+    if itineraryID not in DI.data["itineraries"]:
+        return redirect(url_for("error",error="Itinerary Not Found"))
 
     # activitiesInfo = []
     # for activity in DI.data["itineraries"]["days"][day]["activities"].values():
