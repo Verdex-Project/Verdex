@@ -84,7 +84,8 @@ function changeEmail() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
-                        location.reload()
+                        alert("Email changed successfully! For security reasons, you have been logged out. Please sign in again.")
+                        location.href = `${origin}/account/login`
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")
                         console.log("Unknown response received: " + response.data)
@@ -152,6 +153,7 @@ function logoutIdentity() {
 }
 
 function deleteIdentity() {
+    if (!confirm("Are you sure you want to delete your account?")) { return }
     axios({
         method: 'post',
         url: `/api/deleteIdentity`,

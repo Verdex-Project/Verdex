@@ -228,11 +228,14 @@ def editEmail():
             return "UERROR: Email is already taken."
     
     # Success case
+        
+    ## Change email in Firebase Authentication
     response = FireAuth.changeUserEmail(fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"], newEmail = request.json["email"])
     if response != True:
         Logger.log("API EDITEMAIL ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(targetAccountID, response))
         return "ERROR: Failed to change email."
     
+    ## Change email verified status to False in Firebase Authentication (ignore if goes wrong)
     verification = FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
     if verification != True:
         Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email verification status; response: {}".format(response))
@@ -244,6 +247,10 @@ def editEmail():
     if verifyEmailLink.startswith("ERROR"):
         Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(response))
         return "ERROR: Email verification link generation failed."
+    
+    ## Nullify session
+    deleteSession(targetAccountID)
+    del session["idToken"]
 
     altText = f"""
     Dear {username},
@@ -272,7 +279,7 @@ def editEmail():
     DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
     DI.save()
     
-    return "SUCCESS: Email updated and verification sent!"
+    return "SUCCESS: Email updated and verification sent! Please re-login."
 
 @apiBP.route('/api/resendEmail', methods=['POST'])
 def resendEmail():
