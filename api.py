@@ -97,7 +97,7 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False
     }
-    Logger.log("Account with ID accIDHere created.")
+    Logger.log("Account with ID {} created.".format(accID))
     DI.save()
 
     verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
