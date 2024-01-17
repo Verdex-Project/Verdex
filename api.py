@@ -263,9 +263,17 @@ def nextDay():
         return check
     
     nextDay = request.json['nextDay']
+    itineraryID = request.json['itineraryID']
+
+    if 'nextDay' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(nextDay) not in dayCountList:
         return "ERROR: You are not directed to the next day!"
@@ -279,9 +287,16 @@ def previousDay():
         return check
     
     previousDay = request.json['previousDay']
+    itineraryID = request.json['itineraryID']
+
+    if 'previousDay' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(previousDay) not in dayCountList:
         return "ERROR: You are not directed to the previous day!"
@@ -388,7 +403,7 @@ def editPost():
         return "ERROR: One or more payload parameters are missing."
     if "edit_post_tag" not in request.json:
         return "ERROR: One or more payload parameters are missing."
-    
+
     post_id = request.json['post_id']
     edit_user_names = request.json['edit_user_names']
     edit_post_title = request.json['edit_post_title']
@@ -404,3 +419,146 @@ def editPost():
         return "SUCCESS: Post successfully edited."
     elif post_id not in DI.data["forum"]:
         return "ERROR: Post ID not found in system."
+
+# @apiBP.route("/api/newActivityLocationName", methods = ['POST'])
+# def newActivityLocationName():
+#     check = checkHeaders(request.headers)
+#     if check != True:
+#         return check
+
+#     day = request.json["day"]
+#     activityId = request.json["activityId"]
+    
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = request.json["newActivityName"]
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = request.json["newActivityLocation"]
+#     DI.save()
+
+#     return "SUCCESS: New activity location and name updated."
+
+@apiBP.route('/api/deleteActivity', methods=['POST'])
+def deleteActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["day"]
+    itineraryID = request.json['itineraryID']
+    activityId = request.json["activityId"]
+
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
+    DI.save()
+    
+    return "SUCCESS: Activity is deleted."
+
+@apiBP.route('/api/deleteItinerary', methods=['POST'])
+def deleteItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    itineraryID = request.json['itineraryID']
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID] = {}
+    DI.save()
+    
+    return "SUCCESS: Itinerarty is deleted."
+
+# @apiBP.route("/api/newActivityStartEndTime", methods = ['POST'])
+# def newActivityStartEndTime():
+#     check = checkHeaders(request.headers)
+#     if check != True:
+#         return check
+
+#     day = request.json["day"]
+#     activityId = request.json["activityId"]
+    
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = request.json["newActivityStartTime"]
+#     DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = request.json["newActivityEndTime"]
+#     DI.save()
+
+#     return "SUCCESS: New activity start time and end time updated."
+
+@apiBP.route("/api/editActivityModal", methods = ['POST'])
+def editActivityModal():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["activityId"]
+    startTime = request.json["newStartTime"]
+    endTime = request.json["newEndTime"]
+    location = request.json["newLocation"]
+    name = request.json["newName"]
+    
+
+    print(request.json)
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayCount" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "activityId" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newStartTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newEndTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newLocation" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newName" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+    
+    if not startTime.isnumeric():
+        return "UERROR: Start Time is not a numeric value"
+
+    if not endTime.isnumeric():
+        return "UERROR: End Time is not a numeric value"
+
+    if len(startTime) != 4:
+        return "UERROR: Start Time Format is not correct"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
+    
+    # timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) <= int(startTime) + 30 :
+        return "UERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
+
+    if len(location) > 10:
+        return "UERROR: Activity Location should be less than 10 characters!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
+
+    if len(name) > 25:
+        return "UERROR: Activity name should be less than 25 characters!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
+
+    DI.save()
+    return "SUCCESS: Activity edits is saved successfully"
