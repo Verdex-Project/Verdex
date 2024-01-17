@@ -97,11 +97,12 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False
     }
+    Logger.log("Account with ID accIDHere created.")
     DI.save()
 
     verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
     if verifyEmailLink.startswith("ERROR"):
-        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
         return "ERROR: Email verification link generation failed."
 
     altText = f"""
@@ -234,8 +235,7 @@ def editEmail():
     
     verification = FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
     if verification != True:
-        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email; response: {}".format(response))
-        return "ERROR: Update email failed."
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email verification status; response: {}".format(response))
 
     ## Generate email verification link
     username = DI.data["accounts"][targetAccountID]["username"]

@@ -23,11 +23,11 @@ def profileIcon():
 
 @assetsBP.route("/assets/appleLogin", methods=["GET"])
 def appleLogin():
-    return send_file("assets/logos/appleLogin.png", mimetype="image/png")   
+    return send_file("assets/appleLogin.png", mimetype="image/png")   
 
 @assetsBP.route("/assets/appleSignup", methods=["GET"])
 def appleSignup():
-    return send_file("assets/logos/appleSignup.png", mimetype="image/png")
+    return send_file("assets/appleSignup.png", mimetype="image/png")
 
 @assetsBP.route("/assets/copyright")
 def copyright():

@@ -51,7 +51,7 @@ function signIn() {
                     }
                 } else {
                     statusLabel.style.color = "red";
-                    statusLabel.innerHTML = "Incorrect email/username or password. Please try again."
+                    statusLabel.innerText = response.data.substring("UERROR: ".length)
                     console.log("User error occured: " + response.data)
                 }
             } else {

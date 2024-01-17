@@ -36,7 +36,7 @@ def myAccount():
     notVerified = False
     accInfo = FireAuth.accountInfo(DI.data["accounts"][targetAccountID]["idToken"])
     if isinstance(accInfo, str):
-        Logger.log("ACCOUNTS MYACCOUNT: Failed to get account info for email verification (will assume email is verified); error: {}".format(accInfo))
+        Logger.log("ACCOUNTS MYACCOUNT ERROR: Failed to get account info for email verification (will assume email is verified); error: {}".format(accInfo))
         notVerified = True
     else:
         notVerified = not accInfo["emailVerified"]

@@ -90,7 +90,7 @@ function changeEmail() {
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    alert("Email already exists!")
+                    alert(response.data.substring("UERROR: ".length))
                     console.log("User error occured: " + response.data)
                 }
             } else {
