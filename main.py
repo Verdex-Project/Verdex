@@ -2,6 +2,7 @@ import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from models import *
+from emailer import Emailer
 from dotenv import load_dotenv
 from analytics import Analytics
 load_dotenv()
@@ -27,7 +28,7 @@ def deleteSession(accountID):
 
     return True
 
-def manageIDToken():
+def manageIDToken(checkIfAdmin=False):
     '''Returns account ID if token is valid (will refresh if expiring soon) and a str error message if not valid.'''
 
     if "idToken" not in session:
@@ -51,7 +52,7 @@ def manageIDToken():
                     # Refresh token is invalid, delete session entirely
                     deleteSession(accountID)
                     del session["idToken"]
-                    return False
+                    return "ERROR: Your session expired. Please sign in again."
                 
                 DI.data["accounts"][accountID]["idToken"] = response["idToken"]
                 DI.data["accounts"][accountID]["refreshToken"] = response["refreshToken"]
@@ -61,6 +62,10 @@ def manageIDToken():
                 Logger.log("MANAGEIDTOKEN: Refreshed token for account with ID '{}'.".format(accountID))
 
                 session["idToken"] = response["idToken"]
+
+                if checkIfAdmin:
+                    if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
+                        return "ERROR: Access forbidden due to insufficient permissions."
 
             return "SUCCESS: {}".format(accountID)
     
@@ -133,6 +138,9 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Get Emailer to check context
+    Emailer.checkContext()
     
     ## Set up Analytics
     Analytics.setup()
@@ -141,13 +149,13 @@ if __name__ == '__main__':
     Logger.setup()
 
     # Database Synchronisation with Firebase Auth accounts
-    # if FireConn.checkPermissions():
-    #     previousCopy = copy.deepcopy(DI.data["accounts"])
-    #     DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
-    #     DI.save()
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
 
-    #     if previousCopy != DI.data["accounts"]:
-    #         print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
+        if previousCopy != DI.data["accounts"]:
+            print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
     
     if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
         DI.data["itineraries"] = {

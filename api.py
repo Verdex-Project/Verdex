@@ -1,7 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
-from models import *
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Universal
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -84,7 +83,8 @@ def createAccount():
     # Create a new account
     tokenInfo = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
     if isinstance(tokenInfo, str):
-        return "UERROR: Account already exists."
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Account creation failed; response: {}".format(tokenInfo))
+        return "UERROR: Please enter a valid Email."
     
     accID = Universal.generateUniqueID()
     DI.data["accounts"][accID] = {
@@ -92,12 +92,41 @@ def createAccount():
         "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
-        "password": request.json["password"],
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
-        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "disabled": False
     }
+    Logger.log("Account with ID {} created.".format(accID))
     DI.save()
+
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
+
+    altText = f"""
+    Dear {request.json["username"]},
+    
+    Thank you for Thank you for signing up with Verdex! To finish signing up, please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/createAccountEmail.html",
+        username = request.json["username"],
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(request.json["email"], "Welcome To Verdex", altText, html)
+    # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
 
@@ -165,17 +194,138 @@ def editUsername():
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
+    ## Check body
+    if "username" not in request.json:
+        return "ERROR: One or more payload not present."
     
-    # # Check if the username or email is already in use
-    # for accountID in DI.data["accounts"]:
-    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
-    #         return "UERROR: Username is already taken."
+    # Check if the username is already in use
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+            return "UERROR: Username is already taken."
 
     # Update the username in the data
     DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
     DI.save()
 
     return "SUCCESS: Username updated."
+
+@apiBP.route("/api/editEmail", methods = ['POST'])
+def editEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "email" not in request.json:
+        return "ERROR: One or more payload not present."
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == request.json["email"]:
+            return "UERROR: Email is already taken."
+    
+    # Success case
+        
+    ## Change email in Firebase Authentication
+    response = FireAuth.changeUserEmail(fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"], newEmail = request.json["email"])
+    if response != True:
+        Logger.log("API EDITEMAIL ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(targetAccountID, response))
+        return "ERROR: Failed to change email."
+    
+    ## Change email verified status to False in Firebase Authentication (ignore if goes wrong)
+    verification = FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
+    if verification != True:
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email verification status; response: {}".format(response))
+
+    ## Generate email verification link
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = request.json["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(response))
+        return "ERROR: Email verification link generation failed."
+    
+    ## Nullify session
+    deleteSession(targetAccountID)
+    del session["idToken"]
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    ## Dispatch email with link via Emailer
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+
+    # Update the email in the data
+    DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
+    DI.save()
+    
+    return "SUCCESS: Email updated and verification sent! Please re-login."
+
+@apiBP.route('/api/resendEmail', methods=['POST'])
+def resendEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    token = DI.data["accounts"][targetAccountID]["idToken"]
+    verified = FireAuth.accountInfo(token)["emailVerified"]
+    if verified != False:
+        return "ERROR: Email already verified!"
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+    return "SUCCESS: Email verification sent."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
