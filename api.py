@@ -260,13 +260,17 @@ def nextDay():
         return check
     
     nextDay = request.json['nextDay']
+    itineraryID = request.json['itineraryID']
 
     if 'nextDay' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
 
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(nextDay) not in dayCountList:
         return "ERROR: You are not directed to the next day!"
@@ -280,13 +284,16 @@ def previousDay():
         return check
     
     previousDay = request.json['previousDay']
+    itineraryID = request.json['itineraryID']
 
     if 'previousDay' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(previousDay) not in dayCountList:
         return "ERROR: You are not directed to the previous day!"
@@ -334,14 +341,17 @@ def deleteActivity():
         return check
     
     day = request.json["day"]
+    itineraryID = request.json['itineraryID']
     activityId = request.json["activityId"]
 
     if 'day' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
     if 'activityId' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
 
-    DI.data["itineraries"]["days"][day]["activities"].pop(activityId)
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
     DI.save()
     
     return "SUCCESS: Activity is deleted."
@@ -352,7 +362,12 @@ def deleteItinerary():
     if check != True:
         return check
 
-    DI.data["itineraries"] = {}
+    itineraryID = request.json['itineraryID']
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID] = {}
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
@@ -378,43 +393,41 @@ def editActivityModal():
     if check != True:
         return check
     
+    itineraryID = request.json['itineraryID']
     day = request.json["dayCount"]
     activityId = request.json["activityId"]
     startTime = request.json["newStartTime"]
     endTime = request.json["newEndTime"]
     location = request.json["newLocation"]
     name = request.json["newName"]
+    
 
     print(request.json)
 
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
     if "dayCount" not in request.json:
-        print("false1")
         return "ERROR: One or more required payload parameters not provided."
     if "activityId" not in request.json:
-        print("false2")
         return "ERROR: One or more required payload parameters not provided."
     if "newStartTime" not in request.json:
-        print("false3")
         return "ERROR: One or more required payload parameters not provided."
     if "newEndTime" not in request.json:
-        print("false4")
         return "ERROR: One or more required payload parameters not provided."
     if "newLocation" not in request.json:
-        print("false5")
         return "ERROR: One or more required payload parameters not provided."
     if "newName" not in request.json:
-        print("false6")
         return "ERROR: One or more required payload parameters not provided."
 
     dayCountList = []
     activityIdList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(day) not in dayCountList:
         return "UERROR: Day is not found!"
     
-    for key in DI.data["itineraries"]["days"][day]["activities"]:
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
         activityIdList.append(str(key))
     if str(activityId) not in activityIdList:
         return "UERROR: Activity ID not found!"
@@ -428,23 +441,23 @@ def editActivityModal():
     if len(startTime) != 4:
         return "UERROR: Start Time Format is not correct"
     else:
-        DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = startTime
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
     # timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) < int(startTime) + 30 :
+    if len(endTime) != 4 or int(endTime) <= int(startTime) + 30 :
         return "UERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
     else:
-        DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = endTime
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
     if len(location) > 10:
         return "UERROR: Activity Location should be less than 10 characters!"
     else:
-        DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = location
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
 
     if len(name) > 25:
         return "UERROR: Activity name should be less than 25 characters!"
     else:
-        DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = name
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
