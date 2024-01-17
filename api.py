@@ -468,7 +468,7 @@ def deleteItinerary():
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
 
-    DI.data["itineraries"][itineraryID] = {}
+    del DI.data["itineraries"][itineraryID]
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
