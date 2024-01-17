@@ -9,17 +9,29 @@ html {
 }
 
 body {
-    background-color: whitesmoke;
+    background-color: white;
 }
 
 .content {
     font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: space-between;
+}
+
+.natural-flow-content {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140%;
+    box-sizing: border-box;
 }
 
 .list-of-all-filter-buttons-container {
     display: flex;
     justify-content: center;
     margin: 20px;
+    margin-top: 0;
 }
 
 .list-of-all-filter-buttons {
@@ -30,8 +42,7 @@ body {
 .filter-buttons {
     color: white;
     font-size: 120%;
-    display: inline-block;
-    margin-right: 30px;
+    margin-top: 15px;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 30px;
@@ -41,6 +52,7 @@ body {
     border-radius: 15px;
     border: 3px solid rgb(185, 184, 184);
     transition: transform 0.2s ease-in-out;
+    text-align: center;
 }
 
 .filter-buttons:hover {
@@ -48,74 +60,122 @@ body {
     background-color: whitesmoke;
     transition: 0.2s ease;
     color: #66BB69;
-    transform: translateY(-5px);
+    transform: translateX(5px);
 }
 
 .create-a-post-container {
     margin: 20px;
-    margin-right: 10px;
-    border: 3px solid #66BB69;
-    border-radius: 15px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 50px;
-    padding-right: 50px;
-    float: left;
+    padding: 15px;
+    padding-right: 25px;
     background-color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    width: 65%;
+    height: auto;
+    
 }
 
 .create-a-post-button {
-    text-align: center;
-    border: 3px solid rgb(206, 206, 206);
-    border-radius: 15px;
-    padding-left: 70px; 
-    padding-right: 70px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    font-size: 130%;
-    background-color: #66BB69;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
     color: white;
     transition: 0.2s ease;
+    width: 55%;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .create-a-post-button:hover {
-    border: 3px solid #66BB69;
-    font-size: 130%;
-    background-color: white;
+    background-color: whitesmoke;
     color: #66BB69;
     transition: 0.2s ease;
 }
 
-.recent-itineraries-buttons {
-    display: block;
-    margin: 0;
-    padding: 8px 12px;
-    border: 3px solid rgb(206, 206, 206);
-    border-radius: 20px;
-    text-align: center;
-    cursor: pointer;
-    width: 100%;
-    background-color: #66BB69;
-    color: white;
-    transition: 0.2s ease;
+.plus-icon {
+    font-size: 24px;
+    color: #66BB69;
 }
 
-.recent-itineraries-buttons:hover {
-    border: 3px solid #66BB69;
-    transition: 0.2s ease;
-    color: #c3c3c3;
+#plus-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; 
+    height: 40px; 
+    background-color: #ccffcd; 
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.text-container {
+    color: #427b44;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+}
+
+.text {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: -25px;
+}
+
+
+.header {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px; 
+}
+
+.recent-itineraries-buttons {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    color: #fff;
+    padding: 0; 
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
     background-color: white;
 }
 
+.recent-itineraries-buttons:hover {
+    transform: translateY(-5px);
+}
+
+.recent-itineraries-buttons img {
+    width: 210px;
+    height: 170px;
+    object-fit: cover; 
+    border-radius: 10px; 
+    margin: 0 10px;
+}
+
+.recent-itineraries-buttons span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
 .post-section-container {
-    float: right;
     margin: 20px;
-    width: 65%; 
+    width: 65%;
 }
 
 #individual-posts {
-    border: 3px solid #427b44;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     border-radius: 15px;
     margin-bottom: 20px; 
     padding-left: 30px; 
@@ -172,17 +232,6 @@ body {
     transition: 0.2s ease;
 }
 
-.or-separator {
-    text-align: center;
-    font-size: 130%;
-    color: #427b44;
-}
-
-.recent-itineraries-para {
-    font-size: 130%;
-    color: #427b44;
-}
-
 .image {
     float: left;
     border: 2px solid #529954;
@@ -205,7 +254,7 @@ body {
 }
 
 #post-description {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -215,13 +264,13 @@ body {
     text-align: left; 
     margin-top:10px;
     margin-bottom: 30px;
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
 }
 
-#create-a-post-popup, #comment-on-post-popup {
+#create-a-post-popup, #comment-on-post-popup, #edit-post-popup {
     display: none;
     position: fixed;
     top: 0;
@@ -229,6 +278,21 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+#comment-popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 70%;
+    height: 35%;
+    z-index: 2;
 }
 
 #comment-on-post-popup {
@@ -250,12 +314,13 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    width: 85%;
-    height: 85%;
+    width: 70%;
+    height: 70%;
+    z-index: 2;
 }
 
 #close-popup-button {
@@ -283,16 +348,19 @@ body {
 
 #popup-header {
     text-align: center;
+    font-size: 25px;
+    color: #427b44;
+    margin-bottom: 20px;
 }
 
 #post-title {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
 }
 
-#post-it-button, #comment-button {
+#post-it-button {
     cursor: pointer;
     padding: 8px 12px;
     padding-left: 20px;
@@ -304,6 +372,22 @@ body {
     float: right;
     transition: transform 0.2s ease-in-out;
     font-size: 130%;
+}
+
+#comment-button {
+    cursor: pointer;
+    padding: 8px 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: 3px solid rgb(195, 195, 195);
+    border-radius: 20px;
+    background-color: #66BB69;
+    color: white;
+    float: right;
+    transition: transform 0.2s ease-in-out;
+    font-size: 130%;
+    margin-top: -75px;
+    margin-right: 2px;
 }
 
 #post-it-button:hover, #comment-button:hover {
@@ -337,7 +421,7 @@ body {
 }
 
 #user_names {
-    border: 1px solid black;
+    border: 2px solid #427b44;
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 15px;
@@ -422,7 +506,40 @@ body {
 }
 
 #edit_user_names, #edit-post-title, #edit-post-description {
-    border: 1px solid black;
+    border: 2px solid #427b44;
+    margin-bottom: 15px;
     border-radius: 10px;
     padding: 10px;
+}
+
+
+
+#recent-itineraries-container {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    z-index: 1;
+}
+
+.sidebar {
+    margin-top: 105px;
+    margin-left: 20px;
+    width: 30%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    height: 30%;
+}
+
+.filter-posts-header, .recent-itineraries-header {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-top:20px;
+    margin-bottom: 0;
+    color: #427b44;
+}
+
+#no-posts-header {
+    text-align: center;
+    color: #427b44;
 }

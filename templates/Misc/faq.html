@@ -1,0 +1,91 @@
+{% extends 'baseNav.html' %}
+{% block title %}FAQ{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+{% endblock %}
+
+{% block body %}
+<h2>Frequently Asked Questions (FAQ)</h2>
+<div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            How does your sustainable itinerary planner app contribute to eco-friendly tourism in Singapore?
+        </button>
+      </h2>
+      <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            Our app prioritizes sustainable attractions, accommodations, and activities, helping tourists create eco-conscious itineraries that minimize environmental impact and support local sustainability efforts.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+            How does the itinerary generator in your app help users discover popular sustainable tourist attractions in Singapore?
+        </button>
+      </h2>
+      <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            Our itinerary generator suggests popular tourist attractions in Singapore and helps users find a route by bus or train to the location they are interested in so that they do not need to take a cab, which is not very environmentally friendly.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+            How does your app encourage users to explore off-the-beaten-path sustainable attractions in Singapore?
+        </button>
+      </h2>
+      <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            Our app provides recommendations for hidden gems and lesser-known sustainable attractions, allowing users to discover unique experiences beyond the typical tourist spots.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseThree">
+                Tell us more about VerdexTalks, your community forum. How does it enhance the user experience?
+            </button>
+        </h2>
+        <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+         <div class="accordion-body">
+                VerdexTalks is our community forum where users can share their sustainable travel experiences, exchange tips, and connect with like-minded individuals. It enhances the overall user experience by fostering a community dedicated to responsible tourism.
+         </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+            How does user interaction on VerdexTalks contribute to the overall sustainability mission of your app?
+          </button>
+        </h2>
+        <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+          <div class="accordion-body">
+            User interactions on VerdexTalks create a community-driven platform where individuals share insights and tips for sustainable travel. This collaborative effort supports the broader mission of promoting responsible tourism in Singapore.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
+            Can users use VerdexTalks to organize meetups or join eco-friendly group activities during their stay in Singapore?
+          </button>
+        </h2>
+        <div id="flush-collapseSix" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+          <div class="accordion-body">
+            Absolutely! VerdexTalks facilitates connections between users who share similar interests in sustainable travel. Users can organize meetups or join group activities to explore eco-friendly attractions together.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div>
+    <h2>Have more questions?</h2>
+    <br>
+    <span class="here">Can't find the answer you are looking for here? You can contact our friendly customer support team!</span>
+    <a href="{{ url_for('faq.contact_form') }}"><button type="button" class="btn btn-success" id="contact">Get In Touch!</button></a>
+</div>
+{% endblock %}
