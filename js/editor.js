@@ -17,6 +17,12 @@ function capitalizeEachWord(str) {
     return str.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
 }
 
+function isLastTwoCharsLessThan60(str) {
+    var lastTwoChars = str.slice(-2)
+    var lastTwoDigits = parseInt(lastTwoChars, 10)
+    return (lastTwoDigits < 60)
+}
+
 function nextDay(){
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
@@ -449,7 +455,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     
 
     // Check format of all fields; startTime and endTime should be in 24-hr format, perform length check on other fields
-    if (!checkStartTime(newStartTime)) {
+    if (!(checkStartTime(newStartTime) && isLastTwoCharsLessThan60(newStartTime))) {
         errorDisplayModal.innerHTML = "Start time should be in 24-hour format and 4 digits!"
         return
     } else {
@@ -457,8 +463,8 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         newStartTime = newStartTime
     }
 
-    if (!checkEndTime(newEndTime, newStartTime)) {
-        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and must not be earlier than START TIME"
+    if (!(checkEndTime(newEndTime, newStartTime) && isLastTwoCharsLessThan60(newEndTime))) {
+        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and must be later than START TIME"
         return
     } else {
         errorDisplayModal.innerHTML = ""
