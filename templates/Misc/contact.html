@@ -2,13 +2,19 @@
 {% block title %}Contact Us{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
+    <script src="/assets/formJS"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Contact Us</title>
+    <script>
+        var form_id = "{{ form_id }}";
+        var time = "{{ time }}"
+    </script>
 {% endblock %}
 
 {% block body %}
     <h2 class="contact">Contact Us</h2>
 
-    <form id="contactForm" method="post" action ="{{ url_for('faq.contact_success') }}">
+    <form method ="post" id="contactForm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br>
 

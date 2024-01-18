@@ -1,5 +1,5 @@
 import os, json, uuid, random, datetime
-from models import Logger, Universal
+from main import Logger, Universal
 from dotenv import load_dotenv
 load_dotenv()
     
@@ -8,7 +8,6 @@ class Analytics:
     filePath = os.path.join(os.getcwd(), "analytics.json")
     reportsFolderPath = os.path.join(os.getcwd(), "reports")
     reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
-    report_timestamp = None
     sampleMetricsObject = {
         "get_request": 0,
         "post_request": 0,
@@ -160,10 +159,7 @@ The metrics are shown below:
         # Generate a different ID for reportsInfo.json creation
 
         unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + Analytics.generateRandomID(customLength=4)
-        sample = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        loaded = datetime.datetime.strptime(sample, Universal.systemWideStringDatetimeFormat)
-        toShowUser = datetime.datetime.strftime(loaded, "%d %b %Y %I:%M %p")
-        Analytics.report_timestamp = toShowUser
+        report_timestamp = datetime.datetime.now().strftime("%d %b %Y %I:%M %p")
         report_path = os.path.join(Analytics.reportsFolderPath, f"report-{unique_string}.txt")
         with open(report_path, "w") as report:
             report.write(report_text)
@@ -179,7 +175,7 @@ The metrics are shown below:
 
         reportsInfo[unique_string] = {
             "report_id": unique_string,
-            "timestamp": toShowUser,
+            "timestamp": report_timestamp,
             "get_request": Analytics.data['get_request'],
             "post_request": Analytics.data['post_request'],
             "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
@@ -193,4 +189,4 @@ The metrics are shown below:
             json.dump(reportsInfo, f)
         
         ## Return success message
-        return Analytics.report_timestamp
+        return report_timestamp
