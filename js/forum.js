@@ -1,25 +1,20 @@
+var commentedPostId = null
+var editPostId = null
+
 function createPostPopup() {
     document.getElementById("create-a-post-popup").style.display = "block";
 }
 
 function itineraryShortcutButtonPopup(shortcut) {
     document.getElementById("create-a-post-popup").style.display = "block";
-    document.getElementById("post-title").innerHTML = shortcut
+    document.getElementById("post-title").value = shortcut
 }
 
 function closeCreatePopup() {
     closeCreateConfirmation = confirm("Are you sure you'd like to discard all changes?");
     if (closeCreateConfirmation == true) {
-        document.getElementById("create-a-post-popup").style.display = "none";
-        document.getElementById("create-post-form").reset();
+        window.location.reload();
         selectedTag = ""
-
-        document.getElementById('scenery-tag-button').style.backgroundColor = "white";
-        document.getElementById('scenery-tag-button').style.color = "black";
-        document.getElementById('food-tag-button').style.backgroundColor = "white";
-        document.getElementById('food-tag-button').style.color = "black";
-        document.getElementById('nature-tag-button').style.backgroundColor = "white";
-        document.getElementById('nature-tag-button').style.color = "black";
     }
 }
 
@@ -33,44 +28,81 @@ function closeCommentPopup(){
 function closeEditPopup() {
     confirmation = confirm("Are you sure you'd like to discard all changes?");
     if (confirmation == true) {
-        document.getElementById("edit-post-popup").style.display = "none";
-        document.getElementById("edit-post-form").reset();
-        editedSelectedTag = ""
-
-        document.getElementById('edit-scenery-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-scenery-tag-button').style.color = "black";
-        document.getElementById('edit-food-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-food-tag-button').style.color = "black";
-        document.getElementById('edit-nature-tag-button').style.backgroundColor = "white";
-        document.getElementById('edit-nature-tag-button').style.color = "black";
-
-        alert("Changes discarded.");
-        return false;
+        window.location.reload();
     }
-    return false;
 }
 
 let selectedTag = ""
 function submitPost() {
     document.getElementById("post-tag").value = selectedTag;
-    var createPostForm = document.getElementById("create-post-form");
+    const user_names = document.getElementById("user_names");
+    const post_title = document.getElementById("post-title");
+    const post_description = document.getElementById("post-description");
+    const post_tag = document.getElementById("post-tag");
 
-    if (createPostForm.checkValidity()) {
-        alert("Post submitted!");
-        document.getElementById("create-a-post-popup").style.display = "none";
-    } else {
-        createPostForm.reportValidity();
-        return false;
+    if (user_names.value.trim() === ""){
+        alert("Please enter valid name(s)")
+        return;
     }
+    if (post_title.value.trim() === ""){
+        alert("Please enter a valid post title")
+        return;
+    }
+    if (post_description.value.trim() === ""){
+        alert("Please enter a valid post desription")
+        return;
+    }
+
+    axios({
+        method: 'post',
+        url: `/api/submitPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "user_names": user_names.value,
+            "post_title": post_title.value,
+            "post_description": post_description.value,
+            "post_tag": post_tag.value
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while submitting post. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error creating post:', error);
+    });
 }
 
 function likePost(postId) {
-    // Use Axios to send a POST request to the server
-    axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json' } })
+    axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
-            // Update the like count on the client side
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-            likeButton.innerHTML = `Likes (${response.data.likes})`;
+            if (typeof response.data !== "string"){
+                likeButton.innerHTML = `Likes (${response.data.likes})`;
+            }
+            else if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("An error occured while liking post. Please try again.")
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
+                alert(response.data.substring("UERROR: ".length))
+                return;
+            }
         })
         .catch(function (error) {
             console.error('Error liking post:', error);
@@ -80,10 +112,18 @@ function likePost(postId) {
 function deletePost(postId){
     confirmation = confirm("Are you sure you want to delete this post?")
     if (confirmation){
-        axios.post('/api/deletePost', {
-            postId: postId,
-        })
+        axios.post('/api/deletePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("An error occured while deleting post. Please try again.")
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
+                alert(response.data.substring("UERROR: ".length))
+                return;
+            }
             console.log(response.data);
             window.location.reload();
         })
@@ -95,36 +135,52 @@ function deletePost(postId){
 
 function commentPost(postId) {
     document.getElementById("comment-on-post-popup").style.display = "block";
-    window.commentedPostId = postId;
+    commentedPostId = postId;
 }
 
 function submitComment() {
-    const commentDescription = document.getElementById("comment_description").value;
-    const postId = window.commentedPostId;
+    const commentDescription = document.getElementById("comment_description");
+    const postId = commentedPostId;
 
-    if (commentDescription.trim() === "") {
-        alert("Please enter a valid comment.");
-        return;
+    if (!commentDescription.value || commentDescription.value == "" || commentDescription.value.trim() == "") {
+        alert("Please enter a valid comment.")
+        return
     }
 
-    axios.post('/comment_post', {
-        postId: postId,
-        comment_description: commentDescription
+    axios({
+        method: 'post',
+        url: `/api/commentPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "post_id": postId,
+            "comment_description": commentDescription.value
+        }
     })
-    .then(response => {
-        console.log(response.data);
-        alert("Comment added");
-        document.getElementById("comment-on-post-popup").style.display = "none";
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while commenting on post. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
         window.location.reload();
     })
-    .catch(error => {
-        console.error(error);
+    .catch(function (error) {
+        console.error('Error commenting on post:', error);
     });
 }
 
 function editPost(postId) {
     document.getElementById("edit-post-popup").style.display = "block";
-    window.editPostId = postId;
+    editPostId = postId;
 }
 
 let editedSelectedTag = ""
@@ -134,7 +190,7 @@ function submitEdit() {
     const editPostTitle = document.getElementById("edit-post-title").value;
     const editPostDescription = document.getElementById("edit-post-description").value;
     const editPostTag = document.getElementById("edit-post-tag").value;
-    const postId = window.editPostId;
+    const postId = editPostId;
 
     if (editUserNames.trim() === "") {
         alert("Please enter valid name(s).");
@@ -149,21 +205,37 @@ function submitEdit() {
         return;
     }
 
-    axios.post('/edit_post', {
-        postId: postId,
-        edit_user_names: editUserNames,
-        edit_post_title: editPostTitle,
-        edit_post_description: editPostDescription,
-        edit_post_tag: editPostTag
+    axios({
+        method: 'post',
+        url: `/api/editPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "post_id": postId,
+            "edit_user_names": editUserNames,
+            "edit_post_title": editPostTitle,
+            "edit_post_description": editPostDescription,
+            "edit_post_tag": editPostTag
+        }
     })
-    .then(response => {
-        console.log(response.data);
-        alert("Post edited");
-        document.getElementById("edit-post-popup").style.display = "none";
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while editing post. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
         window.location.reload();
     })
-    .catch(error => {
-        console.error(error);
+    .catch(function (error) {
+        console.error('Error editing post:', error);
     });
 }
 
@@ -226,12 +298,18 @@ function filterPosts(tagToDisplay) {
 function deleteComment(postId, commentId){
     confirmation = confirm("Are you sure you want to delete this comment?")
     if (confirmation){
-        // Use Axios to send a POST request to the server
-        axios.post('/api/deleteComment', {
-            postId: postId,
-            commentId: commentId
-        })
+        axios.post('/api/deleteComment', { postId: postId, commentId: commentId}, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(response => {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("An error occured while deleting comment. Please try again.")
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
+                alert(response.data.substring("UERROR: ".length))
+                return;
+            }
             console.log(response.data);
             window.location.reload();
         })

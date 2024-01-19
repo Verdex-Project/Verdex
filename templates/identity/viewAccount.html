@@ -3,19 +3,7 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block head %}
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        text-align: center;
-    }
-
-    #copyright {
-        text-align: center;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/static/viewAccount.css">
 {% endblock %}
 
 {% block body %}
@@ -26,23 +14,38 @@
 <div id="content">
     <div id="username">
         <p>Username: <span id="displayed-username">{{ username }}</span> 
-            <button id="edit-username-btn" onclick="changeUsername()">Edit</button></p>
+            <button id="editUsernameButton" type="button" class="btn btn-outline-dark" onclick="changeUsername()">Edit</button>
+        </p>
     </div>
+
     <div id="email">
         <p>Email: <span id="displayed-email">{{ email }}</span> 
-            <button id="edit-email-btn">Edit</button></p></p>
+            <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
+        </p>
+        <div id="unverifiedEmail">
+            {% if emailNotVerified %}
+            <div class="alert alert-warning" role="alert">
+                Your Email has NOT been verified. 
+                <button id="resendEmailBtn" type="button" class="btn btn-outline-success" onclick="resendEmail()">Resend Verification Email</button>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    <!-- <div id="password">
 
-    </div> -->
-</div>
+    <div id="password">
+        <p>Password</p>
+        <button type="button" class="btn btn-outline-warning">Change Password</button>
+    </div>
 
-<div id="logout">
-    <button id="logout-btn" onclick="logoutIdentity()">Logout</button>
-</div>
-<br>
-<div id="deleteAccount">
-    <button id="deleteAccount-btn" onclick="deleteIdentity()">Delete Account</button>
+    <br>
+    <div id="buttons">
+        <div class="button-container" id="logout">
+            <button type="button" class="btn btn-outline-primary" onclick="logoutIdentity()">Logout</button>
+        </div>
+        <div class="button-container" id="deleteAccount">
+            <button type="button" class="btn btn-outline-danger" onclick="deleteIdentity()">Delete Account</button>
+        </div>    
+    </div>
 </div>
 
 <br>
