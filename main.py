@@ -82,6 +82,7 @@ def updateAnalytics():
 def homepage():
     if "generateReport" in request.args and request.args["generateReport"] == "true":
         Analytics.generateReport()
+
     return render_template('homepage.html')
 
 # Security pages
@@ -257,11 +258,11 @@ if __name__ == '__main__':
     app.register_blueprint(itineraryGenBP)
     
     ## Admin routes
-    from admin.report import reportBP
-    app.register_blueprint(reportBP)
-
     from admin.contact_form import contactBP
     app.register_blueprint(contactBP)
+
+    from admin.home import adminHomeBP
+    app.register_blueprint(adminHomeBP)
     
     ## Forum routes
     from forum.forum import forumBP

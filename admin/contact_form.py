@@ -1,5 +1,5 @@
-from flask import  render_template, request, redirect, url_for, Blueprint
-from main import Universal
+from flask import  render_template, request, redirect, url_for, Blueprint, flash
+from main import Universal, DI
 import uuid, os, json, datetime
 contactBP = Blueprint("faq", __name__)
 
@@ -32,32 +32,54 @@ def faq():
     ]
     return render_template('misc/faq.html', faq_data=faq_data)
 
-@contactBP.route('/form', endpoint='contact_form')
+@contactBP.route('/contactUs', endpoint='contact_form', methods=['GET', 'POST'])
 def contact_form():
-    return render_template('misc/contact.html')
+    if request.method == "GET":
+        return render_template('misc/contact.html')
+    if request.method == "POST":
+    ## Check if correct form fields are provided
+        if 'name' not in request.form:
+            flash("Please provide your name.")
+            return redirect(url_for('faq.contact_form'))
+        if 'email' not in request.form:
+            flash("Please provide your email.")
+            return redirect(url_for('faq.contact_form'))
+        if 'message' not in request.form:
+            flash("Please provide your message.")
+            return redirect(url_for('faq.contact_form'))
 
-@contactBP.route('/success', methods=['POST'], endpoint='contact_success')
-def success():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        message = request.form.get('message')
-        unique_id = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")+ str(uuid.uuid4().hex)[:4]
-        form_data ={
-            'id': unique_id,
-            'name': name,
-            'email': email,
-            'message': message
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
+
+        if name.strip() == "" or email.strip() == "" or message.strip() == "":
+            flash("Please provide all information necessary.")
+            return redirect(url_for('faq.contact_form'))
+        
+        ## Generate ID and timestamp
+        supportQueryID = uuid.uuid4().hex
+        time_stamp = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+        
+        if "supportQueries" not in DI.data["admin"]:
+            DI.data["admin"]["supportQueries"] = {}
+        DI.data["admin"]["supportQueries"][supportQueryID] = {
+            "name": name,
+            "email": email,
+            "message": message,
+            "supportQueryID": supportQueryID,
+            "timestamp": time_stamp
         }
-        json_file_path = 'form_data.json'
-        try:
-            with open(json_file_path, 'r') as file:
-                existing_data = json.load(file)
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
-            existing_data = {}
-        # Append the new form data to the existing data
-        existing_data[unique_id] = form_data
-        # Write the updated data back to the JSON file
-        with open(json_file_path, 'w') as file:
-            json.dump(existing_data, file)
+        ## Save to DI
+        DI.save()
+        ## Redirect to success page
+        return redirect(url_for('faq.contact_success', supportQueryID= supportQueryID))
+
+
+@contactBP.route('/contactUs/success', methods=['GET'], endpoint='contact_success')
+def success():
+    if 'supportQueryID' not in request.args:
+        return redirect(url_for('faq.contact_form'))
+    elif request.args['supportQueryID'] not in DI.data["admin"]["supportQueries"]:
+        return redirect(url_for('faq.contact_form'))
+    else:
         return render_template('misc/success.html')
