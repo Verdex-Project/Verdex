@@ -19,5 +19,5 @@ def verdextalks():
         flash("Access Denied. You have been banned from the forum.")
         return redirect(url_for("error"))
     
-    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"][targetAccountID], itineraryInfoJson=DI.data["itineraries"])
+    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"][targetAccountID], itineraryInfoJson=DI.data["itineraries"])
     

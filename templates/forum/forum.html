@@ -53,37 +53,39 @@
                         <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
                     </div>
                 {% endif %}
-                {% for post_username, post_data in postsInfoJson.items() %}
-                    <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
-                        <div class="post-content">
-                            <div class="nameAndTagHeader">
-                                <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                                {% if post_data.tag != "" %}
-                                    <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                {% for target_account_id, posts in noOfUsers.items() %}
+                    {% for post_datetime, post_data in posts.items() %}
+                        <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
+                            <div class="post-content">
+                                <div class="nameAndTagHeader">
+                                    <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                                    {% if post_data.tag != "" %}
+                                        <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                                    {% endif %}
+                                </div>
+                                <p class="post-description">{{ post_data.post_description }}</p>
+                                {% if post_data.comments != {} %}
+                                    <h5 id="comments-header">Comments: </h5><br>
+                                    {% for comment_id, comment_text in post_data.get("comments", {}).items() %}
+                                        <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                            <li id="comment">{{ comment_text }}</li>
+                                            <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        </div>
+                                    {% endfor %}
                                 {% endif %}
                             </div>
-                            <p class="post-description">{{ post_data.post_description }}</p>
-                            {% if post_data.comments != {} %}
-                                <h5 id="comments-header">Comments: </h5><br>
-                                {% for comment_id, comment_text in post_data.get("comments", {}).items() %}
-                                    <div class="commentDiv" data-comment-id="{{ comment_id }}">
-                                        <li id="comment">{{ comment_text }}</li>
-                                        <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        <div class="lower-row-buttons-container">
-                            <div class="post-reaction-buttons-container">
-                                <ul class="list-of-reaction-buttons">
-                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
-                                    <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
-                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
-                                </ul>
+                            <div class="lower-row-buttons-container">
+                                <div class="post-reaction-buttons-container">
+                                    <ul class="list-of-reaction-buttons">
+                                        <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                        <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
+                                    </ul>
+                                </div>
+                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
                             </div>
-                            <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
                         </div>
-                    </div>
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>
