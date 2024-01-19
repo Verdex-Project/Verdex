@@ -545,6 +545,11 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 }
 
+function addNewActivity(activityId) {
+    let newActivityId = activityId + 1
+
+}
+
 
 // // Get the button element by its ID
 // const myButton = document.getElementById('myButton');
