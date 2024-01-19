@@ -545,7 +545,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 }
 
-function addNewActivity(activityId,location, name, startTime, endTime) {
+function addNewActivity(activityId,location, name,latitude, longitude, imageURL, startTime, endTime) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
@@ -554,9 +554,12 @@ function addNewActivity(activityId,location, name, startTime, endTime) {
     let currentActivityId = activityId
     let currentLocation = location
     let currentName = name
+    let currentLatitude = latitude
+    let currentLongitude = longitude
+    let currentImageURL = imageURL
     let currentStartTime = startTime
     let currentEndTime = endTime
-    let newActivityId = activityId + 1
+    let newActivityId = parseInt(activityId) + 1
     axios({
         method: 'post',
         url: `/api/addNewActivity`,
@@ -567,9 +570,12 @@ function addNewActivity(activityId,location, name, startTime, endTime) {
         data: {
             "itineraryID" : itineraryId,
             'dayCount' : dayCount,
-            'currentactivityId' : currentActivityId,
+            'currentActivityId' : currentActivityId,
             'currentStartTime' : currentStartTime,
             'currentEndTime' : currentEndTime,
+            'currentLatitude' : currentLatitude,
+            'currentLongitude' : currentLongitude,
+            'currentImageURL' : currentImageURL,
             'currentLocation' : currentLocation,
             'currentName' : currentName,
             'newActivityID' : newActivityId

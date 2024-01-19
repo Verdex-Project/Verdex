@@ -562,3 +562,69 @@ def editActivity():
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
+
+@apiBP.route("/api/addNewActivity", methods = ['POST'])
+def addNewActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["currentActivityId"]
+    startTime = request.json["currentStartTime"]
+    endTime = request.json["currentEndTime"]
+    latitude = request.json["currentLatitude"]
+    longitude = request.json["currentLongitude"]
+    imageURL = request.json["currentImageURL"]
+    location = request.json["currentLocation"]
+    name = request.json["currentName"]
+    newActivityId = str(request.json["newActivityID"])
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayCount" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentActivityId" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentStartTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentEndTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentLatitude" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentLongitude" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentImageURL" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentLocation" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "currentName" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newActivityID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["startTime"] = startTime
+    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["endTime"] = endTime
+    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["location"] = location
+    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["name"] = name
+    DI.save()
+
+    print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
+
+    return "SUCCESS: New activity is added successfully"
+
