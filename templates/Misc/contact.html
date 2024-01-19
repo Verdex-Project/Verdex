@@ -2,7 +2,6 @@
 {% block title %}Contact Us{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
-    <script src="/assets/formJS"></script>
     <title>Contact Us</title>
 {% endblock %}
 
@@ -13,7 +12,7 @@
     {% with messages = get_flashed_messages() %}  
         {% if messages %}  
             {% for message in messages %}
-                <div class="alert alert-success" role="alert">{{ message }}</div>
+                <div class="alert alert-warning" style="margin-left: 30px; margin-right:30px;" role="alert">{{ message }}</div>
             {% endfor %}
         {% endif %}
     {% endwith %}

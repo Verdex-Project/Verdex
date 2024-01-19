@@ -52,6 +52,3 @@ def itineraryGenerationJS():
 @assetsBP.route("/assets/forumJS")
 def forumJS():
     return fileContent("js/forum.js")
-@assetsBP.route("/assets/formJS")
-def formJS():
-    return fileContent("js/contact_form.js", passAPIKey=True)

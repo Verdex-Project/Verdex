@@ -1,6 +1,6 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
 import json, os, datetime
-from main import DI, Logger, Analytics
+from main import DI, Logger, Analytics, Universal
 adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin')
@@ -15,6 +15,8 @@ def user_management():
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
+    for key in data:
+        data[key]['timestamp'] = datetime.datetime.strptime(data[key]['timestamp'], Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
     return render_template('admin/report.html', data=data)
 
 @adminHomeBP.route('/admin/report/generate', methods=['POST', 'GET'])

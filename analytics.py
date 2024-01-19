@@ -159,7 +159,7 @@ The metrics are shown below:
         # Generate a different ID for reportsInfo.json creation
 
         unique_string = datetime.datetime.now().strftime("%Y%m%dT%H%M%S") + Analytics.generateRandomID(customLength=4)
-        report_timestamp = datetime.datetime.now().strftime("%d %b %Y %I:%M %p")
+        report_timestamp = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
         report_path = os.path.join(Analytics.reportsFolderPath, f"report-{unique_string}.txt")
         with open(report_path, "w") as report:
             report.write(report_text)

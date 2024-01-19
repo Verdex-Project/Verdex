@@ -34,27 +34,52 @@ def faq():
 
 @contactBP.route('/contactUs', endpoint='contact_form', methods=['GET', 'POST'])
 def contact_form():
+    if request.method == "GET":
+        return render_template('misc/contact.html')
     if request.method == "POST":
-        ## Check if correct form fields are provided
+    ## Check if correct form fields are provided
         if 'name' not in request.form:
             flash("Please provide your name.")
-            return redirect(url_for('contact.contact_form'))
-        
+            return redirect(url_for('faq.contact_form'))
+        if 'email' not in request.form:
+            flash("Please provide your email.")
+            return redirect(url_for('faq.contact_form'))
+        if 'message' not in request.form:
+            flash("Please provide your message.")
+            return redirect(url_for('faq.contact_form'))
 
-        ## Generate ID
-        
+        name = request.form['name']
+        email = request.form['email']
+        message = request.form['message']
 
+        if name.strip() == "" or email.strip() == "" or message.strip() == "":
+            flash("Please provide all information necessary.")
+            return redirect(url_for('faq.contact_form'))
+        
+        ## Generate ID and timestamp
+        supportQueryID = uuid.uuid4().hex
+        time_stamp = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+        
+        if "supportQueries" not in DI.data["admin"]:
+            DI.data["admin"]["supportQueries"] = {}
+        DI.data["admin"]["supportQueries"][supportQueryID] = {
+            "name": name,
+            "email": email,
+            "message": message,
+            "supportQueryID": supportQueryID,
+            "timestamp": time_stamp
+        }
         ## Save to DI
-
+        DI.save()
         ## Redirect to success page
-        # return redirect(url_for('faq.success', supportQueryID=YOUR ID HERE))
+        return redirect(url_for('faq.contact_success', supportQueryID= supportQueryID))
 
 
 @contactBP.route('/contactUs/success', methods=['GET'], endpoint='contact_success')
 def success():
     if 'supportQueryID' not in request.args:
         return redirect(url_for('faq.contact_form'))
-    elif request.args['supportQueryID'] not in DI.data["admin"]["]:
+    elif request.args['supportQueryID'] not in DI.data["admin"]["supportQueries"]:
         return redirect(url_for('faq.contact_form'))
     else:
         return render_template('misc/success.html')
