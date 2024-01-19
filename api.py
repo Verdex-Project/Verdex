@@ -240,12 +240,15 @@ def like_post():
 
     post_id = request.json['postId']
 
-    if post_id in DI.data["forum"][targetAccountID]:
-        DI.data["forum"][targetAccountID][post_id]["likes"] = str(int(DI.data["forum"][targetAccountID][post_id]["likes"]) + 1)
-        DI.save()
-        return jsonify({'likes': int(DI.data["forum"][targetAccountID][post_id]["likes"])})
-    elif post_id not in DI.data["forum"][targetAccountID]:
-        return "ERROR: Post ID not found in system."
+    for targetAccountID in DI.data["forum"]:
+        for post_datetime, post_data in DI.data["forum"][targetAccountID].items():
+            if post_id == post_datetime:
+                # If post_id exists, increment likes
+                post_data["likes"] = str(int(post_data["likes"]) + 1)
+                DI.save()
+                return jsonify({'likes': int(post_data["likes"])})
+        
+    return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
