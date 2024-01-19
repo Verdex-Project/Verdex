@@ -95,8 +95,11 @@ def createAccount():
         "password": request.json["password"],
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
-        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "forumBanned": False # Set default status to false. This value will change onclick of the ban button in the admin page (Nicholas)
     }
+
+    DI.data["forum"][accID] = {} # Create a new forum entry for the account ID, so the webpage is still able to load the forum page without any posts yet
     DI.save()
 
     session["idToken"] = tokenInfo["idToken"]
@@ -226,16 +229,22 @@ def like_post():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
 
     post_id = request.json['postId']
 
-    if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
+    if post_id in DI.data["forum"][targetAccountID]:
+        DI.data["forum"][targetAccountID][post_id]["likes"] = str(int(DI.data["forum"][targetAccountID][post_id]["likes"]) + 1)
         DI.save()
-        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
-    elif post_id not in DI.data["forum"]:
+        return jsonify({'likes': int(DI.data["forum"][targetAccountID][post_id]["likes"])})
+    elif post_id not in DI.data["forum"][targetAccountID]:
         return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/deletePost', methods=['POST'])
@@ -244,16 +253,21 @@ def delete_post():
     if check != True:
         return check
     
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
 
     post_id = request.json['postId']
 
-    if post_id in DI.data["forum"]:
-        DI.data["forum"].pop(post_id)
+    if post_id in DI.data["forum"][targetAccountID]:
+        DI.data["forum"][targetAccountID].pop(post_id)
         DI.save()
         return "SUCCESS: Post was successfully removed from the system."
-    elif post_id not in DI.data["forum"]:
+    elif post_id not in DI.data["forum"][targetAccountID]:
         return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/nextDay', methods=['POST'])
@@ -293,6 +307,11 @@ def deleteComment():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -302,9 +321,9 @@ def deleteComment():
     post_id = request.json['postId']
     comment_id = request.json['commentId']
 
-    if post_id in DI.data["forum"]:
-        if comment_id in DI.data["forum"][post_id]["comments"]:
-            del DI.data["forum"][post_id]["comments"][comment_id]
+    if post_id in DI.data["forum"][targetAccountID]:
+        if comment_id in DI.data["forum"][targetAccountID][post_id]["comments"]:
+            del DI.data["forum"][targetAccountID][post_id]["comments"][comment_id]
             DI.save()
             return "SUCCESS: Comment was successfully removed from the post in the system."
         else:
@@ -317,6 +336,11 @@ def submitPost():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if 'user_names' not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -344,7 +368,8 @@ def submitPost():
         "comments": {}
     }
 
-    DI.data["forum"][postDateTime] = new_post
+    DI.data["forum"].setdefault(targetAccountID, {})
+    DI.data["forum"][targetAccountID][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Post was successfully submitted to the system."
 
@@ -354,6 +379,11 @@ def commentPost():
     if check != True:
         return check
     
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     if "post_id" not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if "comment_description" not in request.json:
@@ -362,14 +392,14 @@ def commentPost():
     post_id = request.json['post_id']
     comment_description = request.json['comment_description']
 
-    if post_id in DI.data["forum"]:
-        if 'comments' not in DI.data["forum"][post_id]:
-            DI.data["forum"][post_id]['comments'] = {}
+    if post_id in DI.data["forum"][targetAccountID]:
+        if 'comments' not in DI.data["forum"][targetAccountID][post_id]:
+            DI.data["forum"][targetAccountID][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
+        DI.data["forum"][targetAccountID][post_id]['comments'][postDateTime] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
-    elif post_id not in DI.data["forum"]:
+    elif post_id not in DI.data["forum"][targetAccountID]:
         return "ERROR: Post ID not found in system."
     
 @apiBP.route('/api/editPost', methods=['POST'])
@@ -377,6 +407,11 @@ def editPost():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if "post_id" not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -395,12 +430,12 @@ def editPost():
     edit_post_description = request.json['edit_post_description']
     edit_post_tag = request.json['edit_post_tag']
 
-    if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["user_names"] = edit_user_names
-        DI.data["forum"][post_id]["post_title"] = edit_post_title
-        DI.data["forum"][post_id]["post_description"] = edit_post_description
-        DI.data["forum"][post_id]["tag"] = edit_post_tag
+    if post_id in DI.data["forum"][targetAccountID]:
+        DI.data["forum"][targetAccountID][post_id]["user_names"] = edit_user_names
+        DI.data["forum"][targetAccountID][post_id]["post_title"] = edit_post_title
+        DI.data["forum"][targetAccountID][post_id]["post_description"] = edit_post_description
+        DI.data["forum"][targetAccountID][post_id]["tag"] = edit_post_tag
         DI.save()
         return "SUCCESS: Post successfully edited."
-    elif post_id not in DI.data["forum"]:
+    elif post_id not in DI.data["forum"][targetAccountID]:
         return "ERROR: Post ID not found in system."

@@ -65,7 +65,7 @@
                             <p class="post-description">{{ post_data.post_description }}</p>
                             {% if post_data.comments != {} %}
                                 <h5 id="comments-header">Comments: </h5><br>
-                                {% for comment_id, comment_text in post_data.comments.items() %}
+                                {% for comment_id, comment_text in post_data.get("comments", {}).items() %}
                                     <div class="commentDiv" data-comment-id="{{ comment_id }}">
                                         <li id="comment">{{ comment_text }}</li>
                                         <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
