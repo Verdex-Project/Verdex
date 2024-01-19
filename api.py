@@ -243,7 +243,6 @@ def like_post():
     for targetAccountID in DI.data["forum"]:
         for post_datetime, post_data in DI.data["forum"][targetAccountID].items():
             if post_id == post_datetime:
-                # If post_id exists, increment likes
                 post_data["likes"] = str(int(post_data["likes"]) + 1)
                 DI.save()
                 return jsonify({'likes': int(post_data["likes"])})
@@ -267,11 +266,12 @@ def delete_post():
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"][targetAccountID]:
+        # Delete the post associated with post_id
         DI.data["forum"][targetAccountID].pop(post_id)
         DI.save()
         return "SUCCESS: Post was successfully removed from the system."
-    elif post_id not in DI.data["forum"][targetAccountID]:
-        return "ERROR: Post ID not found in system."
+    
+    return "UERROR: You can't delete someone else's post!."
 
 @apiBP.route('/api/nextDay', methods=['POST'])
 def nextDay():
@@ -324,15 +324,24 @@ def deleteComment():
     post_id = request.json['postId']
     comment_id = request.json['commentId']
 
-    if post_id in DI.data["forum"][targetAccountID]:
-        if comment_id in DI.data["forum"][targetAccountID][post_id]["comments"]:
-            del DI.data["forum"][targetAccountID][post_id]["comments"][comment_id]
-            DI.save()
-            return "SUCCESS: Comment was successfully removed from the post in the system."
-        else:
-            return "ERROR: Comment ID not found in system."
-    else:
-        return "ERROR: Post ID not found in system."
+    # for targetAccountID in DI.data["forum"]:
+    #     for post_datetime, post_data in DI.data["forum"][targetAccountID].items():
+    #         if post_id == post_datetime:
+    #             post_data["likes"] = str(int(post_data["likes"]) + 1)
+    #             DI.save()
+    #             return jsonify({'likes': int(post_data["likes"])})
+        
+    # return "ERROR: Post ID not found in system."
+
+    # if post_id in DI.data["forum"][targetAccountID]:
+    #     if comment_id in DI.data["forum"][targetAccountID][post_id]["comments"]:
+    #         del DI.data["forum"][targetAccountID][post_id]["comments"][comment_id]
+    #         DI.save()
+    #         return "SUCCESS: Comment was successfully removed from the post in the system."
+    #     else:
+    #         return "ERROR: Comment ID not found in system."
+    # else:
+    #     return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/submitPost', methods=['POST'])
 def submitPost():
