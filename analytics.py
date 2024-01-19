@@ -1,5 +1,5 @@
 import os, json, uuid, random, datetime
-from main import Logger, Universal
+from models import Logger, Universal
 from dotenv import load_dotenv
 load_dotenv()
     

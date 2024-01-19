@@ -1,4 +1,4 @@
-from flask import  render_template, request, redirect, url_for, Blueprint
+from flask import  render_template, request, redirect, url_for, Blueprint, flash
 from main import Universal, DI
 import uuid, os, json, datetime
 contactBP = Blueprint("faq", __name__)
@@ -32,12 +32,29 @@ def faq():
     ]
     return render_template('misc/faq.html', faq_data=faq_data)
 
-@contactBP.route('/form', endpoint='contact_form', methods=['GET', 'POST'])
+@contactBP.route('/contactUs', endpoint='contact_form', methods=['GET', 'POST'])
 def contact_form():
-    form_id = str(uuid.uuid4().hex)[:4]
-    time = str(datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat))
-    return render_template('misc/contact.html', form_id=form_id, time = time)
+    if request.method == "POST":
+        ## Check if correct form fields are provided
+        if 'name' not in request.form:
+            flash("Please provide your name.")
+            return redirect(url_for('contact.contact_form'))
+        
 
-@contactBP.route('/success', methods=['GET'], endpoint='contact_success')
+        ## Generate ID
+        
+
+        ## Save to DI
+
+        ## Redirect to success page
+        # return redirect(url_for('faq.success', supportQueryID=YOUR ID HERE))
+
+
+@contactBP.route('/contactUs/success', methods=['GET'], endpoint='contact_success')
 def success():
-    return render_template('misc/success.html')
+    if 'supportQueryID' not in request.args:
+        return redirect(url_for('faq.contact_form'))
+    elif request.args['supportQueryID'] not in DI.data["admin"]["]:
+        return redirect(url_for('faq.contact_form'))
+    else:
+        return render_template('misc/success.html')

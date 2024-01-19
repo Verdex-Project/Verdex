@@ -3,18 +3,22 @@
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
     <script src="/assets/formJS"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Contact Us</title>
-    <script>
-        var form_id = "{{ form_id }}";
-        var time = "{{ time }}"
-    </script>
 {% endblock %}
 
 {% block body %}
     <h2 class="contact">Contact Us</h2>
 
-    <form method ="post" id="contactForm">
+    <br>
+    {% with messages = get_flashed_messages() %}  
+        {% if messages %}  
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" id="contactForm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br>
 

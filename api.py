@@ -303,16 +303,17 @@ def deleteComment():
         DI.save()
     
     return "SUCCESS: Comment was successfully removed from the post in the system."
-@apiBP.route('/api/saveFormData', methods =['POST'])
-def saveFormData():
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
+
+# @apiBP.route('/api/saveFormData', methods=['POST'])
+# def saveFormData():
+#     check = checkHeaders(request.headers)
+#     if check != True:
+#         return check
     
-    data = request.json
+#     data = request.json
     
-    if "contact_form" not in DI.data["admin"]:
-        DI.data["admin"]["contact_form"] ={}
-    DI.data["admin"]["contact_form"][data["form_id"]] = data
-    DI.save()
-    return 'SUCCESS: Data from form has been saved into database'
+#     if "contact_form" not in DI.data["admin"]:
+#         DI.data["admin"]["contact_form"] = {}
+#     DI.data["admin"]["contact_form"][data["form_id"]] = data
+#     DI.save()
+#     return 'SUCCESS: Data from form has been saved into database'

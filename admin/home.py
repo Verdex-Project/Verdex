@@ -3,21 +3,25 @@ import json, os, datetime
 from main import DI, Logger, Analytics
 adminHomeBP = Blueprint("admin", __name__)
 
-@adminHomeBP.route('/admin/dashboard')
-def home():
+@adminHomeBP.route('/admin')
+def admin():
     return render_template('admin/home.html')
+
 @adminHomeBP.route('/admin/user_management')
 def user_management():
     return render_template('admin/user_management.html')
+
 @adminHomeBP.route('/admin/report')
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
     return render_template('admin/report.html', data=data)
+
 @adminHomeBP.route('/admin/report/generate', methods=['POST', 'GET'])
 def generate_report():
     Analytics.generateReport()
     return redirect(url_for('admin.report'))
+
 @adminHomeBP.route('/admin/report/<report_id>', methods=['POST', 'GET'])
 def download_report(report_id):
     #Checks if reportsInfo.json file exists, added this after merging
@@ -46,6 +50,7 @@ def download_report(report_id):
         return send_file(full_report_file_path, as_attachment=True)
     except Exception as e:
         return str(e)
+
 @adminHomeBP.route('/admin/report/delete/<report_id>', methods=['POST', 'GET'])
 def delete_report(report_id):
     report_file_path = os.path.join(Analytics.reportsFolderPath, f'report-{report_id}.txt')
@@ -62,6 +67,7 @@ def delete_report(report_id):
         return redirect(url_for('admin.report'))
     except Exception as e:
         return str(e)
+
 @adminHomeBP.route('/admin/report/delete/all', methods=['POST', 'GET'])
 def delete_all_reports():
     try:
@@ -75,6 +81,7 @@ def delete_all_reports():
         return redirect(url_for('admin.report'))
     except Exception as e:
         return str(e)
+
 @adminHomeBP.route('/admin/report/clear', methods=['POST', 'GET'])
 def clear_data():
     with open(Analytics.filePath, "w") as metrics_file:
@@ -84,9 +91,11 @@ def clear_data():
     Logger.log("ADMIN CLEAR_DATA: Analytics data cleared.")
     # Redirect to the report page after clearing data
     return redirect(url_for('admin.report'))
+
 @adminHomeBP.route('/admin/system_health')
 def system_health():
     return render_template('admin/system_health.html')
+
 @adminHomeBP.route('/admin/reply')
 def reply():
     return render_template('admin/reply.html')
