@@ -1,0 +1,32 @@
+{% extends 'baseNav.html' %}
+{% block title %}Contact Us{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='contactAndFAQ.css') }}">
+    <title>Contact Us</title>
+{% endblock %}
+
+{% block body %}
+    <h2 class="contact">Contact Us</h2>
+
+    <br>
+    {% with messages = get_flashed_messages() %}  
+        {% if messages %}  
+            {% for message in messages %}
+                <div class="alert alert-warning" style="margin-left: 30px; margin-right:30px;" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" id="contactForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br>
+
+        <button value="submit" type="submit" class="btn btn-outline-success">Submit</button>
+    </form>
+{% endblock %}

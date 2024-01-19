@@ -76,3 +76,16 @@ function signIn() {
     })
 
 }
+
+function editElement() {
+    var element = document.getElementById('editableElement');
+    element.contentEditable = true; // Enable editing
+    element.classList.add('editing'); // Add editing class for styling
+    element.focus(); // Set focus to the edited element
+    
+    // Attach a blur event listener to save changes when the element loses focus
+    element.addEventListener('blur', function () {
+        element.contentEditable = false; // Disable editing
+        element.classList.remove('editing'); // Remove editing class
+    });
+}
