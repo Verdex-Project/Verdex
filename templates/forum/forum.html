@@ -2,7 +2,6 @@
     {% block title %}VerdexTalks{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/assets/forumJS"></script>
 {% endblock %}
 
@@ -26,29 +25,33 @@
                 </div>
                 <div class="text-container">
                     <h3 class="header">Create a post</h3><br>
-                    <p class="text">Share your memories with friends</p>
+                    <p class="text">Share your memories with friends!</p>
                 </div>
             </div>
             <div class="create-a-post-container">
                 <h3 class="recent-itineraries-header">What's on your mind?</h3><br>
                 <div id="recent-itineraries-container">
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">
-                        <img src="static/Images/Sentosa darkened.jpg" alt="Sentosa">
-                        <span>Sentosa</span>
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Nature Tapestry: Exploring the Green Gems of Singapore')">
+                        <img src="static/Images/Nature.png" alt="Nature">
+                        <span>Nature</span>
                     </button><br>
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Islands')">
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Hidden Isles: A Journey into the Mini Islands')">    
                         <img src="static/Images/SG Islands darkened.jpg" alt="Singapore Islands">
-                        <span>Singapore Islands</span>
+                        <span>Singapore's Islands</span>
                     </button><br>
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Food Galore')">
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Culinary Chronicles: A Gastronomic Expedition on Singaporean Delicacies')">
                         <img src="static/Images/Food Galore darkened.jpg" alt="Food Galore">
-                        <span>Food Galore</span>
+                        <span>Food</span>
                     </button><br>
                 </div>
             </div>
             <div class="post-section-container">
                 {% if postsInfoJson.items()|length == 0 %}
-                    <h4 id="no-posts-header">It's quiet here...</h4>
+                    <div class="no-posts-here-container">
+                        <img src="static/Images/findingDuck.jpg" alt="No posts yet" id="findingDuck" width="100" height="100">
+                        <h4 id="no-posts-header">It's quiet here...</h4><br>
+                        <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
+                    </div>
                 {% endif %}
                 {% for post_username, post_data in postsInfoJson.items() %}
                     <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
