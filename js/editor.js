@@ -498,7 +498,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkLocation(newLocation) && checkName(newName)) {
         axios({
             method: 'post',
-            url: `/api/editActivityModal`,
+            url: `/api/editActivity`,
             headers: {
                 'Content-Type': 'application/json',
                 'VerdexAPIKey': '\{{ API_KEY }}'
@@ -540,14 +540,70 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         })
         .catch(err => {
             console.log("An error occured in connecting to Verdex Servers: " + err)
-            alert("An error occured while  updating your edits for your activity. Please try again later.")
+            alert("An error occured while updating your edits for your activity. Please try again later.")
         })
     }
 }
 
-function addNewActivity(activityId) {
-    let newActivityId = activityId + 1
+function addNewActivity(activityId,location, name, startTime, endTime) {
+    var currentUrl = window.location.href;
+    var urlParts = currentUrl.split('/');
+    var dayCount = urlParts[urlParts.length - 1];
+    var itineraryId = urlParts[urlParts.length - 2];
 
+    let currentActivityId = activityId
+    let currentLocation = location
+    let currentName = name
+    let currentStartTime = startTime
+    let currentEndTime = endTime
+    let newActivityId = activityId + 1
+    axios({
+        method: 'post',
+        url: `/api/addNewActivity`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID" : itineraryId,
+            'dayCount' : dayCount,
+            'currentactivityId' : currentActivityId,
+            'currentStartTime' : currentStartTime,
+            'currentEndTime' : currentEndTime,
+            'currentLocation' : currentLocation,
+            'currentName' : currentName,
+            'newActivityID' : newActivityId
+        }
+    })
+    .then(response => {
+        console.log("Response:", response);  // Add this line to print the response
+        if (response.status == 200) {
+            if (!response.data.startsWith("ERROR:")) {
+                if (!response.data.startsWith("UERROR")) {
+                    if (response.data.startsWith("SUCCESS:")) {
+                        alert("A new activity is added successfully!");
+                        window.location.reload();
+                    } else {
+                        alert("An unknown response was recieved from Verdex Servers.")
+                        console.log("Unknown response received: " + response.data)
+                    }
+                } else {
+                    alert("User error occured. Check for user inputs and try again")
+                    console.log("User error occurred; error: " + response.data)
+                }
+            } else {
+                alert("An error occured while updating your edits for your activity. Please try again later.")
+                console.log("Error occured while adding a new activity to your itinerary: " + response.data)
+            }
+        } else {
+            alert("An error occured while connecting to Verdex Servers. Please try again later.")
+            console.log("Non-200 responnse status code recieved from Verdex Servers.")
+        }
+    })
+    .catch(err => {
+        console.log("An error occured in connecting to Verdex Servers: " + err)
+        alert("An error occured while adding a new activity to your itinerary. Please try again later.")
+    })
 }
 
 

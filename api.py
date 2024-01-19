@@ -488,8 +488,8 @@ def deleteItinerary():
 
 #     return "SUCCESS: New activity start time and end time updated."
 
-@apiBP.route("/api/editActivityModal", methods = ['POST'])
-def editActivityModal():
+@apiBP.route("/api/editActivity", methods = ['POST'])
+def editActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
