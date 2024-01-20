@@ -54,7 +54,7 @@
                     </div>
                 {% endif %}
                 {% for post_username, post_data in postsInfoJson.items()|reverse %}
-                    <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
+                <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }} {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}user-post{% endif %}">
                         <div class="post-content">
                             <div class="nameAndTagHeader">
                                 <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
