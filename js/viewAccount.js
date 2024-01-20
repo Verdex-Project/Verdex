@@ -265,11 +265,6 @@ function changePassword() {
         return
     }
 
-    if (currentPassword == newPassword) {
-        changePasswordMsg.innerHTML = "New password must differ from the current password."
-        return
-    }
-
     if (newPassword.value !== cfmPassword.value) {
         changePasswordMsg.innerHTML = "Passwords do not match."
         return
@@ -278,58 +273,49 @@ function changePassword() {
     saveBtn.disabled = true
     saveBtn.innerText = "Saving Changes..."
 
-    location.reload()
-    console.log("Pass")
-
-    // axios({
-    //     method: 'post',
-    //     url: '/api/changePassword',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //         'VerdexAPIKey': '\{{ API_KEY }}'
-    //     },
-    //     data: {
-    //         "currentPassword": currentPassword.value,
-    //         "newPassword": newPassword.value,
-    //         "cfmNewPassword": cfmPassword.value
-    //     }
-    // })
-    // .then(response => {
-    //     if (response.status == 200) {
-    //         if (!response.data.startsWith("ERROR:")) {
-    //             if (!response.data.startsWith("UERROR:")) {
-    //                 if (response.data.startsWith("SUCCESS:")) {
-    //                     // signUpButton.innerHTML = "Account created! Redirecting now..."
-    //                     // location.href = `${origin}/account/info`;
-    //                 } else {
-    //                     // cfmPasswordMsg.style.color = 'red'
-    //                     // cfmPasswordMsg.innerText = "An unknown error occured in creating the account. Please try again."
-    //                     console.log("Unknown response received: " + response.data)
-    //                 }
-    //             } else {
-    //                 console.log("User error occured: " + response.data)
-    //                 cfmPasswordMsg.style.color = 'red'
-    //                 cfmPasswordMsg.innerText = response.data.substring("UERROR: ".length)
-    //             }
-    //         } else {
-    //             cfmPasswordMsg.style.color = 'red'
-    //             cfmPasswordMsg.innerText = "An error occured in creating your account. Please try again."
-    //             console.log("Error occured in making login request: " + response.data)
-    //         }
-    //     } else {
-    //         cfmPasswordMsg.style.color = 'red'
-    //         cfmPasswordMsg.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
-    //         console.log("Non-200 responnse status code recieved from Verdex Servers.")
-    //     }
-    //     signUpButton.disabled = false
-    //     signUpButton.innerText = "Sign Up"
-    // })
-    // .catch(err => {
-    //     console.log("An error occured in connecting to Verdex Servers: " + err)
-    //     cfmPasswordMsg.style.color = 'red'
-    //     cfmPasswordMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
-    //     signUpButton.disabled = false
-    //     signUpButton.innerText = "Sign Up"
-    // })
-
+    axios({
+        method: 'post',
+        url: '/api/changePassword',
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "currentPassword": currentPassword.value,
+            "newPassword": newPassword.value,
+            "cfmNewPassword": cfmPassword.value
+        }
+    })
+    .then(response => {
+        if (response.status == 200) {
+            if (!response.data.startsWith("ERROR:")) {
+                if (!response.data.startsWith("UERROR:")) {
+                    if (response.data.startsWith("SUCCESS:")) {
+                        changePasswordMsg.innerHTML = "Changes saved!"
+                        location.reload()
+                    } else {
+                        changePasswordMsg.innerText = "An unknown error occured in creating the account. Please try again."
+                        console.log("Unknown response received: " + response.data)
+                    }
+                } else {
+                    console.log("User error occured: " + response.data)
+                    changePasswordMsg.innerText = response.data.substring("UERROR: ".length)
+                }
+            } else {
+                changePasswordMsg.innerText = "An error occured in changing your password. Please try again."
+                console.log("Error occured in changing password: " + response.data)
+            }
+        } else {
+            changePasswordMsg.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
+            console.log("Non-200 responnse status code recieved from Verdex Servers.")
+        }
+        saveBtn.disabled = false
+        saveBtn.innerText = "Save changes"
+    })
+    .catch(err => {
+        console.log("An error occured in connecting to Verdex Servers: " + err)
+        changePasswordMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
+        saveBtn.disabled = false
+        saveBtn.innerText = "Save changes"
+    })
 }
