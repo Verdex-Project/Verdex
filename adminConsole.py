@@ -1,32 +1,42 @@
-import re, datetime
+import re, datetime, sys, copy
 from models import DI, Logger, Universal
 from addons import FireConn, FireAuth
 from emailer import Emailer
 print("Setting up .....")
-#Setup DI
-DI.setup()
-if DI.setup() == "Error":
-    print("There is an error with the setup. ")
-    exit()
+# # Setup DI
+response = DI.setup()
+if response != "Success":
+    print("ADMINCONSOLE: Error in setting up DI; error: " + response)
+    sys.exit(1)
 
-FireConn.connect()
-if FireConn.connect().startswith("ERROR"):
-    print("There is an error with the Firebase setup.")
-    exit()
+    
+## Set up FireConn
 
-FireAuth.connect()
-if FireAuth.connect() == False:
-    print("There is an error with the Firebase Authentication setup.")
-    exit()
+if FireConn.checkPermissions():
+    response = FireConn.connect()
+    if response != True:
+        print("ADMINCONSOLE: Error in setting up FireConn; error: " + response)
+        sys.exit(1)
+else:
+    print("Firebase admin connection not established due to insufficient permissions.")
+
+response = FireAuth.connect()
+if not response:
+    print(f"ADMINCONSOLE: Failed to establish FireAuth connection. Response: {response}")
+    sys.exit(1)
+
+if FireConn.checkPermissions():
+    previousCopy = copy.deepcopy(DI.data["accounts"])
+    DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+    DI.save()
+
+    if previousCopy != DI.data["accounts"]:
+        print("ADMINCONSOLE: Necessary database synchronisation with Firebase Authentication complete.")
 
 Emailer.checkContext()
 emailregex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-def checkName(name):
-    for accountID in DI.data['accounts']:
-        if DI.data['accounts'][accountID]['name'] == name:
-            print("Name already exists. Please try again.")
-            return True
-    return False
+
+
 def checkUsername(username):
     for accountID in DI.data['accounts']:
         if DI.data['accounts'][accountID]['username'] == username:
@@ -35,7 +45,7 @@ def checkUsername(username):
     return False
 def createUser():
     while True:
-        username = input("Enter the username of the admin: ")
+        username = input("Enter the username of the admin: ").strip()
         if username == "":
             print("Username cannot be empty. Please try again.")
             continue
@@ -43,15 +53,13 @@ def createUser():
             continue
         break
     while True:
-        name = input("Enter the name of the admin: ")
+        name = input("Enter the name of the admin: ").strip()
         if name == "":
             print("Name cannot be empty. Please try again.")
             continue
-        elif checkName(name):
-            continue
         break
     while True:
-        email = input("Enter the email of the admin: ")
+        email = input("Enter the email of the admin: ").strip()
         if email == "":
             print("Email cannot be empty. Please try again.")
             continue
@@ -60,13 +68,13 @@ def createUser():
             continue
         break
     while True:
-        position = input("Enter the position of the admin: ")
+        position = input("Enter the position of the admin: ").strip()
         if position == "":
             print("Position cannot be empty. Please try again.")
             continue
         break
     while True:
-        password = input("Enter the password of the admin: ")
+        password = input("Enter the password of the admin: ").strip()
         if password == "":
             print("Password cannot be empty. Please try again.")
             continue
@@ -86,7 +94,6 @@ def createUser():
             'tokenExpiry': (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
             'disabled': False,
             'admin': True,
-            'forumBanned': False,
             'name': name,
             "position": position
     }
@@ -107,8 +114,6 @@ def changeName(userName):
                 newName = input("Enter the new name of the admin: ")
                 if newName == "":
                     print("Name cannot be empty. Please try again.")
-                    continue
-                elif checkName(newName):
                     continue
                 break
 
@@ -172,8 +177,7 @@ def deleteUser(userName):
                 print("User with username {} is not an admin. Please try again.".format(userName))
                 return
 
-            FireAuth.deleteAccount(DI.data['accounts'][accountID]['idToken'])
-            FireAuth.de
+            FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
             del DI.data['accounts'][accountID]
             Logger.log("ADMINCONSOLE DELETEUSER: Deleted admin user with username {}".format(userName))
             DI.save()
