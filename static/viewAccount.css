@@ -25,6 +25,18 @@
     margin-left: 20px;
 }
 
+.modal-body>label {
+    margin-left: 5px;
+}
+
+#changePasswordMsg {
+    visibility: hidden;
+    font-size: smaller;
+    margin-top: 10px;
+    margin-left: 5px;
+    color: red;
+}
+
 .button-container {
     display: inline-block;
     margin-right: 15px;
