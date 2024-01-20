@@ -53,7 +53,7 @@
                         <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
                     </div>
                 {% endif %}
-                {% for post_username, post_data in postsInfoJson.items() %}
+                {% for post_username, post_data in postsInfoJson.items()|reverse %}
                     <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
                         <div class="post-content">
                             <div class="nameAndTagHeader">
@@ -71,11 +71,6 @@
                                         {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split(" ")[2] %}
                                             <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
                                         {% endif %}
-                                        <script>
-                                            // Log the value of comment_id.split(" ")[2]
-                                            console.log("comment_id.split(\" \")[1] value:", '{{ comment_id.split(" ")[2] }}');
-                                            console.log("Comment ID:, '{{ comment_id }}")
-                                        </script>
                                     </div>
                                 {% endfor %}
                             {% endif %}
