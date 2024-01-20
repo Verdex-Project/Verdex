@@ -283,7 +283,7 @@ function changePassword() {
 
     // axios({
     //     method: 'post',
-    //     url: '/api/createAccount',
+    //     url: '/api/changePassword',
     //     headers: {
     //         'Content-Type': 'application/json',
     //         'VerdexAPIKey': '\{{ API_KEY }}'

@@ -329,6 +329,50 @@ def resendEmail():
     Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
     return "SUCCESS: Email verification sent."
 
+@apiBP.route('/api/changePassword', method=['POST'])
+def changePassword():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "currentPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "cfmNewPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    ## Check password length
+    if len(request.json["password"]) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    newPassword = request.json["newPassword"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password"
+    
+    ## Nullify session
+    deleteSession(targetAccountID)
+    del session["idToken"]
+    
+    ## Auto login
+    email = DI.data["accounts"][targetAccountID]["email"]
+    login = FireAuth.login(email=email, password=newPassword)
+    if login.startswith("ERROR"):
+        Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(login))
+        return "ERROR: Auto login failed."
+    
+    return "SUCCESS: User reauthenticated with new password."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     authCheck = manageIDToken()
@@ -344,7 +388,6 @@ def logoutIdentity():
     del session['idToken']
 
     return "SUCCESS: User logged out."
-
 
 @apiBP.route('/api/deleteIdentity', methods=['POST'])
 def deleteIdentity():
