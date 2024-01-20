@@ -179,8 +179,38 @@ function submitComment() {
 }
 
 function editPost(postId) {
-    document.getElementById("edit-post-popup").style.display = "block";
     editPostId = postId;
+
+    axios({
+        method: 'post',
+        url: `/api/openEditPost`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "post_id": editPostId
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while trying to edit post. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            document.getElementById("edit-post-popup").style.display = "none";
+            return;
+        }
+        else if (response.data.startsWith("SUCCESS:")){
+            document.getElementById("edit-post-popup").style.display = "block";
+        }
+    })
+    .catch(function (error) {
+        console.error('Error trying to edit post:', error);
+    });
 }
 
 let editedSelectedTag = ""
@@ -223,7 +253,7 @@ function submitEdit() {
     .then(function (response) {
         if (response.data.startsWith("ERROR:")){
             console.log(response.data)
-            alert("An error occured while editing post. Please try again.")
+            alert("An error occured while submitting edit. Please try again.")
             return;
         }
         else if (response.data.startsWith("UERROR:")){

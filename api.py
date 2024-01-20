@@ -268,7 +268,7 @@ def delete_post():
             DI.save()
             return "SUCCESS: Post was successfully removed from the system."
         else:
-            return "UERROR: You can't delete someone else's post!."
+            return "UERROR: You can't delete someone else's post!"
     
     return "ERROR: Post ID not found in system."
 
@@ -447,3 +447,25 @@ def editPost():
             return "ERROR: Post ID not found in system."
     else:
         return "UERROR: You can't edit someone else's post!"
+    
+@apiBP.route('/api/openEditPost', methods=['POST'])
+def openEditPost():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "post_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    post_id = request.json['post_id']
+
+    if targetAccountID != DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+        return "UERROR: You can't edit someone else's post!"
+    
+    return "SUCCESS: Post successfully opened for editing."
+
