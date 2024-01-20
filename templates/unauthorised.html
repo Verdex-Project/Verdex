@@ -20,17 +20,7 @@
     <br>
     <h1 id="heading">Access Unauthorised</h1>
     <br>
-    {% with messages = get_flashed_messages() %}  
-        {% if messages %}  
-            {% for message in messages %}
-                <h3>{{ message }}</h3>
-            {% endfor %}
-        {% elif error != None and error != '' %}
-            <h3>{{ error }}</h3>
-        {% else %}
-            <h3>No error message was provided.</h3>
-        {% endif %}
-    {% endwith %}
+    <h3>{{ message }}</h3>
     <br>
     <h6>You have been re-directed to this webpage due to incomplete or failed security checks by the Verdex system.</h6>
     <br>
