@@ -302,8 +302,14 @@ function changePassword() {
                     changePasswordMsg.innerText = response.data.substring("UERROR: ".length)
                 }
             } else {
-                changePasswordMsg.innerText = "An error occured in changing your password. Please try again."
-                console.log("Error occured in changing password: " + response.data)
+                if (response.data="ERROR: Change password auto login failed.") {
+                    alert("Password updated! You'll be redirected to the homepage for security. Re-login with your new password to continue.")
+                    location.href = `${origin}/`;
+                } else {
+                    changePasswordMsg.innerText = "An error occured in changing your password. Please try again."
+                    console.log("Error occured in changing password: " + response.data)
+                }
+
             }
         } else {
             changePasswordMsg.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
