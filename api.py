@@ -325,7 +325,7 @@ def deleteComment():
 
     if post_id in DI.data["forum"]:
         if comment_id in DI.data["forum"][post_id]["comments"]:
-            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID in DI.data["forum"][post_id]["comments"]:
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split(" ")[2]:
                 del DI.data["forum"][post_id]["comments"][comment_id]
                 DI.save()
                 return "SUCCESS: Comment was successfully removed from the post in the system."

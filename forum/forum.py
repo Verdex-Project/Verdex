@@ -5,6 +5,9 @@ import datetime
 
 forumBP = Blueprint("forum", __name__)
 
+global targetAccountID
+targetAccountID = ""
+
 @forumBP.route('/verdextalks')
 def verdextalks():
     authCheck = manageIDToken()
@@ -16,5 +19,5 @@ def verdextalks():
         flash("Access Denied. You have been banned from the forum.")
         return redirect(url_for("unauthorised"))
     
-    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"], accountsInfoJson=DI.data["accounts"])
+    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"], accountsInfoJson=DI.data["accounts"], targetAccountID=targetAccountID)
     

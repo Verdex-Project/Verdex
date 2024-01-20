@@ -68,7 +68,14 @@
                                 {% for comment_id, comment_text in post_data.comments.items() %}
                                     <div class="commentDiv" data-comment-id="{{ comment_id }}">
                                         <li id="comment">{{ comment_text }}</li>
-                                        <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split(" ")[2] %}
+                                            <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        {% endif %}
+                                        <script>
+                                            // Log the value of comment_id.split(" ")[2]
+                                            console.log("comment_id.split(\" \")[1] value:", '{{ comment_id.split(" ")[2] }}');
+                                            console.log("Comment ID:, '{{ comment_id }}")
+                                        </script>
                                     </div>
                                 {% endfor %}
                             {% endif %}
@@ -77,11 +84,15 @@
                             <div class="post-reaction-buttons-container">
                                 <ul class="list-of-reaction-buttons">
                                     <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
-                                    <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                    {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                    {% endif %}
                                     <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
                                 </ul>
                             </div>
-                            <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                            {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
