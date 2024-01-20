@@ -581,28 +581,8 @@ def addNewActivity():
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if 'itineraryID' not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "dayCount" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentActivityId" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentStartTime" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentEndTime" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentLatitude" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentLongitude" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentImageURL" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentLocation" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "currentName" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if "newActivityID" not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
     activityIdList = []
@@ -618,10 +598,6 @@ def addNewActivity():
         return "UERROR: Activity ID not found!"
 
     DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
-    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["startTime"] = startTime
-    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["endTime"] = endTime
-    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["location"] = location
-    # DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId]["name"] = name
     DI.save()
 
     print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
