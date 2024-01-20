@@ -97,7 +97,7 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False,
         "admin": False,
-        "forumBanStatus": False
+        "forumBanned": False
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
