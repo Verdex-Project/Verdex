@@ -455,8 +455,12 @@ class FireAuth:
             return "ERROR: Invalid refresh token; error response: {}".format(e)
         
     @staticmethod
-    def deleteAccount(idToken):
+    def deleteAccount(idTokenOrFireAuthID, admin=False):
         '''Returns True upon successful account deletion.
+
+        Delete account requires either the ID token of a logged in user or the Firebase Authentication ID of the user. Set `admin` to `True` if the latter is used.
+
+        If admin mode is off (`deleteAccount` called with ID token), `FireAuth.accountInfo` will be called to derive the Firebase Authentication ID of the target account.
 
         Usage:
 
@@ -468,20 +472,32 @@ class FireAuth:
             print(loginResponse)
             exit()
 
+        ## Deleting account based on user's ID token (would require the user to be logged in)
         response = FireAuth.deleteAccount(loginResponse["idToken"])
+        if isinstance(response, str):
+            print(response)
+            exit()
+
+        ## Deleting account based on Firebase Authentication ID
+        response = FireAuth.deleteAccount(idTokenOrFireAuthID="sampleFirebaseUserID", admin=True)
         if isinstance(response, str):
             print(response)
             exit()
         ```
         
-        NOTE: This method uses firebase_admin rather than pyrebase unlike the other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        NOTE: This method uses firebase_admin rather than pyrebase unlike the other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method. If not using admin mode, `FireAuth.connect()` needs to be executed successfully prior to execution of this method.
         '''
 
         if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
             return "ERROR: Delete account requires a Firebase Admin connection granted by explicit permission."
         
         try:
-            fireAuthUserID = FireAuth.accountInfo(idToken)["uid"]
+            fireAuthUserID = idTokenOrFireAuthID
+            if not admin:
+                accInfo = FireAuth.accountInfo(idTokenOrFireAuthID)
+                if isinstance(accInfo, str):
+                    raise Exception(accInfo)
+                fireAuthUserID = accInfo["uid"]
             adminAuth.delete_user(fireAuthUserID)
             return True
         except Exception as e:
