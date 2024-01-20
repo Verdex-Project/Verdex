@@ -141,13 +141,13 @@ if __name__ == '__main__':
     Logger.setup()
 
     # Database Synchronisation with Firebase Auth accounts
-    # if FireConn.checkPermissions():
-    #     previousCopy = copy.deepcopy(DI.data["accounts"])
-    #     DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
-    #     DI.save()
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
 
-    #     if previousCopy != DI.data["accounts"]:
-    #         print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
+        if previousCopy != DI.data["accounts"]:
+            print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
     
     if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
         DI.data["itineraries"] = {

@@ -99,7 +99,6 @@ def createAccount():
         "forumBanned": False # Set default status to false. This value will change onclick of the ban button in the admin page (Nicholas)
     }
 
-    DI.data["forum"][accID] = {} # Create a new forum entry for the account ID, so the webpage is still able to load the forum page without any posts yet
     DI.save()
 
     session["idToken"] = tokenInfo["idToken"]
@@ -240,12 +239,10 @@ def like_post():
 
     post_id = request.json['postId']
 
-    for targetAccountID in DI.data["forum"]:
-        for post_datetime, post_data in DI.data["forum"][targetAccountID].items():
-            if post_id == post_datetime:
-                post_data["likes"] = str(int(post_data["likes"]) + 1)
-                DI.save()
-                return jsonify({'likes': int(post_data["likes"])})
+    if post_id in DI.data["forum"]:
+        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
+        DI.save()
+        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
         
     return "ERROR: Post ID not found in system."
 
@@ -265,13 +262,15 @@ def delete_post():
 
     post_id = request.json['postId']
 
-    if post_id in DI.data["forum"][targetAccountID]:
-        # Delete the post associated with post_id
-        DI.data["forum"][targetAccountID].pop(post_id)
-        DI.save()
-        return "SUCCESS: Post was successfully removed from the system."
+    if post_id in DI.data["forum"]:
+        if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+            del DI.data["forum"][post_id]
+            DI.save()
+            return "SUCCESS: Post was successfully removed from the system."
+        else:
+            return "UERROR: You can't delete someone else's post!."
     
-    return "UERROR: You can't delete someone else's post!."
+    return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/nextDay', methods=['POST'])
 def nextDay():
@@ -324,24 +323,18 @@ def deleteComment():
     post_id = request.json['postId']
     comment_id = request.json['commentId']
 
-    # for targetAccountID in DI.data["forum"]:
-    #     for post_datetime, post_data in DI.data["forum"][targetAccountID].items():
-    #         if post_id == post_datetime:
-    #             post_data["likes"] = str(int(post_data["likes"]) + 1)
-    #             DI.save()
-    #             return jsonify({'likes': int(post_data["likes"])})
-        
-    # return "ERROR: Post ID not found in system."
-
-    # if post_id in DI.data["forum"][targetAccountID]:
-    #     if comment_id in DI.data["forum"][targetAccountID][post_id]["comments"]:
-    #         del DI.data["forum"][targetAccountID][post_id]["comments"][comment_id]
-    #         DI.save()
-    #         return "SUCCESS: Comment was successfully removed from the post in the system."
-    #     else:
-    #         return "ERROR: Comment ID not found in system."
-    # else:
-    #     return "ERROR: Post ID not found in system."
+    if post_id in DI.data["forum"]:
+        if comment_id in DI.data["forum"][post_id]["comments"]:
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID in DI.data["forum"][post_id]["comments"]:
+                del DI.data["forum"][post_id]["comments"][comment_id]
+                DI.save()
+                return "SUCCESS: Comment was successfully removed from the post in the system."
+            else:
+                return "UERROR: You can't delete someone else's comment!"
+        else:
+            return "ERROR: Comment ID not found in system."
+    else:
+        return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/submitPost', methods=['POST'])
 def submitPost():
@@ -377,11 +370,11 @@ def submitPost():
         "postDateTime": postDateTime,
         "liked_status": False,
         "tag": post_tag,
+        "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {}
     }
 
-    DI.data["forum"].setdefault(targetAccountID, {})
-    DI.data["forum"][targetAccountID][postDateTime] = new_post
+    DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Post was successfully submitted to the system."
 
@@ -404,14 +397,14 @@ def commentPost():
     post_id = request.json['post_id']
     comment_description = request.json['comment_description']
 
-    if post_id in DI.data["forum"][targetAccountID]:
-        if 'comments' not in DI.data["forum"][targetAccountID][post_id]:
-            DI.data["forum"][targetAccountID][post_id]['comments'] = {}
+    if post_id in DI.data["forum"]:
+        if 'comments' not in DI.data["forum"][post_id]:
+            DI.data["forum"][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][targetAccountID][post_id]['comments'][postDateTime] = comment_description
+        DI.data["forum"][post_id]['comments'][str(postDateTime + " " + targetAccountID)] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
-    elif post_id not in DI.data["forum"][targetAccountID]:
+    else:
         return "ERROR: Post ID not found in system."
     
 @apiBP.route('/api/editPost', methods=['POST'])
@@ -442,12 +435,15 @@ def editPost():
     edit_post_description = request.json['edit_post_description']
     edit_post_tag = request.json['edit_post_tag']
 
-    if post_id in DI.data["forum"][targetAccountID]:
-        DI.data["forum"][targetAccountID][post_id]["user_names"] = edit_user_names
-        DI.data["forum"][targetAccountID][post_id]["post_title"] = edit_post_title
-        DI.data["forum"][targetAccountID][post_id]["post_description"] = edit_post_description
-        DI.data["forum"][targetAccountID][post_id]["tag"] = edit_post_tag
-        DI.save()
-        return "SUCCESS: Post successfully edited."
-    elif post_id not in DI.data["forum"][targetAccountID]:
-        return "ERROR: Post ID not found in system."
+    if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+        if post_id in DI.data["forum"]:
+            DI.data["forum"][post_id]["user_names"] = edit_user_names
+            DI.data["forum"][post_id]["post_title"] = edit_post_title
+            DI.data["forum"][post_id]["post_description"] = edit_post_description
+            DI.data["forum"][post_id]["tag"] = edit_post_tag
+            DI.save()
+            return "SUCCESS: Post successfully edited."
+        else:
+            return "ERROR: Post ID not found in system."
+    else:
+        return "UERROR: You can't edit someone else's post!"

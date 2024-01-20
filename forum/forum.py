@@ -10,14 +10,11 @@ def verdextalks():
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
-    targetAccountID = authCheck[len("SUCCESS: ")::]
+    targetAccountID = authCheck[len("SUCCESS: ")::] 
 
-    if "idToken" not in session:
-        return redirect(url_for('unauthorised', error="Please sign in first."))
-
-    if DI.data["accounts"][targetAccountID]["forumBanned"] == True:
+    if "forumBanned" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["forumBanned"] == True:
         flash("Access Denied. You have been banned from the forum.")
-        return redirect(url_for("error"))
+        return redirect(url_for("unauthorised"))
     
-    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"][targetAccountID], itineraryInfoJson=DI.data["itineraries"])
+    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"])
     
