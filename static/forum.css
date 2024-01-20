@@ -420,14 +420,6 @@ body {
     float: left;
 }
 
-#user_names {
-    border: 2px solid #427b44;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 15px;
-    margin-top: 20px;
-}
-
 #postTitle {
     color: #2d532e;
 }
@@ -505,7 +497,7 @@ body {
     transition: 0.2s ease;
 }
 
-#edit_user_names, #edit-post-title, #edit-post-description {
+#edit-post-title, #edit-post-description {
     border: 2px solid #427b44;
     margin-bottom: 15px;
     border-radius: 10px;

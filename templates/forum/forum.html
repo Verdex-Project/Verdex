@@ -57,7 +57,7 @@
                     <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
                         <div class="post-content">
                             <div class="nameAndTagHeader">
-                                <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                                <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
                                 {% if post_data.tag != "" %}
                                     <h4 class="tag-display">#{{ post_data.tag }}</h4>
                                 {% endif %}
@@ -91,7 +91,6 @@
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
                 <h2 id="popup-header"><b>Create A Post!</b></h2>
-                <input type="text" name="user_names" id="user_names" size="50" placeholder="Name(s): " required><br>
                 <input type="text" name="post_title" id="post-title" size="70" placeholder="Title: " required><br>
                 <textarea name="post_description" id="post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
                 <input type="hidden" name="post_tag" id="post-tag" value="">
@@ -116,7 +115,6 @@
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
                 <h2 id="popup-header"><b>Edit post</b></h2>
-                <input type="text" name="edit_user_names" id="edit_user_names" size="50" required placeholder="Enter new name(s): "><br>
                 <input type="text" name="edit_post_title" id="edit-post-title" size="70" required placeholder="Enter new title: "><br>
                 <textarea name="edit_post_description" id="edit-post-description" rows="5" cols="80" required placeholder="Enter new description: "></textarea><br>
                 <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">

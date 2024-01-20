@@ -347,8 +347,6 @@ def submitPost():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
-    if 'user_names' not in request.json:
-        return "ERROR: One or more payload parameters are missing."
     if 'post_title' not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if 'post_description' not in request.json:
@@ -356,14 +354,13 @@ def submitPost():
     if 'post_tag' not in request.json:
         return "ERROR: One or more payload parameters are missing."
     
-    user_names = request.json['user_names']
     post_title = request.json['post_title']
     post_description = request.json['post_description']
     post_tag = request.json['post_tag']
 
     postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
     new_post = {
-        "user_names": user_names,
+        "username": DI.data["accounts"][targetAccountID]["username"],
         "post_title": post_title,
         "post_description": post_description,
         "likes": "0",
@@ -420,8 +417,6 @@ def editPost():
     
     if "post_id" not in request.json:
         return "ERROR: One or more payload parameters are missing."
-    if "edit_user_names" not in request.json:
-        return "ERROR: One or more payload parameters are missing."
     if "edit_post_title" not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if "edit_post_description" not in request.json:
@@ -430,14 +425,12 @@ def editPost():
         return "ERROR: One or more payload parameters are missing."
     
     post_id = request.json['post_id']
-    edit_user_names = request.json['edit_user_names']
     edit_post_title = request.json['edit_post_title']
     edit_post_description = request.json['edit_post_description']
     edit_post_tag = request.json['edit_post_tag']
 
     if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
         if post_id in DI.data["forum"]:
-            DI.data["forum"][post_id]["user_names"] = edit_user_names
             DI.data["forum"][post_id]["post_title"] = edit_post_title
             DI.data["forum"][post_id]["post_description"] = edit_post_description
             DI.data["forum"][post_id]["tag"] = edit_post_tag

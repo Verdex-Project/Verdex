@@ -35,15 +35,10 @@ function closeEditPopup() {
 let selectedTag = ""
 function submitPost() {
     document.getElementById("post-tag").value = selectedTag;
-    const user_names = document.getElementById("user_names");
     const post_title = document.getElementById("post-title");
     const post_description = document.getElementById("post-description");
     const post_tag = document.getElementById("post-tag");
 
-    if (user_names.value.trim() === ""){
-        alert("Please enter valid name(s)")
-        return;
-    }
     if (post_title.value.trim() === ""){
         alert("Please enter a valid post title")
         return;
@@ -61,7 +56,6 @@ function submitPost() {
             'VerdexAPIKey': '\{{ API_KEY }}'
         },
         data: {
-            "user_names": user_names.value,
             "post_title": post_title.value,
             "post_description": post_description.value,
             "post_tag": post_tag.value
@@ -216,17 +210,12 @@ function editPost(postId) {
 let editedSelectedTag = ""
 function submitEdit() {
     document.getElementById("edit-post-tag").value = editedSelectedTag;
-    const editUserNames = document.getElementById("edit_user_names").value;
     const editPostTitle = document.getElementById("edit-post-title").value;
     const editPostDescription = document.getElementById("edit-post-description").value;
     const editPostTag = document.getElementById("edit-post-tag").value;
     const postId = editPostId;
-
-    if (editUserNames.trim() === "") {
-        alert("Please enter valid name(s).");
-        return;
-    }
-    else if (editPostTitle.trim() === "") {
+    
+    if (editPostTitle.trim() === "") {
         alert("Please enter a valid title.");
         return;
     }
@@ -244,7 +233,6 @@ function submitEdit() {
         },
         data: {
             "post_id": postId,
-            "edit_user_names": editUserNames,
             "edit_post_title": editPostTitle,
             "edit_post_description": editPostDescription,
             "edit_post_tag": editPostTag
