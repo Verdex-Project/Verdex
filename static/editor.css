@@ -335,7 +335,7 @@
     transition: 0.5s ease-out;
 }
 
-#addButton {
+.addActivityButton {
     padding: none;
     background: none;
     border: none;
@@ -344,7 +344,7 @@
     font-size: 40px;
 }
 
-#addButton:hover {
+.addActivityButton:hover {
     padding: 2px 2px 2px 2px;
     font-size: 50px;
     color: rgb(0, 210, 0);
