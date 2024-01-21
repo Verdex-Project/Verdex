@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Universal
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -53,7 +53,6 @@ def loginAccount():
 
     return "SUCCESS: User logged in succesfully"
 
-
 @apiBP.route("/api/createAccount", methods = ['POST'])
 def createAccount():
 
@@ -92,10 +91,13 @@ def createAccount():
         "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
+        "password": Encryption.encodeToSHA256(request.json["password"]),
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
-        "disabled": False
+        "disabled": False,
+        "admin": False,
+        "forumBanned": False
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -327,6 +329,73 @@ def resendEmail():
     Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
     return "SUCCESS: Email verification sent."
 
+@apiBP.route('/api/changePassword', methods=['POST'])
+def changePassword():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "currentPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "cfmNewPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    currentPassword = request.json["currentPassword"].strip()
+    newPassword = request.json["newPassword"].strip()
+    cfmNewPassword = request.json["cfmNewPassword"].strip()
+    
+    if newPassword != cfmNewPassword:
+        return "UERROR: New and confirm password fields do not match."
+    if len(newPassword) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+    if currentPassword == newPassword:
+        return "UERROR: New password must differ from the current password."
+    
+    ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
+    if "password" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Your password cannot be changed at this time. Please try again."
+    
+    ## Check if current password is correct
+    oldPassword = DI.data["accounts"][targetAccountID]["password"]
+    if not Encryption.verifySHA256(currentPassword, oldPassword):
+        return "UERROR: Current password is incorrect."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password."
+    
+    ### Update DI
+    DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    DI.save()
+    
+    ## Automated re-login
+    email = DI.data["accounts"][targetAccountID]["email"]
+    loginResponse = FireAuth.login(email=email, password=newPassword)
+    if isinstance(loginResponse, str) and loginResponse.startswith("ERROR"):
+        Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(loginResponse))
+        deleteSession(targetAccountID)
+        del session[targetAccountID]
+        return "ERROR: Change password auto login failed."
+    else:
+        DI.data["accounts"][targetAccountID]["idToken"] = loginResponse["idToken"]
+        DI.data["accounts"][targetAccountID]["refreshToken"] = loginResponse["refreshToken"]
+        DI.data["accounts"][targetAccountID]["tokenExpiry"] = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        DI.save()
+        session["idToken"] = loginResponse["idToken"]
+    
+    return "SUCCESS: Password updated successfully."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     authCheck = manageIDToken()
@@ -342,7 +411,6 @@ def logoutIdentity():
     del session['idToken']
 
     return "SUCCESS: User logged out."
-
 
 @apiBP.route('/api/deleteIdentity', methods=['POST'])
 def deleteIdentity():

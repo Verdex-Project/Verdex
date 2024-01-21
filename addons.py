@@ -639,6 +639,36 @@ class FireAuth:
             return "ERROR: Failed to update disabled status; error response: {}".format(e)
         
     @staticmethod
+    def updatePassword(fireAuthID, newPassword):
+        '''Returns True upon successful update.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.updatePassword(fireAuthID="sampleFirebaseUserID", newPassword="newPassword")
+        if response != True:
+            print(response)
+        else:
+            print("Password updated successfully!")
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if not isinstance(newPassword, str):
+            return "ERROR: Invalid password."
+        
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Update password requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, password=newPassword)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to update password; error response: {}".format(e)
+        
+    @staticmethod
     def generateAccountsObject(fireAuthUsers, existingAccounts, strategy="add-only"):
         '''## Intro
         Returns an accounts object that can be used to update the accounts object in DI.

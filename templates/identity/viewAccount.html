@@ -34,7 +34,34 @@
 
     <div id="password">
         <p>Password</p>
-        <button type="button" class="btn btn-outline-warning">Change Password</button>
+        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#newPasswordModal">Change Password</button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPasswordModalLabel">Change Your Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
+                    <input type="password" class="form-control" id="currentPasswordInput" placeholder="Current Password">
+                    <br>
+                    <label for="newPasswordInput" class="form-label">Enter New Password</label>
+                    <input type="password" class="form-control" id="newPasswordInput" placeholder="New Password">
+                    <br>
+                    <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="cfmPasswordInput" placeholder="Confirm New Password">
+                    <div id="changePasswordMsg"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modalCloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="modalSaveBtn" type="button" class="btn btn-primary" onclick="changePassword()">Save changes</button>
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
 
     <br>
