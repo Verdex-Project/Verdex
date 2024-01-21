@@ -760,9 +760,6 @@ def editActivity():
     endTime = request.json["newEndTime"]
     location = request.json["newLocation"]
     name = request.json["newName"]
-    
-
-    print(request.json)
 
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -860,8 +857,42 @@ def addNewActivity():
     DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
     DI.save()
 
-    print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
-
     return "SUCCESS: New activity is added successfully"
 
+@apiBP.route('/api/deleteActivity', methods=['POST'])
+def deleteActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["day"]
+    itineraryID = request.json['itineraryID']
+    activityId = request.json["activityId"]
 
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
+    DI.save()
+    
+    return "SUCCESS: Activity is deleted."
+
+@apiBP.route('/api/deleteItinerary', methods=['POST'])
+def deleteItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    itineraryID = request.json['itineraryID']
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    del DI.data["itineraries"][itineraryID]
+    DI.save()
+    
+    return "SUCCESS: Itinerarty is deleted."
