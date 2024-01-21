@@ -706,8 +706,8 @@ def deleteItinerary():
 
 #     return "SUCCESS: New activity start time and end time updated."
 
-@apiBP.route("/api/editActivityModal", methods = ['POST'])
-def editActivityModal():
+@apiBP.route("/api/editActivity", methods = ['POST'])
+def editActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -762,9 +762,9 @@ def editActivityModal():
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
-    # timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) <= int(startTime) + 30 :
-        return "UERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
+    timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+        return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
@@ -780,3 +780,45 @@ def editActivityModal():
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
+
+@apiBP.route("/api/addNewActivity", methods = ['POST'])
+def addNewActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["currentActivityId"]
+    startTime = request.json["currentStartTime"]
+    endTime = request.json["currentEndTime"]
+    latitude = request.json["currentLatitude"]
+    longitude = request.json["currentLongitude"]
+    imageURL = request.json["currentImageURL"]
+    location = request.json["currentLocation"]
+    name = request.json["currentName"]
+    newActivityId = str(request.json["newActivityID"])
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.save()
+
+    print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
+
+    return "SUCCESS: New activity is added successfully"
+

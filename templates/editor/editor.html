@@ -84,7 +84,7 @@
                                         <div class="modal-header">
                                             <h1 class="modal-title fs-5" id="exampleModalLabel">
                                                 <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Edit This Activity! </h5>
-                                                <span style="color:gray">(Click on the elements that you want to choose)</span></h1>
+                                                <span style="color:gray">(Click on the elements that you want to edit)</span></h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
@@ -216,7 +216,8 @@
                                         <div class="modal-header">
                                             <h1 class="modal-title fs-5" id="exampleModalLabel">
                                                 <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Edit This Activity! </h5>
-                                                <span style="color:gray">(Click on the elements that you want to choose)</span></h1>
+                                                <span style="color:gray">(Click on the elements that you want to edit)</span></h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
@@ -252,7 +253,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary" onclick="saveActivityEdits('{{ activityId }}',
+                                            <button type="button" class="btn btn-primary"
+                                            onclick="saveActivityEdits('{{ activityId }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
@@ -271,7 +273,15 @@
                     </div>
 
                     <div id="addExtra">
-                        <button id="addButton" onclick="addNewActivity()">+</button>
+                        <button type="button" class="addActivityButton" id="addActivityButton" 
+                        onclick="addNewActivity('{{ activityId }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['lat'] }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['long'] }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
+                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">+</button>
                     </div>
                 {% endif %}
             {% endfor %}
