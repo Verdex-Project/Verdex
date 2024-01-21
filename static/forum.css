@@ -592,3 +592,14 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.itineraryDiv {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid #66bb69;
+    padding: 10px 20px 10px 20px;
+}
+
+#itinerary-header, #itinerary-info {
+    color: #427b44;
+}

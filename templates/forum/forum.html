@@ -72,6 +72,15 @@
                                 {% endif %}
                             </div>
                             <p class="post-description">{{ post_data.post_description }}</p>
+                            {% if post_data.itineraries %}
+                                <h5 id="itinerary-header">Check out my itinerary!</h5>
+                                {% for itinerary_id, itinerary_data in post_data.itineraries.items() %}
+                                    <div class="itineraryDiv" data-itinerary-id="{{ itinerary_id }}">
+                                        <p id="itinerary-info"><strong>{{ itinerary_data.itinerary_title }}</strong></p>
+                                        <p id="itinerary-info">{{ itinerary_data.itinerary_description }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                             {% if post_data.comments != {} %}
                                 <h5 id="comments-header">Comments: </h5><br>
                                 {% for comment_id, comment_text in post_data.comments.items() %}
