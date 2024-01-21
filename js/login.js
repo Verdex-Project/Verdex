@@ -1,27 +1,28 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//     const usernameInput = document.getElementById("usernameInput");
-//     const passwordInput = document.getElementById("passwordInput");
-//     const signInButton = document.getElementById("signInButton");
-
-//     signInButton.addEventListener("click", function () {
-//         const username = usernameInput.value;
-//         const password = passwordInput.value;
-        
-//         console.log("Username:", username);
-//         console.log("Password:", password);
-//     });
-// });
-
+document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            signIn();
+        }
+    });
+});
 
 function signIn() {
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
-    // const signInButton = document.getElementById("signInButton");
+    const statusLabel = document.getElementById("statusLabel")
+    const signInButton = document.getElementById("signInButton")
+
+    statusLabel.style.visibility = 'visible'
 
     if (!usernameInput.value || usernameInput.value == "" || !passwordInput.value || passwordInput.value == "") {
-        alert("One or more fields is empty. Please try again.")
+        statusLabel.style.color = "red";
+        statusLabel.innerHTML = "Please fill in all the fields."
         return
     }
+
+    signInButton.disabled = true
+    signInButton.innerText = "Logging you in..."
 
     axios({
         method: 'post',
@@ -41,27 +42,50 @@ function signIn() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
+                        signInButton.innerText = "Logged in! Redirecting now..."
                         location.href = `${origin}/account/info`;
                     } else {
-                        alert("An unknown response was recieved from Verdex Servers.")
+                        statusLabel.style.color = "red";
+                        statusLabel.innerText = "An unknown response was recieved from Verdex Servers."
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    alert("User error occured. Check logs for more information.")
+                    statusLabel.style.color = "red";
+                    statusLabel.innerText = response.data.substring("UERROR: ".length)
                     console.log("User error occured: " + response.data)
                 }
             } else {
-                alert("An error occured in logging you in. Please try again or check logs for more information.")
+                statusLabel.style.color = "red";
+                statusLabel.innerText = "An error occured in logging you in. Please try again later."
                 console.log("Error occured in making login request: " + response.data)
             }
         } else {
-            alert("An error occured while connecting to Verdex Servers. Please try again later.")
+            statusLabel.style.color = "red";
+            statusLabel.innerText = "An error occured while connecting to Verdex Servers. Please try again later."
             console.log("Non-200 responnse status code recieved from Verdex Servers.")
         }
+        signInButton.disabled = false
+        signInButton.innerText = "Sign In"
     })
     .catch(err => {
+        statusLabel.style.color = "red";
+        statusLabel.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
         console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured in connecting to Verdex Servers. Please try again later or check logs for more information.")
+        signInButton.disabled = false
+        signInButton.innerText = "Sign In"
     })
 
+}
+
+function editElement() {
+    var element = document.getElementById('editableElement');
+    element.contentEditable = true; // Enable editing
+    element.classList.add('editing'); // Add editing class for styling
+    element.focus(); // Set focus to the edited element
+    
+    // Attach a blur event listener to save changes when the element loses focus
+    element.addEventListener('blur', function () {
+        element.contentEditable = false; // Disable editing
+        element.classList.remove('editing'); // Remove editing class
+    });
 }

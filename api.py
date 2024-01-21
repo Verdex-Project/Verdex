@@ -1,7 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
-from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger
-from models import *
+from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -54,7 +53,6 @@ def loginAccount():
 
     return "SUCCESS: User logged in succesfully"
 
-
 @apiBP.route("/api/createAccount", methods = ['POST'])
 def createAccount():
 
@@ -84,7 +82,8 @@ def createAccount():
     # Create a new account
     tokenInfo = FireAuth.createUser(email=request.json["email"], password=request.json["password"])
     if isinstance(tokenInfo, str):
-        return "UERROR: Account already exists."
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Account creation failed; response: {}".format(tokenInfo))
+        return "UERROR: Please enter a valid Email."
     
     accID = Universal.generateUniqueID()
     DI.data["accounts"][accID] = {
@@ -92,14 +91,44 @@ def createAccount():
         "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
-        "password": request.json["password"],
+        "password": Encryption.encodeToSHA256(request.json["password"]),
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
-        "forumBanned": False # Set default status to false. This value will change onclick of the ban button in the admin page (Nicholas)
+        "disabled": False,
+        "admin": False,
+        "forumBanned": False
     }
-
+    Logger.log("Account with ID {} created.".format(accID))
     DI.save()
+
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(request.json["email"])
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS CREATEACCOUNT ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
+
+    altText = f"""
+    Dear {request.json["username"]},
+    
+    Thank you for Thank you for signing up with Verdex! To finish signing up, please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/createAccountEmail.html",
+        username = request.json["username"],
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(request.json["email"], "Welcome To Verdex", altText, html)
+    # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
 
@@ -167,17 +196,205 @@ def editUsername():
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
+    ## Check body
+    if "username" not in request.json:
+        return "ERROR: One or more payload not present."
     
-    # # Check if the username or email is already in use
-    # for accountID in DI.data["accounts"]:
-    #     if DI.data["accounts"][accountID]["username"] == request.json["username"]:
-    #         return "UERROR: Username is already taken."
+    # Check if the username is already in use
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["username"] == request.json["username"]:
+            return "UERROR: Username is already taken."
 
     # Update the username in the data
     DI.data["accounts"][targetAccountID]["username"] = request.json["username"]
     DI.save()
 
     return "SUCCESS: Username updated."
+
+@apiBP.route("/api/editEmail", methods = ['POST'])
+def editEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "email" not in request.json:
+        return "ERROR: One or more payload not present."
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == request.json["email"]:
+            return "UERROR: Email is already taken."
+    
+    # Success case
+        
+    ## Change email in Firebase Authentication
+    response = FireAuth.changeUserEmail(fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"], newEmail = request.json["email"])
+    if response != True:
+        Logger.log("API EDITEMAIL ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(targetAccountID, response))
+        return "ERROR: Failed to change email."
+    
+    ## Change email verified status to False in Firebase Authentication (ignore if goes wrong)
+    verification = FireAuth.updateEmailVerifiedStatus(DI.data["accounts"][targetAccountID]["fireAuthID"], False)
+    if verification != True:
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to update email verification status; response: {}".format(response))
+
+    ## Generate email verification link
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = request.json["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(response))
+        return "ERROR: Email verification link generation failed."
+    
+    ## Nullify session
+    deleteSession(targetAccountID)
+    del session["idToken"]
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    ## Dispatch email with link via Emailer
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+
+    # Update the email in the data
+    DI.data["accounts"][targetAccountID]["email"] = request.json["email"]
+    DI.save()
+    
+    return "SUCCESS: Email updated and verification sent! Please re-login."
+
+@apiBP.route('/api/resendEmail', methods=['POST'])
+def resendEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    token = DI.data["accounts"][targetAccountID]["idToken"]
+    verified = FireAuth.accountInfo(token)["emailVerified"]
+    if verified != False:
+        return "ERROR: Email already verified!"
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+    verifyEmailLink = FireAuth.generateEmailVerificationLink(email)
+    if verifyEmailLink.startswith("ERROR"):
+        Logger.log("ACCOUNTS EDITEMAIL ERROR: Failed to generate email verification link; response: {}".format(verifyEmailLink))
+        return "ERROR: Email verification link generation failed."
+
+    altText = f"""
+    Dear {username},
+    
+    Please verify your email here:
+    {verifyEmailLink}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/resendVerificationEmail.html",
+        username = username,
+        verifyEmailLink = verifyEmailLink,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
+    return "SUCCESS: Email verification sent."
+
+@apiBP.route('/api/changePassword', methods=['POST'])
+def changePassword():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "currentPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "cfmNewPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    currentPassword = request.json["currentPassword"].strip()
+    newPassword = request.json["newPassword"].strip()
+    cfmNewPassword = request.json["cfmNewPassword"].strip()
+    
+    if newPassword != cfmNewPassword:
+        return "UERROR: New and confirm password fields do not match."
+    if len(newPassword) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+    if currentPassword == newPassword:
+        return "UERROR: New password must differ from the current password."
+    
+    ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
+    if "password" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Your password cannot be changed at this time. Please try again."
+    
+    ## Check if current password is correct
+    oldPassword = DI.data["accounts"][targetAccountID]["password"]
+    if not Encryption.verifySHA256(currentPassword, oldPassword):
+        return "UERROR: Current password is incorrect."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password."
+    
+    ### Update DI
+    DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    DI.save()
+    
+    ## Automated re-login
+    email = DI.data["accounts"][targetAccountID]["email"]
+    loginResponse = FireAuth.login(email=email, password=newPassword)
+    if isinstance(loginResponse, str) and loginResponse.startswith("ERROR"):
+        Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(loginResponse))
+        deleteSession(targetAccountID)
+        del session[targetAccountID]
+        return "ERROR: Change password auto login failed."
+    else:
+        DI.data["accounts"][targetAccountID]["idToken"] = loginResponse["idToken"]
+        DI.data["accounts"][targetAccountID]["refreshToken"] = loginResponse["refreshToken"]
+        DI.data["accounts"][targetAccountID]["tokenExpiry"] = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        DI.save()
+        session["idToken"] = loginResponse["idToken"]
+    
+    return "SUCCESS: Password updated successfully."
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
@@ -194,7 +411,6 @@ def logoutIdentity():
     del session['idToken']
 
     return "SUCCESS: User logged out."
-
 
 @apiBP.route('/api/deleteIdentity', methods=['POST'])
 def deleteIdentity():
@@ -279,9 +495,17 @@ def nextDay():
         return check
     
     nextDay = request.json['nextDay']
+    itineraryID = request.json['itineraryID']
+
+    if 'nextDay' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(nextDay) not in dayCountList:
         return "ERROR: You are not directed to the next day!"
@@ -295,9 +519,16 @@ def previousDay():
         return check
     
     previousDay = request.json['previousDay']
+    itineraryID = request.json['itineraryID']
+
+    if 'previousDay' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
     dayCountList = []
 
-    for key in DI.data["itineraries"]["days"]:
+    for key in DI.data["itineraries"][itineraryID]["days"]:
         dayCountList.append(str(key))
     if str(previousDay) not in dayCountList:
         return "ERROR: You are not directed to the previous day!"
@@ -404,7 +635,7 @@ def commentPost():
         return "SUCCESS: Comment successfully made."
     else:
         return "ERROR: Post ID not found in system."
-    
+      
 @apiBP.route('/api/editPost', methods=['POST'])
 def editPost():
     check = checkHeaders(request.headers)
@@ -441,7 +672,7 @@ def editPost():
             return "ERROR: Post ID not found in system."
     else:
         return "UERROR: You can't edit someone else's post!"
-    
+
 @apiBP.route('/api/openEditPost', methods=['POST'])
 def openEditPost():
     check = checkHeaders(request.headers)
@@ -515,3 +746,122 @@ def submitPostWithItinerary():
     DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Itinerary was successfully shared to the forum."
+
+@apiBP.route("/api/editActivity", methods = ['POST'])
+def editActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["activityId"]
+    startTime = request.json["newStartTime"]
+    endTime = request.json["newEndTime"]
+    location = request.json["newLocation"]
+    name = request.json["newName"]
+    
+
+    print(request.json)
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayCount" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "activityId" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newStartTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newEndTime" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newLocation" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "newName" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+    
+    if not startTime.isnumeric():
+        return "UERROR: Start Time is not a numeric value"
+
+    if not endTime.isnumeric():
+        return "UERROR: End Time is not a numeric value"
+
+    if len(startTime) != 4:
+        return "UERROR: Start Time Format is not correct"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
+    
+    timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+        return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
+
+    if len(location) > 10:
+        return "UERROR: Activity Location should be less than 10 characters!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
+
+    if len(name) > 25:
+        return "UERROR: Activity name should be less than 25 characters!"
+    else:
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
+
+    DI.save()
+    return "SUCCESS: Activity edits is saved successfully"
+
+
+@apiBP.route("/api/addNewActivity", methods = ['POST'])
+def addNewActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["currentActivityId"]
+    startTime = request.json["currentStartTime"]
+    endTime = request.json["currentEndTime"]
+    latitude = request.json["currentLatitude"]
+    longitude = request.json["currentLongitude"]
+    imageURL = request.json["currentImageURL"]
+    location = request.json["currentLocation"]
+    name = request.json["currentName"]
+    newActivityId = str(request.json["newActivityID"])
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.save()
+
+    print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
+
+    return "SUCCESS: New activity is added successfully"
+
+
