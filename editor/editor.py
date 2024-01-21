@@ -4,9 +4,15 @@ import json, os, datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
+@editorPage.route("/editor")
+def editorRoot():
+    if "itineraryID" not in request.args:
+        return redirect(url_for("error", error="Please provide the ID of the itinerary you want to edit."))
+    else:
+        return redirect(url_for("editorPageBP.editorHome", itineraryID=request.args.get("itineraryID")))
+
 @editorPage.route("/editor/<itineraryID>")
 def editorHome(itineraryID):
-
     if itineraryID not in DI.data["itineraries"]:
         return redirect(url_for("error",error="Itinerary Not Found"))
 
