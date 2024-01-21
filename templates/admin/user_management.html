@@ -48,9 +48,9 @@
             {% for user in users %}
                 <div class="users">
                     <div class="user-item">
-                        <li>{{ user.email }}</li>
+                        <li>{{ user['email'] }}</li> <!-- is this the correct way to get the email? -->
                         <div class="button">
-                            <a href="{{ url_for('admin.user_profile', user_id=user.uid) }}">
+                            <a href="{{ url_for('admin.user_profile', user_id=user['id']) }}">
                                 <button type="button" class="btn btn-outline-primary">Edit User</button>
                             </a>
                         </div>

@@ -9,19 +9,19 @@
         let mail = prompt("Please enter the new email for this user")
         var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
         if (mail.match(regex)){
-            window.location.href = "/admin/user_profile/{{ user.uid }}/changeEmail?newEmail="+ mail;
+            window.location.href = "/admin/user_profile/{{ user['id'] }}/changeEmail?newEmail="+ mail; // is this the correct way of getting the id?
         }
     }
     function deleteAccount(){
         confirmMessage = 'Are you sure you want to delete this account'
         if (confirm(confirmMessage)===true){
-            window.location.href ="/admin/user_profile/{{ user.uid }}/delete"
+            window.location.href ="/admin/user_profile/{{ user['id'] }}/delete" // is this the correct way of getting the id?
         }
     }
     function banFromForum(){
         confirmMessage ='Are you sure you want to ban this account from VerdexTalks'
         if (confirm(confirmMessage)===true){
-            window.location.href = "/admin/user_profile/{{ user.uid }}/ban"
+            window.location.href = "/admin/user_profile/{{ user['id'] }}/ban" // is this the correct way of getting the id?
         }
     }
     function backToHome(){
@@ -68,8 +68,8 @@
 <div class="user-container">
     <h1>User Profile</h1>
     <div class="user-details">
-        <p>Email: {{ user.email }}</p>
-        <p>User ID: {{ user.uid }}</p>
+        <p>Email: {{ user['email'] }}</p> <!-- is this the correct way of getting the email? -->
+        <p>User ID: {{ user['id'] }}</p> <!-- is this the correct way of getting the id? -->
         <div class="edit-buttons">
             <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
             <button class="btn btn-outline-secondary">Password Reset</button>

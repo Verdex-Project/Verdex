@@ -29,19 +29,16 @@ def user_management():
         return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"]
-    position = targetAccount["position"]
-    users = FireAuth.listUsers()
-    admin_uids = []
-    for uid, user_data in DI.data['accounts'].items():
-        if user_data.get('admin', False):
-            admin_uids.append(user_data['fireAuthID'])
+    name = targetAccount["name"] ## what if it's not there?
+    position = targetAccount["position"] ## what if it's not there?
+
     non_admin_users = []
-    for user in users:
-        if user.uid not in admin_uids:
-            non_admin_users.append(user)
-    # Render the list of users in a template
+    for accountID in DI.data['accounts']:
+        if not ('admin' in DI.data['accounts'][accountID] and DI.data['accounts'][accountID]['admin']==True):
+            non_admin_users.append(DI.data['accounts'][accountID])
+    
     return render_template('admin/user_management.html', users=non_admin_users, name=name, position=position)
+
 @adminHomeBP.route('/admin/user_profile/<string:user_id>', methods=['GET'])
 def user_profile(user_id):
     authCheck = manageIDToken()
@@ -49,50 +46,49 @@ def user_profile(user_id):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
-    if "idToken" not in session:
-        return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"]
-    position = targetAccount["position"]
-    for user in FireAuth.listUsers():
-        found_user = None
-        if user.uid == user_id:
-            found_user = user
-            break
-    if found_user:
-        return render_template('admin/edit_user.html', user = user, name=name, position=position)
-    else:
-        return render_template('error.html', error_message="User not found")
+    name = targetAccount["name"] ## what if it's not there?
+    position = targetAccount["position"] ## what if it's not there?
+    if user_id not in DI.data['accounts']:
+        return redirect(url_for('error', error='User not found'))
+    
+    return render_template('admin/edit_user.html', user=DI.data['accounts'][user_id], name=name, position=position)
+
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/changeEmail', methods= ['GET'])
 def changeEmail(user_id):
     new_email = request.args.get("newEmail")
     for accountID in DI.data['accounts']:
-        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+        if DI.data['accounts'][accountID]['id'] == user_id:
             DI.data['accounts'][accountID]['email'] = new_email
             DI.save()
             Logger.log(f'ADMIN Account with ID {accountID} has changed their email to {new_email}')
-            break
-    FireAuth.changeUserEmail(user_id, new_email)
-    return redirect(url_for('admin.user_management'))
+            FireAuth.changeUserEmail(user_id, new_email)
+            return redirect(url_for('admin.user_management'))
+        
+    return redirect(url_for('error', error='User not found'))
+
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/delete', methods=['GET'])
 def deleteAccount(user_id):
     for accountID in DI.data['accounts']:
-        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+        if DI.data['accounts'][accountID]['id'] == user_id:
             FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
             del DI.data['accounts'][accountID]
             DI.save()
             Logger.log(f'ADMIN Account with ID {accountID} has been deleted')
             return redirect(url_for('admin.user_management'))
-        
+    return redirect(url_for('error', error='User not found'))
+    
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/ban')
 def banAccount(user_id):
     for accountID in DI.data['accounts']:
-        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+        if DI.data['accounts'][accountID]['id'] == user_id:
             DI.data['accounts'][accountID]['forumBanned'] = True
             DI.save()
             Logger.log(f'ADMIN Account with ID {accountID} has been banned from Verdextalks')
             return redirect(url_for('admin.user_management'))
+
+    return redirect(url_for('error', error='User not found'))
         
 @adminHomeBP.route('/admin/report')
 def report():
