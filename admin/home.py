@@ -20,7 +20,6 @@ def user_management():
 def user_profile(user_id):
     for user in FireAuth.listUsers():
         found_user = None
-        print(f"Checking {user}")
         if user.uid == user_id:
             found_user = user
             break
@@ -31,8 +30,33 @@ def user_profile(user_id):
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/changeEmail', methods= ['GET'])
 def changeEmail(user_id):
     new_email = request.args.get("newEmail")
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+            DI.data['accounts'][accountID]['email'] = new_email
+            DI.save()
+            Logger.log(f'ADMIN Account with ID {accountID} has changed their email to {new_email}')
+            break
     FireAuth.changeUserEmail(user_id, new_email)
     return redirect(url_for('admin.user_management'))
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/delete', methods=['GET'])
+def deleteAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+            FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
+            del DI.data['accounts'][accountID]
+            DI.save()
+            Logger.log(f'ADMIN Account with ID {accountID} has been deleted')
+            return redirect(url_for('admin.user_management'))
+        
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/ban')
+def banAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['fireAuthID'] == user_id:
+            DI.data['accounts'][accountID]['forumBanned'] = True
+            DI.save()
+            Logger.log(f'ADMIN Account with ID {accountID} has been banned from Verdextalks')
+            return redirect(url_for('admin.user_management'))
+        
 @adminHomeBP.route('/admin/report')
 def report():
     with open('reports/reportsInfo.json', 'r') as file:

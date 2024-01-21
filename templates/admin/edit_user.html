@@ -12,6 +12,21 @@
             window.location.href = "/admin/user_profile/{{ user.uid }}/changeEmail?newEmail="+ mail;
         }
     }
+    function deleteAccount(){
+        confirmMessage = 'Are you sure you want to delete this account'
+        if (confirm(confirmMessage)===true){
+            window.location.href ="/admin/user_profile/{{ user.uid }}/delete"
+        }
+    }
+    function banFromForum(){
+        confirmMessage ='Are you sure you want to ban this account from VerdexTalks'
+        if (confirm(confirmMessage)===true){
+            window.location.href = "/admin/user_profile/{{ user.uid }}/ban"
+        }
+    }
+    function backToHome(){
+        window.location.href = "/admin/user_management"
+    }
 </script>
 {% endblock %}
 
@@ -48,6 +63,7 @@
     </div>
 </div>
 <br>
+<button type="button" id="back-button" class="btn btn-outline-dark" onclick="backToHome()">Go back</button>
 <div class="user-container">
     <h1>User Profile</h1>
     <div class="user-details">
@@ -56,8 +72,8 @@
         <div class="edit-buttons">
             <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
             <button class="btn btn-outline-secondary">Password Reset</button>
-            <button class="btn btn-outline-warning">Ban from VerdexTalks</button>
-            <button class="btn btn-outline-danger">Delete account</button>
+            <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
+            <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
         </div>
     </div>
 </div>
