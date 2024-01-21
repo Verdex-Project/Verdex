@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Blueprint, session, redirect, url_for
 from flask_cors import CORS
-from main import DI, FireAuth, Universal, manageIDToken
+from main import DI, FireAuth, Universal, manageIDToken, Logger
 
 accountsBP = Blueprint("accounts",__name__)
 
@@ -32,4 +32,13 @@ def myAccount():
     username = targetAccount["username"]
     email = targetAccount["email"]
 
-    return render_template("identity/viewAccount.html", username=username, email=email)
+    ## Check email verification
+    notVerified = False
+    accInfo = FireAuth.accountInfo(DI.data["accounts"][targetAccountID]["idToken"])
+    if isinstance(accInfo, str):
+        Logger.log("ACCOUNTS MYACCOUNT ERROR: Failed to get account info for email verification (will assume email is verified); error: {}".format(accInfo))
+        notVerified = True
+    else:
+        notVerified = not accInfo["emailVerified"]
+
+    return render_template("identity/viewAccount.html", username=username, email=email, emailNotVerified=notVerified)

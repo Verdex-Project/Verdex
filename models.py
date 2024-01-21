@@ -227,6 +227,7 @@ class Universal:
     '''This class contains universal methods and variables that can be used across the entire project. Project-wide standards and conventions (such as datetime format) are also defined here.'''
 
     systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
+    copyright = "© 2023-2024 The Verdex Team. All Rights Reserved."
 
     @staticmethod
     def generateUniqueID():
