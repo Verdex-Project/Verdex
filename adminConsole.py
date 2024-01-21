@@ -3,15 +3,8 @@ from models import DI, Logger, Universal, Encryption
 from addons import FireConn, FireAuth
 from emailer import Emailer
 print("Setting up .....")
-# # Setup DI
-response = DI.setup()
-if response != "Success":
-    print("ADMINCONSOLE: Error in setting up DI; error: " + response)
-    sys.exit(1)
 
-    
 ## Set up FireConn
-
 if FireConn.checkPermissions():
     response = FireConn.connect()
     if response != True:
@@ -19,6 +12,12 @@ if FireConn.checkPermissions():
         sys.exit(1)
 else:
     print("Firebase admin connection not established due to insufficient permissions.")
+
+# # Setup DI
+response = DI.setup()
+if response != "Success":
+    print("ADMINCONSOLE: Error in setting up DI; error: " + response)
+    sys.exit(1)
 
 response = FireAuth.connect()
 if not response:
