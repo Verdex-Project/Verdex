@@ -45,6 +45,19 @@
                     </button><br>
                 </div>
             </div>
+            <div class="generated-itineraries-container">
+                <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
+                {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
+                    <div class="generated-itineraries">
+                        <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
+                        <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
+                    </div>
+                    <script>
+                        console.log("{{ itinerary_data.title }}");
+                        console.log("{{ itinerary_data.description }}");
+                    </script>
+                {% endfor %}
+            </div>
             <div class="post-section-container">
                 {% if postsInfoJson.items()|length == 0 %}
                     <div class="no-posts-here-container">

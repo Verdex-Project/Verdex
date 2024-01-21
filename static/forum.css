@@ -522,8 +522,8 @@ body {
     height: 30%;
 }
 
-.filter-posts-header, .recent-itineraries-header {
-    font-size: 16px;
+.filter-posts-header, .recent-itineraries-header, .generated-itineraries-header {
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
     margin-top:20px;
@@ -549,6 +549,36 @@ body {
 
 .user-post {
     border: 3px solid #66bb69; 
-    border-radius: 10px; 
+    border-radius: 15px; 
     padding: 10px; 
+}
+
+.generated-itineraries-title {
+    text-align: center;
+    color: #427b44;
+}
+
+.generated-itineraries-description {
+    color: #66bb69;
+    text-align: center;
+}
+
+.generated-itineraries-container{
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+
+.generated-itineraries {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    margin-top: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.generated-itineraries:hover {
+    background-color: whitesmoke;
+    transform: translateX(5px);
+    transition: 0.2s ease;
 }
