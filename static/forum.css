@@ -504,7 +504,12 @@ body {
     padding: 10px;
 }
 
-
+#itinerary-title, #itinerary-description {
+    border: 2px solid rgb(179, 179, 179);
+    margin-bottom: 15px;
+    border-radius: 10px;
+    padding: 10px;
+}
 
 #recent-itineraries-container {
     display: flex;
