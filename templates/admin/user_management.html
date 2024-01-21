@@ -11,13 +11,14 @@
     <div class="sidebar">
         <div class="profile">
             <img class='profile' src="/static/Images/user.png" alt="">
-            <h3>Kate Gibson</h3>
-            <p>Chief of Support</p>
+            <span class="admin-name">{{ name }}</span>
+            <br>
+            <span class="admin-position">{{ position }}</span>
         </div>
         <ul>
             <li>
                 <a href="/admin">
-                    <span class="item">Home</span>
+                    <span class="item">System Health</span>
                 </a>
             </li>
             <li>
@@ -40,21 +41,25 @@
 </div>
 <br>
 <div class="user-container">
-        <h1>List of Users</h1>
+    <h1>List of Users</h1>
+    <h3>Email:</h3>
     <ol>
-        <div class="users">
-            <h3>Email:</h3>
+        {% if users %}
             {% for user in users %}
-            <div class ="user-item">
-                <li>{{ user.email }}</li>
-            <div class="button">
-                <a href="{{ url_for('admin.user_profile', user_id = user.uid) }}">
-            <button type="button" class="btn btn-outline-primary">Edit User</button>
-        </a>
-        </div>
-            </div>
+                <div class="users">
+                    <div class="user-item">
+                        <li>{{ user.email }}</li>
+                        <div class="button">
+                            <a href="{{ url_for('admin.user_profile', user_id=user.uid) }}">
+                                <button type="button" class="btn btn-outline-primary">Edit User</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-        </div>
+        {% else %}
+            <p>No users yet.</p>
+        {% endif %}
     </ol>
 </div>
 {% endblock %}

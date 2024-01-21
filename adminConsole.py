@@ -2,6 +2,7 @@ import re, datetime, sys, copy
 from models import DI, Logger, Universal, Encryption
 from addons import FireConn, FireAuth
 from emailer import Emailer
+from getpass import getpass
 print("Setting up .....")
 
 ## Set up FireConn
@@ -51,10 +52,14 @@ def createUser():
         elif checkUsername(username):
             continue
         break
+
     while True:
-        name = input("Enter the name of the admin: ").strip()
-        if name == "":
-            print("Name cannot be empty. Please try again.")
+        password = getpass("Enter the password of the admin: ").strip()
+        if password == "":
+            print("Password cannot be empty. Please try again.")
+            continue
+        elif len(password)<6:
+            print("Password must be at least 6 characters long. Please try again.")
             continue
         break
     while True:
@@ -66,21 +71,21 @@ def createUser():
             print("Invalid email. Please try again.")
             continue
         break
+
+    while True:
+        name = input("Enter the name of the admin: ").strip()
+        if name == "":
+            print("Name cannot be empty. Please try again.")
+            continue
+        break
+
     while True:
         position = input("Enter the position of the admin: ").strip()
         if position == "":
             print("Position cannot be empty. Please try again.")
             continue
         break
-    while True:
-        password = input("Enter the password of the admin: ").strip()
-        if password == "":
-            print("Password cannot be empty. Please try again.")
-            continue
-        elif len(password)<6:
-            print("Password must be at least 6 characters long. Please try again.")
-            continue
-        break
+    
     accID = Universal.generateUniqueID()
     responseObject =FireAuth.createUser(email, password)
     DI.data['accounts'][accID] = {

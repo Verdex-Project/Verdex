@@ -1,30 +1,67 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
 import json, os, datetime
-from main import DI, Logger, Analytics, Universal, FireAuth
+from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken
 adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin')
 def admin():
-    return render_template('admin/home.html')
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "idToken" not in session:
+        return redirect(url_for('unauthorised', error="Please sign in first."))
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    name = targetAccount["name"]
+    position = targetAccount["position"]
+    return render_template('admin/system_health.html', name=name, position=position)
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
 def user_management():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "idToken" not in session:
+        return redirect(url_for('unauthorised', error="Please sign in first."))
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    name = targetAccount["name"]
+    position = targetAccount["position"]
     users = FireAuth.listUsers()
-
-    if isinstance(users, str):
-        return render_template('error.html', error_message=users)
-
+    admin_uids = []
+    for uid, user_data in DI.data['accounts'].items():
+        if user_data.get('admin', False):
+            admin_uids.append(user_data['fireAuthID'])
+    non_admin_users = []
+    for user in users:
+        if user.uid not in admin_uids:
+            non_admin_users.append(user)
     # Render the list of users in a template
-    return render_template('admin/user_management.html', users=users)
+    return render_template('admin/user_management.html', users=non_admin_users, name=name, position=position)
 @adminHomeBP.route('/admin/user_profile/<string:user_id>', methods=['GET'])
 def user_profile(user_id):
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "idToken" not in session:
+        return redirect(url_for('unauthorised', error="Please sign in first."))
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    name = targetAccount["name"]
+    position = targetAccount["position"]
     for user in FireAuth.listUsers():
         found_user = None
         if user.uid == user_id:
             found_user = user
             break
     if found_user:
-        return render_template('admin/edit_user.html', user = user)
+        return render_template('admin/edit_user.html', user = user, name=name, position=position)
     else:
         return render_template('error.html', error_message="User not found")
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/changeEmail', methods= ['GET'])
@@ -59,11 +96,22 @@ def banAccount(user_id):
         
 @adminHomeBP.route('/admin/report')
 def report():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "idToken" not in session:
+        return redirect(url_for('unauthorised', error="Please sign in first."))
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    name = targetAccount["name"]
+    position = targetAccount["position"]
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
     for key in data:
         data[key]['timestamp'] = datetime.datetime.strptime(data[key]['timestamp'], Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
-    return render_template('admin/report.html', data=data)
+    return render_template('admin/report.html', data=data, name=name, position=position)
 
 @adminHomeBP.route('/admin/report/generate', methods=['POST', 'GET'])
 def generate_report():
@@ -140,9 +188,6 @@ def clear_data():
     # Redirect to the report page after clearing data
     return redirect(url_for('admin.report'))
 
-@adminHomeBP.route('/admin/system_health')
-def system_health():
-    return render_template('admin/system_health.html')
 
 @adminHomeBP.route('/admin/customer_support')
 def reply():

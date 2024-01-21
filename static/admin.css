@@ -37,7 +37,16 @@ body {
     margin-bottom: 30px;
     text-align: center;
 }
+.admin-name{
+    margin-top:10px;
+    font-size:24px;
+    font-family: 'Open Sans', sans-serif;
+}
+.admin-position{
+    font-size:16px;
+    font-family: 'Open Sans', sans-serif;
 
+}
 .wrapper .sidebar .profile img {
     display: block;
     width: 100px;
