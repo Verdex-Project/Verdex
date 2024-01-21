@@ -368,7 +368,8 @@ def submitPost():
         "liked_status": False,
         "tag": post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
-        "comments": {}
+        "comments": {},
+        "itineraries": {}
     }
 
     DI.data["forum"][postDateTime] = new_post
@@ -462,3 +463,58 @@ def openEditPost():
     
     return "SUCCESS: Post successfully opened for editing."
 
+@apiBP.route('/api/submitPostWithItinerary', methods=['POST'])
+def submitPostWithItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    if "itinerary_post_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_post_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_post_tag" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    itinerary_post_title = request.json['itinerary_post_title']
+    itinerary_post_description = request.json['itinerary_post_description']
+    itinerary_post_tag = request.json['itinerary_post_tag']
+    itinerary_id = request.json['itinerary_id']
+    itinerary_title = request.json['itinerary_title']
+    itinerary_description = request.json['itinerary_description']
+
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+    new_post = {
+        "username": DI.data["accounts"][targetAccountID]["username"],
+        "post_title": itinerary_post_title,
+        "post_description": itinerary_post_description,
+        "likes": "0",
+        "postDateTime": postDateTime,
+        "liked_status": False,
+        "tag": itinerary_post_tag,
+        "targetAccountIDOfPostAuthor": targetAccountID,
+        "comments": {},
+        "itineraries": {
+            itinerary_id: {
+                "itinerary_title": itinerary_title,
+                "itinerary_description": itinerary_description
+            }
+        }
+    }
+    DI.data["forum"][postDateTime] = new_post
+    DI.save()
+    return "SUCCESS: Itinerary was successfully shared to the forum."
+    
+
+    

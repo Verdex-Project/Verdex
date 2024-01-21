@@ -270,7 +270,7 @@ body {
     margin-bottom: 15px;
 }
 
-#create-a-post-popup, #comment-on-post-popup, #edit-post-popup {
+#create-a-post-popup, #comment-on-post-popup, #edit-post-popup, #create-a-post-popup-with-itinerary {
     display: none;
     position: fixed;
     top: 0;
@@ -318,8 +318,8 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    width: 70%;
-    height: 70%;
+    width: 80%;
+    height: 80%;
     z-index: 2;
 }
 
@@ -497,7 +497,7 @@ body {
     transition: 0.2s ease;
 }
 
-#edit-post-title, #edit-post-description {
+#edit-post-title, #edit-post-description, #itinerary-title, #itinerary-description, #itinerary-post-title, #itinerary-post-description {
     border: 2px solid #427b44;
     margin-bottom: 15px;
     border-radius: 10px;
@@ -581,4 +581,14 @@ body {
     background-color: whitesmoke;
     transform: translateX(5px);
     transition: 0.2s ease;
+}
+
+#create-a-post-popup-with-itinerary {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }

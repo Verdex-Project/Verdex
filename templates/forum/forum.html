@@ -48,14 +48,10 @@
             <div class="generated-itineraries-container">
                 <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
                 {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
-                    <div class="generated-itineraries">
+                    <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
                         <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
                         <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
                     </div>
-                    <script>
-                        console.log("{{ itinerary_data.title }}");
-                        console.log("{{ itinerary_data.description }}");
-                    </script>
                 {% endfor %}
             </div>
             <div class="post-section-container">
@@ -144,6 +140,25 @@
                     <button id="edit-nature-tag-button" class="tags-button" onclick="editSelectTag('Nature', event, 'edit-nature-tag-button', 'edit-scenery-tag-button', 'edit-food-tag-button')">#Nature</button>
                 </div>
                 <button type="button" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
+            </div>
+        </div>
+        <div id="create-a-post-popup-with-itinerary">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Share your itinerary!</b></h2>
+                <input type="text" name="post_title" id="itinerary-post-title" size="70" placeholder="Post title: " required><br>
+                <textarea name="post_description" id="itinerary-post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
+                <input type="hidden" name="itinerary_id" id="itinerary-id" value="">
+                <input type="text" name="itinerary_title" id="itinerary-title" size="77" value="" disabled><br>
+                <input type="text" name="itinerary_description" id="itinerary-description" size="77" value="" disabled><br>
+                <input type="hidden" name="itinerary_post_tag" id="itinerary-post-tag" value="">
+                <p>Suggested tags: (Optional)</p>
+                <div id="tags-button-container">
+                    <button id="itinerary-scenery-tag-button" class="tags-button" onclick="itinerarySelectTag('Scenery', event, 'itinerary-scenery-tag-button', 'itinerary-food-tag-button', 'itinerary-nature-tag-button')">#Scenery</button>
+                    <button id="itinerary-food-tag-button" class="tags-button" onclick="itinerarySelectTag('Food', event, 'itinerary-food-tag-button', 'itinerary-scenery-tag-button', 'itinerary-nature-tag-button')">#Food</button>
+                    <button id="itinerary-nature-tag-button" class="tags-button" onclick="itinerarySelectTag('Nature', event, 'itinerary-nature-tag-button', 'itinerary-scenery-tag-button', 'itinerary-food-tag-button')">#Nature</button>
+                </div>
+                <button type="button" name="addNewPostWithItinerary" id="post-it-button" onclick="submitPostWithItinerary()">Share it!</button>
             </div>
         </div>
     </div>

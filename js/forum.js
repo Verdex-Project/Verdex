@@ -214,7 +214,7 @@ function submitEdit() {
     const editPostDescription = document.getElementById("edit-post-description").value;
     const editPostTag = document.getElementById("edit-post-tag").value;
     const postId = editPostId;
-    
+
     if (editPostTitle.trim() === "") {
         alert("Please enter a valid title.");
         return;
@@ -335,4 +335,87 @@ function deleteComment(postId, commentId){
             console.error(error);
         });
     }
+}
+
+function createPostPopupWithItinerary(itinerary_id, itinerary_title, itinerary_description){
+    document.getElementById('create-a-post-popup-with-itinerary').style.display = "block";
+    document.getElementById('itinerary-id').value = itinerary_id
+    document.getElementById('itinerary-title').value = "Itinerary title: " + itinerary_title
+    document.getElementById('itinerary-description').value = "Itinerary description: " + itinerary_description
+}
+
+let itinerarySelectedTag = ""
+function submitPostWithItinerary(){
+    document.getElementById("itinerary-post-tag").value = itinerarySelectedTag;
+    const itinerary_id = document.getElementById('itinerary-id');
+    const itinerary_post_title = document.getElementById("itinerary-post-title");
+    const itinerary_post_description = document.getElementById('itinerary-post-description');
+    const itinerary_post_tag = document.getElementById("itinerary-post-tag");
+    const itinerary_title = document.getElementById('itinerary-title');
+    const itinerary_description = document.getElementById('itinerary-description');
+
+    if (itinerary_post_title.value.trim() === ""){
+        alert("Please enter a valid post title")
+        return;
+    }
+    if (itinerary_post_description.value.trim() === ""){
+        alert("Please enter a valid post desription")
+        return;
+    }
+
+    axios({
+        method: 'post',
+        url: `/api/submitPostWithItinerary`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itinerary_id": itinerary_id.value,
+            "itinerary_post_title": itinerary_post_title.value,
+            "itinerary_post_tag": itinerary_post_tag.value,
+            "itinerary_title": itinerary_title.value,
+            "itinerary_post_description": itinerary_post_description.value,
+            "itinerary_description": itinerary_description.value
+        }
+    })
+    .then(function (response) {
+        console.log("Payload successfully sent")
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while sharing itinerary. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error sharing itinerary:', error);
+    });
+}
+
+function itinerarySelectTag(tag, event, buttonToEnable, firstButtonToDisable, secondButtonToDisable){
+    if (itinerarySelectedTag === tag) {
+        itinerarySelectedTag = "";
+        document.getElementById(buttonToEnable).style.backgroundColor = "white";
+        document.getElementById(buttonToEnable).style.color = "black";
+    } else {
+        itinerarySelectedTag = tag;
+        document.getElementById(buttonToEnable).style.backgroundColor = "#66BB69";
+        document.getElementById(buttonToEnable).style.color = "white";
+
+        document.getElementById(firstButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(firstButtonToDisable).style.color = "black";
+
+        document.getElementById(secondButtonToDisable).style.backgroundColor = "white";
+        document.getElementById(secondButtonToDisable).style.color = "black";
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
 }
