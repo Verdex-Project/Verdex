@@ -231,7 +231,7 @@ def like_post():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if 'postId' not in request.json:
@@ -254,7 +254,7 @@ def delete_post():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if 'postId' not in request.json:
@@ -312,7 +312,7 @@ def deleteComment():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if 'postId' not in request.json:
@@ -344,7 +344,7 @@ def submitPost():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if 'post_title' not in request.json:
@@ -384,7 +384,7 @@ def commentPost():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if "post_id" not in request.json:
@@ -413,7 +413,7 @@ def editPost():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if "post_id" not in request.json:
@@ -450,7 +450,7 @@ def openEditPost():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if "post_id" not in request.json:
@@ -471,7 +471,7 @@ def submitPostWithItinerary():
     
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+        return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if "itinerary_post_title" not in request.json:
@@ -515,6 +515,3 @@ def submitPostWithItinerary():
     DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Itinerary was successfully shared to the forum."
-    
-
-    

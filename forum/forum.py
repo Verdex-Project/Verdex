@@ -18,5 +18,5 @@ def verdextalks():
     if "forumBanned" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["forumBanned"] == True:
         return redirect(url_for("unauthorised", error="Access Denied. You have been banned from the forum."))
     
-    return render_template("forum/forum.html", noOfUsers = DI.data["forum"], postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"], accountsInfoJson=DI.data["accounts"], targetAccountID=targetAccountID)
+    return render_template("forum/forum.html", postsInfoJson=DI.data["forum"], itineraryInfoJson=DI.data["itineraries"], accountsInfoJson=DI.data["accounts"], targetAccountID=targetAccountID)
     
