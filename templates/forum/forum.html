@@ -48,7 +48,7 @@
             <div class="generated-itineraries-container">
                 <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
                 {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
-                    {% if targetAccountID == itinerary_data.targetAccountID %}
+                    {% if targetAccountID == itinerary_data.associatedAccountID %}
                         <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
                             <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
                             <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
@@ -88,7 +88,7 @@
                                 {% for comment_id, comment_text in post_data.comments.items() %}
                                     <div class="commentDiv" data-comment-id="{{ comment_id }}">
                                         <li id="comment">{{ comment_text }}</li>
-                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split(" ")[2] %}
+                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split("_")[2] %}
                                             <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
                                         {% endif %}
                                     </div>
