@@ -4,6 +4,15 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<script>
+    function changeEmail(){
+        let mail = prompt("Please enter the new email for this user")
+        var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        if (mail.match(regex)){
+            window.location.href = "/admin/user_profile/{{ user.uid }}/changeEmail?newEmail="+ mail;
+        }
+    }
+</script>
 {% endblock %}
 
 {% block body %}
@@ -40,21 +49,16 @@
 </div>
 <br>
 <div class="user-container">
-        <h1>List of Users</h1>
-    <ol>
-        <div class="users">
-            <h3>Email:</h3>
-            {% for user in users %}
-            <div class ="user-item">
-                <li>{{ user.email }}</li>
-            <div class="button">
-                <a href="{{ url_for('admin.user_profile', user_id = user.uid) }}">
-            <button type="button" class="btn btn-outline-primary">Edit User</button>
-        </a>
+    <h1>User Profile</h1>
+    <div class="user-details">
+        <p>Email: {{ user.email }}</p>
+        <p>User ID: {{ user.uid }}</p>
+        <div class="edit-buttons">
+            <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
+            <button class="btn btn-outline-secondary">Password Reset</button>
+            <button class="btn btn-outline-warning">Ban from VerdexTalks</button>
+            <button class="btn btn-outline-danger">Delete account</button>
         </div>
-            </div>
-            {% endfor %}
-        </div>
-    </ol>
+    </div>
 </div>
 {% endblock %}

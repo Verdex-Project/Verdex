@@ -1,16 +1,38 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
 import json, os, datetime
-from main import DI, Logger, Analytics, Universal
+from main import DI, Logger, Analytics, Universal, FireAuth
 adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin')
 def admin():
     return render_template('admin/home.html')
 
-@adminHomeBP.route('/admin/user_management')
+@adminHomeBP.route('/admin/user_management', methods=['GET'])
 def user_management():
-    return render_template('admin/user_management.html')
+    users = FireAuth.listUsers()
 
+    if isinstance(users, str):
+        return render_template('error.html', error_message=users)
+
+    # Render the list of users in a template
+    return render_template('admin/user_management.html', users=users)
+@adminHomeBP.route('/admin/user_profile/<string:user_id>', methods=['GET'])
+def user_profile(user_id):
+    for user in FireAuth.listUsers():
+        found_user = None
+        print(f"Checking {user}")
+        if user.uid == user_id:
+            found_user = user
+            break
+    if found_user:
+        return render_template('admin/edit_user.html', user = user)
+    else:
+        return render_template('error.html', error_message="User not found")
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/changeEmail', methods= ['GET'])
+def changeEmail(user_id):
+    new_email = request.args.get("newEmail")
+    FireAuth.changeUserEmail(user_id, new_email)
+    return redirect(url_for('admin.user_management'))
 @adminHomeBP.route('/admin/report')
 def report():
     with open('reports/reportsInfo.json', 'r') as file:
@@ -98,6 +120,6 @@ def clear_data():
 def system_health():
     return render_template('admin/system_health.html')
 
-@adminHomeBP.route('/admin/reply')
+@adminHomeBP.route('/admin/customer_support')
 def reply():
     return render_template('admin/reply.html')

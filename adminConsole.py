@@ -1,5 +1,5 @@
 import re, datetime, sys, copy
-from models import DI, Logger, Universal
+from models import DI, Logger, Universal, Encryption
 from addons import FireConn, FireAuth
 from emailer import Emailer
 print("Setting up .....")
@@ -89,6 +89,7 @@ def createUser():
             "fireAuthID": responseObject['uid'],
             "username": username,
             "email": email,
+            "password": Encryption.encodeToSHA256(password),
             "idToken": responseObject['idToken'],
             "refreshToken": responseObject['refreshToken'],
             'tokenExpiry': (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
