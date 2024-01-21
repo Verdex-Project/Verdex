@@ -247,6 +247,7 @@ if __name__ == '__main__':
                 "title" : "My Itinerary",
                 "description" : "3 days itinerary in Singapore",
                 "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+                "targetAccountID": "0d91f3f46a5645d48630a905844e9246",
                 "days" : {
                     "1" : {
                         "date" : "2024-01-01",
@@ -333,6 +334,7 @@ if __name__ == '__main__':
                 "title" : "Second Itinerary",
                 "description" : "5 days itinerary in Singapore",
                 "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+                "targetAccountID": "5ca056b3f3cf487aa59db436bc8970a7",
                 "days" : {
                     "1" : {
                         "date" : "2024-01-01",

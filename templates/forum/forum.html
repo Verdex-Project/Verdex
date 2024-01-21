@@ -48,10 +48,12 @@
             <div class="generated-itineraries-container">
                 <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
                 {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
-                    <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
-                        <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
-                        <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
-                    </div>
+                    {% if targetAccountID == itinerary_data.targetAccountID %}
+                        <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
+                            <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
+                            <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <div class="post-section-container">
