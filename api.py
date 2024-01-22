@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Universal
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -53,7 +53,6 @@ def loginAccount():
 
     return "SUCCESS: User logged in succesfully"
 
-
 @apiBP.route("/api/createAccount", methods = ['POST'])
 def createAccount():
 
@@ -92,10 +91,13 @@ def createAccount():
         "fireAuthID": tokenInfo["uid"],
         "username": request.json["username"],
         "email": request.json["email"],
+        "password": Encryption.encodeToSHA256(request.json["password"]),
         "idToken": tokenInfo['idToken'],
         "refreshToken": tokenInfo['refreshToken'],
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
-        "disabled": False
+        "disabled": False,
+        "admin": False,
+        "forumBanned": False
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -327,6 +329,73 @@ def resendEmail():
     Emailer.sendEmail(email, "Verdex Email Verification", altText, html)
     return "SUCCESS: Email verification sent."
 
+@apiBP.route('/api/changePassword', methods=['POST'])
+def changePassword():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    ## Check body
+    if "currentPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    if "cfmNewPassword" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    currentPassword = request.json["currentPassword"].strip()
+    newPassword = request.json["newPassword"].strip()
+    cfmNewPassword = request.json["cfmNewPassword"].strip()
+    
+    if newPassword != cfmNewPassword:
+        return "UERROR: New and confirm password fields do not match."
+    if len(newPassword) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+    if currentPassword == newPassword:
+        return "UERROR: New password must differ from the current password."
+    
+    ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
+    if "password" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Your password cannot be changed at this time. Please try again."
+    
+    ## Check if current password is correct
+    oldPassword = DI.data["accounts"][targetAccountID]["password"]
+    if not Encryption.verifySHA256(currentPassword, oldPassword):
+        return "UERROR: Current password is incorrect."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password."
+    
+    ### Update DI
+    DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    DI.save()
+    
+    ## Automated re-login
+    email = DI.data["accounts"][targetAccountID]["email"]
+    loginResponse = FireAuth.login(email=email, password=newPassword)
+    if isinstance(loginResponse, str) and loginResponse.startswith("ERROR"):
+        Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(loginResponse))
+        deleteSession(targetAccountID)
+        del session[targetAccountID]
+        return "ERROR: Change password auto login failed."
+    else:
+        DI.data["accounts"][targetAccountID]["idToken"] = loginResponse["idToken"]
+        DI.data["accounts"][targetAccountID]["refreshToken"] = loginResponse["refreshToken"]
+        DI.data["accounts"][targetAccountID]["tokenExpiry"] = (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat)
+        DI.save()
+        session["idToken"] = loginResponse["idToken"]
+    
+    return "SUCCESS: Password updated successfully."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     authCheck = manageIDToken()
@@ -342,7 +411,6 @@ def logoutIdentity():
     del session['idToken']
 
     return "SUCCESS: User logged out."
-
 
 @apiBP.route('/api/deleteIdentity', methods=['POST'])
 def deleteIdentity():
@@ -376,6 +444,12 @@ def like_post():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
 
@@ -385,8 +459,8 @@ def like_post():
         DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
         DI.save()
         return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
-    elif post_id not in DI.data["forum"]:
-        return "ERROR: Post ID not found in system."
+        
+    return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/deletePost', methods=['POST'])
 def delete_post():
@@ -394,17 +468,25 @@ def delete_post():
     if check != True:
         return check
     
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
 
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"].pop(post_id)
-        DI.save()
-        return "SUCCESS: Post was successfully removed from the system."
-    elif post_id not in DI.data["forum"]:
-        return "ERROR: Post ID not found in system."
+        if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+            del DI.data["forum"][post_id]
+            DI.save()
+            return "SUCCESS: Post was successfully removed from the system."
+        else:
+            return "UERROR: You can't delete someone else's post!"
+    
+    return "ERROR: Post ID not found in system."
 
 @apiBP.route('/api/nextDay', methods=['POST'])
 def nextDay():
@@ -458,6 +540,11 @@ def deleteComment():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if 'postId' not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -469,9 +556,12 @@ def deleteComment():
 
     if post_id in DI.data["forum"]:
         if comment_id in DI.data["forum"][post_id]["comments"]:
-            del DI.data["forum"][post_id]["comments"][comment_id]
-            DI.save()
-            return "SUCCESS: Comment was successfully removed from the post in the system."
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[2]:
+                del DI.data["forum"][post_id]["comments"][comment_id]
+                DI.save()
+                return "SUCCESS: Comment was successfully removed from the post in the system."
+            else:
+                return "UERROR: You can't delete someone else's comment!"
         else:
             return "ERROR: Comment ID not found in system."
     else:
@@ -483,8 +573,11 @@ def submitPost():
     if check != True:
         return check
     
-    if 'user_names' not in request.json:
-        return "ERROR: One or more payload parameters are missing."
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     if 'post_title' not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if 'post_description' not in request.json:
@@ -492,21 +585,22 @@ def submitPost():
     if 'post_tag' not in request.json:
         return "ERROR: One or more payload parameters are missing."
     
-    user_names = request.json['user_names']
     post_title = request.json['post_title']
     post_description = request.json['post_description']
     post_tag = request.json['post_tag']
 
     postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
     new_post = {
-        "user_names": user_names,
+        "username": DI.data["accounts"][targetAccountID]["username"],
         "post_title": post_title,
         "post_description": post_description,
         "likes": "0",
         "postDateTime": postDateTime,
         "liked_status": False,
         "tag": post_tag,
-        "comments": {}
+        "targetAccountIDOfPostAuthor": targetAccountID,
+        "comments": {},
+        "itineraries": {}
     }
 
     DI.data["forum"][postDateTime] = new_post
@@ -518,6 +612,11 @@ def commentPost():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
     
     if "post_id" not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -531,21 +630,24 @@ def commentPost():
         if 'comments' not in DI.data["forum"][post_id]:
             DI.data["forum"][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][post_id]['comments'][postDateTime] = comment_description
+        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID)] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
-    elif post_id not in DI.data["forum"]:
+    else:
         return "ERROR: Post ID not found in system."
-    
+      
 @apiBP.route('/api/editPost', methods=['POST'])
 def editPost():
     check = checkHeaders(request.headers)
     if check != True:
         return check
     
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     if "post_id" not in request.json:
-        return "ERROR: One or more payload parameters are missing."
-    if "edit_user_names" not in request.json:
         return "ERROR: One or more payload parameters are missing."
     if "edit_post_title" not in request.json:
         return "ERROR: One or more payload parameters are missing."
@@ -553,93 +655,100 @@ def editPost():
         return "ERROR: One or more payload parameters are missing."
     if "edit_post_tag" not in request.json:
         return "ERROR: One or more payload parameters are missing."
-
+    
     post_id = request.json['post_id']
-    edit_user_names = request.json['edit_user_names']
     edit_post_title = request.json['edit_post_title']
     edit_post_description = request.json['edit_post_description']
     edit_post_tag = request.json['edit_post_tag']
 
-    if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["user_names"] = edit_user_names
-        DI.data["forum"][post_id]["post_title"] = edit_post_title
-        DI.data["forum"][post_id]["post_description"] = edit_post_description
-        DI.data["forum"][post_id]["tag"] = edit_post_tag
-        DI.save()
-        return "SUCCESS: Post successfully edited."
-    elif post_id not in DI.data["forum"]:
-        return "ERROR: Post ID not found in system."
+    if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+        if post_id in DI.data["forum"]:
+            DI.data["forum"][post_id]["post_title"] = edit_post_title
+            DI.data["forum"][post_id]["post_description"] = edit_post_description
+            DI.data["forum"][post_id]["tag"] = edit_post_tag
+            DI.save()
+            return "SUCCESS: Post successfully edited."
+        else:
+            return "ERROR: Post ID not found in system."
+    else:
+        return "UERROR: You can't edit someone else's post!"
 
-# @apiBP.route("/api/newActivityLocationName", methods = ['POST'])
-# def newActivityLocationName():
-#     check = checkHeaders(request.headers)
-#     if check != True:
-#         return check
-
-#     day = request.json["day"]
-#     activityId = request.json["activityId"]
-    
-#     DI.data["itineraries"]["days"][day]["activities"][activityId]["name"] = request.json["newActivityName"]
-#     DI.data["itineraries"]["days"][day]["activities"][activityId]["location"] = request.json["newActivityLocation"]
-#     DI.save()
-
-#     return "SUCCESS: New activity location and name updated."
-
-@apiBP.route('/api/deleteActivity', methods=['POST'])
-def deleteActivity():
+@apiBP.route('/api/openEditPost', methods=['POST'])
+def openEditPost():
     check = checkHeaders(request.headers)
     if check != True:
         return check
     
-    day = request.json["day"]
-    itineraryID = request.json['itineraryID']
-    activityId = request.json["activityId"]
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
 
-    if 'day' not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if 'activityId' not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-    if 'itineraryID' not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
-    DI.save()
+    if "post_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
     
-    return "SUCCESS: Activity is deleted."
+    post_id = request.json['post_id']
 
-@apiBP.route('/api/deleteItinerary', methods=['POST'])
-def deleteItinerary():
+    if targetAccountID != DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"]:
+        return "UERROR: You can't edit someone else's post!"
+    
+    return "SUCCESS: Post successfully opened for editing."
+
+@apiBP.route('/api/submitPostWithItinerary', methods=['POST'])
+def submitPostWithItinerary():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    if "itinerary_post_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_post_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_post_tag" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "itinerary_description" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    itinerary_post_title = request.json['itinerary_post_title']
+    itinerary_post_description = request.json['itinerary_post_description']
+    itinerary_post_tag = request.json['itinerary_post_tag']
+    itinerary_id = request.json['itinerary_id']
+    itinerary_title = request.json['itinerary_title']
+    itinerary_description = request.json['itinerary_description']
 
-    itineraryID = request.json['itineraryID']
-
-    if 'itineraryID' not in request.json:
-        return "ERROR: One or more required payload parameters not provided."
-
-    del DI.data["itineraries"][itineraryID]
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+    new_post = {
+        "username": DI.data["accounts"][targetAccountID]["username"],
+        "post_title": itinerary_post_title,
+        "post_description": itinerary_post_description,
+        "likes": "0",
+        "postDateTime": postDateTime,
+        "liked_status": False,
+        "tag": itinerary_post_tag,
+        "targetAccountIDOfPostAuthor": targetAccountID,
+        "comments": {},
+        "itineraries": {
+            itinerary_id: {
+                "itinerary_title": itinerary_title,
+                "itinerary_description": itinerary_description
+            }
+        }
+    }
+    DI.data["forum"][postDateTime] = new_post
     DI.save()
-    
-    return "SUCCESS: Itinerarty is deleted."
+    return "SUCCESS: Itinerary was successfully shared to the forum."
 
-# @apiBP.route("/api/newActivityStartEndTime", methods = ['POST'])
-# def newActivityStartEndTime():
-#     check = checkHeaders(request.headers)
-#     if check != True:
-#         return check
-
-#     day = request.json["day"]
-#     activityId = request.json["activityId"]
-    
-#     DI.data["itineraries"]["days"][day]["activities"][activityId]["startTime"] = request.json["newActivityStartTime"]
-#     DI.data["itineraries"]["days"][day]["activities"][activityId]["endTime"] = request.json["newActivityEndTime"]
-#     DI.save()
-
-#     return "SUCCESS: New activity start time and end time updated."
-
-@apiBP.route("/api/editActivityModal", methods = ['POST'])
-def editActivityModal():
+@apiBP.route("/api/editActivity", methods = ['POST'])
+def editActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -651,9 +760,6 @@ def editActivityModal():
     endTime = request.json["newEndTime"]
     location = request.json["newLocation"]
     name = request.json["newName"]
-    
-
-    print(request.json)
 
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -694,9 +800,9 @@ def editActivityModal():
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
-    # timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) <= int(startTime) + 30 :
-        return "UERROR: End Time Format is not correct and interval should me more than 30 minutes OR End Time is earlier than Start Time!"
+    timeDiff = int(endTime) - int(startTime)
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+        return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
@@ -712,3 +818,81 @@ def editActivityModal():
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
+
+
+@apiBP.route("/api/addNewActivity", methods = ['POST'])
+def addNewActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json["dayCount"]
+    activityId = request.json["currentActivityId"]
+    startTime = request.json["currentStartTime"]
+    endTime = request.json["currentEndTime"]
+    latitude = request.json["currentLatitude"]
+    longitude = request.json["currentLongitude"]
+    imageURL = request.json["currentImageURL"]
+    location = request.json["currentLocation"]
+    name = request.json["currentName"]
+    newActivityId = str(request.json["newActivityID"])
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
+
+    dayCountList = []
+    activityIdList = []
+
+    for key in DI.data["itineraries"][itineraryID]["days"]:
+        dayCountList.append(str(key))
+    if str(day) not in dayCountList:
+        return "UERROR: Day is not found!"
+    
+    for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
+        activityIdList.append(str(key))
+    if str(activityId) not in activityIdList:
+        return "UERROR: Activity ID not found!"
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.save()
+
+    return "SUCCESS: New activity is added successfully"
+
+@apiBP.route('/api/deleteActivity', methods=['POST'])
+def deleteActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["day"]
+    itineraryID = request.json['itineraryID']
+    activityId = request.json["activityId"]
+
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
+    DI.save()
+    
+    return "SUCCESS: Activity is deleted."
+
+@apiBP.route('/api/deleteItinerary', methods=['POST'])
+def deleteItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    itineraryID = request.json['itineraryID']
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    del DI.data["itineraries"][itineraryID]
+    DI.save()
+    
+    return "SUCCESS: Itinerarty is deleted."
