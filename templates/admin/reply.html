@@ -1,6 +1,6 @@
 {% extends "baseAdminNav.html" %}
 
-{% block title %}User Management{% endblock %}
+{% block title %}Customer Support{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
@@ -22,7 +22,7 @@
                 </a>
             </li>
             <li>
-                <a href="/admin/user_management" class="active">
+                <a href="/admin/user_management">
                     <span class="item">User Management</span>
                 </a>
             </li>
@@ -32,34 +32,11 @@
                 </a>
             </li>
             <li>
-                <a href="/admin/customer_support">
+                <a href="/admin/customer_support" class="active">
                     <span class="item">Customer Support</span>
                 </a>
             </li>
         </ul>
     </div>
-</div>
-<br>
-<div class="user-container">
-    <h1>List of Users</h1>
-    <h3>Email:</h3>
-    <ol>
-        {% if users %}
-            {% for user in users %}
-                <div class="users">
-                    <div class="user-item">
-                        <li>{{ user['email'] }}</li> <!-- is this the correct way to get the email? -->
-                        <div class="button">
-                            <a href="{{ url_for('admin.user_profile', user_id=user['id']) }}">
-                                <button type="button" class="btn btn-outline-primary">Edit User</button>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No users yet.</p>
-        {% endif %}
-    </ol>
 </div>
 {% endblock %}

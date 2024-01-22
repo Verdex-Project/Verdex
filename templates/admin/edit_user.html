@@ -1,0 +1,81 @@
+{% extends "baseAdminNav.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<script>
+    function changeEmail(){
+        let mail = prompt("Please enter the new email for this user")
+        var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        if (mail.match(regex)){
+            window.location.href = "/admin/user_profile/{{ user['id'] }}/changeEmail?newEmail="+ mail; // is this the correct way of getting the id?
+        }
+    }
+    function deleteAccount(){
+        confirmMessage = 'Are you sure you want to delete this account'
+        if (confirm(confirmMessage)===true){
+            window.location.href ="/admin/user_profile/{{ user['id'] }}/delete" // is this the correct way of getting the id?
+        }
+    }
+    function banFromForum(){
+        confirmMessage ='Are you sure you want to ban this account from VerdexTalks'
+        if (confirm(confirmMessage)===true){
+            window.location.href = "/admin/user_profile/{{ user['id'] }}/ban" // is this the correct way of getting the id?
+        }
+    }
+    function backToHome(){
+        window.location.href = "/admin/user_management"
+    }
+</script>
+{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    <div class="sidebar">
+        <div class="profile">
+            <img class='profile' src="/static/Images/user.png" alt="">
+            <span class="admin-name">{{ name }}</span>
+            <br>
+            <span class="admin-position">{{ position }}</span>
+        </div>
+        <ul>
+            <li>
+                <a href="/admin">
+                    <span class="item">System Health</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/user_management" class="active">
+                    <span class="item">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/report">
+                    <span class="item">Weekly Report</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/customer_support">
+                    <span class="item">Customer Support</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<br>
+<button type="button" id="back-button" class="btn btn-outline-dark" onclick="backToHome()">Go back</button>
+<div class="user-container">
+    <h1>User Profile</h1>
+    <div class="user-details">
+        <p>Email: {{ user['email'] }}</p> <!-- is this the correct way of getting the email? -->
+        <p>User ID: {{ user['id'] }}</p> <!-- is this the correct way of getting the id? -->
+        <div class="edit-buttons">
+            <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
+            <button class="btn btn-outline-secondary">Password Reset</button>
+            <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
+            <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
