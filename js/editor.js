@@ -519,7 +519,6 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
                 if (!response.data.startsWith("ERROR:")) {
                     if (!response.data.startsWith("UERROR")) {
                         if (response.data.startsWith("SUCCESS:")) {
-                            alert("Your Itinerary is edited successfully!");
                             window.location.reload();
                         } else {
                             alert("An unknown response was recieved from Verdex Servers.")
@@ -587,7 +586,6 @@ function addNewActivity(activityId,location, name,latitude, longitude, imageURL,
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR")) {
                     if (response.data.startsWith("SUCCESS:")) {
-                        alert("A new activity is added successfully!");
                         window.location.reload();
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")
