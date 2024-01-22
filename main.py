@@ -3,8 +3,9 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from emailer import Emailer
-from dotenv import load_dotenv
 from analytics import Analytics
+from GMapsService import GoogleMapsService
+from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
@@ -142,10 +143,14 @@ if __name__ == '__main__':
 
     ## Get Emailer to check context
     Emailer.checkContext()
+
+    ## Set up GoogleMapsService
+    GoogleMapsService.checkContext()
     
     ## Set up Analytics
     Analytics.setup()
     Analytics.load_metrics()
+    
     ## Set up Logger
     Logger.setup()
 
