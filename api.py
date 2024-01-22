@@ -50,12 +50,13 @@ def loginAccount():
     DI.save()
 
     session["idToken"] = response["idToken"]
+    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
+        session["admin"] = True
 
-    return "SUCCESS: User logged in succesfully"
+    return "SUCCESS: User logged in succesfully."
 
 @apiBP.route("/api/createAccount", methods = ['POST'])
 def createAccount():
-
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -252,7 +253,6 @@ def editEmail():
     
     ## Nullify session
     deleteSession(targetAccountID)
-    del session["idToken"]
 
     altText = f"""
     Dear {username},
@@ -385,7 +385,6 @@ def changePassword():
     if isinstance(loginResponse, str) and loginResponse.startswith("ERROR"):
         Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(loginResponse))
         deleteSession(targetAccountID)
-        del session[targetAccountID]
         return "ERROR: Change password auto login failed."
     else:
         DI.data["accounts"][targetAccountID]["idToken"] = loginResponse["idToken"]
@@ -408,7 +407,6 @@ def logoutIdentity():
         return check
     
     deleteSession(targetAccountID)
-    del session['idToken']
 
     return "SUCCESS: User logged out."
 
