@@ -207,7 +207,7 @@ def deleteUser(userName):
 
             response = FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
             if isinstance(response, str):
-                Logger.log(f"ADMINCONSOLE DELETEUSER: Failed to delete user from Firebase Authentication. Response: {response}", debugPrintExplicitDeny=True)
+                Logger.log(f"ADMINCONSOLE DELETEUSER ERROR: Failed to delete user from Firebase Authentication. Response: {response}", debugPrintExplicitDeny=True)
                 print(f"Failed to delete user from Firebase Authentication. Response: {response}")
                 return
             del DI.data['accounts'][accountID]

@@ -78,13 +78,13 @@ def changeEmail(user_id):
         if DI.data['accounts'][accountID]['id'] == user_id:
             response = FireAuth.changeUserEmail(fireAuthID=DI.data["accounts"][accountID]["fireAuthID"], newEmail=new_email)
             if response != True:
-                Logger.log("ADMIN USERMANAGEMENT: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(accountID, response))
+                Logger.log("ADMIN USERMANAGEMENT ERROR: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(accountID, response))
                 return redirect(url_for('error', error='Failed to change email. Please try again.'))
             
             DI.data['accounts'][accountID]['email'] = new_email
             DI.save()
 
-            Logger.log(f'ADMIN: Account with ID {accountID} has changed their email to {new_email}.')
+            Logger.log(f'ADMIN CHANGEEMAIL: Account with ID {accountID} has changed their email to {new_email}.')
             
             return redirect(url_for('admin.user_management'))
         
@@ -96,11 +96,11 @@ def deleteAccount(user_id):
         if DI.data['accounts'][accountID]['id'] == user_id:
             response = FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
             if isinstance(response, str):
-                Logger.log("ADMIN USERMANAGEMENT: Failed to get FireAuth to delete account ID '{}'; response: {}".format(accountID, response))
+                Logger.log("ADMIN USERMANAGEMENT ERROR: Failed to get FireAuth to delete account ID '{}'; response: {}".format(accountID, response))
                 return "ERROR: Failed to delete account."
             del DI.data['accounts'][accountID]
             DI.save()
-            Logger.log(f'ADMIN Account with ID {accountID} has been deleted')
+            Logger.log(f'ADMIN DELETEACCOUNT: Account with ID {accountID} has been deleted')
             return redirect(url_for('admin.user_management'))
     return redirect(url_for('error', error='User not found'))
     
@@ -110,7 +110,7 @@ def banAccount(user_id):
         if DI.data['accounts'][accountID]['id'] == user_id:
             DI.data['accounts'][accountID]['forumBanned'] = True
             DI.save()
-            Logger.log(f'ADMIN Account with ID {accountID} has been banned from Verdextalks')
+            Logger.log(f'ADMIN BANACCOUNT: Account with ID {accountID} has been banned from Verdextalks')
             return redirect(url_for('admin.user_management'))
 
     return redirect(url_for('error', error='User not found'))
