@@ -1,4 +1,4 @@
-import os, sys, json, datetime, copy, pyrebase, uuid, googlemaps
+import os, sys, json, datetime, copy, pyrebase, uuid, re, googlemaps
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
@@ -307,10 +307,14 @@ class FireAuth:
     '''A class to manage authentication via Firebase Authentication.
 
     Relies on `pyrebase` module (`pip install pyrebase4`) that establishes a client connection to Firebase Authentication. 
+    
     Explicit permission has to be granted by setting `FireAuthEnabled` to `True` in the .env file. 
+    
     `FireAPIKey`, `FireAuthDomain`, `RTDB_URL`, and `STORAGE_URL` variables must be set in .env file. Obtain them on the Firebase Console.
 
     Some methods in this class require an admin connection via `firebase_admin` and thus require `FireConn.connect()` to be executed first.
+
+    If an account is disabled, several account related methods will not work. To update an account's disabled status, use the `updateDisabledStatus` method.
 
     NOTE: This class is not meant to be instantiated. The `FireAuth.connect()` method must be executed before executing any other methods.
     '''
@@ -341,7 +345,7 @@ class FireAuth:
     def createUser(email, password):
         '''Usage:
 
-        ```
+        ```python
         if FireAuth.checkPermissions() and FireAuth.connect():
             ## Create user (password must be minimum six characters
             responseObject = FireAuth.createUser(email="test@example.com", password="123456")
@@ -369,7 +373,7 @@ class FireAuth:
     def login(email, password):
         '''Usage:
         
-        ```
+        ```python
         if FireAuth.checkPermissions() and FireAuth.connect():
             ## Login (FYI, create user already logs in the user)
             responseObject = FireAuth.login(email="test@example.com", password="123456")
@@ -390,20 +394,20 @@ class FireAuth:
 
             return responseObject
         except Exception as e:
-            return "ERROR: Invalid credentials; error response: {}".format(e)
+            return "ERROR: Failed to log user in; error response: {}".format(e)
     
     @staticmethod
     def accountInfo(idToken, includePassHash=False):
         '''Usage:
 
-        ```
+        ```python
         if FireAuth.checkPermissions() and FireAuth.connect():
             ## Get account info
             responseObject = FireAuth.accountInfo(idToken=responseObject["idToken"])
             if "ERROR" in responseObject:
                 print(responseObject)
                 exit()
-            ### Parameters in responseObject (of type `dict` in success case): localId, email, emailVerified, displayName, photoUrl, passwordHash, passwordUpdatedAt, validSince, disabled, lastLoginAt, createdAt, customAuth, providerUserInfo, lastRefreshAt
+            ### Parameters in responseObject (of type `dict` in success case): uid, email, emailVerified, passwordUpdatedAt, providerId, federatedId, rawId, validSince, lastLoginAt, createdAt, lastRefreshAt
         ```
         '''
 
@@ -427,13 +431,13 @@ class FireAuth:
 
             return responseObject
         except Exception as e:
-            return "ERROR: Invalid ID token; error response: {}".format(e)
+            return "ERROR: Failed to obtain account info; error response: {}".format(e)
 
     @staticmethod
     def refreshToken(refreshToken):
         '''Usage:
 
-        ```
+        ```python
         if FireAuth.checkPermissions() and FireAuth.connect():
             ## Refresh token
             responseObject = FireAuth.refreshToken(refreshToken=responseObject["refreshToken"])
@@ -456,8 +460,8 @@ class FireAuth:
 
         Usage:
 
-        ```
-        FireAuth.connect()
+        ```python
+        FireAuth.connect() ## optional but recommended
         FireConn.connect()
         loginResponse = FireAuth.login(email="test@example.com", password="123456")
         if "ERROR" in loginResponse:
@@ -474,7 +478,7 @@ class FireAuth:
         '''
 
         if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
-            return "ERROR: Delete account requires a Firebase connection granted by explicit permission."
+            return "ERROR: Delete account requires a Firebase Admin connection granted by explicit permission."
         
         try:
             fireAuthUserID = FireAuth.accountInfo(idToken)["uid"]
@@ -490,8 +494,8 @@ class FireAuth:
         Returns a `FirebaseAdmin.Auth.ExportedUserRecord` object for each user.
 
         Usage:
-        ```
-        FireAuth.connect()
+        ```python
+        FireAuth.connect() ## optional but recommended
         FireConn.connect()
         users = FireAuth.listUsers()
         if isinstance(users, str):
@@ -505,8 +509,8 @@ class FireAuth:
         NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
         '''
 
-        if ((not FireConn.checkPermissions()) or (not FireConn.connected)):
-            return "ERROR: List users requires a Firebase connection granted by explicit permission."
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: List users requires a Firebase Admin connection granted by explicit permission."
         
         users = []
         try:
@@ -515,6 +519,154 @@ class FireAuth:
             return users
         except Exception as e:
             return "ERROR: Failed to list users; error response: {}".format(e)
+    
+    @staticmethod
+    def changeUserEmail(fireAuthID, newEmail):
+        '''Returns True upon a successful email update.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.changeUserEmail(fireAuthID="sampleFirebaseUserID", newEmail="newEmail@domain.com")
+        if response != True:
+            print(response)
+        else:
+            print("Changed email!")
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", newEmail) == None:
+            return "ERROR: Invalid email address."
+        
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Change user email requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, email=newEmail)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to change user email; error response: {}".format(e)
+        
+    @staticmethod
+    def generateEmailVerificationLink(email):
+        '''Returns an email verification link upon successful generation.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.generateEmailVerificationLink(email="real@email.com")
+        if "ERROR" in response:
+            print(response)
+        else:
+            print("Email verification link generated! Link: " + response)
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email) == None:
+            return "ERROR: Invalid email address."
+
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Generate email verification link requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            link = adminAuth.generate_email_verification_link(email)
+            return link
+        except Exception as e:
+            return "ERROR: Failed to generate email verification link; error response: {}".format(e)
+    
+    @staticmethod
+    def updateEmailVerifiedStatus(fireAuthID, newStatus: bool):
+        '''Returns True upon successful update.
+        
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.updateEmailVerifiedStatus(fireAuthID="sampleFirebaseUserID", newStatus=True)
+        if response != True:
+            print(response)
+        else:
+            print("Email verified status updated!")
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if not isinstance(newStatus, bool):
+            return "ERROR: Invalid email verified status."
+
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Update email verified status requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, email_verified=newStatus)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to update email verified status; error response: {}".format(e)
+        
+    @staticmethod
+    def updateDisabledStatus(fireAuthID, newStatus: bool):
+        '''Returns True upon successful update.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.updateDisabledStatus(fireAuthID="sampleFirebaseUserID", newStatus=True)
+        if response != True:
+            print(response)
+        else:
+            print("Account disabled successfully!")
+        ```
+        '''
+        
+        if not isinstance(newStatus, bool):
+            return "ERROR: Invalid disabled status."
+        
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Update disabled status requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, disabled=newStatus)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to update disabled status; error response: {}".format(e)
+        
+    @staticmethod
+    def updatePassword(fireAuthID, newPassword):
+        '''Returns True upon successful update.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.updatePassword(fireAuthID="sampleFirebaseUserID", newPassword="newPassword")
+        if response != True:
+            print(response)
+        else:
+            print("Password updated successfully!")
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if not isinstance(newPassword, str):
+            return "ERROR: Invalid password."
+        
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Update password requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            adminAuth.update_user(fireAuthID, password=newPassword)
+            return True
+        except Exception as e:
+            return "ERROR: Failed to update password; error response: {}".format(e)
         
     @staticmethod
     def generateAccountsObject(fireAuthUsers, existingAccounts, strategy="add-only"):
@@ -554,7 +706,7 @@ class FireAuth:
                         "fireAuthID": fireUser.uid,
                         "username": "Not Set",
                         "email": fireUser.email,
-                        "password": "Not Set",
+                        "disabled": fireUser.disabled
                     }
         
         if strategy == 'overwrite' or strategy == 'remove-only':

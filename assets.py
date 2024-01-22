@@ -21,6 +21,14 @@ def logo():
 def profileIcon():
     return send_file("assets/logos/profileIcon.svg", mimetype="image/svg+xml")
 
+@assetsBP.route("/assets/appleLogin", methods=["GET"])
+def appleLogin():
+    return send_file("assets/appleLogin.png", mimetype="image/png")   
+
+@assetsBP.route("/assets/appleSignup", methods=["GET"])
+def appleSignup():
+    return send_file("assets/appleSignup.png", mimetype="image/png")
+
 @assetsBP.route("/assets/copyright")
 def copyright():
     return fileContent("assets/copyright.js")
@@ -39,7 +47,7 @@ def viewAccountJS():
 
 @assetsBP.route("/assets/editorJS")
 def editorJS():
-    return fileContent("js/editorNew.js")
+    return fileContent("js/editor.js", passAPIKey=True)
 
 @assetsBP.route("/assets/completionJS")
 def completionJS():
@@ -48,3 +56,7 @@ def completionJS():
 @assetsBP.route("/assets/targetLocationsJS")
 def itineraryGenerationJS():
     return fileContent("js/targetLocations.js", passAPIKey=True)
+
+@assetsBP.route("/assets/forumJS")
+def forumJS():
+    return fileContent("js/forum.js", passAPIKey=True)

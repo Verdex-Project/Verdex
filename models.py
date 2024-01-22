@@ -45,11 +45,13 @@ class DI:
     '''
 
     data = []
+    syncStatus = True
 
     sampleData = {
         "accounts": {},
         "itineraries": {},
-        "forum": {}
+        "forum": {},
+        "admin": {}
     }
 
     @staticmethod
@@ -79,10 +81,33 @@ class DI:
     @staticmethod
     def load():
         try:
+            ## Check and create database file if it does not exist
             if not os.path.exists(os.path.join(os.getcwd(), "database.txt")):
                 with open("database.txt", "w") as f:
                     json.dump(DI.sampleData, f)
-            
+
+            def loadFromLocalDBFile():
+                loadedData = []
+                # Read data from local database file
+                with open("database.txt", "r") as f:
+                    loadedData = json.load(f)
+
+                ## Carry out structure enforcement
+                changesMade = False
+                for topLevelKey in DI.sampleData:
+                    if topLevelKey not in loadedData:
+                        loadedData[topLevelKey] = DI.sampleData[topLevelKey]
+                        changesMade = True
+
+                if changesMade:
+                    # Local database structure needs to be updated
+                    with open("database.txt", "w") as f:
+                        json.dump(loadedData, f)
+
+                # Load data into DI
+                DI.data = loadedData
+                return
+
             if FireRTDB.checkPermissions():
                 # Fetch data from RTDB
                 fetchedData = FireRTDB.getRef()
@@ -91,9 +116,8 @@ class DI:
                     print("DI-FIRERTDB GETREF ERROR: " + fetchedData)
                     print("DI: System will try to resort to local database to load data to prevent a crash. Attempts to sync with RTDB will continue.")
 
-                    # Read data from local database file
-                    with open("database.txt", "r") as f:
-                        DI.data = json.load(f)
+                    loadFromLocalDBFile()
+                    DI.syncStatus = False
                     return "Success"
                 
                 # Translate data for local use
@@ -103,33 +127,34 @@ class DI:
                     print("DI-FIRERTDB TRANSLATELOCAL ERROR: " + fetchedData)
                     print("DI: System will try to resort to local database to load data to prevent a crash. Attempts to sync with RTDB will continue.")
 
-                    # Read data from local database file
-                    with open("database.txt", "r") as f:
-                        DI.data = json.load(f)
+                    loadFromLocalDBFile()
+                    DI.syncStatus = False
                     return "Success"
                 
-                # Write data to local db file
-                if fetchedData != None and fetchedData != {}:
-                    with open("database.txt", "w") as f:
-                        json.dump(fetchedData, f)
-                    
-                    # Load data into DI
-                    DI.data = fetchedData
-                else:
-                    # RTDB is empty and sample structure needs to be written
-                    response = FireRTDB.setRef(FireRTDB.translateForCloud(DI.sampleData))
+                # Carry out structure enforcement
+                changesMade = False
+                for topLevelKey in DI.sampleData:
+                    if topLevelKey not in fetchedData:
+                        fetchedData[topLevelKey] = DI.sampleData[topLevelKey]
+                        changesMade = True
+
+                if changesMade:
+                    # RTDB structure needs to be updated
+                    response = FireRTDB.setRef(FireRTDB.translateForCloud(fetchedData))
                     if response != True:
                         print("DI-FIRERTDB SETREF ERROR: " + response)
-                        print("DI: Failed to set sample structure in RTDB. System will resort to local database but attempts to sync will continue.")
-                        with open("database.txt", "r") as f:
-                            DI.data = json.load(f)
-                        return "Success"
-                    else:
-                        DI.data = DI.sampleData
+                        print("DI: Failed to update RTDB structure. System will continue to avoid a crash but attempts to sync with RTDB will continue.")
+                        DI.syncStatus = False
+
+                # Write data to local db file
+                with open("database.txt", "w") as f:
+                    json.dump(fetchedData, f)
+                
+                # Load data into DI
+                DI.data = fetchedData
             else:
-                # Read data from local database file
-                with open("database.txt", "r") as f:
-                    DI.data = json.load(f)
+                loadFromLocalDBFile()
+                DI.syncStatus = True
                 return "Success"
         except Exception as e:
             print("DI ERROR: Failed to load data from database; error: {}".format(e))
@@ -141,6 +166,7 @@ class DI:
         try:
             with open("database.txt", "w") as f:
                 json.dump(DI.data, f)
+            DI.syncStatus = True
 
             # Update RTDB
             if FireRTDB.checkPermissions():
@@ -148,9 +174,11 @@ class DI:
                 if response != True:
                     print("DI FIRERTDB SETREF ERROR: " + response)
                     print("DI: System will resort to local database to prevent a crash. Attempts to sync with RTDB will continue.")
+                    DI.syncStatus = False
                     # Continue runtime as system can function without cloud database
         except Exception as e:
             print("DI ERROR: Failed to save data to database; error: {}".format(e))
+            DI.syncStatus = False
             return "Error"
         return "Success"
 
@@ -199,6 +227,7 @@ class Universal:
     '''This class contains universal methods and variables that can be used across the entire project. Project-wide standards and conventions (such as datetime format) are also defined here.'''
 
     systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
+    copyright = "© 2023-2024 The Verdex Team. All Rights Reserved."
 
     @staticmethod
     def generateUniqueID():
@@ -241,8 +270,8 @@ class Logger:
         return
 
     @staticmethod
-    def log(message):
-        if "DebugMode" in os.environ and os.environ["DebugMode"] == 'True':
+    def log(message, debugPrintExplicitDeny=False):
+        if "DebugMode" in os.environ and os.environ["DebugMode"] == 'True' and (not debugPrintExplicitDeny):
             print("LOG: {}".format(message))
         if Logger.checkPermission():
             try:
@@ -311,7 +340,7 @@ Commands:
                     targetLogs = allLogs
                 elif userChoice[1] == ".filter":
                     if len(userChoice) < 3:
-                        print("Invalid log filter. Format: read <number of lines> .filter <keywords>")
+                        print("Invalid log filter. Format: read .filter <keywords>")
                         continue
                     else:
                         try:
@@ -343,6 +372,8 @@ Commands:
                             logCount = len(allLogs)
                         elif logCount <= 0:
                             raise Exception("Invalid log count. Must be a positive integer above 0 lower than or equal to the total number of logs.")
+                        
+                        targetLogs = allLogs[-logCount::]
                     except Exception as e:
                         print("LOGGER: Failed to read logs. Error: {}".format(e))
                         continue
