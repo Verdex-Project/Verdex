@@ -504,19 +504,19 @@ def deleteIdentity():
     if check != True:
         return check
     
+    response = FireAuth.deleteAccount(session['idToken'])
+    if response != True:
+        Logger.log("API DELETEIDENTITY ERROR: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
+        return "ERROR: Something went wrong. Please try again."
+    else:
+        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
+    
     ## Delete account from DI
     del DI.data["accounts"][targetAccountID]
     DI.save()
     Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
 
-    response = FireAuth.deleteAccount(session['idToken'])
-    if response != True:
-        Logger.log("API DELETEIDENTITY: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
-        return "ERROR: Something went wrong. Please try again."
-    else:
-        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
-
-    del session['idToken']
+    session.clear()
 
     return "SUCCESS: Account deleted successfully."
 
