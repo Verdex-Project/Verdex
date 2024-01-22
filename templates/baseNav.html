@@ -11,7 +11,11 @@
 </head>
 <body>
     {% block navbar %}
-        {% include "includes/_navbar.html" %}
+        {% if session["admin"] == True %}
+            {% include "includes/_adminNavbar.html" %}
+        {% else %}
+            {% include "includes/_navbar.html" %}
+        {% endif %}
     {% endblock %}
 
     {% block body %}
