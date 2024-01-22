@@ -14,9 +14,12 @@
 <div id="content">
     <div id="email">
         <div class="mb-3">
-            <label for="usernameInput" class="form-label">Enter Your Email</label>
-            <input type="text" class="form-control" id="usernameInput" placeholder="Email">
+            <label for="emailInput" class="form-label">Enter Your Email</label>
+            <input type="text" class="form-control" id="emailInput" placeholder="Email">
             <div id="emailMsg"></div>
+        </div>
+        <div id="emailResetKeyDiv">
+            <button id="emailResetKeyBtn" type="button" class="btn btn-outline-success" onclick="emailResetKey()">Send Reset Key</button>
         </div>
     </div>
 
@@ -42,5 +45,5 @@
 <div id="copyright">
     <script src="/assets/copyright"></script>
 </div>
-<script src="/assets/viewAccountJS"></script>
+<script src="/assets/accountRecoveryJS"></script>
 {% endblock %}

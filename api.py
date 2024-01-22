@@ -18,8 +18,8 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route('/api/accountRecovery', methods=['POST'])
-def accountRecovery():
+@apiBP.route('/api/emailResetKey', methods=['POST'])
+def emailResetKey():
     pass
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
