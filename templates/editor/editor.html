@@ -207,7 +207,7 @@
                                 <h5 id="activityLocation">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5>
                                  <h5> &nbsp | &nbsp  </h5>
                                  <h5 id="activityName">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                                <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
                             </div>
 
                             <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
