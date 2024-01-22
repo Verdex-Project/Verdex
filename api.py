@@ -480,14 +480,14 @@ def changePassword():
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
     
     deleteSession(targetAccountID)
 
