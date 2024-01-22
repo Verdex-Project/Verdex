@@ -18,6 +18,10 @@ def checkHeaders(headers):
 
     return True
 
+@apiBP.route('/api/accountRecovery', methods=['POST'])
+def accountRecovery():
+    pass
+
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
     check = checkHeaders(request.headers)

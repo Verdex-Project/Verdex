@@ -291,6 +291,7 @@ function changePassword() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
+                        changePasswordMsg.style.color = 'green'
                         changePasswordMsg.innerHTML = "Changes saved!"
                         location.reload()
                     } else {

@@ -1,0 +1,46 @@
+{% extends "baseNav.html" %}
+
+{% block title %}Account Recovery{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/accountRecovery.css">
+{% endblock %}
+
+{% block body %}
+<div id="top">
+    <h1 id="heading">Recover Your Account</h1>
+</div>
+
+<div id="content">
+    <div id="email">
+        <div class="mb-3">
+            <label for="usernameInput" class="form-label">Enter Your Email</label>
+            <input type="text" class="form-control" id="usernameInput" placeholder="Email">
+            <div id="emailMsg"></div>
+        </div>
+    </div>
+
+    <div id="reset">
+        <div class="mb-3">
+            <label for="resetKey" class="form-label">Enter Reset Key</label>
+            <input type="text" class="form-control" id="resetKey" placeholder="Reset Key">
+        </div>
+
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">Reset Password</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="Password">
+        </div>
+
+        <div class="mb-3">
+            <label for="cfmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="cfmPassword" placeholder="Password">
+        </div>
+    </div>
+</div>
+
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
+</div>
+<script src="/assets/viewAccountJS"></script>
+{% endblock %}

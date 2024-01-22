@@ -1,0 +1,34 @@
+* {
+    box-sizing: border-box;
+}
+
+#heading {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+
+#content {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mb-3>label {
+    margin-left: 5px;
+}
+
+#emailMsg {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+#reset {
+    visibility: hidden;
+}
+
+#copyright {
+    text-align: center;
+}
