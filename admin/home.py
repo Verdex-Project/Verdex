@@ -14,8 +14,16 @@ def admin():
         return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"]
-    position = targetAccount["position"]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
+    
     return render_template('admin/system_health.html', name=name, position=position)
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
@@ -29,8 +37,15 @@ def user_management():
         return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"] ## what if it's not there?
-    position = targetAccount["position"] ## what if it's not there?
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
 
     non_admin_users = []
     for accountID in DI.data['accounts']:
@@ -46,12 +61,19 @@ def user_profile(user_id):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
-    
-    targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"] ## what if it's not there?
-    position = targetAccount["position"] ## what if it's not there?
     if user_id not in DI.data['accounts']:
         return redirect(url_for('error', error='User not found'))
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
     
     return render_template('admin/edit_user.html', user=DI.data['accounts'][user_id], name=name, position=position)
 
@@ -60,10 +82,16 @@ def changeEmail(user_id):
     new_email = request.args.get("newEmail")
     for accountID in DI.data['accounts']:
         if DI.data['accounts'][accountID]['id'] == user_id:
+            response = FireAuth.changeUserEmail(fireAuthID=DI.data["accounts"][accountID]["fireAuthID"], newEmail=new_email)
+            if response != True:
+                Logger.log("ADMIN USERMANAGEMENT: Failed to get FireAuth to change email for account ID '{}'; response: {}".format(accountID, response))
+                return redirect(url_for('error', error='Failed to change email. Please try again.'))
+            
             DI.data['accounts'][accountID]['email'] = new_email
             DI.save()
-            Logger.log(f'ADMIN Account with ID {accountID} has changed their email to {new_email}')
-            FireAuth.changeUserEmail(user_id, new_email)
+
+            Logger.log(f'ADMIN: Account with ID {accountID} has changed their email to {new_email}.')
+            
             return redirect(url_for('admin.user_management'))
         
     return redirect(url_for('error', error='User not found'))
@@ -72,7 +100,10 @@ def changeEmail(user_id):
 def deleteAccount(user_id):
     for accountID in DI.data['accounts']:
         if DI.data['accounts'][accountID]['id'] == user_id:
-            FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
+            response = FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
+            if isinstance(response, str):
+                Logger.log("ADMIN USERMANAGEMENT: Failed to get FireAuth to delete account ID '{}'; response: {}".format(accountID, response))
+                return "ERROR: Failed to delete account."
             del DI.data['accounts'][accountID]
             DI.save()
             Logger.log(f'ADMIN Account with ID {accountID} has been deleted')
@@ -101,8 +132,14 @@ def report():
         return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    name = targetAccount["name"]
-    position = targetAccount["position"]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
     for key in data:
