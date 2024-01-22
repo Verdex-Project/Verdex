@@ -63,9 +63,9 @@ def manageIDToken(checkIfAdmin=False):
 
                 session["idToken"] = response["idToken"]
 
-                if checkIfAdmin:
-                    if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
-                        return "ERROR: Access forbidden due to insufficient permissions."
+            if checkIfAdmin:
+                if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
+                    return "ERROR: Access forbidden due to insufficient permissions."
 
             return "SUCCESS: {}".format(accountID)
     

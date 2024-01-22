@@ -1,6 +1,6 @@
 {% extends "baseAdminNav.html" %}
 
-{% block title %}System Health{% endblock %}
+{% block title %}Customer Support{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
@@ -17,7 +17,7 @@
         </div>
         <ul>
             <li>
-                <a href="/admin" class="active">
+                <a href="/admin">
                     <span class="item">System Health</span>
                 </a>
             </li>
@@ -32,7 +32,7 @@
                 </a>
             </li>
             <li>
-                <a href="/admin/customer_support">
+                <a href="/admin/customer_support" class="active">
                     <span class="item">Customer Support</span>
                 </a>
             </li>

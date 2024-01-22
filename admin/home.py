@@ -5,16 +5,13 @@ adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin')
 def admin():
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "idToken" not in session:
-        return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
         name = "Not set"
     else:
         name = targetAccount["name"]
@@ -28,16 +25,13 @@ def admin():
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
 def user_management():
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "idToken" not in session:
-        return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
         name = "Not set"
     else:
         name = targetAccount["name"]
@@ -56,7 +50,7 @@ def user_management():
 
 @adminHomeBP.route('/admin/user_profile/<string:user_id>', methods=['GET'])
 def user_profile(user_id):
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
@@ -65,7 +59,7 @@ def user_profile(user_id):
         return redirect(url_for('error', error='User not found'))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
         name = "Not set"
     else:
         name = targetAccount["name"]
@@ -123,16 +117,13 @@ def banAccount(user_id):
         
 @adminHomeBP.route('/admin/report')
 def report():
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "idToken" not in session:
-        return redirect(url_for('unauthorised', error="Please sign in first."))
     
     targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['admin']!=''):
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
         name = "Not set"
     else:
         name = targetAccount["name"]
@@ -224,4 +215,18 @@ def clear_data():
 
 @adminHomeBP.route('/admin/customer_support')
 def reply():
-    return render_template('admin/reply.html')
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    targetAccount = DI.data["accounts"][targetAccountID]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
+    return render_template('admin/reply.html', name=name, position=position)
