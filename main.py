@@ -2,8 +2,9 @@ import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from models import *
-from dotenv import load_dotenv
 from admin.analytics import Analytics
+from GMapsService import GoogleMapsService
+from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
@@ -144,13 +145,13 @@ if __name__ == '__main__':
     Logger.setup()
 
     # Database Synchronisation with Firebase Auth accounts
-    # if FireConn.checkPermissions():
-    #     previousCopy = copy.deepcopy(DI.data["accounts"])
-    #     DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
-    #     DI.save()
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
 
-    #     if previousCopy != DI.data["accounts"]:
-    #         print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
+        if previousCopy != DI.data["accounts"]:
+            print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
     
     # Register routes
     
