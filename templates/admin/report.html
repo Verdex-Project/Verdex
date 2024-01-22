@@ -1,4 +1,4 @@
-{% extends "baseAdminNav.html" %}
+{% extends "baseNav.html" %}
 
 {% block title %}Reports{% endblock %}
 
@@ -62,32 +62,28 @@
     <div class="sidebar">
         <div class="profile">
             <img class='profile' src="/static/Images/user.png" alt="">
-            <h3>Kate Gibson</h3>
-            <p>Chief of Support</p>
+            <span class="admin-name">{{ name }}</span>
+            <br>
+            <span class="admin-position">{{ position }}</span>
         </div>
         <ul>
             <li>
-                <a href="home.html">
-                    <span class="item">Home</span>
-                </a>
-            </li>
-            <li>
-                <a href="user_management.html" >
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="active">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="system_health.html">
+                <a href="/admin">
                     <span class="item">System Health</span>
                 </a>
             </li>
             <li>
-                <a href="reply.html">
+                <a href="/admin/user_management" >
+                    <span class="item">User Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/report" class="active">
+                    <span class="item">Weekly Report</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/customer_support">
                     <span class="item">Customer Support</span>
                 </a>
             </li>
