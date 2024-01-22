@@ -1,0 +1,12 @@
+__pycache__/
+.env
+virt/
+venv/
+serviceAccountKey.json
+config.txt
+.DS_Store
+database.txt
+reports/
+logs.txt
+analytics.json
+form_data.json

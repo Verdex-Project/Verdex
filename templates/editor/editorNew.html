@@ -1,0 +1,112 @@
+{% extends "baseNav.html" %} <!--NAVBAR-->
+
+{% block tabTitle %}Itinerary Editor | Verdex {% endblock %}
+
+{% block head %}
+<!-- <script type="text/javascript" src="/js/editorNew.js"></script> -->
+<link rel="stylesheet" href="{{ url_for('static', filename='editorNew.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/assets/editorJS"></script>
+
+{% endblock %}
+
+{% block body %}
+<div id="content">
+    <div class="header"><h1>Itinerary Editor</h1></div>
+    <div class="addDayButton" ><!--onclick="addDay()"-->
+        <!--ADD DAY BUTTON HERE (+ button next to the day label which creates a new day)-->
+        <form method="post" action="{{ url_for('editorPageBP.editorDay') }}">
+                <button type="submit" name="addDay" id="addDayButton">Add day</button>
+    </div>
+        </form>
+</div>
+<div id="dayBox">
+    <div class="dayLabel">
+        <!-- DAY BOX HERE (Label that shows day) -->
+        {% for day, itinerary_day in itinerary_data.items() %}
+        <div class="day-header-container">
+            <h2 id="dayNumber">Day {{ day }}</h2>
+            <button class="mainAddButton" id="addButton_{{ day }}" onclick="toggleAddActivity('{{ day }}')">Add activity</button><!-- Add Button -->
+            <div id="newActivityForm_{{ day }}" style="display: none;">
+                <form class="addActivityForm" id="addActivityForm_{{ day }}" action="{{ url_for('editorPageBP.editorDay') }}" method="post">
+                    <input type="hidden" name="day" value="{{ day }}">
+                    <input type="text" id="newActivityPlaceholder" name="new_activity" placeholder="Enter new activity name">
+                    <button type="submit" name="addNewActivity" id="addNewActivityButton">Add it!</button>
+                </form>
+            </div>
+            <div class="deleteDayButton" onclick="deleteDay('{{day}}')">
+                <!--DELETE BUTTON HERE (Delete button next to create day button to remove the day (Return to homepage if only day was deleted))-->
+                <form method="post" action="{{ url_for('editorPageBP.editorDay') }}">
+                    <button type="submit" name="deleteDay" value="{{ day }}" id="deleteDayButton">Delete day</button>
+                </form><br>
+            </div>
+        </div>
+
+        <div class="activityLog">
+            <div class="activityList">
+                <div class="activity">
+                <!-- ACITIVITY NAME HERE (List of activities for the day with only name)-->
+                    <div class="day-container">
+                        <ul>
+                            <h4>Activities:</h4>
+                            {% for activity_number, activity_info in itinerary_day.activities.items() %}
+                            <!--EDIT BUTTON HERE (Edit button to change the activity)-->
+                            <li id="activityListItem">
+                                <div class="activityListTop">
+                                    <div id="activityBoxLeft">
+                                        <span id="activityName_{{ day }}_{{ activity_number }}" class="activityName">{{ activity_info.name }}</span>
+                                        <!--Delete button here-->
+                                        <form method="post" action="{{ url_for('editorPageBP.editor') }}" class="deleteForm">
+                                            <input type="hidden" name="deleteActivity" value="true">
+                                            <input type="hidden" name="day" value="{{ day }}">
+                                            <input type="hidden" name="activity_number" value="{{ activity_number }}">
+                                            <button type="submit" class="deleteButton">Delete activity</button>
+                                        </form>
+                                    </div>
+                                    <button type="button" id="editButton_{{ day }}_{{ activity_number }}" class="editButton" onclick="showEditForm('{{ day }}', '{{ activity_number }}')"  style="float: right;">Edit</button>
+                                </div>
+                                <div class="activityListBottom" id="editFormDiv">
+                                    <form class="editForm" id="editForm_{{ day }}_{{ activity_number }}" style="display: none;" action="{{ url_for('editorPageBP.editorDay') }}" method="post">
+                                        <input type="hidden" name="day" value="{{ day }}">
+                                        <input type="hidden" name="activity_number" value="{{ activity_number }}">
+                                        <input id="newActivityNamePlaceholder" type="text" name="new_name" placeholder="Enter new activity name">
+                                        <button type="submit" name="confirmEdit" class="confirmButton" id="confirmButton_{{ day }}_{{ activity_number }}" style="float:right;">Confirm</button>
+                                    </form>
+                                </div>
+                            </li>
+                            
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if not loop.last %}
+            <hr id="dividingLine">
+        {% endif %}
+        {% endfor %}
+    
+        <div class="addActivity">
+            <!--ADD ACTIVITY BUTTON (+ button to add activities (prompt))-->
+        </div>
+    </div>
+</div>  
+    <div id="footer"> <!--Footer-->
+        
+        <div id="deleteItinerary" onclick="deleteItinerary()">
+            <form method="post" action="{{ url_for('editorPageBP.editorDay') }}">
+                <button type="submit" name="deleteItinerary" id="deleteItineraryButton">
+                    <h5>Delete itinerary</h5>
+                </button>
+            </form>
+        </div>
+
+        <div id="saveItinerary">
+            <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
+                <h5>Proceed</h5> <!--Save button to itinerary page done-->
+            </button>
+        </div>
+
+    </div>
+{% endblock %}

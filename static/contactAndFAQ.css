@@ -1,0 +1,113 @@
+html {
+    scroll-behavior: smooth;
+}
+
+h1 {
+    color: #333;
+}
+.faq{
+    text-align: center;
+    margin-bottom:30px;
+    margin-top:30px;
+}
+
+form {
+    max-width: 400px;
+    margin: 20px auto;
+    background-color:white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: Arial,sans-serif;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    text-align: left;
+    font-family: Arial,sans-serif;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: Arial,sans-serif;
+}
+
+input[type="submit"] {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: Arial,sans-serif;
+}
+textarea{
+    resize: none;
+}
+.success{
+    font-size:25px;
+    text-align: center;
+    font-family: Arial,sans-serif;
+}
+#content {
+    margin-top: 100px;
+    text-align: center;
+    font-family: Arial,sans-serif;
+}
+#contact{
+    margin-left:10px;
+}
+.link{
+    text-align: center;
+}
+.here{
+    font-size:20px;
+}
+.contact{
+    text-align: center;
+}
+
+h2.accordion-header{
+    padding-right:0;
+}
+
+.accordion {
+    margin: auto;
+    width: 60%;
+}
+.wrapper img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+}
+.wrapper h1{
+    margin-top:-50px;
+    text-align: center;
+    font-family: Arial,sans-serif;
+    color: #006006
+}
+.wrapper h4{
+    text-align: center;
+    font-family: Arial,sans-serif;
+}
+.button{
+    margin:0;
+    position: absolute;
+    left: 50%;
+    margin-top: 20px;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}

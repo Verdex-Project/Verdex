@@ -1,0 +1,176 @@
+{% extends 'baseNav.html' %}
+    {% block title %}VerdexTalks{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
+    <script src="/assets/forumJS"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="content">
+        <div class="sidebar">
+            <h3 class="filter-posts-header">Filter posts:</h3>
+            <div class="list-of-all-filter-buttons-container">
+                <ul class="list-of-all-filter-buttons">
+                    <li class="filter-buttons" onclick="filterPosts('All')">All</li>
+                    <li class="filter-buttons" onclick="filterPosts('Scenery')">#Scenery</li>
+                    <li class="filter-buttons" onclick="filterPosts('Nature')">#Nature</li>
+                    <li class="filter-buttons" onclick="filterPosts('Food')">#Food</li>
+                </ul>
+            </div>
+        </div>
+        <div class="natural-flow-content">
+            <div class="create-a-post-button" onclick="createPostPopup()">
+                <div id="plus-icon-container">
+                    <span class="plus-icon">+</span>
+                </div>
+                <div class="text-container">
+                    <h3 class="header">Create a post</h3><br>
+                    <p class="text">Share your memories with friends!</p>
+                </div>
+            </div>
+            <div class="create-a-post-container">
+                <h3 class="recent-itineraries-header">What's on your mind?</h3><br>
+                <div id="recent-itineraries-container">
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Nature Tapestry: Exploring the Green Gems of Singapore')">
+                        <img src="static/Images/Nature.png" alt="Nature">
+                        <span>Nature</span>
+                    </button><br>
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Hidden Isles: A Journey into the Mini Islands')">    
+                        <img src="static/Images/SG Islands darkened.jpg" alt="Singapore Islands">
+                        <span>Singapore's Islands</span>
+                    </button><br>
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Culinary Chronicles: A Gastronomic Expedition on Singaporean Delicacies')">
+                        <img src="static/Images/Food Galore darkened.jpg" alt="Food Galore">
+                        <span>Food</span>
+                    </button><br>
+                </div>
+            </div>
+            <div class="generated-itineraries-container">
+                <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
+                {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
+                    {% if targetAccountID == itinerary_data.associatedAccountID %}
+                        <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
+                            <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
+                            <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="post-section-container">
+                {% if postsInfoJson.items()|length == 0 %}
+                    <div class="no-posts-here-container">
+                        <img src="static/Images/findingDuck.jpg" alt="No posts yet" id="findingDuck" width="100" height="100">
+                        <h4 id="no-posts-header">It's quiet here...</h4><br>
+                        <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
+                    </div>
+                {% endif %}
+                {% for post_username, post_data in postsInfoJson.items()|reverse %}
+                <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }} {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}user-post{% endif %}">
+                        <div class="post-content">
+                            <div class="nameAndTagHeader">
+                                <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                                {% if post_data.tag != "" %}
+                                    <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                                {% endif %}
+                            </div>
+                            <p class="post-description">{{ post_data.post_description }}</p>
+                            {% if post_data.itineraries %}
+                                <h5 id="itinerary-header">Check out my itinerary!</h5>
+                                {% for itinerary_id, itinerary_data in post_data.itineraries.items() %}
+                                    <div class="itineraryDiv" data-itinerary-id="{{ itinerary_id }}">
+                                        <p id="itinerary-info"><strong>{{ itinerary_data.itinerary_title }}</strong></p>
+                                        <p id="itinerary-info">{{ itinerary_data.itinerary_description }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if post_data.comments != {} %}
+                                <h5 id="comments-header">Comments: </h5><br>
+                                {% for comment_id, comment_text in post_data.comments.items() %}
+                                    <div class="commentDiv" data-comment-id="{{ comment_id }}">
+                                        <li id="comment">{{ comment_text }}</li>
+                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split("_")[2] %}
+                                            <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="lower-row-buttons-container">
+                            <div class="post-reaction-buttons-container">
+                                <ul class="list-of-reaction-buttons">
+                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
+                                    {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                    {% endif %}
+                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
+                                </ul>
+                            </div>
+                            {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="create-a-post-popup">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Create A Post!</b></h2>
+                <input type="text" name="post_title" id="post-title" size="70" placeholder="Title: " required><br>
+                <textarea name="post_description" id="post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
+                <input type="hidden" name="post_tag" id="post-tag" value="">
+                <p>Suggested tags: (Optional)</p>
+                <div id="tags-button-container">
+                    <button id="scenery-tag-button" class="tags-button" onclick="selectTag('Scenery', event, 'scenery-tag-button', 'food-tag-button', 'nature-tag-button')">#Scenery</button>
+                    <button id="food-tag-button" class="tags-button" onclick="selectTag('Food', event, 'food-tag-button', 'scenery-tag-button', 'nature-tag-button')">#Food</button>
+                    <button id="nature-tag-button" class="tags-button" onclick="selectTag('Nature', event, 'nature-tag-button', 'scenery-tag-button', 'food-tag-button')">#Nature</button>
+                </div>
+                <button type="button" name="addNewPost" id="post-it-button" onclick="submitPost()">Post it!</button>
+            </div>
+        </div>
+        <div id="comment-on-post-popup">
+            <div id="comment-popup-content">
+                <button id="close-popup-button" onclick="return closeCommentPopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Add your comment!</b></h2>
+                <textarea name="comment_description" id="comment_description" rows="5" cols="80" placeholder="Write your comment here" required></textarea><br>
+                <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
+            </div>
+        </div>
+        <div id="edit-post-popup">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Edit post</b></h2>
+                <input type="text" name="edit_post_title" id="edit-post-title" size="70" required placeholder="Enter new title: "><br>
+                <textarea name="edit_post_description" id="edit-post-description" rows="5" cols="80" required placeholder="Enter new description: "></textarea><br>
+                <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
+                <p>Suggested tags: </p>
+                <div id="tags-button-container">
+                    <button id="edit-scenery-tag-button" class="tags-button" onclick="editSelectTag('Scenery', event, 'edit-scenery-tag-button', 'edit-food-tag-button', 'edit-nature-tag-button')">#Scenery</button>
+                    <button id="edit-food-tag-button" class="tags-button" onclick="editSelectTag('Food', event, 'edit-food-tag-button', 'edit-scenery-tag-button', 'edit-nature-tag-button')">#Food</button>
+                    <button id="edit-nature-tag-button" class="tags-button" onclick="editSelectTag('Nature', event, 'edit-nature-tag-button', 'edit-scenery-tag-button', 'edit-food-tag-button')">#Nature</button>
+                </div>
+                <button type="button" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
+            </div>
+        </div>
+        <div id="create-a-post-popup-with-itinerary">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Share your itinerary!</b></h2>
+                <input type="text" name="post_title" id="itinerary-post-title" size="70" placeholder="Post title: " required><br>
+                <textarea name="post_description" id="itinerary-post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
+                <input type="hidden" name="itinerary_id" id="itinerary-id" value="">
+                <input type="text" name="itinerary_title" id="itinerary-title" size="77" value="" disabled><br>
+                <input type="text" name="itinerary_description" id="itinerary-description" size="77" value="" disabled><br>
+                <input type="hidden" name="itinerary_post_tag" id="itinerary-post-tag" value="">
+                <p>Suggested tags: (Optional)</p>
+                <div id="tags-button-container">
+                    <button id="itinerary-scenery-tag-button" class="tags-button" onclick="itinerarySelectTag('Scenery', event, 'itinerary-scenery-tag-button', 'itinerary-food-tag-button', 'itinerary-nature-tag-button')">#Scenery</button>
+                    <button id="itinerary-food-tag-button" class="tags-button" onclick="itinerarySelectTag('Food', event, 'itinerary-food-tag-button', 'itinerary-scenery-tag-button', 'itinerary-nature-tag-button')">#Food</button>
+                    <button id="itinerary-nature-tag-button" class="tags-button" onclick="itinerarySelectTag('Nature', event, 'itinerary-nature-tag-button', 'itinerary-scenery-tag-button', 'itinerary-food-tag-button')">#Nature</button>
+                </div>
+                <button type="button" name="addNewPostWithItinerary" id="post-it-button" onclick="submitPostWithItinerary()">Share it!</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

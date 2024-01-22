@@ -1,0 +1,44 @@
+{% extends "baseXNav.html" %}
+
+{% block tabTitle %}Error Occurred | Verdex{% endblock %}
+
+{% block head %}
+<style>
+    #content {
+        text-align: center;
+        margin-top: 100px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    #heading {
+        margin-top: 80px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="content">
+    <img src="/assets/logo?type=transparentColour" alt="logo" width="200">
+    <br>
+    <h1 id="heading">An Error Occurred</h1>
+    <br>
+    {% with messages = get_flashed_messages() %}  
+        {% if messages %}  
+            {% for message in messages %}
+                <h3>{{ message }}</h3>
+            {% endfor %}
+        {% elif error != None and error != '' %}
+            <h3>{{ error }}</h3>
+        {% else %}
+            <h3>No error message was provided.</h3>
+        {% endif %}
+    {% endwith %}
+    <br>
+    <h6>You have been re-directed to this page as an error occurred in your request. Please try again.</h6>
+    <br>
+    <br>
+    <a href="{{ originURL }}"><p>Go back to Verdex Home</p></a>
+    <br>
+    <script src="/assets/copyright"></script>
+</div>
+{% endblock %}

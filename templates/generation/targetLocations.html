@@ -1,0 +1,115 @@
+{% extends "baseNav.html" %}
+
+{% block title %}test{% endblock %}
+
+{% block head %}
+<style>
+    .container {
+        width: 80%;
+        margin: auto;
+        margin-top: 3%;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    .attractions-box {
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .attraction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: grab;
+    }
+
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .proceed-button {
+        float: right;
+    }
+
+    .cancel-button {
+        float: left;
+    }
+
+    #titleAndDescriptionBox {
+        visibility: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #titleAndDescriptionBox input, #titleAndDescriptionBox textarea {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>What do you want to see?</h1>
+    <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
+
+    <div id="targetAttractionsBox" class="attractions-box">
+        <h2>Target Attractions</h2>
+    </div>
+
+    <div id="popularAttractionsBox" class="attractions-box">
+        <h2>Popular Attractions</h2>
+        {% for location in popularLocations %}
+            <div id="{{ location.strip() }}" class="attraction-item">
+                <span>{{ location }}</span>
+                <button class="btn btn-outline-primary" onclick="move(this)">Add</button>
+            </div>
+        {% endfor %}
+    </div>
+    <button id="cancelButton" class="btn btn-outline-danger cancel-button" onclick="window.location.href='/'">Cancel</button>
+    <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
+
+    <div id="titleAndDescriptionBox">
+        <!-- <input type="text" id="titleInput" placeholder="Title">
+        <textarea id="descriptionInput" placeholder="Description" style="height: 80px;"></textarea> -->
+        <div class="mb-3">
+            <label for="titleInput" class="form-label">Title</label>
+            <input type="text" class="form-control" id="titleInput">
+        </div>
+        <div class="mb-3">
+            <label for="descriptionInput" class="form-label">Description</label>
+            <textarea class="form-control" id="descriptionInput" rows="3"></textarea>
+        </div>
+        <button id="proceedButton2" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
+    </div>
+
+    <script>
+        let attractions = document.getElementsByClassName("attraction-item");
+        let targetBox = document.getElementById("targetAttractionsBox");
+        let popularBox = document.getElementById("popularAttractionsBox");
+
+        function move(element) {
+            const attractionItem = element.parentNode;
+
+            if (attractionItem.parentNode.id == popularBox.id) {
+                targetBox.appendChild(attractionItem);
+                element.innerText = "Remove";
+            } else {
+                popularBox.appendChild(attractionItem);
+                element.innerText = "Add";
+            }
+        }
+    </script>
+    <script src="/assets/targetLocationsJS"></script>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+#content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#header ,#beforeItineraryLabel{
+    display:flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+}
+
+#tickIcon {
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+
+#completeItinerary {
+    margin: auto;
+    border: 2px solid green;
+    border-radius: 50px;
+    height: 500px;
+    width: 70%;
+}
+
+#completionFooter {
+    margin: auto;
+    margin-top: 20px;
+    width: 70%;
+}
+
+#share, #exit {
+    float: right;
+    text-align: center;
+    vertical-align: center;
+}
+
+.exitButton {
+    padding: 5px;
+    padding-top: 8px;
+    margin: 5px;
+    width: 70px;
+    border: 2px solid red;
+    border-radius: 30px;
+    background-color: white;
+    color: red;
+    cursor: pointer;
+    transition: 0.5s ease-out;
+}
+
+.shareForumButton {
+    padding: 5px;
+    padding-top: 8px;
+    margin: 5px;
+    width: 200px;
+    border: 2px solid green;
+    border-radius: 25px;
+    background-color: white;
+    color: green;
+    cursor: pointer;
+    transition: 0.5s ease-out;
+}
+
+.exitButton img, .shareForumButton img {
+    padding-top: 5px;
+}
+
+.shareForumButton:hover {
+    background-color: green;
+    color: white;
+    transition: 0.5s;
+}
+
+.exitButton:hover {
+    background-color: red;
+    color: white;
+    transition: 0.5s;
+}
