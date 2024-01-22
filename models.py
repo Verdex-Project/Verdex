@@ -340,7 +340,7 @@ Commands:
                     targetLogs = allLogs
                 elif userChoice[1] == ".filter":
                     if len(userChoice) < 3:
-                        print("Invalid log filter. Format: read <number of lines> .filter <keywords>")
+                        print("Invalid log filter. Format: read .filter <keywords>")
                         continue
                     else:
                         try:
@@ -372,6 +372,8 @@ Commands:
                             logCount = len(allLogs)
                         elif logCount <= 0:
                             raise Exception("Invalid log count. Must be a positive integer above 0 lower than or equal to the total number of logs.")
+                        
+                        targetLogs = allLogs[-logCount::]
                     except Exception as e:
                         print("LOGGER: Failed to read logs. Error: {}".format(e))
                         continue
