@@ -80,8 +80,16 @@
     <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
 
     <div id="titleAndDescriptionBox">
-        <input type="text" id="titleInput" placeholder="Title">
-        <textarea id="descriptionInput" placeholder="Description" style="height: 80px;"></textarea>
+        <!-- <input type="text" id="titleInput" placeholder="Title">
+        <textarea id="descriptionInput" placeholder="Description" style="height: 80px;"></textarea> -->
+        <div class="mb-3">
+            <label for="titleInput" class="form-label">Title</label>
+            <input type="text" class="form-control" id="titleInput">
+        </div>
+        <div class="mb-3">
+            <label for="descriptionInput" class="form-label">Description</label>
+            <textarea class="form-control" id="descriptionInput" rows="3"></textarea>
+        </div>
         <button id="proceedButton2" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
     </div>
 
@@ -89,32 +97,6 @@
         let attractions = document.getElementsByClassName("attraction-item");
         let targetBox = document.getElementById("targetAttractionsBox");
         let popularBox = document.getElementById("popularAttractionsBox");
-
-        // for (var attraction of attractions) {
-        //     attraction.addEventListener("dragstart", (e) => {
-        //         let selected = e.target;
-
-        //         popularBox.addEventListener("dragover", (e) => {
-        //             e.preventDefault();
-        //         });
-
-        //         popularBox.addEventListener("drop", (e) => {
-        //             popularBox.appendChild(selected);
-        //             switchButton(attraction.firstElementChild.nextElementSibling)
-        //             selected = null;
-        //         });
-
-        //         targetBox.addEventListener("dragover", (e) => {
-        //             e.preventDefault();
-        //         });
-
-        //         targetBox.addEventListener("drop", (e) => {
-        //             targetBox.appendChild(selected);
-        //             switchButton(attraction.firstElementChild.nextElementSibling)
-        //             selected = null;
-        //         });
-        //     })
-        // }
 
         function move(element) {
             const attractionItem = element.parentNode;

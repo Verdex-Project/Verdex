@@ -27,6 +27,8 @@ def deleteSession(accountID):
         del DI.data["accounts"][accountID]["tokenExpiry"]
     DI.save()
 
+    session.clear()
+
     return True
 
 def manageIDToken(checkIfAdmin=False):
@@ -43,7 +45,6 @@ def manageIDToken(checkIfAdmin=False):
             delta = datetime.datetime.strptime(DI.data["accounts"][accountID]["tokenExpiry"], Universal.systemWideStringDatetimeFormat) - datetime.datetime.now()
             if delta.total_seconds() < 0:
                 deleteSession(accountID)
-                del session["idToken"]
                 Logger.log("MANAGEIDTOKEN: Session expired for account with ID '{}'.".format(accountID))
                 return "ERROR: Your session has expired. Please sign in again."
             elif delta.total_seconds() < 600:
@@ -52,7 +53,6 @@ def manageIDToken(checkIfAdmin=False):
                 if isinstance(response, str):
                     # Refresh token is invalid, delete session entirely
                     deleteSession(accountID)
-                    del session["idToken"]
                     return "ERROR: Your session expired. Please sign in again."
                 
                 DI.data["accounts"][accountID]["idToken"] = response["idToken"]
