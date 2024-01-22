@@ -611,3 +611,7 @@ body {
 #itinerary-header, #itinerary-info {
     color: #427b44;
 }
+
+#comment {
+    list-style-type: none;
+}
