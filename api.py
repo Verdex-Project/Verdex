@@ -537,9 +537,16 @@ def like_post():
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
-        DI.save()
-        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        if targetAccountID not in DI.data["forum"][post_id]["users_who_liked"]:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
+            DI.data["forum"][post_id]["users_who_liked"].append(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        else:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) - 1)
+            DI.data["forum"][post_id]["users_who_liked"].remove(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
         
     return "ERROR: Post ID not found in system."
 
@@ -677,7 +684,7 @@ def submitPost():
         "post_description": post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
@@ -813,7 +820,7 @@ def submitPostWithItinerary():
         "post_description": itinerary_post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": itinerary_post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
