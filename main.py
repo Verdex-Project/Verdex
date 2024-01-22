@@ -3,8 +3,9 @@ from flask import Flask, request, render_template, redirect, url_for, flash, Blu
 from flask_cors import CORS
 from models import *
 from emailer import Emailer
-from dotenv import load_dotenv
 from analytics import Analytics
+from GMapsService import GoogleMapsService
+from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
@@ -26,6 +27,8 @@ def deleteSession(accountID):
         del DI.data["accounts"][accountID]["tokenExpiry"]
     DI.save()
 
+    session.clear()
+
     return True
 
 def manageIDToken(checkIfAdmin=False):
@@ -42,7 +45,6 @@ def manageIDToken(checkIfAdmin=False):
             delta = datetime.datetime.strptime(DI.data["accounts"][accountID]["tokenExpiry"], Universal.systemWideStringDatetimeFormat) - datetime.datetime.now()
             if delta.total_seconds() < 0:
                 deleteSession(accountID)
-                del session["idToken"]
                 Logger.log("MANAGEIDTOKEN: Session expired for account with ID '{}'.".format(accountID))
                 return "ERROR: Your session has expired. Please sign in again."
             elif delta.total_seconds() < 600:
@@ -51,7 +53,6 @@ def manageIDToken(checkIfAdmin=False):
                 if isinstance(response, str):
                     # Refresh token is invalid, delete session entirely
                     deleteSession(accountID)
-                    del session["idToken"]
                     return "ERROR: Your session expired. Please sign in again."
                 
                 DI.data["accounts"][accountID]["idToken"] = response["idToken"]
@@ -63,9 +64,9 @@ def manageIDToken(checkIfAdmin=False):
 
                 session["idToken"] = response["idToken"]
 
-                if checkIfAdmin:
-                    if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
-                        return "ERROR: Access forbidden due to insufficient permissions."
+            if checkIfAdmin:
+                if not ("admin" in DI.data["accounts"][accountID] and DI.data["accounts"][accountID]["admin"] == True):
+                    return "ERROR: Access forbidden due to insufficient permissions."
 
             return "SUCCESS: {}".format(accountID)
     
@@ -142,10 +143,14 @@ if __name__ == '__main__':
 
     ## Get Emailer to check context
     Emailer.checkContext()
+
+    ## Set up GoogleMapsService
+    GoogleMapsService.checkContext()
     
     ## Set up Analytics
     Analytics.setup()
     Analytics.load_metrics()
+    
     ## Set up Logger
     Logger.setup()
 

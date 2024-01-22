@@ -50,12 +50,13 @@ def loginAccount():
     DI.save()
 
     session["idToken"] = response["idToken"]
+    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
+        session["admin"] = True
 
-    return "SUCCESS: User logged in succesfully"
+    return "SUCCESS: User logged in succesfully."
 
 @apiBP.route("/api/createAccount", methods = ['POST'])
 def createAccount():
-
     check = checkHeaders(request.headers)
     if check != True:
         return check
@@ -140,6 +141,14 @@ def generateItinerary():
     if headersCheck != True:
         return headersCheck
     
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
+        return "ERROR: Admins cannot generate itineraries."
+    
     ## Check body
     if "targetLocations" not in request.json:
         return "ERROR: One or more required payload parameters not present."
@@ -156,6 +165,7 @@ def generateItinerary():
         "title": request.json["title"].strip(),
         "description": request.json["description"].strip(),
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+        "associatedAccountID": targetAccountID,
         "days": {}
     }
 
@@ -169,15 +179,89 @@ def generateItinerary():
 
     firstDayActivities = allActivities[:6]
     secondDayActivities = allActivities[6:]
-    for day in range(1, 3):
-        newItinerary["days"][str(day)] = {
-            "activities": {}
-        }
 
-        for activityIndex in range(len((firstDayActivities if day == 1 else secondDayActivities))):
-            newItinerary["days"][str(day)]["activities"][str(activityIndex)] = {
-                "name": (firstDayActivities if day == 1 else secondDayActivities)[activityIndex]
+    ## DEBUG PHASE ONLY
+    newItinerary["days"] = {
+        "1" : {
+            "date" : "2024-01-01",
+            "activities" : {
+                "0" : {
+                    "name" : "Marina Bay Sands",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
+                    "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
+                    "startTime" : "0800",
+                    "endTime" : "1000"
+                },
+                "1" : {
+                    "name" : "Universal Studios Singapore",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
+                    "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
+                    "startTime" : "1000", 
+                    "endTime" : "1800"
+                },
+                "2" : {
+                    "name" : "Sentosa",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
+                    "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
+                    "startTime" : "1800",
+                    "endTime" : "2200"
+                }
             }
+        },
+        "2" : {
+            "date" : "2024-01-02",
+            "activities" : {
+                "0" : {
+                    "name" : "SEA Aquarium",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
+                    "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
+                    "startTime" : "0800",
+                    "endTime" : "1200"
+                },
+                "1" : {
+                    "name" : "Botanical Gardens",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
+                    "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
+                    "startTime" : "1200",
+                    "endTime" : "1600"
+                },
+                "2" : {
+                    "name" : "Orchard Raod",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
+                    "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
+                    "startTime" : "1600",
+                    "endTime" : "2200"
+                }
+            }
+        },
+        "3" : {
+            "date" : "2024-01-03",
+            "activities" : {
+                "0" : {
+                    "name" : "Gardens By The Bay",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
+                    "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
+                    "startTime" : "1000",
+                    "endTime" : "1800"
+                },
+                "1" : {
+                    "name" : "Chinatown",
+                    "location" : "Singapore",
+                    "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
+                    "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
+                    "startTime" : "1800",
+                    "endTime" : "2100"
+                }
+            }
+        }
+    }
     
     ## Save itinerary
     DI.data["itineraries"][newItinerary["id"]] = newItinerary
@@ -252,7 +336,6 @@ def editEmail():
     
     ## Nullify session
     deleteSession(targetAccountID)
-    del session["idToken"]
 
     altText = f"""
     Dear {username},
@@ -385,7 +468,6 @@ def changePassword():
     if isinstance(loginResponse, str) and loginResponse.startswith("ERROR"):
         Logger.log("ACCOUNTS CHANGEPASWORD ERROR: Auto login failed; response: {}".format(loginResponse))
         deleteSession(targetAccountID)
-        del session[targetAccountID]
         return "ERROR: Change password auto login failed."
     else:
         DI.data["accounts"][targetAccountID]["idToken"] = loginResponse["idToken"]
@@ -398,17 +480,16 @@ def changePassword():
 
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    check = checkHeaders(request.headers)
-    if check != True:
-        return check
     
     deleteSession(targetAccountID)
-    del session['idToken']
 
     return "SUCCESS: User logged out."
 
@@ -423,19 +504,19 @@ def deleteIdentity():
     if check != True:
         return check
     
+    response = FireAuth.deleteAccount(session['idToken'])
+    if response != True:
+        Logger.log("API DELETEIDENTITY ERROR: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
+        return "ERROR: Something went wrong. Please try again."
+    else:
+        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
+    
     ## Delete account from DI
     del DI.data["accounts"][targetAccountID]
     DI.save()
     Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
 
-    response = FireAuth.deleteAccount(session['idToken'])
-    if response != True:
-        Logger.log("API DELETEIDENTITY: Failed to delete account with ID '{}' from FireAuth; error response: {}".format(targetAccountID, response))
-        return "ERROR: Something went wrong. Please try again."
-    else:
-        Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
-
-    del session['idToken']
+    session.clear()
 
     return "SUCCESS: Account deleted successfully."
 
@@ -767,9 +848,6 @@ def editActivity():
     endTime = request.json["newEndTime"]
     location = request.json["newLocation"]
     name = request.json["newName"]
-    
-
-    print(request.json)
 
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -867,8 +945,42 @@ def addNewActivity():
     DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
     DI.save()
 
-    print(DI.data["itineraries"][itineraryID]["days"][day]["activities"])
-
     return "SUCCESS: New activity is added successfully"
 
+@apiBP.route('/api/deleteActivity', methods=['POST'])
+def deleteActivity():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    day = request.json["day"]
+    itineraryID = request.json['itineraryID']
+    activityId = request.json["activityId"]
 
+    if 'day' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'activityId' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
+    DI.save()
+    
+    return "SUCCESS: Activity is deleted."
+
+@apiBP.route('/api/deleteItinerary', methods=['POST'])
+def deleteItinerary():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    itineraryID = request.json['itineraryID']
+
+    if 'itineraryID' not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+
+    del DI.data["itineraries"][itineraryID]
+    DI.save()
+    
+    return "SUCCESS: Itinerarty is deleted."
