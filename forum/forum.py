@@ -5,15 +5,15 @@ import datetime
 
 forumBP = Blueprint("forum", __name__)
 
-global targetAccountID
-targetAccountID = ""
-
 @forumBP.route('/verdextalks')
 def verdextalks():
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
-    targetAccountID = authCheck[len("SUCCESS: ")::] 
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
+        return redirect(url_for("admin.admin"))
 
     if "forumBanned" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["forumBanned"] == True:
         return redirect(url_for("unauthorised", error="Access Denied. You have been banned from the forum."))
