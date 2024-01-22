@@ -2,7 +2,6 @@
     {% block title %}VerdexTalks{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/assets/forumJS"></script>
 {% endblock %}
 
@@ -26,46 +25,72 @@
                 </div>
                 <div class="text-container">
                     <h3 class="header">Create a post</h3><br>
-                    <p class="text">Share your memories with friends</p>
+                    <p class="text">Share your memories with friends!</p>
                 </div>
             </div>
             <div class="create-a-post-container">
                 <h3 class="recent-itineraries-header">What's on your mind?</h3><br>
                 <div id="recent-itineraries-container">
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Trip to Sentosa')">
-                        <img src="static/Images/Sentosa darkened.jpg" alt="Sentosa">
-                        <span>Sentosa</span>
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Nature Tapestry: Exploring the Green Gems of Singapore')">
+                        <img src="static/Images/Nature.png" alt="Nature">
+                        <span>Nature</span>
                     </button><br>
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Islands')">
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Singapore Hidden Isles: A Journey into the Mini Islands')">    
                         <img src="static/Images/SG Islands darkened.jpg" alt="Singapore Islands">
-                        <span>Singapore Islands</span>
+                        <span>Singapore's Islands</span>
                     </button><br>
-                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Food Galore')">
+                    <button class="recent-itineraries-buttons" onclick="itineraryShortcutButtonPopup('Culinary Chronicles: A Gastronomic Expedition on Singaporean Delicacies')">
                         <img src="static/Images/Food Galore darkened.jpg" alt="Food Galore">
-                        <span>Food Galore</span>
+                        <span>Food</span>
                     </button><br>
                 </div>
             </div>
+            <div class="generated-itineraries-container">
+                <h3 class="generated-itineraries-header">Share your recently generated itineraries!</h3>
+                {% for itinerary_id, itinerary_data in itineraryInfoJson.items() %}
+                    {% if targetAccountID == itinerary_data.associatedAccountID %}
+                        <div class="generated-itineraries" onclick="createPostPopupWithItinerary('{{ itinerary_id }}', '{{ itinerary_data.title }}', '{{ itinerary_data.description }}')">
+                            <h3 class="generated-itineraries-title">{{ itinerary_data.title }}</h3>
+                            <p class="generated-itineraries-description">{{ itinerary_data.description }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
             <div class="post-section-container">
                 {% if postsInfoJson.items()|length == 0 %}
-                    <h4 id="no-posts-header">It's quiet here...</h4>
+                    <div class="no-posts-here-container">
+                        <img src="static/Images/findingDuck.jpg" alt="No posts yet" id="findingDuck" width="100" height="100">
+                        <h4 id="no-posts-header">It's quiet here...</h4><br>
+                        <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
+                    </div>
                 {% endif %}
-                {% for post_username, post_data in postsInfoJson.items() %}
-                    <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }}">
+                {% for post_username, post_data in postsInfoJson.items()|reverse %}
+                <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }} {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}user-post{% endif %}">
                         <div class="post-content">
                             <div class="nameAndTagHeader">
-                                <h3 class="name-of-user-who-shared-post-header">{{ post_data.user_names }} shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
+                                <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
                                 {% if post_data.tag != "" %}
                                     <h4 class="tag-display">#{{ post_data.tag }}</h4>
                                 {% endif %}
                             </div>
                             <p class="post-description">{{ post_data.post_description }}</p>
+                            {% if post_data.itineraries %}
+                                <h5 id="itinerary-header">Check out my itinerary!</h5>
+                                {% for itinerary_id, itinerary_data in post_data.itineraries.items() %}
+                                    <div class="itineraryDiv" data-itinerary-id="{{ itinerary_id }}">
+                                        <p id="itinerary-info"><strong>{{ itinerary_data.itinerary_title }}</strong></p>
+                                        <p id="itinerary-info">{{ itinerary_data.itinerary_description }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                             {% if post_data.comments != {} %}
                                 <h5 id="comments-header">Comments: </h5><br>
                                 {% for comment_id, comment_text in post_data.comments.items() %}
                                     <div class="commentDiv" data-comment-id="{{ comment_id }}">
                                         <li id="comment">{{ comment_text }}</li>
-                                        <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split("_")[2] %}
+                                            <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             {% endif %}
@@ -74,11 +99,15 @@
                             <div class="post-reaction-buttons-container">
                                 <ul class="list-of-reaction-buttons">
                                     <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
-                                    <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                    {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                    {% endif %}
                                     <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
                                 </ul>
                             </div>
-                            <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                            {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
+                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -88,7 +117,6 @@
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
                 <h2 id="popup-header"><b>Create A Post!</b></h2>
-                <input type="text" name="user_names" id="user_names" size="50" placeholder="Name(s): " required><br>
                 <input type="text" name="post_title" id="post-title" size="70" placeholder="Title: " required><br>
                 <textarea name="post_description" id="post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
                 <input type="hidden" name="post_tag" id="post-tag" value="">
@@ -113,7 +141,6 @@
             <div id="popup-content">
                 <button id="close-popup-button" onclick="return closeEditPopup()"><span>&#x274C;</span> Discard changes</button>
                 <h2 id="popup-header"><b>Edit post</b></h2>
-                <input type="text" name="edit_user_names" id="edit_user_names" size="50" required placeholder="Enter new name(s): "><br>
                 <input type="text" name="edit_post_title" id="edit-post-title" size="70" required placeholder="Enter new title: "><br>
                 <textarea name="edit_post_description" id="edit-post-description" rows="5" cols="80" required placeholder="Enter new description: "></textarea><br>
                 <input type="hidden" name="edit_post_tag" id="edit-post-tag" value="">
@@ -124,6 +151,25 @@
                     <button id="edit-nature-tag-button" class="tags-button" onclick="editSelectTag('Nature', event, 'edit-nature-tag-button', 'edit-scenery-tag-button', 'edit-food-tag-button')">#Nature</button>
                 </div>
                 <button type="button" name="editPost" id="post-it-button" onclick="submitEdit()">Confirm edits</button>
+            </div>
+        </div>
+        <div id="create-a-post-popup-with-itinerary">
+            <div id="popup-content">
+                <button id="close-popup-button" onclick="return closeCreatePopup()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Share your itinerary!</b></h2>
+                <input type="text" name="post_title" id="itinerary-post-title" size="70" placeholder="Post title: " required><br>
+                <textarea name="post_description" id="itinerary-post-description" rows="5" cols="80" placeholder="Write your post description here" required></textarea><br>
+                <input type="hidden" name="itinerary_id" id="itinerary-id" value="">
+                <input type="text" name="itinerary_title" id="itinerary-title" size="77" value="" disabled><br>
+                <input type="text" name="itinerary_description" id="itinerary-description" size="77" value="" disabled><br>
+                <input type="hidden" name="itinerary_post_tag" id="itinerary-post-tag" value="">
+                <p>Suggested tags: (Optional)</p>
+                <div id="tags-button-container">
+                    <button id="itinerary-scenery-tag-button" class="tags-button" onclick="itinerarySelectTag('Scenery', event, 'itinerary-scenery-tag-button', 'itinerary-food-tag-button', 'itinerary-nature-tag-button')">#Scenery</button>
+                    <button id="itinerary-food-tag-button" class="tags-button" onclick="itinerarySelectTag('Food', event, 'itinerary-food-tag-button', 'itinerary-scenery-tag-button', 'itinerary-nature-tag-button')">#Food</button>
+                    <button id="itinerary-nature-tag-button" class="tags-button" onclick="itinerarySelectTag('Nature', event, 'itinerary-nature-tag-button', 'itinerary-scenery-tag-button', 'itinerary-food-tag-button')">#Nature</button>
+                </div>
+                <button type="button" name="addNewPostWithItinerary" id="post-it-button" onclick="submitPostWithItinerary()">Share it!</button>
             </div>
         </div>
     </div>
