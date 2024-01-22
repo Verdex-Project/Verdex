@@ -595,6 +595,36 @@ class FireAuth:
             return link
         except Exception as e:
             return "ERROR: Failed to generate email verification link; error response: {}".format(e)
+        
+    @staticmethod
+    def generatePasswordResetLink(email):
+        '''Returns a password reset link upon successful generation.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.generatePasswordResetLink(email="test@example.com")
+        if "ERROR" in response:
+            print(response)
+        else:
+            print("Password reset link generated! Link: " + response)
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email) == None:
+            return "ERROR: Invalid email address."
+
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Generate password reset link requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            passwordResetLink = adminAuth.generate_password_reset_link(email)
+            return passwordResetLink
+        except Exception as e:
+            return "ERROR: Failed to generate password reset link; error response: {}".format(e)
     
     @staticmethod
     def updateEmailVerifiedStatus(fireAuthID, newStatus: bool):
