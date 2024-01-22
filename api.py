@@ -144,6 +144,9 @@ def generateItinerary():
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
+        return "ERROR: Admins cannot generate itineraries."
     
     ## Check body
     if "targetLocations" not in request.json:
