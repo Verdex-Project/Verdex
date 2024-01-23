@@ -419,3 +419,32 @@ function itinerarySelectTag(tag, event, buttonToEnable, firstButtonToDisable, se
     event.preventDefault();
     event.stopPropagation();
 }
+
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Check if dark mode is currently active
+    const isDarkMode = body.classList.contains('dark-mode');
+
+    // Store the current dark mode state in localStorage
+    localStorage.setItem('darkMode', isDarkMode);
+
+    // Update the toggle button state
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.checked = isDarkMode;
+}
+
+// Check if dark mode was enabled before (on page load)
+document.addEventListener('DOMContentLoaded', () => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+
+    // If dark mode was enabled before, apply it on page load
+    if (savedDarkMode === 'true') {
+        document.body.classList.add('dark-mode');
+
+        // Update the toggle button state
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.checked = true;
+    }
+});

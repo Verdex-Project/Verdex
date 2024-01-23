@@ -19,6 +19,10 @@
             </div>
         </div>
         <div class="natural-flow-content">
+            <div class="dark-mode-toggle top-right" onclick="toggleDarkMode()" id="toggleButton">
+                <span class="dark-mode-text">Dark Mode:</span>
+                <input class="toggle" type="checkbox" id="darkModeToggle" />
+            </div>
             <div class="create-a-post-button" onclick="createPostPopup()">
                 <div id="plus-icon-container">
                     <span class="plus-icon">+</span>
@@ -59,7 +63,7 @@
             <div class="post-section-container">
                 {% if postsInfoJson.items()|length == 0 %}
                     <div class="no-posts-here-container">
-                        <img src="static/Images/findingDuck.jpg" alt="No posts yet" id="findingDuck" width="100" height="100">
+                        <img src="static/Images/findingDuck copy.png" alt="No posts yet" id="findingDuck" width="100" height="100">
                         <h4 id="no-posts-header">It's quiet here...</h4><br>
                         <h5 id="no-posts-header">No posts yet? Be the first to share your memories with friends!</h5>
                     </div>
