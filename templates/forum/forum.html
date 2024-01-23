@@ -91,8 +91,8 @@
                                 <h5 id="comments-header">Comments: </h5><br>
                                 {% for comment_id, comment_text in post_data.comments.items() %}
                                     <div class="commentDiv" data-comment-id="{{ comment_id }}">
-                                        <li id="comment">{{ comment_text }}</li>
-                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split("_")[2] %}
+                                        <li id="comment"><b>{{ comment_id.split("_")[2] }}: </b>{{ comment_text }}</li>
+                                        {% if targetAccountID == post_data.targetAccountIDOfPostAuthor or targetAccountID == comment_id.split("_")[1] %}
                                             <button id="delete-comment-button" onclick="deleteComment('{{ post_data.postDateTime }}', '{{ comment_id }}')">Delete comment</button>
                                         {% endif %}
                                     </div>

@@ -644,7 +644,7 @@ def deleteComment():
 
     if post_id in DI.data["forum"]:
         if comment_id in DI.data["forum"][post_id]["comments"]:
-            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[2]:
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[1]:
                 del DI.data["forum"][post_id]["comments"][comment_id]
                 DI.save()
                 return "SUCCESS: Comment was successfully removed from the post in the system."
@@ -718,7 +718,7 @@ def commentPost():
         if 'comments' not in DI.data["forum"][post_id]:
             DI.data["forum"][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID)] = comment_description
+        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID + "_" + DI.data["accounts"][targetAccountID]["username"])] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
     else:
@@ -820,7 +820,7 @@ def submitPostWithItinerary():
         "post_description": itinerary_post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": itinerary_post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},

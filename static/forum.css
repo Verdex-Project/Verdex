@@ -623,6 +623,10 @@ body {
     color: #427b44;
 }
 
+#comment {
+    list-style-type: none;
+}
+
 .toggle {
     -webkit-appearance: none;
     -moz-appearance: none;
