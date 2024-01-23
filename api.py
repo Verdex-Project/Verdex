@@ -18,13 +18,13 @@ def checkHeaders(headers):
 
     return True
 
-@apiBP.route('/api/emailResetKey', methods=['POST'])
-def emailResetKey():
+@apiBP.route('/api/sendPasswordResetKey', methods=['POST'])
+def sendPasswordResetKey():
     check = checkHeaders(request.headers)
     if check != True:
         return check
     
-    if "email" not in request.json:
+    if "usernameOrEmail" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     
     ## Check if email / username exists
@@ -33,15 +33,44 @@ def emailResetKey():
     for accountID in DI.data["accounts"]:
         if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
             email = usernameOrEmail
+            username = DI.data["accounts"][targetAccountID]["username"]
             break
         elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
             targetAccountID = accountID
             ## Retrieve email if input is username
             email = DI.data["accounts"][targetAccountID]["email"]
+            username = usernameOrEmail
             break
     if targetAccountID == None:
-        return "UERROR: No accounts associated with the username or email."
+        return "UERROR: Account doesnt exist."
     
+    passwordResetKey = Analytics.generateRandomID(customLength=6)
+    DI.data["accounts"][targetAccountID]["passwordResetKey"] = passwordResetKey
+    DI.save()
+
+    altText = f"""
+    Dear {username},
+
+    We received a request to recover your account. To proceed, please use the following reset key: 
+    {passwordResetKey}
+
+    If you did not request this, please ignore this email.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/forgetCredentialsEmail.html",
+        username = username,
+        resetKey = passwordResetKey,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email, "Verdex Account Recovery", altText, html)
+    
+    return "SUCCESS: Password reset key sent."
 
 
 
