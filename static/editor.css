@@ -136,7 +136,7 @@
     padding-left: 50px;
 }
 
-#activityBox, #transportBox, #addExtra {
+#activityBox, #transportBox {
     width: 90%;
     margin: auto;
 }
@@ -330,7 +330,8 @@
 }
 
 #addExtra {
-    margin: auto;
+    margin-left: auto;   
+    margin-right:auto;
     text-align: center;
     transition: 0.5s ease-out;
 }
@@ -341,12 +342,11 @@
     border: none;
     color: green;
     transition: 0.5s ease-out;
-    font-size: 40px;
+    font-size: 30px;
+    height: 35px;
 }
 
 .addActivityButton:hover {
-    padding: 2px 2px 2px 2px;
-    font-size: 50px;
     color: rgb(0, 210, 0);
     transition: 0.5s;
 }

@@ -272,19 +272,10 @@
                         </div>
                     </div>
 
-                    <div id="addExtra">
-                        <button type="button" class="addActivityButton" id="addActivityButton" 
-                        onclick="addNewActivity('{{ activityId }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['lat'] }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['long'] }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
-                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">+</button>
-                    </div>
+                    
                 {% endif %}
             {% endfor %}
+ 
         </div>
 
         <div id="activityPanelFooter"> <!--Footer-->
@@ -292,6 +283,22 @@
                 <button id="deleteItineraryButton" onclick="deleteItinerary()">
                     <h5>Delete Itinerary</h5>
                 </button>
+            </div>
+
+            <div id="addExtra"> 
+                {% for activityId in activityCountList %}
+                    {% if loop.last %} 
+                        <button type="button" class="addActivityButton" id="addActivityButton" 
+                            onclick="addNewActivity('{{ activityId }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['lat'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['long'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">+</button>
+                    {% endif %}
+                {% endfor %}
             </div>
 
             <div id="saveItinerary">
