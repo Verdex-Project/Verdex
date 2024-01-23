@@ -32,47 +32,48 @@ def sendPasswordResetKey():
     targetAccountID = None
     for accountID in DI.data["accounts"]:
         if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
-            email = usernameOrEmail
-            username = DI.data["accounts"][targetAccountID]["username"]
+            targetAccountID = accountID
             break
         elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
             targetAccountID = accountID
-            ## Retrieve email if input is username
-            email = DI.data["accounts"][targetAccountID]["email"]
-            username = usernameOrEmail
             break
     if targetAccountID == None:
         return "UERROR: Account doesnt exist."
     
-    passwordResetKey = Analytics.generateRandomID(customLength=6)
-    DI.data["accounts"][targetAccountID]["passwordResetKey"] = passwordResetKey
+    ## TODO
+    resetKeyTime = "%Y-%m-%dT%H:%M:%S"
+    resetKeyValue = Analytics.generateRandomID(customLength=6)
+    resetKey = f"{resetKeyTime}-{resetKeyValue}"
+    DI.data["accounts"][targetAccountID]["resetKey"] = resetKey
     DI.save()
 
     altText = f"""
-    Dear {username},
+    Dear {DI.data["accounts"][targetAccountID]["username"]},
 
     We received a request to recover your account. To proceed, please use the following reset key: 
-    {passwordResetKey}
+    {resetKeyValue}
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
 
     html = render_template(
         "emails/forgetCredentialsEmail.html",
-        username = username,
-        resetKey = passwordResetKey,
+        username = DI.data["accounts"][targetAccountID]["username"],
+        resetKey = resetKeyValue,
         copyright = Universal.copyright
     )
 
-    Emailer.sendEmail(email, "Verdex Account Recovery", altText, html)
+    Emailer.sendEmail(DI.data["accounts"][targetAccountID]["email"], "Verdex Account Recovery", altText, html)
     
     return "SUCCESS: Password reset key sent."
 
-
+@apiBP.route('/api/checkResetKey', methods=['POST'])
+def checkResetKey():
+    pass
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
@@ -172,7 +173,7 @@ def createAccount():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -401,7 +402,7 @@ def editEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -453,7 +454,7 @@ def resendEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
