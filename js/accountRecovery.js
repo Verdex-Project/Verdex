@@ -34,6 +34,7 @@ function sendPasswordResetKey() {
                         usernameMsg.style.color = 'green'
                         usernameMsg.innerText = response.data.substring("SUCCESS: ".length)
                         reset.style.visibility = 'visible'
+                        usernameOrEmail.disabled = true
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")
                         console.log("Unknown response received: " + response.data)
@@ -71,6 +72,7 @@ function passwordReset() {
     var resetKey = document.getElementById("resetKey")
     var newPassword = document.getElementById("newPassword")
     var cfmPassword = document.getElementById("cfmPassword")
+    const usernameOrEmail = document.getElementById("usernameOrEmail")
     const resetPasswordMsg = document.getElementById("resetPasswordMsg")
     const resetPasswordBtn = document.getElementById("resetPasswordBtn")
 
@@ -94,8 +96,9 @@ function passwordReset() {
         },
         data: {
             "resetKeyValue": resetKey.value,
-            "newPassword": newPassword.value.trim(),
-            "cfmPassword": cfmPassword.value.trim()
+            "newPassword": newPassword.value,
+            "cfmPassword": cfmPassword.value,
+            "usernameOrEmail": usernameOrEmail.value
         }
     }).then(response => {
         if (response.status == 200) {
