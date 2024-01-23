@@ -1,12 +1,13 @@
 function emailResetKey() {
-    var emailInput = document.getElementById("emailInput");
-    const emailMsg = document.getElementById("emailMsg");
+    var usernameOrEmail = document.getElementById("usernameOrEmail");
+    const usernameMsg = document.getElementById("usernameMsg");
     const emailResetKeyBtn = document.getElementById("emailResetKeyBtn");
 
-    emailMsg.style.visibility = 'visible'
+    usernameMsg.style.visibility = 'visible'
 
-    if (!emailInput.value || emailInput.value == "") {
-        changePasswordMsg.innerHTML = "Please enter your email."
+    if (!usernameOrEmail.value || usernameOrEmail.value == "") {
+        usernameMsg.style.color = 'red'
+        usernameMsg.innerHTML = "Please enter your email."
         return
     }
 
@@ -21,7 +22,7 @@ function emailResetKey() {
             'VerdexAPIKey': '\{{ API_KEY }}'
         },
         data: {
-            "email": emailInput.value
+            "usernameOrEmail": usernameOrEmail.value,
         }
     }).then(response => {})
 }

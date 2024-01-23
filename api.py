@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -20,7 +20,30 @@ def checkHeaders(headers):
 
 @apiBP.route('/api/emailResetKey', methods=['POST'])
 def emailResetKey():
-    pass
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "email" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    ## Check if email / username exists
+    usernameOrEmail = request.json["usernameOrEmail"]
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
+            email = usernameOrEmail
+            break
+        elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
+            targetAccountID = accountID
+            ## Retrieve email if input is username
+            email = DI.data["accounts"][targetAccountID]["email"]
+            break
+    if targetAccountID == None:
+        return "UERROR: No accounts associated with the username or email."
+    
+
+
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
