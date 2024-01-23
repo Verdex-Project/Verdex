@@ -20,12 +20,14 @@
     margin-left: 5px;
 }
 
-#emailMsg {
+#usernameMsg,
+#resetPasswordMsg {
     margin-left: 5px;
     margin-top: 5px;
 }
 
 #reset {
+    margin-top: 10px;
     visibility: hidden;
 }
 

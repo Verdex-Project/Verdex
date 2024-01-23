@@ -41,7 +41,7 @@ def sendPasswordResetKey():
         return "UERROR: Account doesnt exist."
     
     ## TODO
-    resetKeyTime = "%Y-%m-%dT%H:%M:%S"
+    resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     resetKeyValue = Analytics.generateRandomID(customLength=6)
     resetKey = f"{resetKeyTime}-{resetKeyValue}"
     DI.data["accounts"][targetAccountID]["resetKey"] = resetKey
@@ -69,11 +69,13 @@ def sendPasswordResetKey():
 
     Emailer.sendEmail(DI.data["accounts"][targetAccountID]["email"], "Verdex Account Recovery", altText, html)
     
-    return "SUCCESS: Password reset key sent."
+    return "SUCCESS: Password reset key sent to {}".format(DI.data["accounts"][targetAccountID]["email"])
 
-@apiBP.route('/api/checkResetKey', methods=['POST'])
-def checkResetKey():
-    pass
+@apiBP.route('/api/passwordReset', methods=['POST'])
+def passwordReset():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
