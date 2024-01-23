@@ -529,11 +529,19 @@ body {
     background-color: white;
 }
 
-.filter-posts-header, .recent-itineraries-header, .generated-itineraries-header {
+.filter-posts-header, .recent-itineraries-header {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
     margin-top:20px;
+    margin-bottom: 0;
+    color: #427b44;
+}
+
+.generated-itineraries-header {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
     margin-bottom: 0;
     color: #427b44;
 }
@@ -689,11 +697,6 @@ body {
     transition: 0.2s ease;
 }
 
-.dark-mode h3, .dark-mode p, .dark-mode h4 { 
-    color: #323437;
-    transition: 0.2s ease;
-}
-
 .dark-mode .filter-buttons {
     background-color: #DBB941; 
     color: #323437;
@@ -703,4 +706,16 @@ body {
 .dark-mode #no-posts-header { 
     color: #DBB941;
     transition: 0.2s ease;
+}
+
+.dark-mode .generated-itineraries-container {
+    border: 3px solid #DBB941;
+}
+
+.dark-mode #individual-posts {
+    box-shadow: 8px 8px 12px #DBB941;
+}
+
+.dark-mode .header, .dark-mode .text {
+    color: #323437;
 }
