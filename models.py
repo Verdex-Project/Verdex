@@ -9,6 +9,13 @@ def fileContent(filePath, passAPIKey=False):
             f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
         return f_content
 
+def customRenderTemplate(filePath, **kwargs):
+    with open(filePath, 'r') as f:
+        f_content = f.read()
+        for key in kwargs:
+            f_content = f_content.replace("{{ " + key + " }}", kwargs[key])
+        return f_content
+
 # DatabaseInterface class
 class DI:
     '''## INTRO

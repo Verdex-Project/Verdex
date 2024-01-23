@@ -1,8 +1,9 @@
 import re, datetime, sys, copy
-from models import DI, Logger, Universal, Encryption
+from models import DI, Logger, Universal, Encryption, fileContent, customRenderTemplate
 from addons import FireConn, FireAuth
 from emailer import Emailer
 from getpass import getpass
+from flask import render_template
 print("Setting up .....")
 
 ## Set up FireConn
@@ -116,8 +117,23 @@ def createUser():
 
     print()
     print("Sending welcome email to admin...")
-    Emailer.sendEmail(email, 'Welcome to Verdex Admin', 'Dear recipients, you have an account that is recognised as a Verdex Admin. Please use your registered username and email to login into the Admin dashboard', '<h1>Dear User, you have an account that is recognised as a Verdex Admin. Please use your registered username and email to login into the Admin dashboard</h1>')
+    altText =f'''
+    Dear {DI.data['accounts'][accID]['name']},
 
+    Welcome to Verdex Family!
+
+    We are pleased to have you on board.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    '''
+    html = customRenderTemplate(
+        'templates/emails/createAdminAccountEmail.html'
+        , name=DI.data['accounts'][accID]['name']
+        , copyright = Universal.copyright
+        )
+    Emailer.sendEmail(email, 'Welcome to Verdex Admin!', altText, html)
     print()
     print("Admin account created successfully!")
 
@@ -140,11 +156,14 @@ def changeName(userName):
                     print("Name cannot be empty. Please try again.")
                     continue
                 break
-
+            print()
+            print('Changing name of the admin user on local database...')
             DI.data['accounts'][accountID]['name'] = newName
             DI.save()
 
             Logger.log("ADMINCONSOLE CHANGENAME: Changed name of admin user with username {}".format(userName), debugPrintExplicitDeny=True)
+            print()
+            print('Admin Account change name success')
             return
 
     print("Admin user with username {} not found.".format(userName))
@@ -165,12 +184,13 @@ def changePosition(userName):
                     print("Position cannot be empty. Please try again.")
                     continue
                 break
-
+            print()
+            print(f'Changing position of admin user...')
             DI.data['accounts'][accountID]['position'] = newPosition
             DI.save()
-
             Logger.log("ADMINCONSOLE CHANGEPOSITION: Changed position of admin user with username {}".format(userName), debugPrintExplicitDeny=True)
-
+            print()
+            print('Admin Account change position success')
             return
 
     print("Admin user with username {} not found.".format(userName))
@@ -185,11 +205,14 @@ def downgradeAdmin(userName):
             if not DI.data['accounts'][accountID]['admin']:
                 print("User with username {} is not an admin. Please try again.".format(userName))
                 return
-
+            print()
+            print('Downgrading Admin Account...')
             DI.data['accounts'][accountID]['admin'] = False
             DI.save()
 
             Logger.log("ADMINCONSOLE DOWNGRADEADMIN: Downgraded admin user with username {}".format(userName), debugPrintExplicitDeny=True)
+            print()
+            print('Admin Account successfully downgraded')
             return
 
     print("Admin user with username {} not found.".format(userName))
@@ -204,13 +227,19 @@ def deleteUser(userName):
             if not DI.data['accounts'][accountID]['admin']:
                 print("User with username {} is not an admin. Please try again.".format(userName))
                 return
-
+            print("Deleting admin account on Firebase Authentication...")
             response = FireAuth.deleteAccount(DI.data['accounts'][accountID]['fireAuthID'], admin=True)
             if isinstance(response, str):
                 Logger.log(f"ADMINCONSOLE DELETEUSER ERROR: Failed to delete user from Firebase Authentication. Response: {response}", debugPrintExplicitDeny=True)
                 print(f"Failed to delete user from Firebase Authentication. Response: {response}")
                 return
+            print()
+            print('Admin Account deleted successfully on Firebase Authentication...')
+            print()
+            print('Deleting admin account on local database...')
             del DI.data['accounts'][accountID]
+            print()
+            print('Admin Account deleted successfully on local database...')
             DI.save()
 
             Logger.log("ADMINCONSOLE DELETEUSER: Deleted admin user with username {}".format(userName), debugPrintExplicitDeny=True)
