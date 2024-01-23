@@ -16,6 +16,10 @@
     margin-right: auto;
 }
 
+#back {
+    margin-bottom: 20px;
+}
+
 .mb-3>label {
     margin-left: 5px;
 }

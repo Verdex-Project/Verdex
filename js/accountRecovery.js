@@ -139,3 +139,7 @@ function passwordReset() {
         resetPasswordBtn.innerText = "Reset Password"
     })
 }
+
+function backToLogin() {
+    location.href = `${origin}/account/login`
+}
