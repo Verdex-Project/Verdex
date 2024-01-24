@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary" >
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand mb-0 h1 mt-10" href="/admin">
             <img src="/assets/logo?type=icon" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -23,3 +23,12 @@
         </div>
     </div>
 </nav>
+<div class="sidenav">
+    <img src="/static/Images/user.png" alt="">
+    <p class="admin-name">{{ name }}</p>
+    <p class="admin-position">{{ position }}</p>
+    <a href="/admin">System Health</a>
+    <a href="/admin/user_management">User Management</a>
+    <a href="/admin/report">Reports Generation</a>
+    <a href="/admin/customer_support">Customer Support</a>
+</div>

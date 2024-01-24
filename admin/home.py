@@ -2,7 +2,24 @@ from flask import Blueprint,Flask, render_template, request, redirect, url_for, 
 import json, os, datetime
 from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken
 adminHomeBP = Blueprint("admin", __name__)
-
+@adminHomeBP.route('/test')
+def test():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    
+    targetAccount = DI.data["accounts"][targetAccountID]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
+    return render_template('test.html', name = name, position = position)
 @adminHomeBP.route('/admin')
 def admin():
     authCheck = manageIDToken(checkIfAdmin=True)
@@ -114,7 +131,17 @@ def banAccount(user_id):
             return redirect(url_for('admin.user_management'))
 
     return redirect(url_for('error', error='User not found'))
+
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/unban')
+def unbanAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['id'] == user_id:
+            DI.data['accounts'][accountID]['forumBanned'] = False
+            DI.save()
+            Logger.log(f'ADMIN BANACCOUNT: Account with ID {accountID} has been unbanned from Verdextalks')
+            return redirect(url_for('admin.user_management'))
         
+    return redirect(url_for('error', error='User not found'))
 @adminHomeBP.route('/admin/report')
 def report():
     authCheck = manageIDToken(checkIfAdmin=True)

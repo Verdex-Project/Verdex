@@ -58,38 +58,6 @@
 {% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="profile">
-            <img class='profile' src="/static/Images/user.png" alt="">
-            <span class="admin-name">{{ name }}</span>
-            <br>
-            <span class="admin-position">{{ position }}</span>
-        </div>
-        <ul>
-            <li>
-                <a href="/admin">
-                    <span class="item">System Health</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/user_management" >
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/report" class="active">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/customer_support">
-                    <span class="item">Customer Support</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
 <div class="content">
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>

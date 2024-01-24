@@ -4,6 +4,68 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<style>
+    .sidenav {
+    height: 100%;
+    width: 15%;
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    background-color: #f8f9f8;
+    overflow: hidden;
+    padding-top: 100px;
+}
+  
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: black;
+    display: block;
+    text-align: center;
+}
+  
+.sidenav a:hover {
+    color: black;
+    border-right: 2px solid black;
+}
+.sidenav a.active {
+    color: black;
+    border-right: 2px solid black;
+}
+.main {
+    margin-left: 160px; /* Same as the width of the sidenav */
+    font-size: 28px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+}
+  
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+.sidenav img{
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display:flex;
+      margin-left: auto;
+      margin-right: auto;
+}
+.sidenav p{
+      color: black;
+      text-align: center;
+}
+.admin-name{
+      margin-top:10px;
+      font-size:24px;
+      font-family: 'Open Sans', sans-serif;
+}
+.admin-position{
+      font-size:16px;
+      font-family: 'Open Sans', sans-serif;
+}
+</style>
 <script>
     function changeEmail(){
         let mail = prompt("Please enter the new email for this user")
@@ -24,6 +86,12 @@
             window.location.href = "/admin/user_profile/{{ user['id'] }}/ban" // is this the correct way of getting the id?
         }
     }
+    function unbanFromForum(){
+        confirmMessage = 'Are you sure you want to unban this account from VerdexTalks'
+        if (confirm(confirmMessage)===true){
+            window.location.href ="/admin/user_profile/{{ user['id'] }}/unban"
+        }
+    }
     function backToHome(){
         window.location.href = "/admin/user_management"
     }
@@ -31,39 +99,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="profile">
-            <img class='profile' src="/static/Images/user.png" alt="">
-            <span class="admin-name">{{ name }}</span>
-            <br>
-            <span class="admin-position">{{ position }}</span>
-        </div>
-        <ul>
-            <li>
-                <a href="/admin">
-                    <span class="item">System Health</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/user_management" class="active">
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/report">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/customer_support">
-                    <span class="item">Customer Support</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-<br>
+
 <button type="button" id="back-button" class="btn btn-outline-dark" onclick="backToHome()">Go back</button>
 <div class="user-container">
     <h1>User Profile</h1>
@@ -74,6 +110,7 @@
             <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
             <button class="btn btn-outline-secondary">Password Reset</button>
             <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
+            <button class="btn btn-outline-success" onclick ="unbanFromForum()">Unban from VerdexTalks</button>
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
         </div>
     </div>
