@@ -53,7 +53,6 @@ def editorDay(itineraryID, day):
 
     #generate routes for every activity and add to dictionary
     routes = {}
-    GoogleMapsService.checkContext()
     count = 0
     while count + 1 == len(locations):
         route = GoogleMapsService.generateRoute(locations[count], locations[count+1],"transit",dateTimeObjects[count])
