@@ -42,7 +42,7 @@ def sendPasswordResetKey():
     
     resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     resetKeyValue = Analytics.generateRandomID(customLength=6)
-    resetKey = f"{resetKeyTime}-{resetKeyValue}"
+    resetKey = f"{resetKeyTime}_{resetKeyValue}"
     DI.data["accounts"][targetAccountID]["resetKey"] = resetKey
     DI.save()
 
@@ -90,6 +90,7 @@ def passwordReset():
     cfmPassword = request.json["cfmPassword"].strip()
 
     ## Get user targetAccountID using usernameOrEmail
+    targetAccountID = None
     for accountID in DI.data["accounts"]:
         if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
             targetAccountID = accountID
@@ -97,32 +98,38 @@ def passwordReset():
         elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
             targetAccountID = accountID
             break
+    if targetAccountID == None:
+        return "UERROR: No such account with that email or username."
 
-    ## Check reset key
-    ## "resetKey": "2024-01-23T17:51:06-iowf2t"
-    key = DI.data["accounts"][targetAccountID]["resetKey"]
-    keySplit = key.rsplit('-', 1)
-    keyTimeStr, keyValue = keySplit
-
-    ## Check reset key value is valid
-    # keyTime = datetime.strptime(keyTimeStr, "%Y-%m-%dT%H:%M:%S")
-    # currentTime = datetime.now()
-    # if currentTime - keyTime > 900:
-    #     return "UERROR: Reset key has expired. Please refresh and try again."
+    ## Expire reset keys
+    expiredRequestingAccountsResetKey = False
+    for accountID in DI.data["accounts"]:
+        if "resetKey" in DI.data["accounts"][accountID]:
+            key = DI.data["accounts"][accountID]["resetKey"]
+            keySplit = key.split('_')
+            keyTimeStr = keySplit[0]
+            keyValue = keySplit[1]
+            ## Check reset key value is valid
+            delta = datetime.datetime.now() - datetime.datetime.strptime(keyTimeStr, "%Y-%m-%dT%H:%M:%S")
+            if delta.total_seconds() > 900:
+                del DI.data["accounts"][accountID]["resetKey"]
+                if accountID == targetAccountID:
+                    expiredRequestingAccountsResetKey = True
+    
+    if expiredRequestingAccountsResetKey:
+        return "UERROR: Reset key has expired. Please refresh and try again."
 
     ## Check if reset key value is correct
-    if request.json["resetKeyValue"] != keyValue:
-        return "UERROR: Invalid Reset Key"
+    if "resetKey" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Please request a password reset key first."
+    if request.json["resetKeyValue"] != DI.data["accounts"][targetAccountID]["resetKey"].split("_")[1]:
+        return "UERROR: Incorrect reset key."
 
     ## Password validation
     if newPassword != cfmPassword:
         return "UERROR: New and confirm password fields do not match."
     if len(newPassword) < 6:
         return "UERROR: Password must be at least 6 characters long."
-    
-    ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
-    if "password" not in DI.data["accounts"][targetAccountID]:
-        return "UERROR: Your password cannot be changed at this time. Please try again."
 
     ## Update password
     fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
@@ -133,6 +140,7 @@ def passwordReset():
     
     ### Update DI
     DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    del DI.data["accounts"][targetAccountID]["resetKey"]
     DI.save()
 
     return "SUCCESS: Password has been reset."
