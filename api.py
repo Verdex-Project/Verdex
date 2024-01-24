@@ -876,13 +876,13 @@ def editActivity():
     if not endTime.isnumeric():
         return "UERROR: End Time is not a numeric value"
 
-    if len(startTime) != 4:
+    if len(startTime) != 4 or int(startTime[:2]) < 25 or int(startTime[-2:]) <60 :
         return "UERROR: Start Time Format is not correct"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
     timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30  or int(endTime[:2]) < 25  or int(endTime[-2:]) <60 :
         return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
