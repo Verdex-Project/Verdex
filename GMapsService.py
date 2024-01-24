@@ -129,7 +129,7 @@ class GoogleMapsService:
             return "ERROR: Google Maps services are not enabled."
         
         if (not isinstance(startLocation, str)) or (not isinstance(endLocation, str)) or (not isinstance(mode, str)) or (not isinstance(departureTime, datetime.datetime)):
-            return "ERROR: Invalid start or end location. Both must be a string."
+            return "ERROR: Invalid start location, end location, commute mode or departure time provided. Start location, end location and commute mode must be of type String while departureTime must be a Python datetime object."
         elif mode not in ["driving", "walking", "bicycling", "transit", "flying"]:
             return "ERROR: Invalid directions mode."
         

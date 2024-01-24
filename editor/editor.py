@@ -27,6 +27,10 @@ def editorDay(itineraryID, day):
     if day not in DI.data["itineraries"][itineraryID]["days"]:
         return redirect(url_for("error",error="Day Not Found!"))
 
+    startLocations = []
+    endLocations= []
+    
+
     # activitiesInfo = []
     # for activity in DI.data["itineraries"]["days"][day]["activities"].values():
     #     name = activity.get('name')
@@ -125,19 +129,6 @@ def editorDay(itineraryID, day):
         activityCountList = activityCountList
         )
 
-    # if request.method == 'GET':
-    #     day_to_delete = request.args.get("deleteDayButton")
-    #     if day_to_delete in itinerary_data:
-    #         del itinerary_data[day_to_delete]
-    #     with open('templates/editor/itinerary.json', 'w') as file:
-    #         json.dump(itinerary_data, file, indent=4)
-
-# @editorPage.route('/editor/<day>', methods=['GET'])
-# def fetchItineraryData(day):
-#     day = request.form['day']
-#     if day not in itinerary_data:
-#         flash("ERROR: The day was not found.")
-#         return redirect(url_for('error'))
 
 
 
