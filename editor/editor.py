@@ -1,6 +1,8 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
 from main import DI, Universal
-import json, os, datetime
+import json, os, datetime, googlemaps
+from datetime import time, datetime
+from GMapsService import *
 
 editorPage = Blueprint("editorPageBP",__name__)
 
@@ -27,18 +29,47 @@ def editorDay(itineraryID, day):
     if day not in DI.data["itineraries"][itineraryID]["days"]:
         return redirect(url_for("error",error="Day Not Found!"))
 
-    startLocations = []
-    endLocations= []
-    
+    locations = []
+    #get all locations
+    endTimes = []
+    #get end times
+    activityDate =  DI.data["itineraries"][itineraryID]["days"][day]["date"]
+    #get day date
+    activities = DI.data["itineraries"][itineraryID]["days"][day]["activities"]
+    for i in activities:
+        locations.append(activities[i]["name"])
 
-    # activitiesInfo = []
-    # for activity in DI.data["itineraries"]["days"][day]["activities"].values():
-    #     name = activity.get('name')
-    #     location = activity.get('location')
-    #     imageURL = activity.get('imageURL')
-    #     startTime = activity.get('startTime')
-    #     endTime = activity.get('endTime')
-    #     activitiesInfo.append({"name": name, "location": location, "imageURL": imageURL, "startTime": startTime, "endTime": endTime})
+    for j in activities:
+        endTimes.append(activities[j]["endTime"])
+
+    #create date time object
+    dateTimeObjects = []
+    for time in endTimes:
+        formattedTime = time[:2] + ":" + time[2:]
+        combinedDatetimeStr = f"{activityDate} {formattedTime}"
+        dateObject = datetime.datetime.strptime(combinedDatetimeStr,"%Y-%m-%d %H:%M" )
+        dateObjectString = dateObject.strftime('%Y-%m-%d %X') 
+        dateTimeObjects.append(dateObjectString)
+
+    #generate routes for every activity and add to dictionary
+    routes = {}
+    GoogleMapsService.checkContext()
+    count = 0
+    while count + 1 == len(locations):
+        route = GoogleMapsService.generateRoute(locations[count], locations[count+1],"transit",dateTimeObjects[count])
+        routes[count] = route
+        count += 1
+    print(routes)
+
+    print(locations)
+    print(endTimes)
+    print(dateTimeObjects)
+
+    etaList = []
+    print(etaList)
+    for i in routes:
+        etaList.append(routes[i]['duration'])
+
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:
