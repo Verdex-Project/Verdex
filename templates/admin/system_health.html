@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}System Health{% endblock %}
 
 {% block head %}
@@ -8,4 +7,9 @@
 
 {% block body %}
 
+{% include "includes/_adminSidebar.html" %}
+
+<script>
+    document.getElementById("healthSidebarLink").style.color = "black"
+</script>
 {% endblock %}

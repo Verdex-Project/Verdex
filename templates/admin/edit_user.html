@@ -1,71 +1,11 @@
 {% extends "baseNav.html" %}
+{% extends "baseSidebar.html" %}
 
 {% block title %}Edit User{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
-<style>
-    .sidenav {
-    height: 100%;
-    width: 15%;
-    position: fixed;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    background-color: #f8f9f8;
-    overflow: hidden;
-    padding-top: 100px;
-}
-  
-.sidenav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 25px;
-    color: black;
-    display: block;
-    text-align: center;
-}
-  
-.sidenav a:hover {
-    color: black;
-    border-right: 2px solid black;
-}
-.sidenav a.active {
-    color: black;
-    border-right: 2px solid black;
-}
-.main {
-    margin-left: 160px; /* Same as the width of the sidenav */
-    font-size: 28px; /* Increased text to enable scrolling */
-    padding: 0px 10px;
-}
-  
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-}
-.sidenav img{
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display:flex;
-      margin-left: auto;
-      margin-right: auto;
-}
-.sidenav p{
-      color: black;
-      text-align: center;
-}
-.admin-name{
-      margin-top:10px;
-      font-size:24px;
-      font-family: 'Open Sans', sans-serif;
-}
-.admin-position{
-      font-size:16px;
-      font-family: 'Open Sans', sans-serif;
-}
-</style>
+
 <script>
     function changeEmail(){
         let mail = prompt("Please enter the new email for this user")
@@ -99,6 +39,7 @@
 {% endblock %}
 
 {% block body %}
+{% include "includes/_adminSidebar.html" %}
 
 <button type="button" id="back-button" class="btn btn-outline-dark" onclick="backToHome()">Go back</button>
 <div class="user-container">
@@ -115,4 +56,8 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("userSidebarLink").style.color = "black"
+</script>
 {% endblock %}

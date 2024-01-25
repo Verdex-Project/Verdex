@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}User Management{% endblock %}
 
 {% block head %}
@@ -7,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-
+{% include "includes/_adminSidebar.html" %}
 <div class="user-container">
     <h1>List of Users</h1>
     <h3>Email:</h3>
@@ -30,4 +29,7 @@
         {% endif %}
     </ol>
 </div>
+<script>
+    document.getElementById("userSidebarLink").style.color = "black"
+</script>
 {% endblock %}

@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}Reports{% endblock %}
 
 {% block head %}
@@ -58,6 +57,8 @@
 {% endblock %}
 
 {% block body %}
+{% include "includes/_adminSidebar.html" %}
+
 <div class="content">
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>
@@ -89,4 +90,7 @@
             {% endfor %}
     </div>
 </div>
+<script>
+    document.getElementById("reportSidebarLink").style.color = "black"
+</script>
 {% endblock %}
