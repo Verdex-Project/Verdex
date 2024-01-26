@@ -644,9 +644,9 @@ body {
     cursor: pointer;
     background-color: #707070;
     transition: background-color ease 0.3s;
-  }
+}
   
-  .toggle:before {
+.toggle:before {
     content: "on off";
     display: block;
     position: absolute;
@@ -667,17 +667,17 @@ body {
     white-space: nowrap;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
-  }
-  
-  .toggle:checked {
-    background-color: #4CD964;
-  }
-  
-  .toggle:checked:before {
-    left: 32px;
-  }
+}
 
-  .dark-mode-toggle {
+.toggle:checked {
+    background-color: #4CD964;
+}
+
+.toggle:checked:before {
+    left: 32px;
+}
+
+.dark-mode-toggle {
     position: absolute;
     display: flex;
     align-items: center;
@@ -722,7 +722,7 @@ body {
     box-shadow: 8px 8px 12px #DBB941;
 }
 
-.dark-mode .header, .dark-mode .text {
+.dark-mode .header, .dark-mode .text, .dark-mode .post-description {
     color: #323437;
 }
 
