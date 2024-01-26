@@ -450,6 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // If dark mode was enabled before, apply it on page load
     if (savedDarkMode === 'true') {
         document.body.classList.add('dark-mode');
+        document.getElementById('verdexNavbar').classList.add("bg-dark")
+        document.getElementById('verdexNavbar').setAttribute("data-bs-theme", "dark")
 
         // Update the toggle button state
         const darkModeToggle = document.getElementById('darkModeToggle');
