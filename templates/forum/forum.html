@@ -71,11 +71,12 @@
                 {% for post_username, post_data in postsInfoJson.items()|reverse %}
                 <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }} {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}user-post{% endif %}">
                         <div class="post-content">
+                            {% if post_data.tag != "" %}
+                                <h3 class="tag-display">#{{ post_data.tag }}</h3>
+                            {% endif %}
                             <div class="nameAndTagHeader">
                                 <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                                {% if post_data.tag != "" %}
-                                    <h4 class="tag-display">#{{ post_data.tag }}</h4>
-                                {% endif %}
+                                <button class="reaction-buttons" id="report-user-button" onclick="reportUser('{{ post_data.targetAccountIDOfPostAuthor }}')">Report User</button>
                             </div>
                             <p class="post-description">{{ post_data.post_description }}</p>
                             {% if post_data.itineraries %}
@@ -106,7 +107,7 @@
                                     {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
                                         <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
                                     {% endif %}
-                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
+                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li><br>
                                 </ul>
                             </div>
                             {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
@@ -139,6 +140,14 @@
                 <h2 id="popup-header"><b>Add your comment!</b></h2>
                 <textarea name="comment_description" id="comment_description" rows="5" cols="80" placeholder="Write your comment here" required></textarea><br>
                 <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
+            </div>
+        </div>
+        <div id="reason-for-reporting-user-popup">
+            <div id="report-reason-content">
+                <button id="close-popup-button" onclick="return closeReportPopup()()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Why should this user be reported?</b></h2>
+                <textarea name="report-reason" id="report-reason" rows="5" cols="80" placeholder="State your reason here" required></textarea><br>
+                <button type="button" name="submit-report" id="submit-report" onclick='submitReport()'>Submit report</button>
             </div>
         </div>
         <div id="edit-post-popup">

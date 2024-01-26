@@ -98,7 +98,8 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False,
         "admin": False,
-        "forumBanned": False
+        "forumBanned": False,
+        "reports": []
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -834,6 +835,34 @@ def submitPostWithItinerary():
     DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Itinerary was successfully shared to the forum."
+
+@apiBP.route('/api/submitReport', methods=['POST'])
+def submitReport():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "author_acc_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "report_reason" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    author_acc_id = request.json['author_acc_id']
+    report_reason = request.json['report_reason']
+
+    if author_acc_id in DI.data["accounts"]:
+        DI.data["accounts"][author_acc_id]["reports"].append(report_reason)
+        DI.save()
+        return "SUCCESS: Report was successfully submitted to the system."
+    else:
+        return "ERROR: User account ID not found in system."
+
+
 
 @apiBP.route("/api/editActivity", methods = ['POST'])
 def editActivity():

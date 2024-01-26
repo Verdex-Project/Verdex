@@ -1,5 +1,6 @@
 var commentedPostId = null
 var editPostId = null
+var authorAccID = null
 
 function createPostPopup() {
     document.getElementById("create-a-post-popup").style.display = "block";
@@ -448,3 +449,53 @@ document.addEventListener('DOMContentLoaded', () => {
         darkModeToggle.checked = true;
     }
 });
+
+function reportUser(passedInID){
+    document.getElementById('reason-for-reporting-user-popup').style.display = "block"
+    authorAccID = passedInID
+}
+
+function submitReport(){
+    const reportReason = document.getElementById('report-reason').value
+    if (reportReason.trim() === "") {
+        alert("Please enter a valid reason. Empty inputs are not accepted.");
+        return;
+    }
+    axios({
+        method: 'post',
+        url: `/api/submitReport`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "author_acc_id": authorAccID,
+            "report_reason": reportReason
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while reporting user. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        alert("Report submitted. We will review it and ban the user if necessary.")
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error reporting user:', error);
+    });
+}
+
+function closeReportPopup(){
+    closeReportConfirmation = confirm("Are you sure you'd like to discard all changes?");
+    if (closeReportConfirmation == true) {
+        window.location.reload();
+    }
+}
