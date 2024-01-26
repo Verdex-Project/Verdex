@@ -116,7 +116,23 @@ class Analytics:
             return False
 
         return True
+    @staticmethod
+    def minus_metrics(event_type, str):
+        if not Analytics.checkPermissions():
+            Logger.log("ANALYTICS MINUS_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type))
+            return True
 
+        if event_type.lower() not in ['verdex_talks_posts']:
+            return False
+        
+        try:
+            Analytics.data[event_type.lower()] -= 1
+            Analytics.save_metrics()
+        except Exception as e:
+            Logger.log("ANALYTICS MINUS_METRICS ERROR: Failed to update metrics for event type '{}'; error: {}".format(event_type.lower(), e))
+            return False
+
+        return True
     @staticmethod
     def generateReport():
         ## Check for permission
