@@ -76,7 +76,9 @@
                             {% endif %}
                             <div class="nameAndTagHeader">
                                 <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                                <button class="reaction-buttons" id="report-user-button" onclick="reportUser('{{ post_data.targetAccountIDOfPostAuthor }}')">Report User</button>
+                                {% if targetAccountID != post_data.targetAccountIDOfPostAuthor %}
+                                    <button class="reaction-buttons" id="report-user-button" onclick="reportUser('{{ post_data.targetAccountIDOfPostAuthor }}')">Report User</button>
+                                {% endif %}
                             </div>
                             <p class="post-description">{{ post_data.post_description }}</p>
                             {% if post_data.itineraries %}
