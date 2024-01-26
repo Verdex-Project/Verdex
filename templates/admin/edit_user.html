@@ -8,6 +8,9 @@
     #reports-header{
         color: rgb(255, 70, 70);
     }
+    #report-list-item {
+        list-style-type: circle;
+    }
 </style>
 <script>
     function changeEmail(){
@@ -88,13 +91,13 @@
     {% endif %}
     {% for user_id, user_data in accountsInfo.items() %}
         {% if 'reports' in user_data %}
-            <ol>
+            <ul>
                 {% for report in user_data['reports'] %}
                     {% if user_data['id'] == user['id'] %}
-                        <li>{{ report }}</li>
+                        <li id="report-list-item">{{ report }}</li>
                     {% endif %}
                 {% endfor %}
-            </ol>
+            </ul>
         {% endif %}
     {% endfor %}
 </div>

@@ -99,7 +99,7 @@ def createAccount():
         "disabled": False,
         "admin": False,
         "forumBanned": False,
-        "reports": []
+        "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -855,9 +855,11 @@ def submitReport():
     author_acc_id = request.json['author_acc_id']
     report_reason = request.json['report_reason']
 
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+
     if author_acc_id in DI.data["accounts"]:
         if targetAccountID != author_acc_id:
-            DI.data["accounts"][author_acc_id]["reports"].append(report_reason)
+            DI.data["accounts"][author_acc_id]["reports"][str(targetAccountID + "_" + postDateTime)] = report_reason
             DI.save()
             return "SUCCESS: Report was successfully submitted to the system."
         else:
