@@ -856,9 +856,12 @@ def submitReport():
     report_reason = request.json['report_reason']
 
     if author_acc_id in DI.data["accounts"]:
-        DI.data["accounts"][author_acc_id]["reports"].append(report_reason)
-        DI.save()
-        return "SUCCESS: Report was successfully submitted to the system."
+        if targetAccountID != author_acc_id:
+            DI.data["accounts"][author_acc_id]["reports"].append(report_reason)
+            DI.save()
+            return "SUCCESS: Report was successfully submitted to the system."
+        else:
+            return "UERROR: You can't report yourself!"
     else:
         return "ERROR: User account ID not found in system."
 

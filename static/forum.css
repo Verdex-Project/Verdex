@@ -190,8 +190,8 @@ body {
 }
 
 .name-of-user-who-shared-post-header {
-    margin-right: 100px;
     color: #529954;
+    width: 80%;
 }
 
 .itinerary-header {
