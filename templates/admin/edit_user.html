@@ -4,6 +4,11 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<style>
+    #reports-header{
+        color: rgb(255, 70, 70);
+    }
+</style>
 <script>
     function changeEmail(){
         let mail = prompt("Please enter the new email for this user")
@@ -77,5 +82,20 @@
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
         </div>
     </div>
+    {% if user['reports'] != [] %}
+        <p></p>
+        <h6 id="reports-header"><b>Reports from other users:</b></h6>
+    {% endif %}
+    {% for user_id, user_data in accountsInfo.items() %}
+        {% if 'reports' in user_data %}
+            <ol>
+                {% for report in user_data['reports'] %}
+                    {% if user_data['id'] == user['id'] %}
+                        <li>{{ report }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        {% endif %}
+    {% endfor %}
 </div>
 {% endblock %}

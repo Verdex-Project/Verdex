@@ -69,7 +69,7 @@ def user_profile(user_id):
     else:
         position = targetAccount["position"]
     
-    return render_template('admin/edit_user.html', user=DI.data['accounts'][user_id], name=name, position=position)
+    return render_template('admin/edit_user.html', user=DI.data['accounts'][user_id], name=name, position=position, accountsInfo=DI.data["accounts"])
 
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/changeEmail', methods= ['GET'])
 def changeEmail(user_id):

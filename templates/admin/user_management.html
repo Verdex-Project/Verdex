@@ -4,17 +4,6 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
-<style>
-    #reports-header {
-        color: rgb(255, 70, 70);
-    }
-    .users {
-        border: 1px solid black;
-        border-radius: 10px;
-        padding: 8px;
-        margin-bottom: 10px;
-    }
-</style>
 {% endblock %}
 
 {% block body %}
@@ -66,14 +55,6 @@
                             </a>
                         </div>
                     </div>
-                    {% if 'reports' in user_data %}
-                        {% for report in user_data['reports'] %}
-                            <h6 id="reports-header"><b>Reports from other users:</b></h6>
-                            <ol>
-                                <li>{{ report }}</li>
-                            </ol>
-                        {% endfor %}
-                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
