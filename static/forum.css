@@ -698,31 +698,12 @@ body {
     transition: 0.2s ease;
 }
 
-.dark-mode .create-a-post-button {
-    background-color: #DBB941; 
-    transition: 0.2s ease;
-}
-
-.dark-mode .filter-buttons {
-    background-color: #DBB941; 
-    color: #323437;
-    transition: 0.2s ease;
-}
-
 .dark-mode #no-posts-header { 
     color: #DBB941;
     transition: 0.2s ease;
 }
 
-.dark-mode .generated-itineraries-container {
-    border: 3px solid #DBB941;
-}
-
-.dark-mode #individual-posts {
-    box-shadow: 8px 8px 12px #DBB941;
-}
-
-.dark-mode .header, .dark-mode .text, .dark-mode .post-description {
+.dark-mode .post-description {
     color: #323437;
 }
 

@@ -427,7 +427,14 @@ function toggleDarkMode() {
 
     // Check if dark mode is currently active
     const isDarkMode = body.classList.contains('dark-mode');
-
+    if (isDarkMode){
+        document.getElementById('verdexNavbar').classList.add("bg-dark")
+        document.getElementById('verdexNavbar').setAttribute("data-bs-theme", "dark")
+    }
+    else {
+        document.getElementById('verdexNavbar').classList.remove("bg-dark")
+        document.getElementById('verdexNavbar').removeAttribute("data-bs-theme")
+    }
     // Store the current dark mode state in localStorage
     localStorage.setItem('darkMode', isDarkMode);
 
