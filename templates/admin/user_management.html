@@ -4,6 +4,17 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+<style>
+    #reports-header {
+        color: rgb(255, 70, 70);
+    }
+    .users {
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
@@ -44,17 +55,25 @@
     <h1>List of Users</h1>
     <h3>Email:</h3>
     <ol>
-        {% if users %}
-            {% for user in users %}
+        {% if accountsInfo %}
+            {% for user_id, user_data in accountsInfo.items() %}
                 <div class="users">
                     <div class="user-item">
-                        <li>{{ user['email'] }}</li> <!-- is this the correct way to get the email? -->
+                        <li>{{ user_data['email'] }}</li>
                         <div class="button">
-                            <a href="{{ url_for('admin.user_profile', user_id=user['id']) }}">
+                            <a href="{{ url_for('admin.user_profile', user_id=user_id) }}">
                                 <button type="button" class="btn btn-outline-primary">Edit User</button>
                             </a>
                         </div>
                     </div>
+                    {% if 'reports' in user_data %}
+                        {% for report in user_data['reports'] %}
+                            <h6 id="reports-header"><b>Reports from other users:</b></h6>
+                            <ol>
+                                <li>{{ report }}</li>
+                            </ol>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
