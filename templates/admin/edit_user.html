@@ -8,9 +8,6 @@
     #reports-header{
         color: rgb(255, 70, 70);
     }
-    #report-list-item {
-        list-style-type: circle;
-    }
 </style>
 <script>
     function changeEmail(){
@@ -85,20 +82,18 @@
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
         </div>
     </div>
-    {% if user['reports'] != [] %}
+    {% if user['reports'] != {} %}
         <p></p>
         <h6 id="reports-header"><b>Reports from other users:</b></h6>
     {% endif %}
-    {% for user_id, user_data in accountsInfo.items() %}
-        {% if 'reports' in user_data %}
-            <ul>
-                {% for report in user_data['reports'] %}
-                    {% if user_data['id'] == user['id'] %}
-                        <li id="report-list-item">{{ report }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endfor %}
+    {% if 'reports' in accountsInfo[user['id']] %}
+        <ul>
+            {% for timestamp, report_text in accountsInfo[user['id']]['reports'].items() %}
+                <li id="report-list-item"><b>{{ accountsInfo[timestamp.split("_")[0]]["username"] }}:</b> {{ report_text }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No reports for this user.</p>
+    {% endif %}
 </div>
 {% endblock %}
