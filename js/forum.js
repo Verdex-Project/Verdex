@@ -85,17 +85,17 @@ function likePost(postId) {
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-            if (typeof response.data !== "string"){
-                likeButton.innerHTML = `<img src="static/Images/like-icon.png" width="40" height="40"> (${response.data.likes})`;
-            }
-            else if (response.data.startsWith("ERROR:")){
-                console.log(response.data)
-                alert("An error occured while liking post. Please try again.")
+
+            if (typeof response.data !== "string") {
+                const likesCountElement = likeButton.querySelector('.likes-count');
+                likesCountElement.textContent = ` (${response.data.likes})`;
+            } else if (response.data.startsWith("ERROR:")) {
+                console.log(response.data);
+                alert("An error occurred while liking the post. Please try again.");
                 return;
-            }
-            else if (response.data.startsWith("UERROR:")){
-                console.log(response.data)
-                alert(response.data.substring("UERROR: ".length))
+            } else if (response.data.startsWith("UERROR:")) {
+                console.log(response.data);
+                alert(response.data.substring("UERROR: ".length));
                 return;
             }
         })
