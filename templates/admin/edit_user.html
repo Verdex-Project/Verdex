@@ -7,6 +7,17 @@
 <style>
     #reports-header{
         color: rgb(255, 70, 70);
+        margin-top: -20px;
+    }
+    #report-list-item{
+        list-style-type: none;
+    }
+    #reporterUsername{
+        color: #427b44;
+    }
+    .report-container {
+        width: 65%;
+        margin-left: 250px;
     }
 </style>
 <script>
@@ -82,18 +93,17 @@
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
         </div>
     </div>
-    {% if user['reports'] != {} %}
-        <p></p>
-        <h6 id="reports-header"><b>Reports from other users:</b></h6>
-    {% endif %}
-    {% if 'reports' in accountsInfo[user['id']] %}
-        <ul>
-            {% for timestamp, report_text in accountsInfo[user['id']]['reports'].items() %}
-                <li id="report-list-item"><b>{{ accountsInfo[timestamp.split("_")[0]]["username"] }}:</b> {{ report_text }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No reports for this user.</p>
-    {% endif %}
 </div>
+{% if user['reports'] != {} %}
+    <div class="report-container">
+        <h2 id="reports-header">Reports from other users:</h2>
+        {% if 'reports' in accountsInfo[user['id']] %}
+            <ul id="report-list">
+                {% for timestamp, report_text in accountsInfo[user['id']]['reports'].items() %}
+                    <li id="report-list-item"><b><span id="reporterUsername">{{ accountsInfo[timestamp.split("_")[0]]["username"] }}</span>:</b> {{ report_text }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endif %}
 {% endblock %}
