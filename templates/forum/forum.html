@@ -105,15 +105,15 @@
                         <div class="lower-row-buttons-container">
                             <div class="post-reaction-buttons-container">
                                 <ul class="list-of-reaction-buttons">
-                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
+                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'><img src="static/Images/like-icon.png" width="40" height="40"> ({{ post_data.likes }})</li>
+                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'><img src="static/Images/comment-icon.png" width="40" height="40"></li><br>
                                     {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
-                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'><img src="static/Images/delete-icon.png" width="40" height="40"></li>
                                     {% endif %}
-                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li><br>
                                 </ul>
                             </div>
                             {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
-                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                                <li id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')"><img src="static/Images/edit-icon.png" width="60" height="40"></li>
                             {% endif %}
                         </div>
                     </div>

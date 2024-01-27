@@ -86,7 +86,7 @@ function likePost(postId) {
         .then(function (response) {
             const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
             if (typeof response.data !== "string"){
-                likeButton.innerHTML = `Likes (${response.data.likes})`;
+                likeButton.innerHTML = `<img src="static/Images/like-icon.png" width="40" height="40"> (${response.data.likes})`;
             }
             else if (response.data.startsWith("ERROR:")){
                 console.log(response.data)
