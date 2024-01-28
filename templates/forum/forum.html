@@ -105,7 +105,7 @@
                         <div class="lower-row-buttons-container">
                             <div class="post-reaction-buttons-container">
                                 <ul class="list-of-reaction-buttons">
-                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'><img src="static/Images/like-icon.png" width="40" height="40"><span class="likes-count"> ({{ post_data.likes }})</span></li> 
+                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'><img src="static/Images/like-icon.png" width="40" height="40"><span id="likes-count"> ({{ post_data.likes }})</span></li> 
                                     <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'><img src="static/Images/comment-icon.png" width="40" height="40"></li><br>
                                     {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
                                         <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'><img src="static/Images/delete-icon.png" width="40" height="40"></li>
