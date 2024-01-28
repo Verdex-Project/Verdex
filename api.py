@@ -68,7 +68,7 @@ def sendPasswordResetKey():
 
     Emailer.sendEmail(DI.data["accounts"][targetAccountID]["email"], "Verdex Account Recovery", altText, html)
     
-    return "SUCCESS: Password reset key sent to {}".format(DI.data["accounts"][targetAccountID]["email"])
+    return "SUCCESS: Password reset key sent to your email."
 
 @apiBP.route('/api/passwordReset', methods=['POST'])
 def passwordReset():
