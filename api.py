@@ -113,6 +113,7 @@ def passwordReset():
             delta = datetime.datetime.now() - datetime.datetime.strptime(keyTimeStr, "%Y-%m-%dT%H:%M:%S")
             if delta.total_seconds() > 900:
                 del DI.data["accounts"][accountID]["resetKey"]
+                Logger.log("ACCOUNTS PASSWORDRESET: Deleted expired reset key for account ID {}.".format(accountID))
                 if accountID == targetAccountID:
                     expiredRequestingAccountsResetKey = True
     
@@ -143,6 +144,7 @@ def passwordReset():
     del DI.data["accounts"][targetAccountID]["resetKey"]
     DI.save()
 
+    Logger.log("ACCOUNTS PASSWORDRESET: Password reset for account ID {} successful.".format(targetAccountID))
     return "SUCCESS: Password has been reset."
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
