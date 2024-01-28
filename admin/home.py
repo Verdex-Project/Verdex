@@ -1,25 +1,11 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
-import json, os, datetime
-from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken
+import json, os, datetime, copy
+from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken, Emailer, AddonsManager, FireConn, FireRTDB
+
 adminHomeBP = Blueprint("admin", __name__)
-@adminHomeBP.route('/test')
-def test():
-    authCheck = manageIDToken(checkIfAdmin=True)
-    if not authCheck.startswith("SUCCESS"):
-        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
-    targetAccountID = authCheck[len("SUCCESS: ")::]
-    
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
-    
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
-    return render_template('test.html', name = name, position = position)
+
+AddonsManager.setup()
+
 @adminHomeBP.route('/admin')
 def admin():
     authCheck = manageIDToken(checkIfAdmin=True)
@@ -37,8 +23,78 @@ def admin():
         position = "Not set"
     else:
         position = targetAccount["position"]
+    os_current = os.environ.get("AnalyticsEnabled")
+    os_current = os_current.lower() == "true"
+    print(os_current)
+    current = AddonsManager.readConfigKey("AnalyticsEnabled")
+
+    if current == 'Key not found':
+        AddonsManager.setConfigKey("AnalyticsEnabled", os_current)
+
+    return render_template('admin/system_health.html', name=name, position=position, analytics_status = os_current)
+
+@adminHomeBP.route('/admin/send_test_email', methods=['GET'])
+def send_test_email():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    targetAccount = DI.data["accounts"][targetAccountID]
+    username = targetAccount["name"]
+    email = targetAccount["email"]
+
+    altText = f"""
+    Dear {username},
+    This is a test email to ensure that the email system is working correctly.
+    If you are reading this, then the email system is working correctly.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+    html = render_template('emails/testEmail.html', username=username, copyright = Universal.copyright)
+
+    Emailer.sendEmail(email, "Test Email", altText, html)
+    Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
+    return redirect(url_for('admin.admin'))
+
+@adminHomeBP.route('/admin/toggle_analytics', methods = ['GET'])
+def toggle_analytics():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    os_current = os.environ.get("AnalyticsEnabled")
+    current = AddonsManager.readConfigKey("AnalyticsEnabled")
+
+    if current == 'Key not found':
+        AddonsManager.setConfigKey("AnalyticsEnabled", os_current)
+        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics enabled.")
+        return redirect(url_for('admin.admin'))
     
-    return render_template('admin/system_health.html', name=name, position=position)
+    if current == True:
+        AddonsManager.setConfigKey("AnalyticsEnabled", False)
+        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics disabled.")
+
+    else:
+        AddonsManager.setConfigKey("AnalyticsEnabled", True)
+        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics enabled.")
+    return redirect(url_for('admin.admin'))
+
+@adminHomeBP.route('/admin/reload_database', methods=['GET'])
+def reload_database():
+    
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    # DI.syncStatus only read
+    FireRTDB.checkPermissions()
+    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded.")
+    
+    return redirect(url_for('admin.admin'))
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
 def user_management():

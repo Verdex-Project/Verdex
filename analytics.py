@@ -1,8 +1,9 @@
 import os, json, uuid, random, datetime
 from models import Logger, Universal
 from dotenv import load_dotenv
+from addons import AddonsManager
 load_dotenv()
-    
+AddonsManager.setup()
 class Analytics:
     data = []
     filePath = os.path.join(os.getcwd(), "analytics.json")
@@ -19,8 +20,12 @@ class Analytics:
 
     @staticmethod
     def checkPermissions():
-        return "AnalyticsEnabled" in os.environ and os.environ["AnalyticsEnabled"] == "True"
-    
+        #Check if addons manager has AnalyticsEnabled value
+        if "AnalyticsEnabled" in os.environ and os.environ["AnalyticsEnabled"] == "True":
+            return AddonsManager.readConfigKey("AnalyticsEnabled")==True
+        else:
+            return False
+
     @staticmethod
     def generateRandomID(customLength=None):
         if customLength == None:

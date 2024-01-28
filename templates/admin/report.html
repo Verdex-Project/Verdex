@@ -6,7 +6,6 @@
 <script>
     function downloadReport(reportId) {
         const downloadUrl = `{{ url_for('admin.download_report', report_id='') }}${reportId}`;
-        console.log(downloadUrl)
         window.location.href = downloadUrl;
     }
 
