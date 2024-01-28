@@ -128,6 +128,7 @@ function logoutIdentity() {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (response.data.startsWith("SUCCESS:")) {
+                        localStorage.clear()
                         location.href = `${origin}/`;
                     } else {
                         alert("An unknown response was recieved from Verdex Servers.")

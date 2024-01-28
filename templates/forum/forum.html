@@ -19,9 +19,9 @@
             </div>
         </div>
         <div class="natural-flow-content">
-            <div class="dark-mode-toggle top-right" onclick="toggleDarkMode()" id="toggleButton">
+            <div class="dark-mode-toggle top-right" id="toggleButton">
                 <span class="dark-mode-text">Dark Mode:</span>
-                <input class="toggle" type="checkbox" id="darkModeToggle" />
+                <input class="toggle" type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()"/>
             </div>
             <div class="create-a-post-button" onclick="createPostPopup()">
                 <div id="plus-icon-container">
@@ -71,10 +71,13 @@
                 {% for post_username, post_data in postsInfoJson.items()|reverse %}
                 <div id="individual-posts" data-post-id="{{ post_data.postDateTime }}" class="{{ post_data.tag }} {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}user-post{% endif %}">
                         <div class="post-content">
+                            {% if post_data.tag != "" %}
+                                <h3 class="tag-display">#{{ post_data.tag }}</h3>
+                            {% endif %}
                             <div class="nameAndTagHeader">
                                 <h3 class="name-of-user-who-shared-post-header"><b>{{ post_data.username }}</b> shared: <span id="postTitle"><i>{{ post_data.post_title }}</i></span></h3>
-                                {% if post_data.tag != "" %}
-                                    <h4 class="tag-display">#{{ post_data.tag }}</h4>
+                                {% if targetAccountID != post_data.targetAccountIDOfPostAuthor %}
+                                    <button class="reaction-buttons" id="report-user-button" onclick="reportUser('{{ post_data.targetAccountIDOfPostAuthor }}')">Report User</button>
                                 {% endif %}
                             </div>
                             <p class="post-description">{{ post_data.post_description }}</p>
@@ -102,15 +105,15 @@
                         <div class="lower-row-buttons-container">
                             <div class="post-reaction-buttons-container">
                                 <ul class="list-of-reaction-buttons">
-                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'>Likes ({{ post_data.likes }})</li>
+                                    <li class="reaction-buttons" onclick='likePost("{{ post_data.postDateTime }}")'><img src="static/Images/like-icon.png" width="40" height="40"><span id="likes-count"> ({{ post_data.likes }})</span></li> 
+                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'><img src="static/Images/comment-icon.png" width="40" height="40"></li><br>
                                     {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
-                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'>Delete post</li>
+                                        <li class="reaction-buttons" onclick='deletePost("{{ post_data.postDateTime }}")'><img src="static/Images/delete-icon.png" width="40" height="40"></li>
                                     {% endif %}
-                                    <li class="reaction-buttons" onclick='commentPost("{{ post_data.postDateTime }}")'>Comment</li>
                                 </ul>
                             </div>
                             {% if targetAccountID == post_data.targetAccountIDOfPostAuthor %}
-                                <button id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')">Edit post</button>
+                                <li id="edit-button" onclick="editPost('{{ post_data.postDateTime }}')"><img src="static/Images/edit-icon.png" width="60" height="40"></li>
                             {% endif %}
                         </div>
                     </div>
@@ -139,6 +142,14 @@
                 <h2 id="popup-header"><b>Add your comment!</b></h2>
                 <textarea name="comment_description" id="comment_description" rows="5" cols="80" placeholder="Write your comment here" required></textarea><br>
                 <button type="button" name="commentOnPost" id="comment-button" onclick='submitComment()'>Add comment!</button>
+            </div>
+        </div>
+        <div id="reason-for-reporting-user-popup">
+            <div id="report-reason-content">
+                <button id="close-popup-button" onclick="return closeReportPopup()()"><span>&#x274C;</span> Discard changes</button>
+                <h2 id="popup-header"><b>Why should this user be reported?</b></h2>
+                <textarea name="report-reason" id="report-reason" rows="5" cols="80" placeholder="State your reason here" required></textarea><br>
+                <button type="button" name="submit-report" id="submit-report" onclick='submitReport()'>Submit report</button>
             </div>
         </div>
         <div id="edit-post-popup">
