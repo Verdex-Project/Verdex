@@ -41,13 +41,27 @@
             "supportedActivities": [""]
         },
         "Fort Canning Park": {
-            "imageURL": "https://media.timeout.com/images/105697504/image.jpg",
+            "imageURL": "https://a.cdn-hotels.com/gdcs/production152/d1240/65dee8c1-5cf8-4625-b9eb-979be59842a6.jpg",
             "supportedActivities": [""]
         },
-        "Marina Barrage": {},
-        "Sungei Buloh Nature Park": {}, 
-        "MacRitchie Reservoir": {},
-        "River Wonders": {},
-        "Wild Wild Wet": {}
+        "Marina Barrage": {
+            "imageURL": "https://www.greenroofs.com/wp-content/uploads/2018/09/marina_barrage1.jpg",
+            "supportedActivities": [""]
+        },
+        "Sungei Buloh Nature Park": {
+            "imageURL": "https://4.bp.blogspot.com/-wlYwCA8Q8Ok/UjsbIVIlVII/AAAAAAAARaU/TTfhVVPIzG0/s1600/044+(2).JPG",
+            "supportedActivities": [""]
+        }, 
+        "MacRitchie Reservoir": {
+            "imageURL": "https://lp-cms-production.imgix.net/2019-06/a2aa48e66952bf8816898991072e32f5-macritchie-reservoir.jpg",
+            "supportedActivities": [""]
+        },
+        "River Wonders": {
+            "imageURL": "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/07/01/4e/94.jpg",
+            "supportedActivities": [""]
+        },
+        "Wild Wild Wet": {
+            "imageURL": "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_3000,h_2000,f_auto/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/b8uttsvddk4febdpzilw/BookSingaporeWildWildWetTicketsOnline-KlookSingapore.jpg",
+            "supportedActivities": [""]
     }
 }
