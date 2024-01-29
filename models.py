@@ -228,10 +228,19 @@ class Universal:
 
     systemWideStringDatetimeFormat = "%Y-%m-%d %H:%M:%S"
     copyright = "© 2023-2024 The Verdex Team. All Rights Reserved."
+    generationDataFilename = "generationData.json"
 
     @staticmethod
     def generateUniqueID():
         return uuid.uuid4().hex
+    
+    @staticmethod
+    def loadGenerationData():
+        if os.path.isfile(os.path.join(os.getcwd(), Universal.generationDataFilename)):
+            with open(Universal.generationDataFilename, "r") as f:
+                return json.load(f)
+        else:
+            return {}
 
 class Logger:
     '''## Intro

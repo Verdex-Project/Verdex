@@ -1,0 +1,53 @@
+{
+    "locations": {
+        "Marina Bay Sands": {
+            "imageURL": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Marina_Bay_Sands_in_the_evening_-_20101120.jpg",
+            "supportedActivities": [""]
+         },
+        "Gardens by the Bay": {
+            "imageURL": "https://www.marinabaysands.com/content/dam/marinabaysands/guides/around-mbs/gardens-by-the-bay/masthead.jpg",
+            "supportedActivities": [""]
+        },
+        "Singapore Botanic Gardens": {
+            "imageURL": "https://mywowo.net/media/images/cache/singapore_giardino_botanico_01_introduzione_jpg_1200_630_cover_85.jpg",
+            "supportedActivities": [""]
+        },
+        "Singapore Zoo": {
+            "imageURL": "https://upload.wikimedia.org/wikipedia/commons/5/50/Singapore_Zoo_entrance-15Feb2010.jpg",
+            "supportedActivities": [""]
+        },
+        "Orchard Road": {
+            "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1200px-Presenting..._the_real_ION_%288200217734%29.jpg",
+            "supportedActivities": [""]
+        },
+        "Jewel Changi Airport": {
+            "imageURL": "https://images.squarespace-cdn.com/content/v1/6244901b5326a2313a3f3c91/1665766514863-YIU0DCDJT8JY6MCS3KPE/Jewel_Slideshow_02.png",
+            "supportedActivities": [""]
+        },
+        "Universal Studios Singapore": {
+            "imageURL": "https://d3gw4aml0lneeh.cloudfront.net/assets/locations/9kTC2X9mXLmE.jpg",
+            "supportedActivities": [""]
+        },
+        "Singapore Flyer": {
+            "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Dikaiosp_210819_6963.jpg/1200px-Dikaiosp_210819_6963.jpg",
+            "supportedActivities": [""]
+        },
+        "Chinatown MRT Station": {
+            "imageURL": "https://assets-global.website-files.com/581110f944272e4a11871c01/59371a097c0c612f3ce7bb94_Chinatown-Street-Market-11.jpg",
+            "supportedActivities": [""]
+        },
+        "East Coast Park": {
+            "imageURL": "https://media.timeout.com/images/105697504/image.jpg",
+            "supportedActivities": [""]
+        },
+        "Fort Canning Park": {
+            "imageURL": "https://media.timeout.com/images/105697504/image.jpg",
+            "supportedActivities": [""]
+        },
+        "Marina Barrage": {},
+        "Sungei Buloh Nature Park": {}, 
+        "MacRitchie Reservoir": {},
+        "River Wonders": {},
+        "Wild Wild Wet": {}
+    }
+}
