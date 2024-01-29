@@ -13,7 +13,7 @@ body {
 
 .sidenav {
     height: 100%;
-    width: 10%;
+    width: 30vh;
     position: fixed;
     /* z-index: 1; */
     top: 0;
@@ -184,7 +184,7 @@ body {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     justify-content: center;
-    width: 70%;
+    width: 75%;
     margin-left:250px;
     margin-top:20px;
     font-family: 'Open Sans', sans-serif;

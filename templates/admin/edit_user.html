@@ -31,6 +31,12 @@
             window.location.href ="/admin/user_profile/{{ user['id'] }}/unban"
         }
     }
+    function logUserOut(){
+        confirmMessage = 'Are you sure you want to log this user out'
+        if (confirm(confirmMessage)===true){
+            window.location.href ="/admin/user_profile/{{ user['id'] }}/logout"
+        }
+    }
     function backToHome(){
         window.location.href = "/admin/user_management"
     }
@@ -52,6 +58,7 @@
             <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
             <button class="btn btn-outline-success" onclick ="unbanFromForum()">Unban from VerdexTalks</button>
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
+            <button type="button" class="btn btn-outline-info" onclick="logUserOut()">Log users out</button>
         </div>
     </div>
 </div>

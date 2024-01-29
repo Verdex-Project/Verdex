@@ -23,17 +23,41 @@ def admin():
         position = "Not set"
     else:
         position = targetAccount["position"]
+
     os_analytics_current = os.environ.get("AnalyticsEnabled")
     os_analytics_current = os_analytics_current.lower() == "true"
     analytics_current = AddonsManager.readConfigKey("AnalyticsEnabled")
 
     os_email_current = os.environ.get("EmailingServicesEnabled")
     os_email_current = os_email_current.lower() == "true"
-    email_current = AddonsManager.readConfigKey("EmailingServicesEnabled") 
+    email_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
+
     if email_current == "Key Not Found":
         AddonsManager.setConfigKey("EmailingServicesEnabled", os_email_current)
 
-    return render_template('admin/system_health.html', name=name, position=position, analytics_status = os_analytics_current, addons_analytics_status = analytics_current, emailer_status = os_email_current, addons_email_status = email_current)
+    total_user = 0
+    logged_in = 0
+    user_list = FireAuth.listUsers()
+
+    for user in user_list:
+        total_user+=1
+
+    for accountID in DI.data['accounts']:
+        if 'idToken' in DI.data['accounts'][accountID]:
+            logged_in +=1
+    
+    return render_template(
+        'admin/system_health.html', 
+        name=name, 
+        position=position, 
+        analytics_status = os_analytics_current, 
+        addons_analytics_status = analytics_current, 
+        emailer_status = os_email_current, 
+        addons_email_status = email_current, 
+        total_user = total_user, 
+        logged_in = logged_in, 
+        sync_status =DI.syncStatus
+    )
 
 @adminHomeBP.route('/admin/send_test_email', methods=['GET'])
 def send_test_email():
@@ -60,6 +84,7 @@ def send_test_email():
     Emailer.sendEmail(email, "Test Email", altText, html)
     Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
     return redirect(url_for('admin.admin'))
+
 @adminHomeBP.route('/admin/toggle_emailer', methods = ['GET'])
 def toggle_emailer():
     authCheck = manageIDToken(checkIfAdmin=True)
@@ -98,7 +123,6 @@ def toggle_analytics():
 
 @adminHomeBP.route('/admin/reload_database', methods=['GET'])
 def reload_database():
-    
     authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
@@ -107,6 +131,23 @@ def reload_database():
     FireRTDB.checkPermissions()
     Logger.log("ADMIN RELOAD_DATABASE: Database reloaded.")
     
+    return redirect(url_for('admin.admin'))
+
+@adminHomeBP.route('/admin/reload_fireauth', methods=['GET'])
+def reload_fireauth():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+
+        if previousCopy != DI.data["accounts"]:
+            print("ADMIN: Necessary database synchronisation with Firebase Authentication complete.")
+
     return redirect(url_for('admin.admin'))
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
@@ -211,6 +252,20 @@ def unbanAccount(user_id):
             return redirect(url_for('admin.user_management'))
         
     return redirect(url_for('error', error='User not found'))
+
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/logout')
+def logoutAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['id'] == user_id:
+            del DI.data['accounts'][accountID]['idToken']
+            del DI.data['accounts'][accountID]['refreshToken']
+            del DI.data['accounts'][accountID]['tokenExpiry']
+            DI.save()
+            Logger.log(f'ADMIN LOGOUTACCOUNT: Account with ID {accountID} has been logged out')
+            return redirect(url_for('admin.user_management'))
+        
+    return redirect(url_for('error', error='User not found'))
+
 @adminHomeBP.route('/admin/report')
 def report():
     authCheck = manageIDToken(checkIfAdmin=True)

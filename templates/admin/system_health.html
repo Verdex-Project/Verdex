@@ -13,8 +13,11 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Database Interface</h5>
-          <p class="card-text">The main service facilitating communication application logic and Verdex's database</p>
-          <a href="/admin/reload_database" class="btn btn-outline-danger">Reload database interface</a>
+          <p class="card-text">The primary service facilitating communication application logic and Verdex's database.</p>
+          {% if not sync_status %}
+            <p class ="card-text" style ="color: red;">There is a mismatch or mis-sync with either the cloud or local database. Please re-load DI when safe.</p>
+          {% endif %}
+          <a href=# class="btn btn-outline-danger" onclick = "reloadDatabase()">Reload database interface</a>
         </div>
       </div>
     </div>
@@ -25,24 +28,24 @@
               {% if not emailer_status %}
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
-                        <label class="form-check-label" for="flexSwitchCheckDisabled">Emailer service is disabled</label>
+                        <label class="form-check-label" for="flexSwitchCheckDisabled">Emailer service is internally disabled</label>
                     </div>
                     <p class="card-text">Send a test email to check if emailer is working.</p>
-                    <a href="/admin/send_test_email" class="btn btn-primary disabled" aria-disabled="true">Send test email</a>
+                    <a href=# class="btn btn-primary disabled" aria-disabled="true">Test email cannot be sent as emailer disabled</a>
               {% elif addons_email_status %}
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked onclick="toggleEmailer()">
                       <label class="form-check-label" for="flexSwitchCheckChecked">Emailer service is currently on</label>
                     </div>
                     <p class="card-text">Send a test email to check if emailer is working.</p>
-                    <a href="/admin/send_test_email" class="btn btn-primary">Send test email</a>
+                    <a href=# class="btn btn-primary" onclick = "sendTestEmail()">Send test email</a>
               {% elif not addons_email_status %}
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleEmailer()">
-                      <label class="form-check-label" for="flexSwitchCheckDefault">Emailer service is currently off</label>
+                      <label class="form-check-label" for="flexSwitchCheckDefault">Emailer service is disabled</label>
                   </div>
                   <p class="card-text">Send a test email to check if emailer is working.</p>
-                  <a href="/admin/send_test_email" class="btn btn-primary disabled" aria-disabled="true">Send test email</a>
+                  <a href=# class="btn btn-primary disabled" aria-disabled="true">Test email cannot be sent as emailer disabled</a>
               {% endif %}
         </div>
       </div>
@@ -80,7 +83,8 @@
         <div class="card-body">
           <h5 class="card-title">Firebase Authentication</h5>
           <p class="card-text">Create a summary of the number of users in the system and the number of users currently logged in</p>
-          <a href="#" class="btn btn-primary">Check Firebase Auth</a>
+          <p class ="card-text">Total users: {{ total_user }} Total users logged in: {{ logged_in }}</p>
+          <a href=# class="btn btn-primary" onclick ="reloadFireauth()">Reload Firebase Authentication</a>
         </div>
       </div>
     </div>
@@ -88,11 +92,29 @@
 
 <script>
   document.getElementById("healthSidebarLink").style.color = "black"
+  function reloadDatabase(){
+    confirm("Are you sure you want to reload the database interface?")
+    if (confirm){
+      window.location.href = "/admin/reload_database"
+    }
+  }
+  function sendTestEmail(){
+    confirm("Are you sure you want to send a test email?")
+    if (confirm){
+      window.location.href = "/admin/send_test_email"
+    }
+  }
   function toggleAnalytics(){
     window.location.href = "/admin/toggle_analytics"
   }
   function toggleEmailer(){
     window.location.href = "/admin/toggle_emailer"
+  }
+  function reloadFireauth(){
+    confirm("Are you sure you want to reload Firebase Auth?")
+    if (confirm){
+      window.location.href = "/admin/reload_fireauth"
+    }
   }
 </script>
 {% endblock %}
