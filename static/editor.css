@@ -128,12 +128,14 @@
 #activityBox {
     border: 2px solid black;
     border-radius: 20px;
+    margin-top: 10px;
 }
 
 #transportBox{
     display: flex;
-    justify-content: center;
-    padding-left: 50px;
+    justify-content: left;
+    padding-left: 30px;
+    margin: 0 20px 0 20px;
 }
 
 #activityBox, #transportBox {
@@ -287,6 +289,8 @@
 #journeyBox-box {
     display: flex;
     justify-content: space-around;
+    height: 90%;
+    margin: 20px;
 }
 
 #detailJourneyButton {
@@ -327,6 +331,11 @@
 #transportDescription, #transportLogo,#transportInfo {
     height: 28px;
     padding: 0 5px 0 5px;
+}
+
+#transportDescription {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 #addExtra {

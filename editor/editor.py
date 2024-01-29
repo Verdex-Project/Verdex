@@ -5,6 +5,31 @@ import datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
+def getETA(route):
+    return route['duration']
+
+def getArriveTime(route,index,time):
+    duration = route[index]
+    arriveTime = int(time) + int(duration)
+    return
+
+def cleanRoute(route, index):
+    cleanedRoute = {}
+
+    eta = route['duration']
+    cleanRoute[index]["eta"] = eta
+
+    if route["steps"]["travel_mode"] == "WALKING":
+        duration = route[""]
+    if route["steps"]["travel_mode"] == "TRANSIT":
+        pass
+    else:
+        return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
+
+
+    return cleanedRoute
+    
+
 @editorPage.route("/editor")
 def editorRoot():
     if "itineraryID" not in request.args:
@@ -27,6 +52,8 @@ def editorDay(itineraryID, day):
 
     if day not in DI.data["itineraries"][itineraryID]["days"]:
         return redirect(url_for("error",error="Day Not Found!"))
+
+    cleanedRoute = {}
 
     locations = []
     #get all locations
@@ -52,23 +79,27 @@ def editorDay(itineraryID, day):
     # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
     routes = {}
     for locationIndex in range(len(locations)):
-        if not (locationIndex + 1 >= len(locations)):
+        if locationIndex + 1 != len(locations):
             print("Origin: {}".format(locations[locationIndex]))
             print("Destination: {}".format(locations[locationIndex + 1]))
             print(dateTimeObjects[locationIndex])
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
-        routes[locationIndex] = route
+            eta = getETA(route)
+            routes[locationIndex] = route
+            cleanedRoute[locationIndex] = {}
+            cleanedRoute[locationIndex]["eta"] = eta
     print(routes)
+    print(cleanedRoute)
 
     # print(locations)
     # print(endTimes)
     # print(dateTimeObjects)
 
     etaList = []
-    print(etaList)
+
     for i in routes:
         etaList.append(routes[i]['duration'])
-
+    print(etaList)
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:

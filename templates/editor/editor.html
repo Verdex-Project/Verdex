@@ -141,26 +141,13 @@
                     </div>
 
                     <div id="transportBox">
-                        <div id="etaBox">
-                            <p>30 mins</p><!--getETA-->
-                        </div>
                         <div id="processArrow">
                             <h1>↓</h1> <!--Or use image to replace-->
                         </div>
                         <div id="journeyBox">
                             <div id="journeyBox-box">
-                                <div id="transportInfo">
-                                    <!--Bus Number and Line Name (Exception for walking and bicycling)-->
-                                </div>
-                                <div id="transportLogo">
-                                    <!--
-                                        If bus import busLogo
-                                        If train import trainLogo
-                                        ...
-                                    -->
-                                </div>
                                 <div id="transportDescription">
-                                    <p>From <!--get start location--> to <!--get end location--></p>
+                                    <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong></p>
                                 </div>
                                 <div id="detailJourney">
                                     <button id="detailJourneyButton" onclick="detailedJourney()">
