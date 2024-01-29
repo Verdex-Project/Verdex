@@ -607,6 +607,29 @@ def changePassword():
     
     return "SUCCESS: Password updated successfully."
 
+@apiBP.route('/api/aboutMeDescription', methods=['POST'])
+def aboutMeDescription():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "description" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    if len(request.json["description"]) > 150:
+        return "UERROR: Your description cannot exceed 150 characters."
+
+    DI.data["accounts"][targetAccountID]["aboutMe"] = request.json["description"]
+    Logger.log("ACCOUNTS ABOUTMEDESCRIPTION: About Me description updated for {}".format(targetAccountID))
+    DI.save()
+
+    return "SUCCESS: Description updated."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     check = checkHeaders(request.headers)
@@ -1028,7 +1051,6 @@ def editActivity():
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
-
 
 @apiBP.route("/api/addNewActivity", methods = ['POST'])
 def addNewActivity():
