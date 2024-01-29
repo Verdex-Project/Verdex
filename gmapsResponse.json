@@ -1,0 +1,491 @@
+{
+    "copyright": "Map data \u00a92024 Google",
+    "warnings": [
+        "Walking directions are in beta. Use caution \u2013 This route may be missing sidewalks or pedestrian paths."
+    ],
+    "distance": "27.7 km",
+    "duration": "1 hour 1 min",
+    "startAddress": "Yio Chu Kang Gardens, Singapore",
+    "endAddress": "Singapore",
+    "startLocation": {
+        "lat": 1.3811318,
+        "lng": 103.8367557
+    },
+    "endLocation": {
+        "lat": 1.3591178,
+        "lng": 103.9889921
+    },
+    "steps": [
+        {   
+            "distance": {
+                "text": "0.7 km",
+                "value": 740
+            },
+            "duration": {
+                "text": "10 mins",
+                "value": 608
+            },
+            "end_location": {
+                "lat": 1.385693,
+                "lng": 103.838737
+            },
+            "html_instructions": "Walk to Opp Seasons Pk",
+            "polyline": {
+                "points": "awlGwrwxRf@p@iBnAeAt@KFEB[YWQIIaAq@KAEEGECESSKKWSIEUOIEQMSOKGQMMOSWA??C?CI?IPGCIH@@ILIIIDIMDCGGSNGMNKSOYQQ?SQs@o@SSeBeBO[a@e@"
+            },
+            "start_location": {
+                "lat": 1.3811318,
+                "lng": 103.8367557
+            },
+            "steps": [
+                {
+                    "distance": {
+                        "text": "40 m",
+                        "value": 40
+                    },
+                    "duration": {
+                        "text": "1 min",
+                        "value": 32
+                    },
+                    "end_location": {
+                        "lat": 1.3809303,
+                        "lng": 103.8365122
+                    },
+                    "html_instructions": "Head <b>southwest</b> on <b>Yio Chu Kang Gardens</b>",
+                    "polyline": {
+                        "points": "awlGwrwxRf@p@"
+                    },
+                    "start_location": {
+                        "lat": 1.3811318,
+                        "lng": 103.8367557
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.1 km",
+                        "value": 147
+                    },
+                    "duration": {
+                        "text": "2 mins",
+                        "value": 124
+                    },
+                    "end_location": {
+                        "lat": 1.3818985,
+                        "lng": 103.8357792
+                    },
+                    "html_instructions": "Turn <b>right</b> to stay on <b>Yio Chu Kang Gardens</b>",
+                    "maneuver": "turn-right",
+                    "polyline": {
+                        "points": "yulGeqwxRiBnAeAt@KFEB"
+                    },
+                    "start_location": {
+                        "lat": 1.3809303,
+                        "lng": 103.8365122
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.3 km",
+                        "value": 278
+                    },
+                    "duration": {
+                        "text": "4 mins",
+                        "value": 226
+                    },
+                    "end_location": {
+                        "lat": 1.383747,
+                        "lng": 103.8373019
+                    },
+                    "html_instructions": "Turn <b>right</b> onto <b>Yio Chu Kang Rd</b>",
+                    "maneuver": "turn-right",
+                    "polyline": {
+                        "points": "{{lGslwxR[YWQIIaAq@KAEEGECESSKKWSIEUOIEQMSOKGQMMOSWA??C?CI?"
+                    },
+                    "start_location": {
+                        "lat": 1.3818985,
+                        "lng": 103.8357792
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "17 m",
+                        "value": 17
+                    },
+                    "duration": {
+                        "text": "1 min",
+                        "value": 26
+                    },
+                    "end_location": {
+                        "lat": 1.3840283,
+                        "lng": 103.8371235
+                    },
+                    "html_instructions": "Turn <b>left</b> onto <b>Lentor Dr</b>",
+                    "maneuver": "turn-left",
+                    "polyline": {
+                        "points": "mgmGcvwxRIPGCIH@@ILIIID"
+                    },
+                    "start_location": {
+                        "lat": 1.383747,
+                        "lng": 103.8373019
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.3 km",
+                        "value": 258
+                    },
+                    "duration": {
+                        "text": "3 mins",
+                        "value": 200
+                    },
+                    "end_location": {
+                        "lat": 1.385693,
+                        "lng": 103.838737
+                    },
+                    "html_instructions": "Turn <b>right</b> onto <b>Yio Chu Kang Rd</b><div style=\"font-size:0.9em\">Destination will be on the left</div>",
+                    "maneuver": "turn-right",
+                    "polyline": {
+                        "points": "eimG_uwxRIMDCGGSNGMNKSOYQQ?SQs@o@SSeBeBO[a@e@"
+                    },
+                    "start_location": {
+                        "lat": 1.3840283,
+                        "lng": 103.8371235
+                    },
+                    "travel_mode": "WALKING"
+                }
+            ],
+            "travel_mode": "WALKING"
+        },
+        {
+            "distance": {
+                "text": "2.8 km",
+                "value": 2771
+            },
+            "duration": {
+                "text": "6 mins",
+                "value": 367
+            },
+            "end_location": {
+                "lat": 1.402051,
+                "lng": 103.827377
+            },
+            "html_instructions": "Bus towards Yishun",
+            "polyline": {
+                "points": "ssmGa_xxRTSKKwAiByAsBgAuAaB{Bi@y@_@g@uD`AmCnAVd@g@^UJm@^_@XE@OLWTEDEFOTMNINEHGFCD?BS\\EHCBGLS\\ILGJA@[X[XQNEHQ\\ABqA`CEh@GNIRM^OVS\\e@z@IRO^Q^_@p@a@t@ILKLKJWFo@jAILOVOVUb@CFe@z@]n@Wb@e@`AEHINc@t@m@`AMT{DbHQV_@z@eA|Bi@z@]d@c@`@_@Xi@^{@d@g@Xc@TWNs@Zw@\\A@{@Xc@ROFw@Pg@LeAVeAP[DgALkAJY@mAHO@?D"
+            },
+            "start_location": {
+                "lat": 1.385701,
+                "lng": 103.83873
+            },
+            "transit_details": {
+                "arrival_stop": {
+                    "location": {
+                        "lat": 1.402051,
+                        "lng": 103.827377
+                    },
+                    "name": "Bef Sg Seletar Bridge"
+                },
+                "arrival_time": {
+                    "text": "10:55\u202fPM",
+                    "time_zone": "Asia/Singapore",
+                    "value": 1706367331
+                },
+                "departure_stop": {
+                    "location": {
+                        "lat": 1.385701,
+                        "lng": 103.83873
+                    },
+                    "name": "Opp Seasons Pk"
+                },
+                "departure_time": {
+                    "text": "10:49\u202fPM",
+                    "time_zone": "Asia/Singapore",
+                    "value": 1706366964
+                },
+                "headsign": "Yishun",
+                "headway": 840,
+                "line": {
+                    "agencies": [
+                        {
+                            "name": "Tower Transit",
+                            "url": "https://towertransit.sg/"
+                        }
+                    ],
+                    "color": "#55dd33",
+                    "name": "855",
+                    "text_color": "#000000",
+                    "vehicle": {
+                        "icon": "//maps.gstatic.com/mapfiles/transit/iw2/6/bus2.png",
+                        "name": "Bus",
+                        "type": "BUS"
+                    }
+                },
+                "num_stops": 4
+            },
+            "travel_mode": "TRANSIT"
+        },
+        {
+            "distance": {
+                "text": "0.2 km",
+                "value": 191
+            },
+            "duration": {
+                "text": "3 mins",
+                "value": 204
+            },
+            "end_location": {
+                "lat": 1.4021999,
+                "lng": 103.8276266
+            },
+            "html_instructions": "Walk to Aft Sg Seletar Bridge",
+            "polyline": {
+                "points": "yypGaxuxRc@@m@@U@G?IJE_@ESEMAEAEXCHAj@A^A@P"
+            },
+            "start_location": {
+                "lat": 1.4020507,
+                "lng": 103.8273695
+            },
+            "steps": [
+                {
+                    "distance": {
+                        "text": "58 m",
+                        "value": 58
+                    },
+                    "duration": {
+                        "text": "1 min",
+                        "value": 46
+                    },
+                    "end_location": {
+                        "lat": 1.402614,
+                        "lng": 103.8273412
+                    },
+                    "html_instructions": "Head <b>north</b> on <b>Lentor Ave</b>",
+                    "polyline": {
+                        "points": "yypGaxuxRc@@m@@U@G?"
+                    },
+                    "start_location": {
+                        "lat": 1.4020507,
+                        "lng": 103.8273695
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "15 m",
+                        "value": 15
+                    },
+                    "duration": {
+                        "text": "1 min",
+                        "value": 13
+                    },
+                    "end_location": {
+                        "lat": 1.4026574,
+                        "lng": 103.8272833
+                    },
+                    "html_instructions": "Turn <b>left</b>",
+                    "maneuver": "turn-left",
+                    "polyline": {
+                        "points": "i}pG{wuxRIJ"
+                    },
+                    "start_location": {
+                        "lat": 1.402614,
+                        "lng": 103.8273412
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.1 km",
+                        "value": 118
+                    },
+                    "duration": {
+                        "text": "2 mins",
+                        "value": 145
+                    },
+                    "end_location": {
+                        "lat": 1.4021999,
+                        "lng": 103.8276266
+                    },
+                    "html_instructions": "Take the pedestrian tunnel<div style=\"font-size:0.9em\">Destination will be on the left</div>",
+                    "polyline": {
+                        "points": "s}pGowuxRE_@ESEMAEAEXCHAj@A^A@P"
+                    },
+                    "start_location": {
+                        "lat": 1.4026574,
+                        "lng": 103.8272833
+                    },
+                    "travel_mode": "WALKING"
+                }
+            ],
+            "travel_mode": "WALKING"
+        },
+        {
+            "distance": {
+                "text": "23.2 km",
+                "value": 23161
+            },
+            "duration": {
+                "text": "30 mins",
+                "value": 1802
+            },
+            "end_location": {
+                "lat": 1.356501,
+                "lng": 103.986351
+            },
+            "html_instructions": "Bus towards Changi Airport",
+            "polyline": {
+                "points": "szpGuyuxR@Np@Ez@Il@Kv@Mr@QHC^Il@Mz@Ud@M^MVINGRI~Ao@BAb@Uv@a@RKBBdAs@jGmFlAyARa@Vo@p@mAz@aBn@gAt@wAn@eAXw@JY@WEYA_@EYG]s@_Gc@iDK{@E[Ce@Gc@McAaBmJg@kD]yCe@cEQuAG}ASgEG{A?qACmC?cEHqEFiEDiDCkCKwBY}A]sA{B}FiBiE_AqAwCgE{@oAeAuAm@mAa@kAk@uB_@cBq@{CSqAKiBCmCGg@MgEGgBIaGC_AMaCM_BQeBAc@E]H_@@yABgAEcBIiAGkAE_@?o@@eA@sGA}FA_CEa@s@TIPAB@N?ZBLCROX_@LOAA?S?IU?QFOD_@@UFGDKHUR]LONIV?PIVSN}AP{ALs@BqGFgA@o@@aAOeUKwLAmEFqHHcG@s@PcEL{CVcEr@oJ^eFd@yGHwAHw@@c@@m@?w@HmDDcB@gAL_Ar@aEZgBNo@Ls@t@mDb@uAb@yAt@}Bh@mAdAoCbAgCh@uARg@Zg@l@kA^k@`@g@JUPWPY\\]tA{APO`@c@FGb@g@TSb@c@Xe@\\WXYXYp@q@b@[nAqAvAqA|@_AnDwCnDyC`LiJlAeATSpLoJxF{E|CeChC}Bl@k@pAkAhAmAzA}AhAaAX_@`GeGPUrDgHXm@jAoDbAqDt@iDpAgIx@{EVoBRiAZcBZwAZwAr@yBlBqF~F{Pn@cBTw@b@cAj@wAZs@j@qARa@Rg@L[r@wAb@}@Xu@Xs@Ne@dA}BzAiDr@iBv@}At@mAZe@b@q@`@k@p@u@rAyAxBiCf@g@d@k@j@w@d@i@n@y@Zi@tAwCn@}AZ}@Le@A?DM^_BVsA|@_GZgCdAmGhA_IbAyFI?TyAVoATgAr@uC|@gCz@}B~@uBLSA?rAiC~@}Ad@q@|@kA~@kAtAyAfBcBbCqBpA_Ab@_@@B`@WjBeAnAq@rCmAnDqAdCw@b@K^IlCk@hCc@rCm@xBe@fKuBbDs@hB_@rA_@~Am@hB}@`@YfAw@pBgB`B{@b@UnDgBzAm@n@]nF{C`B_ArDoBACz@g@jBeAfBiAdBcBbAqApAiBr@yArAyDlCcIZiAxAoEbAuDvAyFR_CAqAe@iAi@c@mA{@}As@}MiEGCUGOG_Bg@gEsAyIqCUK?@oAc@gBk@s@WUGcBk@aBi@s@WkC{@QGoAS]IW?m@DkAHO?_@?sAa@uCeAeHwBcGeBi@Su@SO?QLA?Sf@K@{@[?O`@gAyFiBCAYKEAyArE"
+            },
+            "start_location": {
+                "lat": 1.402177,
+                "lng": 103.827629
+            },
+            "transit_details": {
+                "arrival_stop": {
+                    "location": {
+                        "lat": 1.356501,
+                        "lng": 103.986351
+                    },
+                    "name": "Changi Airport Ter 3"
+                },
+                "arrival_time": {
+                    "text": "11:29\u202fPM",
+                    "time_zone": "Asia/Singapore",
+                    "value": 1706369354
+                },
+                "departure_stop": {
+                    "location": {
+                        "lat": 1.402177,
+                        "lng": 103.827629
+                    },
+                    "name": "Aft Sg Seletar Bridge"
+                },
+                "departure_time": {
+                    "text": "10:59\u202fPM",
+                    "time_zone": "Asia/Singapore",
+                    "value": 1706367552
+                },
+                "headsign": "Changi Airport",
+                "headway": 480,
+                "line": {
+                    "agencies": [
+                        {
+                            "name": "Tower Transit",
+                            "url": "https://towertransit.sg/"
+                        }
+                    ],
+                    "color": "#55dd33",
+                    "name": "858",
+                    "text_color": "#000000",
+                    "vehicle": {
+                        "icon": "//maps.gstatic.com/mapfiles/transit/iw2/6/bus2.png",
+                        "name": "Bus",
+                        "type": "BUS"
+                    }
+                },
+                "num_stops": 6
+            },
+            "travel_mode": "TRANSIT"
+        },
+        {
+            "distance": {
+                "text": "0.8 km",
+                "value": 849
+            },
+            "duration": {
+                "text": "11 mins",
+                "value": 687
+            },
+            "end_location": {
+                "lat": 1.3591178,
+                "lng": 103.9889921
+            },
+            "html_instructions": "Walk to Singapore",
+            "polyline": {
+                "points": "ezgGc`uyRe@Q}By@MEaAUa@Ei@Gm@Qk@QSISIEAG?K?E?G@_@F_@@a@?YCMAKEKGIMCMAEAG?I@IBIDIFIFEHEJELETCH?EAK?I?MBMBMDIDGMi@\\YPUXM\\KVGLCDCBA@AACAAAFUDBD?B?@?BA@A?CBC@C@GKE@EDEDKFIHMHIVQPKRKXMJCNC"
+            },
+            "start_location": {
+                "lat": 1.3560335,
+                "lng": 103.9873847
+            },
+            "steps": [
+                {
+                    "distance": {
+                        "text": "0.5 km",
+                        "value": 493
+                    },
+                    "duration": {
+                        "text": "6 mins",
+                        "value": 379
+                    },
+                    "end_location": {
+                        "lat": 1.3589046,
+                        "lng": 103.9889049
+                    },
+                    "html_instructions": "Head <b>northeast</b> on <b>T3 Departure Dr</b>",
+                    "polyline": {
+                        "points": "ezgGc`uyRe@Q}By@MEaAUa@Ei@Gm@Qk@QSISIEAG?K?E?G@_@F_@@a@?YCMAKEKGIMCMAEAG?I@IBIDIFIFEHEJELETCH?"
+                    },
+                    "start_location": {
+                        "lat": 1.3560335,
+                        "lng": 103.9873847
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.2 km",
+                        "value": 219
+                    },
+                    "duration": {
+                        "text": "3 mins",
+                        "value": 179
+                    },
+                    "end_location": {
+                        "lat": 1.3600075,
+                        "lng": 103.9882486
+                    },
+                    "html_instructions": "Sharp <b>left</b>",
+                    "maneuver": "turn-sharp-left",
+                    "polyline": {
+                        "points": "clhGsiuyREAK?I?MBMBMDIDGMi@\\YPUXM\\KVGLCDCBA@AACAAAFU"
+                    },
+                    "start_location": {
+                        "lat": 1.3589046,
+                        "lng": 103.9889049
+                    },
+                    "travel_mode": "WALKING"
+                },
+                {
+                    "distance": {
+                        "text": "0.1 km",
+                        "value": 137
+                    },
+                    "duration": {
+                        "text": "2 mins",
+                        "value": 129
+                    },
+                    "end_location": {
+                        "lat": 1.3591178,
+                        "lng": 103.9889921
+                    },
+                    "html_instructions": "Turn <b>right</b>",
+                    "maneuver": "turn-right",
+                    "polyline": {
+                        "points": "ashGqeuyRDBD?B?@?BA@A?CBC@C@GKE@EDEDKFIHMHIVQPKRKXMJCNC"
+                    },
+                    "start_location": {
+                        "lat": 1.3600075,
+                        "lng": 103.9882486
+                    },
+                    "travel_mode": "WALKING"
+                }
+            ],
+            "travel_mode": "WALKING"
+        }
+    ]
+}

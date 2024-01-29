@@ -1,8 +1,7 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
-from main import DI, Universal
-import json, os, datetime, googlemaps
-from datetime import time, datetime
-from GMapsService import *
+from main import DI, Universal, GoogleMapsService
+import json, os, datetime
+import datetime
 
 editorPage = Blueprint("editorPageBP",__name__)
 
@@ -33,7 +32,7 @@ def editorDay(itineraryID, day):
     #get all locations
     endTimes = []
     #get end times
-    activityDate =  DI.data["itineraries"][itineraryID]["days"][day]["date"]
+    activityDate = DI.data["itineraries"][itineraryID]["days"][day]["date"]
     #get day date
     activities = DI.data["itineraries"][itineraryID]["days"][day]["activities"]
     for i in activities:
@@ -45,24 +44,25 @@ def editorDay(itineraryID, day):
     #create date time object
     dateTimeObjects = []
     for time in endTimes:
-        formattedTime = time[:2] + ":" + time[2:]
-        combinedDatetimeStr = f"{activityDate} {formattedTime}"
-        dateObject = datetime.datetime.strptime(combinedDatetimeStr,"%Y-%m-%d %H:%M" )
-        dateObjectString = dateObject.strftime('%Y-%m-%d %X') 
-        dateTimeObjects.append(dateObjectString)
+        combinedDatetimeStr = f"{activityDate} {time}"
+        dateObject = datetime.datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
+        dateTimeObjects.append(dateObject)
 
     #generate routes for every activity and add to dictionary
+    # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
     routes = {}
-    count = 0
-    while count + 1 == len(locations):
-        route = GoogleMapsService.generateRoute(locations[count], locations[count+1],"transit",dateTimeObjects[count])
-        routes[count] = route
-        count += 1
+    for locationIndex in range(len(locations)):
+        if not (locationIndex + 1 >= len(locations)):
+            print("Origin: {}".format(locations[locationIndex]))
+            print("Destination: {}".format(locations[locationIndex + 1]))
+            print(dateTimeObjects[locationIndex])
+            route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
+        routes[locationIndex] = route
     print(routes)
 
-    print(locations)
-    print(endTimes)
-    print(dateTimeObjects)
+    # print(locations)
+    # print(endTimes)
+    # print(dateTimeObjects)
 
     etaList = []
     print(etaList)

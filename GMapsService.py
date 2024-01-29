@@ -123,8 +123,8 @@ class GoogleMapsService:
         return embedHTML
     
     @staticmethod
-    def generateRoute(startLocation: str, endLocation: str, mode: str, departureTime):
-        # Check permission        
+    def generateRoute(startLocation: str, endLocation: str, mode: str, departureTime: datetime.datetime):
+        # Check permission
         if not GoogleMapsService.servicesEnabled:
             return "ERROR: Google Maps services are not enabled."
         
@@ -141,6 +141,7 @@ class GoogleMapsService:
             return "ERROR: Failed to obtain directions data from Google Maps; error: {}".format(e)
         
         # Extract and process relevant data
+        # return directionsData
         directionsData = directionsData[0]
         response = {}
         response["copyright"] = directionsData["copyrights"]
