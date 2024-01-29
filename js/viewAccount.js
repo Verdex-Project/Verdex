@@ -254,7 +254,7 @@ function changePassword() {
     var currentPassword = document.getElementById("currentPasswordInput");
     var newPassword = document.getElementById("newPasswordInput");
     var cfmPassword = document.getElementById("cfmPasswordInput");
-    const changePasswordMsg = document.getElementById("changePasswordMsg")
+    const changePasswordMsg = document.getElementById("changePasswordMsg");
     const saveBtn = document.getElementById("modalSaveBtn");
 
     changePasswordMsg.style.visibility = 'visible'
@@ -332,4 +332,49 @@ function changePassword() {
         saveBtn.disabled = false
         saveBtn.innerText = "Save changes"
     })
+}
+
+function aboutMe() {
+    var description = document.getElementById("description");
+
+    description.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            var newDescription = description.innerText;
+
+            axios({
+                method: 'post',
+                url: '/api/aboutMeDescription',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'VerdexAPIKey': '\{{ API_KEY }}'
+                },
+                data: {
+                    "description": newDescription
+                }
+            })
+            .then(response => {
+                if (response.status == 200) {
+                    if (!response.data.startsWith("ERROR:")) {
+                        if (!response.data.startsWith("UERROR:")) {
+                            if (response.data.startsWith("SUCCESS:")) {
+                                location.reload()
+                            } else {
+
+                                console.log("Unknown response received: " + response.data)
+                            }
+                        } else {
+                            console.log("User error occured: " + response.data)
+                        }
+                    } else {
+                        console.log("Error occured in changing password: " + response.data)
+                    }
+                } else {
+                    console.log("Non-200 responnse status code recieved from Verdex Servers.")
+                }
+            })
+            .catch(err => {
+                console.log("An error occured in connecting to Verdex Servers: " + err)
+            })
+        }
+    });
 }
