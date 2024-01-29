@@ -22,7 +22,11 @@ class Analytics:
     def checkPermissions():
         #Check if addons manager has AnalyticsEnabled value
         if "AnalyticsEnabled" in os.environ and os.environ["AnalyticsEnabled"] == "True":
-            return AddonsManager.readConfigKey("AnalyticsEnabled")==True
+            if AddonsManager.readConfigKey("AnalyticsEnabled") == True:
+                return True
+            elif AddonsManager.readConfigKey("AnalyticsEnabled") == "Key Not Found":
+                AddonsManager.setConfigKey("AnalyticsEnabled", True)
+                return True
         else:
             return False
 

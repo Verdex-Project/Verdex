@@ -23,15 +23,17 @@ def admin():
         position = "Not set"
     else:
         position = targetAccount["position"]
-    os_current = os.environ.get("AnalyticsEnabled")
-    os_current = os_current.lower() == "true"
-    print(os_current)
-    current = AddonsManager.readConfigKey("AnalyticsEnabled")
+    os_analytics_current = os.environ.get("AnalyticsEnabled")
+    os_analytics_current = os_analytics_current.lower() == "true"
+    analytics_current = AddonsManager.readConfigKey("AnalyticsEnabled")
 
-    if current == 'Key not found':
-        AddonsManager.setConfigKey("AnalyticsEnabled", os_current)
+    os_email_current = os.environ.get("EmailingServicesEnabled")
+    os_email_current = os_email_current.lower() == "true"
+    email_current = AddonsManager.readConfigKey("EmailingServicesEnabled") 
+    if email_current == "Key Not Found":
+        AddonsManager.setConfigKey("EmailingServicesEnabled", os_email_current)
 
-    return render_template('admin/system_health.html', name=name, position=position, analytics_status = os_current)
+    return render_template('admin/system_health.html', name=name, position=position, analytics_status = os_analytics_current, addons_analytics_status = analytics_current, emailer_status = os_email_current, addons_email_status = email_current)
 
 @adminHomeBP.route('/admin/send_test_email', methods=['GET'])
 def send_test_email():
@@ -58,6 +60,23 @@ def send_test_email():
     Emailer.sendEmail(email, "Test Email", altText, html)
     Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
     return redirect(url_for('admin.admin'))
+@adminHomeBP.route('/admin/toggle_emailer', methods = ['GET'])
+def toggle_emailer():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    emailer_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
+    
+    if emailer_current == True:
+        AddonsManager.setConfigKey("EmailingServicesEnabled", False)
+        Logger.log("ADMIN TOGGLE_EMAILER: Emailer disabled.")
+
+    else:
+        AddonsManager.setConfigKey("EmailingServicesEnabled", True)
+        Logger.log("ADMIN TOGGLE_EMAILER: Emailer enabled.")
+    return redirect(url_for('admin.admin'))
 
 @adminHomeBP.route('/admin/toggle_analytics', methods = ['GET'])
 def toggle_analytics():
@@ -66,15 +85,9 @@ def toggle_analytics():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
-    os_current = os.environ.get("AnalyticsEnabled")
-    current = AddonsManager.readConfigKey("AnalyticsEnabled")
-
-    if current == 'Key not found':
-        AddonsManager.setConfigKey("AnalyticsEnabled", os_current)
-        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics enabled.")
-        return redirect(url_for('admin.admin'))
+    analytics_current = AddonsManager.readConfigKey("AnalyticsEnabled")
     
-    if current == True:
+    if analytics_current == True:
         AddonsManager.setConfigKey("AnalyticsEnabled", False)
         Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics disabled.")
 

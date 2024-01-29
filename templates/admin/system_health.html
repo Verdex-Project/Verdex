@@ -22,8 +22,28 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Emailer</h5>
-          <p class="card-text">Send a test email to check if emailer is working.</p>
-          <a href="/admin/send_test_email" class="btn btn-primary">Send test email</a>
+              {% if not emailer_status %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
+                        <label class="form-check-label" for="flexSwitchCheckDisabled">Emailer service is disabled</label>
+                    </div>
+                    <p class="card-text">Send a test email to check if emailer is working.</p>
+                    <a href="/admin/send_test_email" class="btn btn-primary disabled" aria-disabled="true">Send test email</a>
+              {% elif addons_email_status %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked onclick="toggleEmailer()">
+                      <label class="form-check-label" for="flexSwitchCheckChecked">Emailer service is currently on</label>
+                    </div>
+                    <p class="card-text">Send a test email to check if emailer is working.</p>
+                    <a href="/admin/send_test_email" class="btn btn-primary">Send test email</a>
+              {% elif not addons_email_status %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleEmailer()">
+                      <label class="form-check-label" for="flexSwitchCheckDefault">Emailer service is currently off</label>
+                  </div>
+                  <p class="card-text">Send a test email to check if emailer is working.</p>
+                  <a href="/admin/send_test_email" class="btn btn-primary disabled" aria-disabled="true">Send test email</a>
+              {% endif %}
         </div>
       </div>
     </div>
@@ -36,16 +56,21 @@
           <h5 class="card-title">Analytics</h5>
           <p class="card-text">Toggle on and off the Analytics system</p>
           <p class ="card-text"></p>
-              {% if analytics_status %}
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
-                        <label class="form-check-label" for="flexSwitchCheckChecked">Default switch checkbox input</label>
-                    </div>
-              {% else %}
+              {% if not analytics_status %}
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
-                        <label class="form-check-label" for="flexSwitchCheckDisabled">Disabled switch checkbox input</label>
+                        <label class="form-check-label" for="flexSwitchCheckDisabled">Analytics service is disabled</label>
                     </div>
+              {% elif addons_analytics_status %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="flexSwitchCheckChecked">Analytics service is currently on</label>
+                    </div>
+              {% elif not addons_analytics_status %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="flexSwitchCheckDefault">Analytics service is currently off</label>
+                  </div>
               {% endif %}
         </div>
       </div>
@@ -63,5 +88,11 @@
 
 <script>
   document.getElementById("healthSidebarLink").style.color = "black"
+  function toggleAnalytics(){
+    window.location.href = "/admin/toggle_analytics"
+  }
+  function toggleEmailer(){
+    window.location.href = "/admin/toggle_emailer"
+  }
 </script>
 {% endblock %}
