@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -16,6 +16,135 @@ def checkHeaders(headers):
         return "ERROR: Invalid API key."
 
     return True
+
+@apiBP.route('/api/sendPasswordResetKey', methods=['POST'])
+def sendPasswordResetKey():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "usernameOrEmail" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    ## Check if email / username exists
+    usernameOrEmail = request.json["usernameOrEmail"]
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+        elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+    if targetAccountID == None:
+        return "UERROR: Account doesnt exist."
+    
+    resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    resetKeyValue = Analytics.generateRandomID(customLength=6)
+    resetKey = f"{resetKeyTime}_{resetKeyValue}"
+    DI.data["accounts"][targetAccountID]["resetKey"] = resetKey
+    DI.save()
+
+    altText = f"""
+    Dear {DI.data["accounts"][targetAccountID]["username"]},
+
+    We received a request to recover your account. To proceed, please use the following reset key: 
+    {resetKeyValue}
+
+    If you did not request this, please ignore this email.
+
+    Kind regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/forgetCredentialsEmail.html",
+        username = DI.data["accounts"][targetAccountID]["username"],
+        resetKey = resetKeyValue,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(DI.data["accounts"][targetAccountID]["email"], "Verdex Account Recovery", altText, html)
+    
+    return "SUCCESS: Password reset key sent to your email."
+
+@apiBP.route('/api/passwordReset', methods=['POST'])
+def passwordReset():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "resetKeyValue" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "cfmPassword" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "usernameOrEmail" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    usernameOrEmail = request.json["usernameOrEmail"]
+    newPassword = request.json["newPassword"].strip()
+    cfmPassword = request.json["cfmPassword"].strip()
+
+    ## Get user targetAccountID using usernameOrEmail
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+        elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+    if targetAccountID == None:
+        return "UERROR: No such account with that email or username."
+
+    ## Expire reset keys
+    expiredRequestingAccountsResetKey = False
+    for accountID in DI.data["accounts"]:
+        if "resetKey" in DI.data["accounts"][accountID]:
+            key = DI.data["accounts"][accountID]["resetKey"]
+            keySplit = key.split('_')
+            keyTimeStr = keySplit[0]
+            keyValue = keySplit[1]
+            ## Check reset key value is valid
+            delta = datetime.datetime.now() - datetime.datetime.strptime(keyTimeStr, "%Y-%m-%dT%H:%M:%S")
+            if delta.total_seconds() > 900:
+                del DI.data["accounts"][accountID]["resetKey"]
+                Logger.log("ACCOUNTS PASSWORDRESET: Deleted expired reset key for account ID {}.".format(accountID))
+                if accountID == targetAccountID:
+                    expiredRequestingAccountsResetKey = True
+    
+    if expiredRequestingAccountsResetKey:
+        return "UERROR: Reset key has expired. Please refresh and try again."
+
+    ## Check if reset key value is correct
+    if "resetKey" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Please request a password reset key first."
+    if request.json["resetKeyValue"] != DI.data["accounts"][targetAccountID]["resetKey"].split("_")[1]:
+        return "UERROR: Incorrect reset key."
+
+    ## Password validation
+    if newPassword != cfmPassword:
+        return "UERROR: New and confirm password fields do not match."
+    if len(newPassword) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password."
+    
+    ### Update DI
+    DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    del DI.data["accounts"][targetAccountID]["resetKey"]
+    DI.save()
+
+    Logger.log("ACCOUNTS PASSWORDRESET: Password reset for account ID {} successful.".format(targetAccountID))
+    return "SUCCESS: Password has been reset."
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
@@ -97,7 +226,8 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False,
         "admin": False,
-        "forumBanned": False
+        "forumBanned": False,
+        "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -115,7 +245,7 @@ def createAccount():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -238,7 +368,7 @@ def editEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -290,7 +420,7 @@ def resendEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -430,9 +560,16 @@ def like_post():
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
-        DI.save()
-        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        if targetAccountID not in DI.data["forum"][post_id]["users_who_liked"]:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
+            DI.data["forum"][post_id]["users_who_liked"].append(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        else:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) - 1)
+            DI.data["forum"][post_id]["users_who_liked"].remove(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
         
     return "ERROR: Post ID not found in system."
 
@@ -530,7 +667,7 @@ def deleteComment():
 
     if post_id in DI.data["forum"]:
         if comment_id in DI.data["forum"][post_id]["comments"]:
-            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[2]:
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[1]:
                 del DI.data["forum"][post_id]["comments"][comment_id]
                 DI.save()
                 return "SUCCESS: Comment was successfully removed from the post in the system."
@@ -570,7 +707,7 @@ def submitPost():
         "post_description": post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
@@ -604,7 +741,7 @@ def commentPost():
         if 'comments' not in DI.data["forum"][post_id]:
             DI.data["forum"][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID)] = comment_description
+        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID + "_" + DI.data["accounts"][targetAccountID]["username"])] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
     else:
@@ -706,7 +843,7 @@ def submitPostWithItinerary():
         "post_description": itinerary_post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": itinerary_post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
@@ -720,6 +857,39 @@ def submitPostWithItinerary():
     DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Itinerary was successfully shared to the forum."
+
+@apiBP.route('/api/submitReport', methods=['POST'])
+def submitReport():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "author_acc_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "report_reason" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    author_acc_id = request.json['author_acc_id']
+    report_reason = request.json['report_reason']
+
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+
+    if author_acc_id in DI.data["accounts"]:
+        if targetAccountID != author_acc_id:
+            DI.data["accounts"][author_acc_id]["reports"][str(targetAccountID + "_" + postDateTime)] = report_reason
+            DI.save()
+            return "SUCCESS: Report was successfully submitted to the system."
+        else:
+            return "UERROR: You can't report yourself!"
+    else:
+        return "ERROR: User account ID not found in system."
+
+
 
 @apiBP.route("/api/editActivity", methods = ['POST'])
 def editActivity():

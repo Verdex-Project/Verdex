@@ -2,6 +2,7 @@ import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from models import *
+from FolderManager import FolderManager
 from emailer import Emailer
 from analytics import Analytics
 from GMapsService import GoogleMapsService
@@ -140,6 +141,12 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Set up FolderManager
+    response = FolderManager.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up FolderManager; error: " + response)
+        sys.exit(1)
 
     ## Get Emailer to check context
     Emailer.checkContext()

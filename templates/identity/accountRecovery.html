@@ -1,0 +1,58 @@
+{% extends "baseNav.html" %}
+
+{% block title %}Account Recovery{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/accountRecovery.css">
+{% endblock %}
+
+{% block body %}
+<div id="top">
+    <h1 id="heading">Recover Your Account</h1>
+</div>
+
+<div id="content">
+    <div id="backDiv">
+        <button id="back" type="button" class="btn btn-outline-secondary" onclick="backToLogin()">Back</button>
+    </div>
+
+    <div id="email">
+        <div class="mb-3">
+            <label for="usernameOrEmail" class="form-label">Enter Username or Email</label>
+            <input type="text" class="form-control" id="usernameOrEmail" placeholder="Username / Email">
+            <div id="usernameMsg"></div>
+        </div>
+        <div id="emailResetKeyDiv">
+            <button id="emailResetKeyBtn" type="button" class="btn btn-outline-success" onclick="sendPasswordResetKey()">Send Password Reset Key</button>
+        </div>
+    </div>
+
+    <div id="reset">
+        <div class="mb-3">
+            <label for="resetKey" class="form-label">Enter Reset Key</label>
+            <input type="text" class="form-control" id="resetKey" placeholder="Reset Key">
+        </div>
+
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">Reset Password</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="Password">
+        </div>
+
+        <div class="mb-3">
+            <label for="cfmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="cfmPassword" placeholder="Password">
+            <div id="resetPasswordMsg"></div>
+        </div>
+
+        <div>
+            <button id="resetPasswordBtn" type="button" class="btn btn-primary" onclick="passwordReset()">Reset Password</button>
+        </div>
+    </div>
+</div>
+
+<br>
+<div id="copyright">
+    <script src="/assets/copyright"></script>
+</div>
+<script src="/assets/accountRecoveryJS"></script>
+{% endblock %}
