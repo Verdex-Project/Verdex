@@ -1,7 +1,7 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
 from main import DI, Universal, GoogleMapsService
 import json, os, datetime
-import datetime
+from datetime import timedelta
 
 editorPage = Blueprint("editorPageBP",__name__)
 
@@ -13,19 +13,78 @@ def getArriveTime(route,index,time):
     arriveTime = int(time) + int(duration)
     return
 
-def cleanRoute(route, index):
+def cleanRoute(route,index,time):
     cleanedRoute = {}
 
+    startTime = time
+    cleanedRoute[index]["startTime"] = startTime
+
     eta = route['duration']
-    cleanRoute[index]["eta"] = eta
+    cleanedRoute[index]["eta"] = eta
 
-    if route["steps"]["travel_mode"] == "WALKING":
-        duration = route[""]
-    if route["steps"]["travel_mode"] == "TRANSIT":
-        pass
-    else:
-        return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
+    for i in route["steps"]:
+        if route["steps"][i]["travel_mode"] == "WALKING":
+            duration = route["steps"][i]["duration"]
+            for part in duration:
+                if part.isdigit():
+                    duration = part
+                    print(duration)
+                    break
 
+            initialTimeStr = startTime
+            initialTime = datetime.strptime(initialTimeStr, "%H%M")
+            arriveTime = initialTime + timedelta(minutes=duration)
+            arriveTime = arriveTime.strftime("%H%M")
+
+            startInstruction = route["steps"][i]["start_instruction"]
+
+            walkIcon = "static/Images/walkIcon.png"
+
+            transportType = "Walk"
+
+            walkTime = route["steps"][i]["duration"]["text"]
+
+            walkDistance = route["steps"][i]["distance"]["text"]
+
+            cleanedRoute[index]["startInstruction"] = startInstruction
+            cleanedRoute[index]["duration"] = arriveTime
+            cleanedRoute[index]["icon"] = walkIcon
+            cleanedRoute[index]["transportType"] = transportType
+            cleanedRoute[index]["walkTime"] = walkTime
+            cleanedRoute[index]["walkDistance"] = walkDistance
+
+        if route["steps"][i]["travel_mode"] == "TRANSIT":
+            duration = route["steps"][i]["duration"]
+
+            initialTimeStr = startTime
+            initialTime = datetime.strptime(initialTimeStr, "%H%M")
+            newTime = initialTime + timedelta(minutes=duration)
+            newTime = newTime.strftime("%H%M")
+
+            startInstruction = route["steps"][i]["start_instruction"]
+
+            if route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] == "Bus":
+                transitIcon = "static/Images/busIcon.png"
+                transportType = route["steps"][i]["transit_details"]["line"]["vehicle"]["name"]
+            elif route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] == "Subway":
+                route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] = "MRT"
+                transitIcon = "static/Images/subwayIcon.png"
+                transportType = route["steps"][i]["transit_details"]["line"]["vehicle"]["name"]
+ 
+            transitTime = route["steps"][i]["duration"]["text"]
+
+            transitDistance = route["steps"][i]["distance"]["text"]
+
+            cleanedRoute[index]["startInstruction"] = startInstruction
+            cleanedRoute[index]["duration"] = arriveTime
+            cleanedRoute[index]["icon"] = transitIcon
+            cleanedRoute[index]["transportType"] = transportType
+            cleanedRoute[index]["transitTime"] = transitTime
+            cleanedRoute[index]["transitDistance"] = transitDistance
+        else:
+            return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
+        
+    startTime = arriveTime
 
     return cleanedRoute
     
@@ -84,10 +143,10 @@ def editorDay(itineraryID, day):
             print("Destination: {}".format(locations[locationIndex + 1]))
             print(dateTimeObjects[locationIndex])
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
-            eta = getETA(route)
             routes[locationIndex] = route
-            cleanedRoute[locationIndex] = {}
-            cleanedRoute[locationIndex]["eta"] = eta
+            # cleanedRoute[locationIndex] = {}
+            # cleanedRoute[locationIndex]["eta"] = 
+            cleanRoute(route, str(locationIndex), dateTimeObjects[locationIndex])
     print(routes)
     print(cleanedRoute)
 
