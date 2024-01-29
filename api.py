@@ -1039,4 +1039,4 @@ def deleteItinerary():
     del DI.data["itineraries"][itineraryID]
     DI.save()
     
-    return "SUCCESS: Itinerarty is deleted."
+    return "SUCCESS: Itinerary is deleted."
