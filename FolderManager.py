@@ -1,65 +1,68 @@
 import os, shutil
 
-class FolderManager :
-    
+class FolderManager:
+    tldName = "UserFolders"
+
+    @staticmethod
+    def setup():
+        if not os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName)):
+            try:
+                os.mkdir(os.path.join(os.getcwd(), FolderManager.tldName))
+            except Exception as e:
+                return "ERROR: Failed to create top-level directory; error: {}".format(e)
+        return "Success"
+
     @staticmethod
     def registerFolder(accID):
-        if os.path.isdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))):
-            # use accountid instead, remove .pfp => pfp "UserFolders", remove space, remove logging, return errors / bool
-            # Path of a specific user folder: os.path.join(os.getcwd(), "UserFolders", {ACCOUTNIDHERE})
-            # Path of a pfp file in a specific user folder: os.path.join(os.getcwd(), "UserFolders", {ACCOUNTIDHERE}, "{ACCOUNTIDHERE}pfp.?")
-            return "FMERROR: The folder is already registered."
+        if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)):
+            return True
         
         try:
-            os.mkdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID)))
+            os.mkdir(os.path.join(os.getcwd(), FolderManager.tldName, accID))
             print("FM: Registered folder for account {}".format(accID))
         except Exception as e:
-            print("FMERROR: {}".format(e))
-            return "FMERROR: There was an unknown error in performing the action."
+            return "ERROR: Failed to register folder; error: {}".format(e)
         
-        return "FMSUCCESS: Folder registered."
+        return True
 
     @staticmethod
     def checkIfFolderIsRegistered(accID):
-        if os.path.isdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))):
+        if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)):
             return True
         else:
             return False
 
     @staticmethod
     def deleteFolder(accID):
-
-        if os.path.isdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))):
+        if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)):
             try:
-                shutil.rmtree(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID)), ignore_errors=True)
+                shutil.rmtree(os.path.join(os.getcwd(), FolderManager.tldName, accID), ignore_errors=True)
                 return True
             except Exception as e:
-                print("FMERROR: {}".format(e))
-                return "FMERROR: There was an unknown error in performing the action."
+                return "ERROR: Failed to delete folder; error: {}".format(e)
         else:
-            return "FMERROR: No such folder registered."
+            return "ERROR: No such folder registered."
 
     @staticmethod
     def getFilenames(accID):
-        if os.path.isdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))):
-            filenames = [f for f in os.listdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))) if os.path.isfile(os.path.join(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID)), f))]
+        if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)):
+            filenames = [f for f in os.listdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)) if os.path.isfile(os.path.join(os.getcwd(), FolderManager.tldName, accID, f))]
             if filenames == []:
                 filenames = []
             return filenames
         else:
-            return "FMERROR: No such folder exists."
+            return "ERROR: No such folder exists."
 
     @staticmethod
     def deleteFile(accID, filename):
-        if os.path.isdir(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID))):
-            if os.path.isfile(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID), filename)):
+        if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName, accID)):
+            if os.path.isfile(os.path.join(os.getcwd(), FolderManager.tldName, accID, filename)):
                 try:
-                    os.remove(os.path.join(os.getcwd(), "UserFolders", "{}pfp.png".format(accID), filename))
-                    return "FMSUCCESS: Successfully deleted the file."
+                    os.remove(os.path.join(os.getcwd(), FolderManager.tldName, accID, filename))
+                    return True
                 except Exception as e:
-                    print("FMERROR: {}".format(e))
-                    return "FMERROR: An unknown error occured in deleting the file."
+                    return "ERROR: An unknown error occured in deleting the file."
             else:
-                return "FMERROR: No such file exists in the folder registered under that username."
+                return "ERROR: No such file exists in the folder registered under that account ID."
         else:
-            return "FMERROR: No such folder exists."
+            return "ERROR: No such folder exists."

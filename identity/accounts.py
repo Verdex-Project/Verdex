@@ -17,6 +17,10 @@ def signUp():
         return redirect(url_for('accounts.myAccount'))
     return render_template('identity/signup.html')
 
+@accountsBP.route('/account/accountRecovery')
+def accountRecovery():
+    return render_template('identity/accountRecovery.html')
+
 ## MyAccount route
 @accountsBP.route("/account/info")
 def myAccount():
