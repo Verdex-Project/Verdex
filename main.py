@@ -191,7 +191,7 @@ if __name__ == '__main__':
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
+                                "name" : "Sentosa Island",
                                 "location" : "Singapore",
                                 "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
@@ -278,7 +278,7 @@ if __name__ == '__main__':
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
+                                "name" : "Sentosa Island",
                                 "location" : "Singapore",
                                 "locationCoordinates" : {"lar" : "246.680", "long" : "246.468"},
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",

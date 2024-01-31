@@ -48,23 +48,12 @@
                                     <span hidden id="activityId">{{ activityId }}</span>
                                     <h3 id="startTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
                                 </div>
-                                <!-- <div id="timeDropdown">
-                                    <button id="timeDropButton">▼</button>
-                                    <div id="timeDropdownContent">
-                                    </div>
-                                </div> -->
                             </div>
                             <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                             <div id="timeEnd">
                                 <div>
                                     <h3 id="endTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
                                 </div>
-                                <!-- <div id="timeDropdown">
-                                    <button id="timeDropButton">▼</button>
-                                    <div id="timeDropdownContent">
-                                        <time radio selection (interval:30minutes/1hour)
-                                    </div>
-                                </div> -->
                             </div>  
                         </div>
 
@@ -150,9 +139,25 @@
                                     <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong></p>
                                 </div>
                                 <div id="detailJourney">
-                                    <button id="detailJourneyButton" onclick="detailedJourney()">
+                                    <button id="detailJourneyButton" onclick="detailedJourney()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute">
                                         <img src="/static//Images/expandButton.png" alt="#">
                                     </button>
+                                    <div class="modal fade" id="expandedRoute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    ...
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -166,24 +171,12 @@
                                     <span hidden id="activityId">{{ activityId }}</span>
                                     <h3 id="startTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
                                 </div>
-                                <!-- <div id="timeDropdown">
-                                    <button id="timeDropButton">▼</button>
-                                    <div id="timeDropdownContent">
-                                        time radio selection (interval:30minutes/1hour)
-                                    </div>
-                                </div> -->
                             </div>
                             <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                             <div id="timeEnd">
                                 <div>
                                     <h3 id="endTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
                                 </div>
-                                <!-- <div id="timeDropdown">
-                                    <button id="timeDropButton">▼</button>
-                                    <div id="timeDropdownContent">
-                                        time radio selection (interval:30minutes/1hour)
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
 
@@ -277,13 +270,13 @@
                     {% if loop.last %} 
                         <button type="button" class="addActivityButton" id="addActivityButton" 
                             onclick="addNewActivity('{{ activityId }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['lat'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['locationCoordinates']['long'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">+</button>
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['location'] }}', 
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['name'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['locationCoordinates']['lat'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['locationCoordinates']['long'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['imageURL'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['startTime'] }}',
+                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['endTime'] }}')">+</button>
                     {% endif %}
                 {% endfor %}
             </div>

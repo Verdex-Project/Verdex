@@ -152,6 +152,9 @@ def editorDay(itineraryID, day):
         dateObject = datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
         dateTimeObjects.append(dateObject)
 
+    print(locations)
+    print(dateTimeObjects)
+
     #generate routes for every activity and add to dictionary
     # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
     routes = {}
@@ -258,7 +261,8 @@ def editorDay(itineraryID, day):
         day = day, 
         itinerary_data = DI.data, 
         dayCountList = dayCountList,
-        activityCountList = activityCountList
+        activityCountList = activityCountList,
+        cleanedRoutes = cleanedRoutes
         )
 
 
