@@ -1,91 +1,109 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
 from main import DI, Universal, GoogleMapsService
-import json, os, datetime
-from datetime import timedelta
+import json, os
+from datetime import datetime, timedelta
 
 editorPage = Blueprint("editorPageBP",__name__)
 
-def getETA(route):
-    return route['duration']
-
-def getArriveTime(route,index,time):
-    duration = route[index]
-    arriveTime = int(time) + int(duration)
-    return
-
-def cleanRoute(route,index,time):
+def cleanRoute(route,time):
     cleanedRoute = {}
+    cleanedRoute["steps"] = []
 
     startTime = time
-    cleanedRoute[index]["startTime"] = startTime
+    cleanedRoute["startTime"] = startTime
+    print(cleanedRoute["startTime"])
 
     eta = route['duration']
-    cleanedRoute[index]["eta"] = eta
+    cleanedRoute["eta"] = eta
+    print(cleanedRoute["eta"])
 
-    for i in route["steps"]:
-        if route["steps"][i]["travel_mode"] == "WALKING":
-            duration = route["steps"][i]["duration"]
-            for part in duration:
-                if part.isdigit():
-                    duration = part
-                    print(duration)
-                    break
+    for stepListDictionary in route["steps"]:
+        stepIndex = 1
+        stepsDictionary = {}
+        travelMode = stepListDictionary["travel_mode"]
+        if travelMode == "WALKING":
+            duration = stepListDictionary["duration"]["text"]
+            durationString = ''.join(filter(str.isdigit, duration))
+            print(durationString)
 
             initialTimeStr = startTime
             initialTime = datetime.strptime(initialTimeStr, "%H%M")
-            arriveTime = initialTime + timedelta(minutes=duration)
+            arriveTime = initialTime + timedelta(minutes=int(durationString))
             arriveTime = arriveTime.strftime("%H%M")
 
-            startInstruction = route["steps"][i]["start_instruction"]
+            startInstruction = stepListDictionary["html_instructions"]
 
             walkIcon = "static/Images/walkIcon.png"
 
             transportType = "Walk"
 
-            walkTime = route["steps"][i]["duration"]["text"]
+            walkTime = stepListDictionary["duration"]["text"]
 
-            walkDistance = route["steps"][i]["distance"]["text"]
+            walkDistance = stepListDictionary["distance"]["text"]
 
-            cleanedRoute[index]["startInstruction"] = startInstruction
-            cleanedRoute[index]["duration"] = arriveTime
-            cleanedRoute[index]["icon"] = walkIcon
-            cleanedRoute[index]["transportType"] = transportType
-            cleanedRoute[index]["walkTime"] = walkTime
-            cleanedRoute[index]["walkDistance"] = walkDistance
+            stepsDictionary["startInstruction"] = startInstruction
+            stepsDictionary["startTime"] = arriveTime
+            stepsDictionary["icon"] = walkIcon
+            stepsDictionary["transportType"] = transportType
+            stepsDictionary["walkTime"] = walkTime
+            stepsDictionary["walkDistance"] = walkDistance
 
-        if route["steps"][i]["travel_mode"] == "TRANSIT":
-            duration = route["steps"][i]["duration"]
+            cleanedRoute["steps"].append(stepsDictionary)
+
+            startTime = arriveTime
+            stepIndex += 1
+
+        elif travelMode == "TRANSIT":
+            duration = stepListDictionary["duration"]["text"]
+            durationString = ''.join(filter(str.isdigit, duration))
+            print(durationString)
 
             initialTimeStr = startTime
             initialTime = datetime.strptime(initialTimeStr, "%H%M")
-            newTime = initialTime + timedelta(minutes=duration)
-            newTime = newTime.strftime("%H%M")
+            arriveTime = initialTime + timedelta(minutes=int(durationString))
+            arriveTime = arriveTime.strftime("%H%M")
 
-            startInstruction = route["steps"][i]["start_instruction"]
+            startInstruction = stepListDictionary["html_instructions"]
 
-            if route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] == "Bus":
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Bus":
                 transitIcon = "static/Images/busIcon.png"
-                transportType = route["steps"][i]["transit_details"]["line"]["vehicle"]["name"]
-            elif route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] == "Subway":
-                route["steps"][i]["transit_details"]["line"]["vehicle"]["name"] = "MRT"
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Subway":
+                stepListDictionary["transit_details"]["line"]["vehicle"]["name"] = "MRT"
                 transitIcon = "static/Images/subwayIcon.png"
-                transportType = route["steps"][i]["transit_details"]["line"]["vehicle"]["name"]
- 
-            transitTime = route["steps"][i]["duration"]["text"]
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Tram":
+                stepListDictionary["transit_details"]["line"]["vehicle"]["name"] = "Tram"
+                transitIcon = "static/Images/subwayIcon.png"
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
 
-            transitDistance = route["steps"][i]["distance"]["text"]
 
-            cleanedRoute[index]["startInstruction"] = startInstruction
-            cleanedRoute[index]["duration"] = arriveTime
-            cleanedRoute[index]["icon"] = transitIcon
-            cleanedRoute[index]["transportType"] = transportType
-            cleanedRoute[index]["transitTime"] = transitTime
-            cleanedRoute[index]["transitDistance"] = transitDistance
+            transitTime = stepListDictionary["duration"]["text"]
+
+            transitDistance = stepListDictionary["distance"]["text"]
+
+            departure = stepListDictionary["transit_details"]["departure_stop"]["name"]
+
+            arrival = stepListDictionary["transit_details"]["arrival_stop"]["name"]
+
+            stepsDictionary["startInstruction"] = startInstruction
+            stepsDictionary["startTime"] = arriveTime
+            stepsDictionary["icon"] = transitIcon
+            stepsDictionary["transportType"] = transportType
+            stepsDictionary["transitTime"] = transitTime
+            stepsDictionary["transitDistance"] = transitDistance
+            stepsDictionary["departure"] = departure
+            stepsDictionary["arrival"] = arrival
+
+            cleanedRoute["steps"].append(stepsDictionary)
+
+            startTime = arriveTime
+            stepIndex += 1
         else:
             return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
-        
-    startTime = arriveTime
 
+    print(stepsDictionary)
+    print(cleanedRoute)
     return cleanedRoute
     
 
@@ -112,7 +130,7 @@ def editorDay(itineraryID, day):
     if day not in DI.data["itineraries"][itineraryID]["days"]:
         return redirect(url_for("error",error="Day Not Found!"))
 
-    cleanedRoute = {}
+    cleanedRoutes = {}
 
     locations = []
     #get all locations
@@ -131,7 +149,7 @@ def editorDay(itineraryID, day):
     dateTimeObjects = []
     for time in endTimes:
         combinedDatetimeStr = f"{activityDate} {time}"
-        dateObject = datetime.datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
+        dateObject = datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
         dateTimeObjects.append(dateObject)
 
     #generate routes for every activity and add to dictionary
@@ -144,21 +162,15 @@ def editorDay(itineraryID, day):
             print(dateTimeObjects[locationIndex])
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
             routes[locationIndex] = route
-            # cleanedRoute[locationIndex] = {}
-            # cleanedRoute[locationIndex]["eta"] = 
-            cleanRoute(route, str(locationIndex), dateTimeObjects[locationIndex])
+            cleanedRoute = cleanRoute(route, endTimes[locationIndex])
+            cleanedRoutes[locationIndex] = cleanedRoute
     print(routes)
-    print(cleanedRoute)
+    print(cleanedRoutes)
 
     # print(locations)
     # print(endTimes)
     # print(dateTimeObjects)
 
-    etaList = []
-
-    for i in routes:
-        etaList.append(routes[i]['duration'])
-    print(etaList)
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:

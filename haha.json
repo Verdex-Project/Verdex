@@ -1,0 +1,50 @@
+{
+    "steps": [
+        {
+            "startInstruction": "Walk to Yio Chu Kang",
+            "startTime": "0906",
+            "icon": "static/Images/walkIcon.png",
+            "transportType": "Walk",
+            "walkTime": "6 mins",
+            "walkDistance": "0.5 km"
+        },
+        {
+            "startInstruction": "Subway towards Marina South Pier",
+            "startTime": "0918",
+            "icon": "static/Images/subwayIcon.png",
+            "transportType": "MRT",
+            "transitTime": "12 mins",
+            "transitDistance": "8.5 km",
+            "departure": "Yio Chu Kang",
+            "arrival": "Newton"
+        },
+        {
+            "startInstruction": "Walk to Newton",
+            "startTime": "0921",
+            "icon": "static/Images/walkIcon.png",
+            "transportType": "Walk",
+            "walkTime": "3 mins",
+            "walkDistance": "0.1 km"
+        },
+        {
+            "startInstruction": "Subway towards Expo",
+            "startTime": "0931",
+            "icon": "static/Images/subwayIcon.png",
+            "transportType": "MRT",
+            "transitTime": "10 mins",
+            "transitDistance": "4.9 km",
+            "departure": "Newton",
+            "arrival": "Bayfront"
+        },
+        {
+            "startInstruction": "Walk to 10 Bayfront Ave, Singapore 018956",
+            "startTime": "0933",
+            "icon": "static/Images/walkIcon.png",
+            "transportType": "Walk",
+            "walkTime": "2 mins",
+            "walkDistance": "0.3 km"
+        }
+    ],
+    "startTime": "0900",
+    "eta": "45 mins"
+}
