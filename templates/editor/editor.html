@@ -136,7 +136,7 @@
                         <div id="journeyBox">
                             <div id="journeyBox-box">
                                 <div id="transportDescription">
-                                    <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong></p>
+                                    <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1)| string]['name'] }}</strong></p>
                                 </div>
                                 <div id="detailJourney">
                                     <button id="detailJourneyButton" onclick="detailedJourney()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute">
@@ -146,13 +146,20 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Expanded Route</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    ...
+                                                    <div id="modalTitleTexty">
+                                                        <p><strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</strong></p>
+                                                    </div>
+                                                    <div id="modalEta">
+                                                        {{ cleanedRoutes[activityId]["eta"] }}
+                                                    </div>
+
                                                 </div>
                                                 <div class="modal-footer">
+                                                    <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}&destination={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}">https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}&destination={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</a>
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                 </div>
                                             </div>
