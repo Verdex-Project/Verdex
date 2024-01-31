@@ -876,13 +876,13 @@ def editActivity():
     if not endTime.isnumeric():
         return "UERROR: End Time is not a numeric value"
 
-    if len(startTime) != 4 or int(startTime[:2]) < 25 or int(startTime[-2:]) <60 :
+    if len(startTime) != 4 or int(startTime[0:2]) >= 24 or int(startTime[2:]) >= 60 :
         return "UERROR: Start Time Format is not correct"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
     timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30  or int(endTime[:2]) < 25  or int(endTime[-2:]) <60 :
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30  or int(endTime[0:2]) >= 24  or int(endTime[2:]) >= 60 :
         return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
@@ -892,8 +892,8 @@ def editActivity():
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
 
-    if len(name) > 25:
-        return "UERROR: Activity name should be less than 25 characters!"
+    if len(name) > 40:
+        return "UERROR: Activity name should be less than 40 characters!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
 

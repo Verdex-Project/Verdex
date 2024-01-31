@@ -419,7 +419,7 @@ function checkLocation(location) {
 
 function checkName(name) {
     name = capitalizeEachWord(name);
-    if (name.length > 25) {
+    if (name.length > 40) {
         return false
     } else {
         return true
@@ -427,12 +427,12 @@ function checkName(name) {
 }
 
 function checkStartTime(startTime) {
-    return (!isNaN(startTime) && String(startTime).length == 4)
+    return (!isNaN(startTime) && String(startTime).length == 4 && startTime.slice(0,2) < 24 && startTime.slice(2) < 60)
 }
 
 function checkEndTime(endTime,startTime) {
     let timeDiff = parseInt(endTime) - parseInt(startTime)
-    return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30)
+    return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30 && endTime.slice(0,2) < 24 && endTime.slice(2) < 60)
 }
 
 function saveActivityEdits(activityId,location, name, startTime, endTime) {
@@ -486,7 +486,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 
     if (!checkName(newName)) {
-        errorDisplayModal.innerHTML = "Activity name should not be more than 25 characters!"
+        errorDisplayModal.innerHTML = "Activity name should not be more than 40 characters!"
         return
     } else {
         errorDisplayModal.innerHTML = ""
@@ -494,7 +494,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 
 
-    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime) && checkLocation(newLocation) && checkName(newName))
+    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime,newStartTime) && checkLocation(newLocation) && checkName(newName))
     console.log(checkStartTime(newStartTime))
     console.log(checkEndTime(newEndTime, newStartTime))
     console.log(checkLocation(newLocation))

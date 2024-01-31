@@ -139,11 +139,11 @@
                                     <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1)| string]['name'] }}</strong></p>
                                 </div>
                                 <div id="detailJourney">
-                                    <button id="detailJourneyButton" onclick="detailedJourney()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute">
+                                    <button id="detailJourneyButton" onclick="detailedJourney()" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute{{ activityId }}">
                                         <img src="/static//Images/expandButton.png" alt="#">
                                     </button>
-                                    <div class="modal fade" id="expandedRoute" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
+                                    <div class="modal fade" id="expandedRoute{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Expanded Route</h1>
