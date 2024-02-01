@@ -18,79 +18,363 @@
         <h3>Your Itinerary</h3>
     </div>
 
-    <div id="completeItinerary"> <!--FINAL ITINERARY-->
-        <div id="itineraryLogFinal">
-            {% for i in days %}
-                {% for j in activities %}
-                {% if not loop.last %}
-                    <div id="dayAndDateHeader">
-                        <div id="dayFinal">
-                            <h1>Day {{ i }}</h1>
+    <div id="editorPanel-sub-header"> <!--SUB HEADER-->
+        <div id="sub-headder-box-left">
+            {% if day != dayCountList[0] %}
+            <div id="changeDayArrowLeft" onclick="previousDay()"><button><strong><</strong></button></div>
+            {% else %}
+            <div id="changeDayArrowLeft-no"><button><strong><</strong></button></div>
+            {% endif %}
+            <div id="dayCount"><h4>Day {{ day }}</h4></div>
+            {% if day != dayCountList[-1] %}
+            <div id="changeDayArrowRight" onclick="nextDay()"><button><strong>></strong></button></div>
+            {% else %}
+            <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
+            {% endif %}
+        </div>
+        <div id="sub-headder-box-right">
+            <div id="date">
+                <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
+            </div>
+        </div>
+    </div>
+
+    <div id="activityLogBox" ondrop="drop(event)" ondragover="allowDrop(event)"> <!--ACTIVITY LOG--> <!--scrollable-->
+        <!--get current day from dayCount-->
+        {% for activityId in activityCountList %}
+            {% if not loop.last %}
+                <div id="activityBox">
+                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                        <div id="timeStart">
+                            <div>
+                                <span hidden id="activityId">{{ activityId }}</span>
+                                <h3 id="startTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                            </div>
                         </div>
-                        <div id="dateFinal">
-                            <h6>{{ date }}</h6>
-                        </div>
+                        <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                        <div id="timeEnd">
+                            <div>
+                                <h3 id="endTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                            </div>
+                        </div>  
                     </div>
+
+                    <div id="activityPicture"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+
+                    <div id="activityFooter">
+                        <div id="activityDescription"> <!--left-->
+                            <h5 id="activityLocation">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                            <h5> &nbsp | &nbsp  </h5>
+                            <h5 id="activityName">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
+                            <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                        </div>
+
+                        <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Edit This Activity! </h5>
+                                            <span style="color:gray">(Click on the elements that you want to edit)</span></h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+                                            <!--get current day from dayCount-->
+                                            <div id="activityBox">
+                                                <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                                                    <div id="timeStart">
+                                                        <div>
+                                                            <span hidden id="activityId">{{ activityId }}</span>
+                                                            <h3 id="startTimeModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                                                    <div id="timeEnd">
+                                                        <div>
+                                                            <h3 id="endTimeModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                                                        </div>
+                                                    </div>  
+                                                </div>
                         
-                    <div id="itineraryActivityFinal">
-                        <div id="activityTable">
-                            <!-- <table style="width:100%"> --> <!--this may be changed-->
-                                <tr>
-                                <th>{{ startTime }}</th>
-                                <th></th>
-                                </tr>
-                                <tr>
-                                <td style="text-align:center">|</td>
-                                <td></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:center">|</td>
-                                    <td>
-                                    <div id="journeyBox">
-                                        <div id="journeyBox-box">
-                                            <div id="transportInfo">
-                                                <!--Bus Number and Line Name (Exception for walking and bicycling)-->
+                                                <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                        
+                                                <div id="activityFooterModal">
+                                                    <div id="activityDescriptionModal"> <!--left-->
+                                                        <h5 id="activityLocationModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                                                        <h5> &nbsp | &nbsp  </h5>
+                                                        <h5 id="activityNameModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                                    </div>
+                                                </div>       
                                             </div>
-                                            <div id="transportLogo">
-                                                <!--
-                                                    If bus import busLogo
-                                                    If train import trainLogo
-                                                    ...
-                                                -->
-                                            </div>
-                                            <div id="transportDescription">
-                                                <p>From {{ startLocation }} to {{ endLocation }}</p>
-                                            </div>
-                                            <div id="detailJourney">
-                                                <button id="detailJoutneyButton" onclick="detailedJourney()">
-                                                <img src="#" alt="#">
-                                            </button>
+                                            <div id="errorDisplayModal{{ activityId }}"></div>
                                         </div>
                                     </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                <td style="text-align:center">|</td>
-                                <td></td>
-                                </tr>
-                                <tr>
-                                <th>{{ endTime }}</th>
-                                <th></th>
-                                </tr>
-                            </table>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary"
+                                        onclick="saveActivityEdits('{{ activityId }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">Save Edits</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="deleteActivity"> <!--right-->
+                            <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
+                                <h5>Delete</h5>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transportBox">
+                    <div id="processArrow">
+                        <h1>↓</h1> <!--Or use image to replace-->
+                    </div>
+                    <div id="journeyBox">
+                        <div id="journeyBox-box">
+                            <div id="transportDescription">
+                                <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1)| string]['name'] }}</strong></p>
+                            </div>
+                            <div id="detailJourney">
+                                <button id="detailJourneyButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute{{ activityId }}">
+                                    <img src="/static//Images/expandButton.png" alt="#">
+                                </button>
+                                <div class="modal fade" id="expandedRoute{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 800px;">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Expanded Route</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div id="modalTitleText">
+                                                    <p style="text-align: center;"><strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</strong></p>
+                                                </div>
+                                                <div id="modalEta" style="text-align: center;">
+                                                    <h5>{{ cleanedRoutes[activityId]["eta"] }}</h5><p>* including transit waiting time *</p>
+                                                </div>
+                                                <div id="modalActivityRoute">
+                                                    <table id="routeTable">
+                                                        {% for routeStep in cleanedRoutes[activityId]["steps"] %}
+                                                                {% if loop.first %}
+                                                                <tr>
+                                                                    <td id="timeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</td>
+                                                                    <td id="nameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</td>
+                                                                </tr>
+                                                                {% endif %}
+                                                
+                                                                {% if not loop.last and routeStep["transportType"] == "Walk" %}
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td id="walkDesRight">
+                                                                            <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                            <p><span>{{ routeStep["name"] }}</span> {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% if not loop.last %}
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                
+                                                                {% if not loop.last and routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
+                                                                <tr>
+                                                                    <td id="transitStartTimeLeft">{{ routeStep["startTime"] }}</td>
+                                                                    <td id="transitDepartNameRight">{{ routeStep["departure"] }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td id="barTransitLeft">|</td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td id="barTransitLeft">|</td>
+                                                                    <td id="transitDesRight">
+                                                                        <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                        <p><span>{{ routeStep["name"] }}</span>  {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td id="barTransitLeft">|</td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                    <td id="transitArriveNameRight">{{ routeStep["arrival"] }}</td>
+                                                                </tr>
+                                                                {% endif %}
+                                                
+                                                            {% if loop.last %}
+                                                                {% if routeStep["transportType"] == "Walk" %}
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td id="walkDesRight">
+                                                                            <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                            <p><span>{{ routeStep["name"] }}</span>  {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barWalkLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="walkArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                        <td id="walkArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                                {% if routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
+                                                                    <tr>
+                                                                        <td  id="transitStartTimeLeft">{{ routeStep["startTime"] }}</td>
+                                                                        <td id="transitDepartNameRight">{{ routeStep["departure"] }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barTransitLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barTransitLeft">|</td>
+                                                                        <td id="transitDesRight">
+                                                                            <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                            <p><span>{{ routeStep["name"] }}</span> {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="barTransitLeft">|</td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                        <td id="transitArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}  
+                                                    </table>
+                                                    <div id="modalFooterCopyright">
+                                                        <p id="gmapsCopyright">{{ cleanedRoutes[activityId]["copyright"] }}</p>
+                                                    </div>
+                                                </div>                                                    
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}&destination={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                {% endif %}
-                {% if loop.last %}
-                    <tr>
-                    <th>{{ startTime }}</th>
-                    <th></th>
-                    </tr>
-                {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </div>
+                </div>
+            {% endif %}
+            {% if loop.last %}
+                <div id="activityBox">
+                    <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                        <div id="timeStart">
+                            <div>
+                                <span hidden id="activityId">{{ activityId }}</span>
+                                <h3 id="startTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                            </div>
+                        </div>
+                        <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                        <div id="timeEnd">
+                            <div>
+                                <h3 id="endTime">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="activityPicture"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div> <!--Image Box-->
+
+                    <div id="activityFooter">
+                        <div id="activityDescription"> <!--left-->
+                            <h5 id="activityLocation">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5>
+                             <h5> &nbsp | &nbsp  </h5>
+                             <h5 id="activityName">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
+                            <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
+                        </div>
+
+                        <div class="modal fade" id="editActivityModal{{ activityId }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Edit This Activity! </h5>
+                                            <span style="color:gray">(Click on the elements that you want to edit)</span></h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+                                            <!--get current day from dayCount-->
+                                            <div id="activityBox">
+                                                <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                                                    <div id="timeStart">
+                                                        <div>
+                                                            <span hidden id="activityId">{{ activityId }}</span>
+                                                            <h3 id="startTimeModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] }}</h3>
+                                                        </div>
+                                                    </div>
+                                                    <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                                                    <div id="timeEnd">
+                                                        <div>
+                                                            <h3 id="endTimeModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</h3>
+                                                        </div>
+                                                    </div>  
+                                                </div>
+                        
+                                                <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                        
+                                                <div id="activityFooterModal">
+                                                    <div id="activityDescriptionModal"> <!--left-->
+                                                        <h5 id="activityLocationModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                                                        <h5> &nbsp | &nbsp  </h5>
+                                                        <h5 id="activityNameModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
+                                                    </div>
+                                                </div>       
+                                            </div>
+                                            <div id="errorDisplayModal{{ activityId }}"></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary"
+                                        onclick="saveActivityEdits('{{ activityId }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
+                                        '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">Save Edits</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="deleteActivity"> <!--right-->
+                            <button id="deleteButton" onclick="deleteActivity('{{ activityId }}')">
+                                <h5>Delete</h5>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                
+            {% endif %}
+        {% endfor %}
+
     </div>
 
     <div id="completionFooter">
