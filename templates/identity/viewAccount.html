@@ -14,31 +14,35 @@
 <div id="content">
     <div id="left">
         <div id="pfpDiv">
-            <img id="pfp" src="/assets/profileIcon">
+            <img id="pfp" src="/assets/profileIcon" data-bs-toggle="modal" data-bs-target="#pfpModal">
         </div>
 
         <legend id="aboutMeLabel">About Me</legend>
         <div id="aboutMeDiv">
-            <div id="description" contenteditable="true">Hello there!! Welcome to Verdex!! You can view your account here. This is an about me description. Maximum length is 150 characters including spaces!!</div>
+            <div id="description" contenteditable="true">Hello there!! Welcome to Verdex!! You can view your account
+                here. This is an about me description. Maximum length is 150 characters including spaces!!</div>
         </div>
     </div>
 
     <div id="right">
         <div id="username">
-            <p>Username: <span id="displayed-username">{{ username }}</span> 
-                <button id="editUsernameButton" type="button" class="btn btn-outline-dark" onclick="changeUsername()">Edit</button>
+            <p>Username: <span id="displayed-username">{{ username }}</span>
+                <button id="editUsernameButton" type="button" class="btn btn-outline-dark"
+                    onclick="changeUsername()">Edit</button>
             </p>
         </div>
 
         <div id="email">
-            <p>Email: <span id="displayed-email">{{ email }}</span> 
-                <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
+            <p>Email: <span id="displayed-email">{{ email }}</span>
+                <button id="editEmailButton" type="button" class="btn btn-outline-dark"
+                    onclick="changeEmail()">Edit</button>
             </p>
             <div id="unverifiedEmail">
                 {% if emailNotVerified %}
                 <div class="alert alert-warning" role="alert">
-                    Your Email has NOT been verified. 
-                    <button id="resendEmailBtn" type="button" class="btn btn-outline-success" onclick="resendEmail()">Resend Verification Email</button>
+                    Your Email has NOT been verified.
+                    <button id="resendEmailBtn" type="button" class="btn btn-outline-success"
+                        onclick="resendEmail()">Resend Verification Email</button>
                 </div>
                 {% endif %}
             </div>
@@ -46,34 +50,8 @@
 
         <div id="password">
             <p>Password</p>
-            <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#newPasswordModal">Change Password</button>
-            
-            <!-- Modal -->
-            <div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="newPasswordModalLabel">Change Your Password</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
-                        <input type="password" class="form-control" id="currentPasswordInput" placeholder="Current Password">
-                        <br>
-                        <label for="newPasswordInput" class="form-label">Enter New Password</label>
-                        <input type="password" class="form-control" id="newPasswordInput" placeholder="New Password">
-                        <br>
-                        <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
-                        <input type="password" class="form-control" id="cfmPasswordInput" placeholder="Confirm New Password">
-                        <div id="changePasswordMsg"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="modalCloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button id="modalSaveBtn" type="button" class="btn btn-primary" onclick="changePassword()">Save changes</button>
-                    </div>
-                </div>
-                </div>
-            </div>
+            <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                data-bs-target="#newPasswordModal">Change Password</button>
         </div>
 
         <br>
@@ -83,7 +61,65 @@
             </div>
             <div class="button-container" id="deleteAccount">
                 <button type="button" class="btn btn-outline-danger" onclick="deleteIdentity()">Delete Account</button>
-            </div>    
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for PFP-->
+<div class="modal" id="pfpModal" tabindex="-1" aria-labelledby="pfpModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div id="pfpModalContent">
+                        <img id="modalpfp" src="/assets/profileIcon">
+                        <br>
+                        <input type="file" name="file">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <input type="submit" class="btn btn-primary" value="Upload">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for new password-->
+<div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newPasswordModalLabel">Change Your Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
+                <input type="password" class="form-control" id="currentPasswordInput"
+                    placeholder="Current Password">
+                <br>
+                <label for="newPasswordInput" class="form-label">Enter New Password</label>
+                <input type="password" class="form-control" id="newPasswordInput"
+                    placeholder="New Password">
+                <br>
+                <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
+                <input type="password" class="form-control" id="cfmPasswordInput"
+                    placeholder="Confirm New Password">
+                <div id="changePasswordMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCloseBtn" type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button id="modalSaveBtn" type="button" class="btn btn-primary"
+                    onclick="changePassword()">Save changes</button>
+            </div>
         </div>
     </div>
 </div>
