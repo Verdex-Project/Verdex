@@ -7,7 +7,7 @@
 
 #editorPanel {
     float: left;
-    width: 65%;
+    width: 100%;
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 10px;
@@ -137,7 +137,7 @@
     width: 90%;
     display: flex;
     justify-content: left;
-    padding-left: 30px;
+    padding-left: 72px;
     margin: 20px 20px 20px 20px;
 }
 
@@ -303,8 +303,8 @@
 }
 
 #detailJourneyButton img {
-    height: 30px;
-    width: 30px;
+    height: 34px;
+    width: 34px;
 }
 
 #etaBox {
@@ -403,16 +403,16 @@
     margin-left: auto;   
     margin-right:auto;
     text-align: center;
-    transition: 0.5s ease-out;
 }
 
-.addActivityButton {
+.addActivityButton{
+    font-size: large;
     padding: none;
     background: none;
     border: none;
     color: green;
     transition: 0.5s ease-out;
-    font-size: 30px;
+    padding-top: 10 px;
     height: 35px;
 }
 
@@ -468,145 +468,6 @@
     background-color: red;
     color: white;
     transition: 0.5s;
-}
-
-#borderLine {
-    height: 93vh;
-    border-left: 5px solid green;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-/* RECOMMENDATION PANEL */
-
-#recommendationsPanel {
-    float: right;
-    width: 25%;
-    margin: 10px;
-}
-
-#recommendationsPanel-header{
-    margin: auto;
-    text-align: center;
-    align-items: center;
-}
-
-#filters {
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-#recommendations {
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    margin: 15px;
-}
-
-/* FILTER 1 */
-
-#filter2 {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#filterContent {
-    border: 2px solid green;
-    border-radius: 30px;
-    padding: 5px;
-    display: flex;
-}
-
-#filterContent:hover:only-child {
-    border-color: green;
-    transition: 1s;
-}
-
-#filterName, #filterNumber, #extendFilter {
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 5px;
-    color: green;
-}
-
-#extendFilter {
-    position: relative;
-    display: inline-block;
-}
-
-#extendFilterButton {
-    background-color: transparent;
-    border: none;
-}
-
-#extendFilter:hover #extendedFilters {
-    display: block;
-    right: -25px;
-}
-
-#extendedFilters {
-    border: 1px solid black;
-    border-radius: 10px;
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    z-index: 1;
-}
-
-#filtersSelected {
-    width: 100%;
-    text-align: center;
-    font-weight: bolder;
-}
-
-#recom {
-    width: 100%;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    border: 2px solid green;
-    border-radius: 25px;
-    position: relative;
-    margin-left: -15px;
-}
-
-#recomImage {
-    height: 250px;
-    width: 90%;
-    margin: 10px;
-}
-
-#addSign {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin:20px
-}
-
-#recomDescription {
-    text-align: center;
-}
-
-#rating {
-    display: flex;
-    border: 2px solid green;
-    color: green;
-    border-radius: 30px;
-    padding-top: 6px;
-}
-
-#rating h6, #rating img{
-    padding: 5px;
-}
-
-#rating h6 {
-    padding-left: 10px;
 }
 
 .btn.btn-primary {
