@@ -12,40 +12,40 @@
 //     event.target.appendChild(document.getElementById(fetchData));
 // }
 
-function addDay(itineraryID, dayNo) {
-    var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
-    if (isConfirmedAdd) {
-        axios({
-            method: 'post',
-            url: `/api/addDay`,
-            headers: {
-                'Content-Type': 'application/json',
-                'VerdexAPIKey': '\{{ API_KEY }}'
-            },
-            data: {
-                "itineraryID": ,
-                "dayNo": 
-            }
-        })
-        .then(function (response) {
-            if (response.data.startsWith("ERROR:")){
-                console.log(response.data)
-                alert("An error occured while adding a day. Please try again.")
-                return;
-            }
-            else if (response.data.startsWith("UERROR:")){
-                console.log(response.data)
-                alert(response.data.substring("UERROR: ".length))
-                return;
-            }
-            console.log(response.data)
-            window.location.reload();
-        })
-        .catch(function (error) {
-            console.error('Error adding day:', error);
-        });    
-    }
-}
+// function addDay(itineraryID, dayNo) {
+//     var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
+//     if (isConfirmedAdd) {
+//         axios({
+//             method: 'post',
+//             url: `/api/addDay`,
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'VerdexAPIKey': '\{{ API_KEY }}'
+//             },
+//             data: {
+//                 "itineraryID": ,
+//                 "dayNo": 
+//             }
+//         })
+//         .then(function (response) {
+//             if (response.data.startsWith("ERROR:")){
+//                 console.log(response.data)
+//                 alert("An error occured while adding a day. Please try again.")
+//                 return;
+//             }
+//             else if (response.data.startsWith("UERROR:")){
+//                 console.log(response.data)
+//                 alert(response.data.substring("UERROR: ".length))
+//                 return;
+//             }
+//             console.log(response.data)
+//             window.location.reload();
+//         })
+//         .catch(function (error) {
+//             console.error('Error adding day:', error);
+//         });    
+//     }
+// }
 
 function capitalizeEachWord(str) {
     str = String(str).toLowerCase()

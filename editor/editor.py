@@ -16,6 +16,10 @@ def cleanRoute(route,time):
     eta = route['duration']
     cleanedRoute["eta"] = eta
     print(cleanedRoute["eta"])
+
+    copyright = route['copyright']
+    cleanedRoute["copyright"] = copyright
+
     for stepListDictionary in route["steps"]:
         stepsDictionary = {}
         travelMode = stepListDictionary["travel_mode"]
