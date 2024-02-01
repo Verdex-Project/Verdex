@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, AddonsManager, FireConn
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -977,3 +977,100 @@ def deleteItinerary():
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
+
+@apiBP.route('/api/sendTestEmail', methods=['POST'])
+def sendTestEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+
+    altText = f"""
+    Dear {username},
+    This is a test email to ensure that the email system is working correctly.
+    If you are reading this, then the email system is working correctly.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+    html = render_template('emails/testEmail.html', username=username, copyright = Universal.copyright)
+
+    email_sent = Emailer.sendEmail(email, "Test Email", altText, html)
+    if email_sent:
+        Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
+        return "SUCCESS: Test email sent to {}.".format(email)
+    else:
+        return "ERROR: Test email failed to send to {}.".format(email)
+    
+@apiBP.route('/api/toggleEmailer', methods=['POST'])
+def toggle_emailer():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    emailer_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
+    
+    if emailer_current == True:
+        AddonsManager.setConfigKey("EmailingServicesEnabled", False)
+        Logger.log("ADMIN TOGGLE_EMAILER: Emailer disabled.")
+        return 'SUCCESS: Emailer disabled.'
+
+    else:
+        AddonsManager.setConfigKey("EmailingServicesEnabled", True)
+        Logger.log("ADMIN TOGGLE_EMAILER: Emailer enabled.")
+        return 'SUCCESS: Emailer enabled.'
+    
+@apiBP.route('/api/toggleAnalytics', methods=['POST'])
+def toggle_analytics():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    analytics_current = AddonsManager.readConfigKey("AnalyticsEnabled")
+    
+    if analytics_current == True:
+        AddonsManager.setConfigKey("AnalyticsEnabled", False)
+        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics disabled.")
+        return 'SUCCESS: Analytics disabled.'
+    else:
+        AddonsManager.setConfigKey("AnalyticsEnabled", True)
+        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics enabled.")
+        return 'SUCCESS: Analytics enabled.'
+    
+@apiBP.route('/api/reload_database', methods=['POST'])
+def reload_database():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    DI.load()
+    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded.")
+    return 'SUCCESS: Database reloaded.'
+
+@apiBP.route('/api/reload_fireauth', methods=['POST'])
+def reload_fireauth():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+
+        if previousCopy != DI.data["accounts"]:
+            print("ADMIN: Necessary database synchronisation with Firebase Authentication complete.")
+
+    Logger.log("ADMIN RELOAD_FIREAUTH: FireAuth reloaded.")
+    return 'SUCCESS: FireAuth reloaded.'

@@ -60,3 +60,7 @@ def itineraryGenerationJS():
 @assetsBP.route("/assets/forumJS")
 def forumJS():
     return fileContent("js/forum.js", passAPIKey=True)
+
+@assetsBP.route("/assets/adminJS")
+def adminJS():
+    return fileContent("js/admin.js", passAPIKey=True)

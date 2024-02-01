@@ -90,31 +90,5 @@
     </div>
 </div>
 
-<script>
-  document.getElementById("healthSidebarLink").style.color = "black"
-  function reloadDatabase(){
-    confirm("Are you sure you want to reload the database interface?")
-    if (confirm){
-      window.location.href = "/admin/reload_database"
-    }
-  }
-  function sendTestEmail(){
-    confirm("Are you sure you want to send a test email?")
-    if (confirm){
-      window.location.href = "/admin/send_test_email"
-    }
-  }
-  function toggleAnalytics(){
-    window.location.href = "/admin/toggle_analytics"
-  }
-  function toggleEmailer(){
-    window.location.href = "/admin/toggle_emailer"
-  }
-  function reloadFireauth(){
-    confirm("Are you sure you want to reload Firebase Auth?")
-    if (confirm){
-      window.location.href = "/admin/reload_fireauth"
-    }
-  }
-</script>
+<script src ="/assets/adminJS"></script>
 {% endblock %}
