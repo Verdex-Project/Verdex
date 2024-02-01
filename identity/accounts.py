@@ -35,7 +35,38 @@ def myAccount():
     
     # PFP Uploading
     if request.method == "POST":
-        return None
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file given.')
+            return redirect(request.url)
+
+        file = request.files['file']
+
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No file selected.')
+            return redirect(request.url)
+    
+        if file and allowed_file(file.filename):
+            # Register folder via FolderManager if not registered
+            if not FolderManager.checkIfFolderIsRegistered(targetAccountID):
+                response = FolderManager.registerFolder(targetAccountID)
+                if response.startswith("ERROR"):
+                    Logger.log("ACCOUNTS UPLOAD_FILE ERROR: Failed to register folder for account id {}; response: {}".format(targetAccountID, response))
+                    flash("Failed to register a folder in the system for your account. Please try again.")
+                    return redirect(request.url)
+            fileNames = FolderManager.getFilenames(targetAccountID)
+            for file in fileNames:
+                filename = file.split('.')[0]
+                if filename[-3:] == 'pfp':
+                    os.remove(file)
+
+            fileExtension = '.' in filename and filename.rsplit('.', 1)[1].lower()
+
+            filename = secure_filename(targetAccountID, "_pfp", fileExtension)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('download_file', name=filename))
     
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]
