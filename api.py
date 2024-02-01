@@ -980,6 +980,46 @@ def deleteItinerary():
 
 @apiBP.route('/api/addDay', methods=['POST'])
 def addDay():
-    if "add_day" not in request.json:
+    print("API Endpoint Hit!")
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "itineraryID" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = request.json['dayNo']
+    latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
+    dateParts = latestDate.split("-")
+    if (int(dateParts[2]) + 1) < 10:
+        newDateNumber = "0" + str(int(dateParts[2]) + 1)
+    else:
+        newDateNumber = str(int(dateParts[2]) + 1)
+    newDate = dateParts[0] + "-" + dateParts[1] + "-" + newDateNumber
+
+    if itineraryID in DI.data["itineraries"]:
+        if "days" in DI.data["itineraries"][itineraryID]:
+            if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+                DI.data["itineraries"][itineraryID]["days"][dayNo] = {"date" : newDate, "activities" : {}}
+                DI.save()
+                return "SUCCESS: Day is added successfully."
+            else:
+                return "UERROR: Day already exists, can't duplicate day."
+        else:
+            DI.data["itineraries"][itineraryID]["days"] = {dayNo : {"date" : newDate, "activities" : {}}}
+            DI.save()
+            return "SUCCESS: Day is added successfully."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+            
+
+
     

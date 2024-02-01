@@ -260,7 +260,8 @@ def editorDay(itineraryID, day):
         itinerary_data = DI.data, 
         dayCountList = dayCountList,
         activityCountList = activityCountList,
-        cleanedRoutes = cleanedRoutes
+        cleanedRoutes = cleanedRoutes,
+        dayLength = len(DI.data['itineraries'][itineraryID]['days'])
         )
 
 

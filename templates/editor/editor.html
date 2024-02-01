@@ -30,7 +30,7 @@
                 <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
                 {% endif %}
             </div>
-            <button onclick="addDay('{{  }}')">Add Day</button>
+            <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Add Day</button>
             <div id="sub-headder-box-right">
                 <div id="date">
                     <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>

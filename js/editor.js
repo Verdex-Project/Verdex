@@ -23,8 +23,8 @@ function addDay(itineraryID, dayNo) {
                 'VerdexAPIKey': '\{{ API_KEY }}'
             },
             data: {
-                "itineraryID": ,
-                "dayNo": 
+                "itineraryID": itineraryID,
+                "dayNo": parseInt(parseInt(dayNo) + 1),
             }
         })
         .then(function (response) {
