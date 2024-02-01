@@ -16,9 +16,7 @@ def cleanRoute(route,time):
     eta = route['duration']
     cleanedRoute["eta"] = eta
     print(cleanedRoute["eta"])
-
     for stepListDictionary in route["steps"]:
-        stepIndex = 1
         stepsDictionary = {}
         travelMode = stepListDictionary["travel_mode"]
         if travelMode == "WALKING":
@@ -42,16 +40,16 @@ def cleanRoute(route,time):
             walkDistance = stepListDictionary["distance"]["text"]
 
             stepsDictionary["startInstruction"] = startInstruction
-            stepsDictionary["startTime"] = arriveTime
+            stepsDictionary["startTime"] = initialTimeStr
+            stepsDictionary["arriveTime"] = arriveTime
             stepsDictionary["icon"] = walkIcon
             stepsDictionary["transportType"] = transportType
-            stepsDictionary["walkTime"] = walkTime
-            stepsDictionary["walkDistance"] = walkDistance
+            stepsDictionary["time"] = walkTime
+            stepsDictionary["distance"] = walkDistance
 
             cleanedRoute["steps"].append(stepsDictionary)
 
             startTime = arriveTime
-            stepIndex += 1
 
         elif travelMode == "TRANSIT":
             duration = stepListDictionary["duration"]["text"]
@@ -62,8 +60,6 @@ def cleanRoute(route,time):
             initialTime = datetime.strptime(initialTimeStr, "%H%M")
             arriveTime = initialTime + timedelta(minutes=int(durationString))
             arriveTime = arriveTime.strftime("%H%M")
-
-            startInstruction = stepListDictionary["html_instructions"]
 
             if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Bus":
                 transitIcon = "static/Images/busIcon.png"
@@ -77,6 +73,7 @@ def cleanRoute(route,time):
                 transitIcon = "static/Images/subwayIcon.png"
                 transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
 
+            startInstruction = stepListDictionary["html_instructions"].replace("Subway", "MRT")
 
             transitTime = stepListDictionary["duration"]["text"]
 
@@ -86,24 +83,27 @@ def cleanRoute(route,time):
 
             arrival = stepListDictionary["transit_details"]["arrival_stop"]["name"]
 
+            name = stepListDictionary["transit_details"]["line"]["name"]
+
             stepsDictionary["startInstruction"] = startInstruction
-            stepsDictionary["startTime"] = arriveTime
+            stepsDictionary["startTime"] = initialTimeStr
+            stepsDictionary["arriveTime"] = arriveTime
             stepsDictionary["icon"] = transitIcon
             stepsDictionary["transportType"] = transportType
-            stepsDictionary["transitTime"] = transitTime
-            stepsDictionary["transitDistance"] = transitDistance
+            stepsDictionary["time"] = transitTime
+            stepsDictionary["distance"] = transitDistance
             stepsDictionary["departure"] = departure
             stepsDictionary["arrival"] = arrival
+            stepsDictionary["name"] = name
 
             cleanedRoute["steps"].append(stepsDictionary)
 
             startTime = arriveTime
-            stepIndex += 1
         else:
             return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
 
-    print(stepsDictionary)
-    print(cleanedRoute)
+    # print(stepsDictionary)
+    # print(cleanedRoute)
     return cleanedRoute
     
 
