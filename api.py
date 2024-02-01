@@ -977,3 +977,9 @@ def deleteItinerary():
     DI.save()
     
     return "SUCCESS: Itinerarty is deleted."
+
+@apiBP.route('/api/addDay', methods=['POST'])
+def addDay():
+    if "add_day" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    

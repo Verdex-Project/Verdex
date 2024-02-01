@@ -30,6 +30,7 @@
                 <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
                 {% endif %}
             </div>
+            <button onclick="addDay('{{  }}')">Add Day</button>
             <div id="sub-headder-box-right">
                 <div id="date">
                     <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
@@ -274,17 +275,16 @@
 
             <div id="addExtra"> 
                 {% for activityId in activityCountList %}
-                    {% if loop.last %} 
-                        <button type="button" class="addActivityButton" id="addActivityButton" 
-                            onclick="addNewActivity('{{ activityId }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['location'] }}', 
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['name'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['locationCoordinates']['lat'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['locationCoordinates']['long'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['imageURL'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['startTime'] }}',
-                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-3]]['endTime'] }}')">+</button>
-                    {% endif %}
+                    {% set activity = itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId] %}
+                    <button type="button" class="addActivityButton" id="addActivityButton" 
+                        onclick="addNewActivity('{{ activityId }}',
+                        '{{ activity['location'] }}',
+                        '{{ activity['name'] }}',
+                        '{{ activity['locationCoordinates']['lat'] }}',
+                        '{{ activity['locationCoordinates']['long'] }}',
+                        '{{ activity['imageURL'] }}',
+                        '{{ activity['startTime'] }}',
+                        '{{ activity['endTime'] }}')">+</button>
                 {% endfor %}
             </div>
 

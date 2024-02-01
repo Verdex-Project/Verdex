@@ -1,15 +1,3 @@
-// function addDay() {
-//     var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
-//     if (isConfirmedAdd) {
-//         $.ajax({ 
-//             url: '/editor', 
-//             type: 'POST', 
-//             data2: { 'data2':true, 'addDay': ''}
-//         })
-//         alert(`Day added successfully`);     
-//     }
-// }
-
 function deleteDay(day) {
     var deleteDay = day;
     var isConfirmedDelete = confirm(`Are you sure you want to delete day ${deleteDay}`);
