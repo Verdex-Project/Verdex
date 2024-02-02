@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics, FolderManager
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -607,6 +607,32 @@ def changePassword():
     
     return "SUCCESS: Password updated successfully."
 
+@apiBP.route('/api/deletePFP', methods=['POST'])
+def deletePFP():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    folderRegistered = FolderManager.checkIfFolderIsRegistered(targetAccountID)
+    if not folderRegistered:
+        return "ERROR: No folder registered."
+
+    storedFilenames = FolderManager.getFilenames(targetAccountID)
+    for storedFile in storedFilenames:
+        storedFilename = storedFile.split('.')[0]
+        if storedFilename.endswith("pfp"):
+            location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, storedFile)
+            os.remove(location)
+
+    Logger.log("ACCOUNTS DELETEPFP: Profile picture deleted for {}".format(targetAccountID))
+
+    return "SUCCESS: File removed successfully."
+
 @apiBP.route('/api/aboutMeDescription', methods=['POST'])
 def aboutMeDescription():
     check = checkHeaders(request.headers)
@@ -667,6 +693,9 @@ def deleteIdentity():
     del DI.data["accounts"][targetAccountID]
     DI.save()
     Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
+
+    ## Remove the userfolder
+    FolderManager.deleteFolder(targetAccountID)
 
     session.clear()
 

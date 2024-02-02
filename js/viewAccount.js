@@ -392,14 +392,10 @@ function removePFP(){
     .then(response => {
         if (response.status == 200) {
             if (!response.data.startsWith("ERROR:")) {
-                if (!response.data.startsWith("UERROR:")) {
-                    if (response.data.startsWith("SUCCESS:")) {
-                        location.reload()
-                    } else {
-                        console.log("Unknown response received: " + response.data)
-                    }
+                if (response.data.startsWith("SUCCESS:")) {
+                    location.reload()
                 } else {
-                    console.log("User error occured: " + response.data)
+                    console.log("Unknown response received: " + response.data)
                 }
             } else {
                 console.log("Error occured in changing password: " + response.data)
