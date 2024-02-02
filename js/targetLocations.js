@@ -1,6 +1,7 @@
 const targetAttractionsBox = document.getElementById("targetAttractionsBox")
 const popularAttractionsCarousel = document.getElementById("popularAttractionsCarousel")
 const proceedButton = document.getElementById("proceedButton")
+proceedButton.disabled = true
 const generateButton = document.getElementById("generateButton")
 const cancelButton = document.getElementById("cancelButton")
 const titleInput = document.getElementById("titleInput")
@@ -39,6 +40,10 @@ function addAttraction(element) {
 
     document.getElementById(element.id).innerText = "Added"
     document.getElementById(element.id).disabled = true
+
+    if (locations.length > 0) {
+        proceedButton.disabled = false
+    }
 }
 
 function removeAttraction(attractionName) {
@@ -53,10 +58,18 @@ function removeAttraction(attractionName) {
     if (index > -1) {
         locations.splice(index, 1);
     }
+
+    if (locations.length <= 0) {
+        proceedButton.disabled = true
+    }
 }
 
 function proceed() {
     if (!locationsConfirmed) {
+        if (locations.length == 0) {
+            alert("Please select at least one attraction.")
+            return
+        }
         targetAttractionsBox.remove()
         popularAttractionsCarousel.remove()
         cancelButton.remove()
