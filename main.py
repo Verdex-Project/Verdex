@@ -330,6 +330,10 @@ if __name__ == '__main__':
     # Register routes
     
     ## Generation routes
+    ## API routes
+    from api import apiBP
+    app.register_blueprint(apiBP)
+
     from generation.itineraryGeneration import itineraryGenBP
     app.register_blueprint(itineraryGenBP)
     
@@ -355,10 +359,6 @@ if __name__ == '__main__':
     ## Account route
     from identity.accounts import accountsBP
     app.register_blueprint(accountsBP)
-
-    ## API routes
-    from api import apiBP
-    app.register_blueprint(apiBP)
 
     ## Assets service
     from assets import assetsBP

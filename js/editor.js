@@ -12,40 +12,145 @@
 //     event.target.appendChild(document.getElementById(fetchData));
 // }
 
-// function addDay(itineraryID, dayNo) {
-//     var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
-//     if (isConfirmedAdd) {
-//         axios({
-//             method: 'post',
-//             url: `/api/addDay`,
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'VerdexAPIKey': '\{{ API_KEY }}'
-//             },
-//             data: {
-//                 "itineraryID": ,
-//                 "dayNo": 
-//             }
-//         })
-//         .then(function (response) {
-//             if (response.data.startsWith("ERROR:")){
-//                 console.log(response.data)
-//                 alert("An error occured while adding a day. Please try again.")
-//                 return;
-//             }
-//             else if (response.data.startsWith("UERROR:")){
-//                 console.log(response.data)
-//                 alert(response.data.substring("UERROR: ".length))
-//                 return;
-//             }
-//             console.log(response.data)
-//             window.location.reload();
-//         })
-//         .catch(function (error) {
-//             console.error('Error adding day:', error);
-//         });    
-//     }
-// }
+function addDay(itineraryID, dayNo) {
+    var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
+    if (isConfirmedAdd) {
+        axios({
+            method: 'post',
+            url: `/api/addDay`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "itineraryID": itineraryID,
+                "dayNo": parseInt(parseInt(dayNo) + 1),
+            }
+        })
+        .then(function (response) {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data)
+                alert("An error occured while adding a day. Please try again.")
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data)
+                alert(response.data.substring("UERROR: ".length))
+                return;
+            }
+            console.log(response.data)
+            window.location.reload();
+        })
+        .catch(function (error) {
+            console.error('Error adding day:', error);
+        });    
+    }
+}
+
+function editDate(){
+    document.getElementById('editDatePopup').style.display = "block"
+}
+
+function closeEditPopup(){
+    window.location.reload()
+}
+
+function dateFormatter(unformattedDate){ //Converts DD-MM-YYYY to YYYY-MM-DD//
+    unformattedDateParts = unformattedDate.split("-")
+    formattedYear = unformattedDateParts[2]
+    formattedMonth = unformattedDateParts[1]
+    formattedDay = unformattedDateParts[0]
+    formattedDate = `${formattedYear}-${formattedMonth}-${formattedDay}`
+    console.log("Date formatted")
+    return formattedDate
+}
+
+function editDateSave(itineraryID, day, previousDate){
+    const editedDate = document.getElementById("newDate").value; // Already formatted
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentDay = currentDate.getDate();
+    const currentDateString = `${currentYear}-${currentMonth < 10 ? '0' : ''}${currentMonth}-${currentDay < 10 ? '0' : ''}${currentDay}`;
+
+    const oneDayMilliseconds = 24 * 60 * 60 * 1000;
+
+    const currentDateObj = new Date(currentDateString);
+    const previousDateObj = new Date(previousDate);
+    const editedDateObj = new Date(editedDate);
+
+    const utcPreviousDate = Date.UTC(previousDateObj.getFullYear(), previousDateObj.getMonth(), previousDateObj.getDate());
+    const utcEditedDate = Date.UTC(editedDateObj.getFullYear(), editedDateObj.getMonth(), editedDateObj.getDate());
+    const utcCurrentDate = Date.UTC(currentDateObj.getFullYear(), currentDateObj.getMonth(), currentDateObj.getDate());
+    const utcMaxDate = Date.UTC(currentDateObj.getFullYear(), currentDateObj.getMonth() + 2, currentDateObj.getDate());
+
+    const timeDifference = utcEditedDate - utcCurrentDate;
+    const diffOfDays = Math.floor(timeDifference / oneDayMilliseconds);
+
+    const timeDistanceDifference = utcMaxDate - utcEditedDate;
+
+    const previousVSeditedDifference = utcEditedDate - utcPreviousDate;
+    const diffBetweenPreviousVSedited = Math.floor(previousVSeditedDifference / oneDayMilliseconds);
+
+    console.log("UTC Edited Date: ", utcEditedDate);
+    console.log("UTC Current Date: ", utcCurrentDate);
+    console.log("Diff of days: ", diffOfDays);
+    console.log("UTC Max Date: ", utcMaxDate);
+    console.log("Edited date less than Max Date: ", utcEditedDate < utcMaxDate);
+    console.log("UTC Previous Date: ", utcPreviousDate);
+    console.log("Diff between previous date and edited date: ", diffBetweenPreviousVSedited)
+
+    if (diffOfDays > 0){
+        if (utcEditedDate > utcMaxDate){
+            alert("New date cannot be more than 2 months from currrent real-time date.");
+            return;
+        }
+    }
+    if (parseInt(diffOfDays) < 0){
+        alert("New date cannot be earlier than current date.");
+        return;
+    }
+    if (parseInt(diffOfDays) == 0){
+        alert("Chosen date can't be today's date!");
+        return;
+    }
+    if (parseInt(diffBetweenPreviousVSedited) == 0){
+        alert("You didn't make any changes to the date!")
+    }
+
+    axios({
+        method: 'post',
+        url: `/api/editDate`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID": itineraryID,
+            "day": day,
+            "editedDate": editedDate
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while editing the date. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        alert("Date sucessfully edited!")
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error editing date:', error);
+    });
+}
 
 function capitalizeEachWord(str) {
     str = String(str).toLowerCase()

@@ -978,6 +978,91 @@ def deleteItinerary():
 
 @apiBP.route('/api/addDay', methods=['POST'])
 def addDay():
-    if "add_day" not in request.json:
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = request.json['dayNo']
+    latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
+    dateParts = latestDate.split("-")
+    # newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+    if (int(dateParts[2]) + 1) < 10:
+        newDateNumber = "0" + str(int(dateParts[2]) + 1)
+    else:
+        newDateNumber = str(int(dateParts[2]) + 1)
+    newDate = dateParts[0] + "-" + dateParts[1] + "-" + newDateNumber
+
+    defaultActivities = {
+            "0": {
+              "name": "Gardens by the Bay",
+              "location": "Singapore",
+              "locationCoordinates": {
+                "lat": "234.432",
+                "long": "243.342"
+              },
+              "imageURL": "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
+              "startTime": "1000",
+              "endTime": "1800"
+            },
+            "1": {
+              "name": "Chinatown MRT Station",
+              "location": "Singapore",
+              "locationCoordinates": {
+                "lat": "198.898",
+                "long": "278.298"
+              },
+              "imageURL": "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
+              "startTime": "1800",
+              "endTime": "2100"
+            }
+          }
+
+    if itineraryID in DI.data["itineraries"]:
+        if "days" in DI.data["itineraries"][itineraryID]:
+            if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+                DI.data["itineraries"][itineraryID]["days"][str(dayNo)] = {"date" : newDate, "activities" : defaultActivities}
+                DI.save()
+                return "SUCCESS: Day is added successfully."
+            else:
+                return "UERROR: Day already exists, can't duplicate day."
+        else:
+            DI.data["itineraries"][itineraryID]["days"] = {dayNo : {"date" : newDate, "activities" : defaultActivities}}
+            DI.save()
+            return "SUCCESS: Day is added successfully."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+            
+@apiBP.route('/api/editDate', methods=['POST'])
+def editdate():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "day" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "editedDate" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json['day']
+    editedDate = request.json['editedDate']
+
+    if itineraryID in DI.data["itineraries"]:
+        if day in DI.data["itineraries"][itineraryID]["days"]:
+            DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
+            DI.save()
+            return "SUCCESS: Date is edited successfully."
+        else:
+            return "ERROR: Day not found in system."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+
     

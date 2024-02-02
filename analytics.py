@@ -2,7 +2,7 @@ import os, json, uuid, random, datetime
 from models import Logger, Universal
 from dotenv import load_dotenv
 load_dotenv()
-    
+
 class Analytics:
     data = []
     filePath = os.path.join(os.getcwd(), "analytics.json")
