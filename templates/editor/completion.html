@@ -47,12 +47,19 @@
                                 <div id="journeyBox">
                                     <div id="journeyBox-box">
                                         <div id="transportDescription">
+                                            {% if cleanedRoutes[day][activityIndex] is string %}
+                                            <p><strong>{{ cleanedRoutes[day][activityIndex] }}</strong></p>
+                                            {% else %}
                                             <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1)| string]['name'] }}</strong></p>
+                                            {% endif %}
                                         </div>
                                         <div id="detailJourney">
+                                            {% if cleanedRoutes[day][activityIndex] is string %}
+                                            {% else %}
                                             <button id="detailJourneyButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute{{ day }}{{ activityIndex }}">
                                                 <img src="/static//Images/expandButton.png" alt="#">
                                             </button>
+                                            {% endif %}
                                             <div class="modal fade" id="expandedRoute{{ day }}{{ activityIndex }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-scrollable" style="max-width: 800px;">
                                                     <div class="modal-content">

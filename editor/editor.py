@@ -168,7 +168,10 @@ def editorDay(itineraryID, day):
             print("Destination: {}".format(locations[locationIndex + 1]))
             print(dateTimeObjects[locationIndex])
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
-            cleanedRoute = cleanRoute(route, endTimes[locationIndex])
+            if isinstance(route,str):
+                cleanedRoute = "Route Could Not Be Determined"
+            else:
+                cleanedRoute = cleanRoute(route, endTimes[locationIndex])
             cleanedRoutes[str(locationIndex)] = cleanedRoute
     print(cleanedRoutes)
 
