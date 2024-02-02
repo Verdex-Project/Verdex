@@ -4,8 +4,6 @@ import os, json, datetime, random
 
 itineraryGenBP = Blueprint('itineraryGen', __name__)
 
-generationData = Universal.loadGenerationData()
-
 @itineraryGenBP.route("/generate/targetLocations")
 def targetLocations():
     ## DEBUG PHASE ONLY
@@ -17,4 +15,4 @@ def targetLocations():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return redirect(url_for('admin.admin'))
 
-    return render_template("generation/targetLocationsNew.html", popularLocations=generationData["locations"])
+    return render_template("generation/targetLocationsNew.html", popularLocations=Universal.generationData["locations"])

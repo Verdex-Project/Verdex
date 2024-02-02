@@ -1,4 +1,4 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics
 from dotenv import load_dotenv
@@ -270,11 +270,11 @@ def generateItinerary():
     if headersCheck != True:
         return headersCheck
     
-    # authCheck = manageIDToken()
-    # if not authCheck.startswith("SUCCESS"):
-    #     return authCheck
-    # targetAccountID = authCheck[len("SUCCESS: ")::]
-    targetAccountID = "04b138f63a0e4ab7855c7d272b1fa1d2"
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    # targetAccountID = "04b138f63a0e4ab7855c7d272b1fa1d2"
 
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return "ERROR: Admins cannot generate itineraries."
@@ -297,14 +297,16 @@ def generateItinerary():
     firstActivityTimeRange = ("0900", "1200")
     secondActivityTimeRange = ("1300", "1600")
     thirdActivityTimeRange = ("1600", "1800")
+    activityTimeRanges = [firstActivityTimeRange, secondActivityTimeRange, thirdActivityTimeRange]
 
     ## Prepare root itinerary object
     itineraryID = Universal.generateUniqueID()
     itinerary = {
-        "title": request.json["title"].strip(),
-        "description": request.json["description"].strip(),
+        "title": title,
+        "description": description,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-        "associatedAccountID": targetAccountID
+        "associatedAccountID": targetAccountID,
+        "days": {}
     }
 
     ## Prepare locations list
@@ -322,10 +324,44 @@ def generateItinerary():
     sevenDayDeltaObject = datetime.datetime.now() + datetime.timedelta(days=7)
     dayDates = [(sevenDayDeltaObject + datetime.timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(3)]
 
-    print(activities)
-    print(dayDates)
+    ## Generate days
+    for dayCount in range(3):
+        day = {
+            "date": dayDates[dayCount],
+            "activities": {}
+        }
 
-    return "SUCCESS: Itinerary ID: {}".format("abc123")
+        for activityCount in range(3):
+            activityLocation = activities[dayCount][activityCount]
+
+            attempts = 5
+            activityType = None
+            while (activityType == None or activityType in [x["activity"] for x in day["activities"].values()]) and attempts > 0:
+                activityType = random.choice(Universal.generationData["locations"][activityLocation]["supportedActivities"])
+                attempts -= 1
+            
+            if activityType == None:
+                ## Backup default activity type
+                activityType = "Visiting"
+            
+            startTime = activityTimeRanges[activityCount][0]
+            endTime = activityTimeRanges[activityCount][1]
+            
+            day["activities"][str(activityCount)] = {
+                "name": activities[dayCount][activityCount],
+                "activity": activityType,
+                "imageURL": Universal.generationData["locations"][activityLocation]["imageURL"],
+                "startTime": startTime,
+                "endTime": endTime
+            }
+
+        itinerary["days"][str(dayCount + 1)] = day
+    
+    ## Save itinerary
+    DI.data["itineraries"][itineraryID] = itinerary
+    DI.save()
+
+    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
@@ -1010,14 +1046,12 @@ def addNewActivity():
     activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
-    latitude = request.json["currentLatitude"]
-    longitude = request.json["currentLongitude"]
     imageURL = request.json["currentImageURL"]
     location = request.json["currentLocation"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentImageURL","currentLocation","currentName","newActivityID"]]:
         return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
@@ -1033,7 +1067,7 @@ def addNewActivity():
     if str(activityId) not in activityIdList:
         return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "location" : location, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"
