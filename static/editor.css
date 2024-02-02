@@ -70,6 +70,10 @@
     background-color: greenyellow;
 }
 
+#activityLogBox::-webkit-scrollbar{
+    display: none;
+}
+
 /*ADD EVERYTHING HERE!!!!!!*/
 #activityTimeline {
     display:flex;

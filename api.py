@@ -912,14 +912,12 @@ def addNewActivity():
     activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
-    latitude = request.json["currentLatitude"]
-    longitude = request.json["currentLongitude"]
     imageURL = request.json["currentImageURL"]
     activity = request.json["currentActivity"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentActivity","currentName","newActivityID"]]:
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
         return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
@@ -935,7 +933,7 @@ def addNewActivity():
     if str(activityId) not in activityIdList:
         return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "activity" : activity, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "activity" : activity, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"

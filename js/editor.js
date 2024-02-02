@@ -585,7 +585,7 @@ function saveActivityEdits(activityId,activity, name, startTime, endTime) {
     }
 }
 
-function addNewActivity(activityId, activity, name,latitude, longitude, imageURL, startTime, endTime) {
+function addNewActivity(activityId, activity, name, imageURL, startTime, endTime) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
@@ -594,8 +594,6 @@ function addNewActivity(activityId, activity, name,latitude, longitude, imageURL
     let currentActivityId = activityId
     let currentActivity = activity
     let currentName = name
-    let currentLatitude = latitude
-    let currentLongitude = longitude
     let currentImageURL = imageURL
     let currentStartTime = startTime
     let currentEndTime = endTime
@@ -613,8 +611,6 @@ function addNewActivity(activityId, activity, name,latitude, longitude, imageURL
             'currentActivityId' : currentActivityId,
             'currentStartTime' : currentStartTime,
             'currentEndTime' : currentEndTime,
-            'currentLatitude' : currentLatitude,
-            'currentLongitude' : currentLongitude,
             'currentImageURL' : currentImageURL,
             'currentActivity' : currentActivity,
             'currentName' : currentName,

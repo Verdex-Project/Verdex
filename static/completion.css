@@ -27,6 +27,10 @@
     overflow: scroll;
 }
 
+#completeItinerary::-webkit-scrollbar{
+    display: none;
+}
+
 #dateFinalRight {
     color: grey;
 }
