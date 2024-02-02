@@ -1,0 +1,86 @@
+.container {
+    width: 80%;
+    margin: auto;
+    margin-top: 3%;
+}
+
+h1 {
+    color: #333;
+}
+
+.attractions-box {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.attraction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: grab;
+}
+
+button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.proceed-button {
+    float: right;
+}
+
+.cancel-button {
+    float: left;
+}
+
+#titleAndDescriptionBox {
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#titleAndDescriptionBox input, #titleAndDescriptionBox textarea {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#carouselExampleCaptions {
+    max-width: 600px;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.carousel-inner {
+    max-height: 300px;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    border-radius: 15px;
+}
+
+.carousel-caption h5 {
+    z-index: 2;
+    margin-bottom: -20px;
+}
+
+.addButtonCarousel {
+    position: absolute;
+    z-index: 2;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.addButtonCarouselContainer {
+    display: flex;
+    justify-content: center;
+}
