@@ -23,18 +23,18 @@
             {% for day in dayCountList %}
                 <div id="dayAndDateHeader">
                     <div id="dayFinalLeft">
-                        <h1>Day {{ day }}</h1>
+                        <h1><strong>Day {{ day }}</strong></h1>
                     </div>
                     <div id="dateFinalRight">
                         <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
                     </div>
                 </div>
                 {% for activityIndex in itinerary_data["itineraries"][itineraryID]["days"][day]["activities"] %}
-                {% if not loop.last %}
+                    {% if not loop.last %}
                         
-                    <table id="routeTableFinal">
+                        <table id="routeTableFinal">
                         <tr>
-                            <td id="StartTimeLeft">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['startTime'] }}</td>
+                            <td id="startTimeLeft">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['startTime'] }}</td>
                             <td id="activityNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                         </tr>
                         <tr>
@@ -194,15 +194,16 @@
                             <td id="barLeft">|</td>
                             <td></td>
                         </tr>
+                    {% endif %}
+                    {% if loop.last %} 
+                        <tr>
+                            <td id="arriveTimeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
+                            <td id="arriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                        </tr>
                     </table>
-                {% endif %}
-                {% if loop.last %} 
-                    <tr>
-                        <td id="arriveTimeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
-                        <td id="arriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
-                    </tr>
-                {% endif %}
+                    {% endif %}
                 {% endfor %}
+                <hr style="height: 3px; color: black; margin-top: 40px; ;">
             {% endfor %}
         </div>
     </div>
