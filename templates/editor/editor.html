@@ -30,7 +30,8 @@
                 <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
                 {% endif %}
             </div>
-            <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Add Day</button>
+            <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')" id="addDayButton">Add Day</button>
+            <button onclick="editDate()" id="editDateButton">Edit Date</button>
             <div id="sub-headder-box-right">
                 <div id="date">
                     <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
@@ -498,6 +499,26 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+    </div>
+    <div id="editDatePopup">
+        <div class="editDatePopup-content">
+            <div class="editDatePopup-header">
+                <h1 id="editDateHeader">Edit Date</h1>
+            </div>
+            <div id="discardChangesButton">
+                <button onclick="closeEditPopup()" id="discardChangesButtonClickable">Discard Changes</button>
+            </div>
+            <div class="editDatePopup-body">
+                <div class="editDatePopup-body-content">
+                    <div class="editDatePopup-body-content-date">
+                        <input type="date" id="newDate" name="newDate" value="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}">
+                    </div>
+                </div>
+            </div>
+            <div class="editDatePopup-footer">
+                <button type="button" name="editDatePopupButton" id="editDatePopupButton" onclick="editDateSave('{{ itineraryID }}', '{{ day }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Save</button>
+            </div>
         </div>
     </div>
 </div>

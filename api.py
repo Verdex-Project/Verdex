@@ -1040,6 +1040,31 @@ def addDay():
     else:
         return "ERROR: Itinerary ID not found in system."
             
+@apiBP.route('/api/editDate', methods=['POST'])
+def editdate():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "day" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "editedDate" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json['day']
+    editedDate = request.json['editedDate']
 
+    if itineraryID in DI.data["itineraries"]:
+        if day in DI.data["itineraries"][itineraryID]["days"]:
+            DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
+            DI.save()
+            return "SUCCESS: Date is edited successfully."
+        else:
+            return "ERROR: Day not found in system."
+    else:
+        return "ERROR: Itinerary ID not found in system."
 
     

@@ -47,6 +47,50 @@ function addDay(itineraryID, dayNo) {
     }
 }
 
+function editDate(){
+    document.getElementById('editDatePopup').style.display = "block"
+}
+
+function closeEditPopup(){
+    window.location.reload()
+}
+
+function editDateSave(itineraryID, day, previousDate){
+    const editedDate = document.getElementById("newDate");
+    const previousDateParts = previousDate.split("-");
+
+    axios({
+        method: 'post',
+        url: `/api/editDate`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID": itineraryID,
+            "day": day,
+            "editedDate": editedDate.value
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while editing the date. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error editing date:', error);
+    });
+}
+
 function capitalizeEachWord(str) {
     str = String(str).toLowerCase()
     return str.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
