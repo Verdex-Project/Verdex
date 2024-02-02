@@ -274,7 +274,6 @@ def generateItinerary():
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
-    # targetAccountID = "04b138f63a0e4ab7855c7d272b1fa1d2"
 
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return "ERROR: Admins cannot generate itineraries."
