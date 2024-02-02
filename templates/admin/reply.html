@@ -7,6 +7,34 @@
 
 {% block body %}
 {% include "includes/_adminSidebar.html" %}
+<div class="question-container">
+    <h1>List of Questions</h1>
+    <h3>Question Details:</h3>
+    <ol>
+        {% if questions_list %}
+            {% for query in questions_list %}
+                <div class="question-item">
+                    <div class="question-details">
+                        <li>
+                            <p class="question-id">ID: <span id="question-id">{{ query.id }}</span></p>
+                            <p class="question-name">Name: <span id="question-name">{{ query.name }}</span></p>
+                            <p class="question-email">Email: <span id="question-email">{{ query.email }}</span></p>
+                            <p class="question-message">Message: <span id="question-message">{{ query.message }}</span></p>
+                        </li>                                               
+                    </div>
+                    <div class="button">
+                        <a href="{{ url_for('admin.type_reply', question_id=query.id) }}">
+                            <button type="button" class="btn btn-outline-primary">Type out reply</button>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No questions yet.</p>
+        {% endif %}
+    </ol>
+</div>
+<script src ="/assets/adminJS"></script>
 <script>
     document.getElementById("replySidebarLink").style.color = "black"
 </script>

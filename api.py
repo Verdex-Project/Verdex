@@ -1074,3 +1074,48 @@ def reload_fireauth():
 
     Logger.log("ADMIN RELOAD_FIREAUTH: FireAuth reloaded.")
     return 'SUCCESS: FireAuth reloaded.'
+
+@apiBP.route('/api/reply', methods=['POST'])
+def reply():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "email_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "email_body" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "email_target" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "email_name" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    email_title = request.json['email_title']
+    email_body = request.json['email_body']
+    email_target = request.json['email_target']
+    email_name = request.json['email_name']
+
+    altText = f"""
+    Dear {email_name},
+    {email_body}
+
+    Kindly regards, The Verdex Team
+    {Universal.copyright}
+    """
+    html = render_template('emails/adminReplyTemplate.html', 
+                           email_name=email_name, 
+                           email_body=email_body, 
+                           email_title=email_title, 
+                           copyright = Universal.copyright)
+    if Emailer.servicesEnabled == False:
+        return "ERROR: Email services are disabled."
+    check =Emailer.sendEmail(email_target, email_title, altText, html)
+    if check == True:
+        return "SUCCESS: Email sent."
+    else:
+        return "ERROR: Email failed to send."

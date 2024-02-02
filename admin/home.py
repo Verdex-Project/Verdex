@@ -275,6 +275,7 @@ def clear_data():
 
 @adminHomeBP.route('/admin/customer_support')
 def reply():
+    questions = []
     authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
@@ -289,4 +290,48 @@ def reply():
         position = "Not set"
     else:
         position = targetAccount["position"]
-    return render_template('admin/reply.html', name=name, position=position)
+    if 'supportQueries' not in DI.data['admin']:
+        return render_template('admin/reply.html', name=name, position=position, questions_list = questions)
+    for question in DI.data['admin']['supportQueries']:
+        question_id = question
+        question_name = DI.data['admin']['supportQueries'][question]['name']
+        email = DI.data['admin']['supportQueries'][question]['email']
+        message = DI.data['admin']['supportQueries'][question]['message']
+        
+        support = {
+            'id': question_id,
+            'name': question_name,
+            'email': email,
+            'message': message
+        }
+        questions.append(support)
+
+    return render_template('admin/reply.html', name=name, position=position, questions_list = questions)
+
+@adminHomeBP.route('/admin/type_reply/<string:question_id>', methods=['GET'])
+def type_reply(question_id):
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+    targetAccount = DI.data["accounts"][targetAccountID]
+    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
+        name = "Not set"
+    else:
+        name = targetAccount["name"]
+    
+    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
+        position = "Not set"
+    else:
+        position = targetAccount["position"]
+    for questionID in DI.data['admin']['supportQueries']:
+        if questionID == question_id:
+            question = DI.data['admin']['supportQueries'][questionID]
+            question_name = question['name']
+            question_email = question['email']
+            question_message = question['message']
+            return render_template('admin/type_reply.html', name=name, position=position, 
+                                   question_id = question_id,
+                                    question_name = question_name, 
+                                    question_email = question_email, 
+                                    question_message = question_message)

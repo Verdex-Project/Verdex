@@ -17,6 +17,7 @@ function sendTestEmail() {
                     window.alert("Test email has been sent successfully!");
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
+                    window.alert("An error occurred: " + response.data);
                 } 
                 else {
                     console.log("Unknown response received: " + response.data);
@@ -46,9 +47,11 @@ function toggleEmailer(){
             if (response.status === 200) {
                 if (response.data.startsWith("SUCCESS:")) {
                     console.log("Emailer toggled successfully.");
+                    window.alert("Emailer has been toggled successfully!");
                     location.reload();
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
+                    window.alert("An error occurred: " + response.data);
                 } 
                 else {
                     console.log("Unknown response received: " + response.data);
@@ -83,9 +86,11 @@ function toggleAnalytics(){
             if (response.status === 200) {
                 if (response.data.startsWith("SUCCESS:")) {
                     console.log("Analytics toggled successfully.");
+                    window.alert("Analytics has been toggled successfully!");
                     location.reload();
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
+                    window.alert("An error occurred: " + response.data);
                 } 
                 else {
                     console.log("Unknown response received: " + response.data);
@@ -122,11 +127,9 @@ function reloadDatabase(){
                     console.log("Database reloaded successfully.");
                     window.alert("Database has been reloaded successfully!");
                     location.reload();
-                }
-                else if (response.data.startsWith("UERROR:")) {
-                    console.log("User error occurred: " + response.data.substring("UERROR: ".length));
                 } else {
                     console.log("Unknown response received: " + response.data);
+                    window.alert("Unknown response received: " + response.data);
                 }
             } else {
                 console.log("Non-200 response status code received from the server.");
@@ -162,9 +165,11 @@ function reloadFireauth(){
                     location.reload();
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
+                    window.alert("An error occurred: " + response.data);
                 }
                 else {
                     console.log("Unknown response received: " + response.data);
+                    window.alert("Unknown response received: " + response.data);
                 }
             } else {
                 console.log("Non-200 response status code received from the server.");
@@ -177,5 +182,55 @@ function reloadFireauth(){
     else {
         window.alert("Firebase Auth reload cancelled.");
         location.reload();
+    }
+}
+
+function reply(){{
+        var email_title = document.getElementById("question-title").value;
+        if (email_title === "") {
+            window.alert("Please enter a title for the email.");
+            return;
+        }
+        var email_body = document.getElementById("question-body").value;
+        if (email_body === "") {
+            window.alert("Please enter a body for the email.");
+            return;
+        }
+        var email_name = document.getElementById("question-name").innerHTML;
+        var email_target = document.getElementById("question-email").innerHTML;
+        axios({
+            method: 'post',
+            url: '/api/reply',
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}' 
+            },
+            data: {
+                "email_title": email_title,
+                "email_body": email_body,
+                "email_name": email_name,
+                "email_target": email_target
+            }
+        })
+        .then(response => {
+            if (response.status === 200) {
+                if (response.data.startsWith("SUCCESS:")) {
+                    console.log("Reply sent successfully.");
+                    window.alert("Reply has been sent successfully!");
+                } else if (response.data.startsWith("ERROR:")) {
+                    console.log("An error occurred: " + response.data);
+                    window.alert("An error occurred: " + response.data);
+                }
+                else {
+                    console.log("Unknown response received: " + response.data);
+                    window.alert("Unknown response received: " + response.data);
+                }
+            } else {
+                console.log("Non-200 response status code received from the server.");
+            }
+        })
+        .catch(error => {
+            console.log("An error occurred while sending the reply: " + error);
+        });
     }
 }

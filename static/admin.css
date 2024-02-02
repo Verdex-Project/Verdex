@@ -13,7 +13,7 @@ body {
 
 .sidenav {
     height: 100%;
-    width: 20vh;
+    width: 15%;
     position: fixed;
     /* z-index: 1; */
     top: 0;
@@ -225,4 +225,25 @@ body {
     margin-bottom: 20px;
     margin-right: 20px;
     font-family: 'Open Sans', sans-serif;
+}
+
+.question-container {
+    border: 2px solid #333;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    margin-right:30px;
+    padding: 35px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    width: 75%;
+    margin-left:250px;
+    margin-top:20px;
+    font-family: 'Open Sans', sans-serif;
+}
+.question-container li{
+    list-style: none;
+}
+#submitButton {
+    margin-top: 20px;
 }
