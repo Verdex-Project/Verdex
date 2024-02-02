@@ -176,7 +176,7 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
                                 "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
                                 "startTime" : "0800",
@@ -184,7 +184,7 @@ if __name__ == '__main__':
                             },
                             "1" : {
                                 "name" : "Universal Studios Singapore",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
                                 "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
                                 "startTime" : "1000", 
@@ -192,7 +192,7 @@ if __name__ == '__main__':
                             },
                             "2" : {
                                 "name" : "Sentosa Island",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
@@ -205,7 +205,7 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
                                 "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
                                 "startTime" : "0800",
@@ -213,7 +213,7 @@ if __name__ == '__main__':
                             },
                             "1" : {
                                 "name" : "Singapore Botanic Gardens",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
@@ -221,7 +221,7 @@ if __name__ == '__main__':
                             },
                             "2" : {
                                 "name" : "Orchard Road",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
@@ -234,7 +234,7 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "Gardens by the Bay",
-                                "location" : "Singapore",
+                                "activtiy" : "Singapore",
                                 "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
@@ -242,7 +242,7 @@ if __name__ == '__main__':
                             },
                             "1" : {
                                 "name" : "Chinatown MRT Station",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",
@@ -263,24 +263,24 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "123.456", "long" : "321.654"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
                                 "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1000"
                             },
                             "1" : {
                                 "name" : "Universal Studios Singapore",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "135.579", "long" : "579.135"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
                                 "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
                                 "startTime" : "1000", 
                                 "endTime" : "1800"
                             },
                             "2" : {
                                 "name" : "Sentosa Island",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "246.680", "long" : "246.468"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2200"
@@ -292,24 +292,24 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "112.223", "long" : "223.334"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
                                 "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1200"
                             },
                             "1" : {
                                 "name" : "Singapore Botanical Gardens",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "334.445", "long" : "445.556"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
                                 "endTime" : "1600"
                             },
                             "2" : {
                                 "name" : "Orchard Road",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "556.667", "long" : "667.778"},
+                                "activity" : "Singapore",
+                                "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
                                 "endTime" : "2200"
@@ -321,7 +321,7 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "Gardens by the Bay",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "234.432", "long" : "243.342"},
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
@@ -329,7 +329,7 @@ if __name__ == '__main__':
                             },
                             "1" : {
                                 "name" : "Chinatown MRT Station",
-                                "location" : "Singapore",
+                                "activity" : "Singapore",
                                 "locationCoordinates" : {"lat" : "198.898", "long" : "278.298"},
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",

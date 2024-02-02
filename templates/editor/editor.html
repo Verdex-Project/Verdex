@@ -61,7 +61,7 @@
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5 id="activityLocation">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                                <h5 id="activityActivity">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] }}</h5> 
                                 <h5> &nbsp | &nbsp  </h5>
                                 <h5 id="activityName">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
                                 <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
@@ -99,7 +99,7 @@
                             
                                                     <div id="activityFooterModal">
                                                         <div id="activityDescriptionModal"> <!--left-->
-                                                            <h5 id="activityLocationModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                                                            <h5 id="activityActivityModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] }}</h5> 
                                                             <h5> &nbsp | &nbsp  </h5>
                                                             <h5 id="activityNameModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
                                                         </div>
@@ -112,7 +112,7 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button type="button" class="btn btn-primary"
                                             onclick="saveActivityEdits('{{ activityId }}',
-                                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['activity'] }}', 
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">Save Edits</button>
@@ -301,7 +301,7 @@
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
-                                <h5 id="activityLocation">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5>
+                                <h5 id="activityActivity">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] }}</h5>
                                  <h5> &nbsp | &nbsp  </h5>
                                  <h5 id="activityName">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
                                 <button type="button" class="editActivityButton" data-bs-toggle="modal" data-bs-target="#editActivityModal{{ activityId }}" id="editActivityButton"><img src="/static/Images/editButtonBlack.png" alt="#"></button>
@@ -339,7 +339,7 @@
                             
                                                     <div id="activityFooterModal">
                                                         <div id="activityDescriptionModal"> <!--left-->
-                                                            <h5 id="activityLocationModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] }}</h5> 
+                                                            <h5 id="activityActivityModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] }}</h5> 
                                                             <h5> &nbsp | &nbsp  </h5>
                                                             <h5 id="activityNameModal{{ activityId }}" contenteditable="true">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] }}</h5>
                                                         </div>
@@ -352,7 +352,7 @@
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button type="button" class="btn btn-primary"
                                             onclick="saveActivityEdits('{{ activityId }}',
-                                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['location'] }}', 
+                                            '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['activity'] }}', 
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['startTime'] }}',
                                             '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['endTime'] }}')">Save Edits</button>
@@ -388,7 +388,7 @@
                     {% set activity = itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-2]] %}
                     <button type="button" class="addActivityButton" id="addActivityButton" 
                         onclick="addNewActivity('{{ activityId }}',
-                        '{{ activity['location'] }}',
+                        '{{ activity['activity'] }}',
                         '{{ activity['name'] }}',
                         '{{ activity['locationCoordinates']['lat'] }}',
                         '{{ activity['locationCoordinates']['long'] }}',
@@ -402,7 +402,7 @@
             </div>
 
             <div id="saveItinerary">
-                <button id="saveItineraryButton" onclick="location.href = '{{ url_for("completionPageBP.completion")}}'">
+                <button id="saveItineraryButton" onclick="location.href = '{{ url_for('completionPageBP.completionHome', itineraryID=itineraryID) }}'">                    
                     <h5>Proceed</h5>
                 </button>
             </div>

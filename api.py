@@ -839,7 +839,7 @@ def editActivity():
     activityId = request.json["activityId"]
     startTime = request.json["newStartTime"]
     endTime = request.json["newEndTime"]
-    location = request.json["newLocation"]
+    activity = request.json["newActivity"]
     name = request.json["newName"]
 
     if 'itineraryID' not in request.json:
@@ -852,7 +852,7 @@ def editActivity():
         return "ERROR: One or more required payload parameters not provided."
     if "newEndTime" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
-    if "newLocation" not in request.json:
+    if "newActivity" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
     if "newName" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -887,10 +887,10 @@ def editActivity():
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
-    if len(location) > 10:
-        return "UERROR: Activity Location should be less than 10 characters!"
+    if len(activity) > 10:
+        return "UERROR: Activity should be less than 10 characters!"
     else:
-        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] = activity
 
     if len(name) > 40:
         return "UERROR: Activity name should be less than 40 characters!"
@@ -915,11 +915,11 @@ def addNewActivity():
     latitude = request.json["currentLatitude"]
     longitude = request.json["currentLongitude"]
     imageURL = request.json["currentImageURL"]
-    location = request.json["currentLocation"]
+    activity = request.json["currentActivity"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentActivity","currentName","newActivityID"]]:
         return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
@@ -935,7 +935,7 @@ def addNewActivity():
     if str(activityId) not in activityIdList:
         return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "activity" : activity, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"

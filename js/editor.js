@@ -443,9 +443,9 @@ function deleteItinerary() {
 //     }
 // }
 
-function checkLocation(location) {
-    location = capitalizeEachWord(location);
-    if (location.length > 10) {
+function checkActivity(activity) {
+    activity = capitalizeEachWord(activity);
+    if (activity.length > 10) {
         return false
     } else {
         return true
@@ -470,24 +470,24 @@ function checkEndTime(endTime,startTime) {
     return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30 && endTime.slice(0,2) < 24 && endTime.slice(2) < 60)
 }
 
-function saveActivityEdits(activityId,location, name, startTime, endTime) {
+function saveActivityEdits(activityId,activity, name, startTime, endTime) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
 
-    let currentLocation = location
+    let currentActivity = activity
     let currentName = name
     let currentstartTime = startTime
     let currentendTime = endTime
 
-    let newLocation = document.getElementById(`activityLocationModal${activityId}`).innerText
+    let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
     let newName = document.getElementById(`activityNameModal${activityId}`).innerText
     let newStartTime = document.getElementById(`startTimeModal${activityId}`).innerText
     let newEndTime = document.getElementById(`endTimeModal${activityId}`).innerText
     let errorDisplayModal = document.getElementById(`errorDisplayModal${activityId}`)
 
-    console.log(newLocation)
+    console.log(newActivity)
     console.log(newName)
     console.log(newStartTime)
     console.log(newEndTime)
@@ -512,12 +512,12 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         newEndTime = newEndTime
     }
 
-    if (!checkLocation(newLocation)) {
-        errorDisplayModal.innerHTML = "Activity location should not be more than 10 characters!"
+    if (!checkActivity(newActivity)) {
+        errorDisplayModal.innerHTML = "Activity activity should not be more than 10 characters!"
         return
     } else {
         errorDisplayModal.innerHTML = "" 
-        newLocation = capitalizeEachWord(newLocation)
+        newActivity = capitalizeEachWord(newActivity)
     }
 
     if (!checkName(newName)) {
@@ -529,14 +529,14 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 
 
-    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime,newStartTime) && checkLocation(newLocation) && checkName(newName))
+    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime,newStartTime) && checkActivity(newActivity) && checkName(newName))
     console.log(checkStartTime(newStartTime))
     console.log(checkEndTime(newEndTime, newStartTime))
-    console.log(checkLocation(newLocation))
+    console.log(checkActivity(newActivity))
     console.log(checkName(newName))
 
     // Make request via axios
-    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkLocation(newLocation) && checkName(newName)) {
+    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkActivity(newActivity) && checkName(newName)) {
         axios({
             method: 'post',
             url: `/api/editActivity`,
@@ -550,7 +550,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
                 'activityId' : activityId,
                 'newStartTime' : newStartTime,
                 'newEndTime' : newEndTime,
-                'newLocation' : newLocation,
+                'newActivity' : newActivity,
                 'newName' : newName
             }
         })
@@ -585,14 +585,14 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 }
 
-function addNewActivity(activityId,location, name,latitude, longitude, imageURL, startTime, endTime) {
+function addNewActivity(activityId, activity, name,latitude, longitude, imageURL, startTime, endTime) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
 
     let currentActivityId = activityId
-    let currentLocation = location
+    let currentActivity = activity
     let currentName = name
     let currentLatitude = latitude
     let currentLongitude = longitude
@@ -616,7 +616,7 @@ function addNewActivity(activityId,location, name,latitude, longitude, imageURL,
             'currentLatitude' : currentLatitude,
             'currentLongitude' : currentLongitude,
             'currentImageURL' : currentImageURL,
-            'currentLocation' : currentLocation,
+            'currentActivity' : currentActivity,
             'currentName' : currentName,
             'newActivityID' : newActivityId
         }
