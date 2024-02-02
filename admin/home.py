@@ -297,18 +297,20 @@ def reply():
         question_name = DI.data['admin']['supportQueries'][question]['name']
         email = DI.data['admin']['supportQueries'][question]['email']
         message = DI.data['admin']['supportQueries'][question]['message']
-        
+        timestamp = DI.data['admin']['supportQueries'][question]['timestamp']
+
         support = {
             'id': question_id,
             'name': question_name,
             'email': email,
-            'message': message
+            'message': message,
+            'timestamp': timestamp
         }
         questions.append(support)
 
     return render_template('admin/reply.html', name=name, position=position, questions_list = questions)
 
-@adminHomeBP.route('/admin/type_reply/<string:question_id>', methods=['GET'])
+@adminHomeBP.route('/admin/type_reply/<string:question_id>', methods=['GET', 'POST'])
 def type_reply(question_id):
     authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
@@ -324,14 +326,20 @@ def type_reply(question_id):
         position = "Not set"
     else:
         position = targetAccount["position"]
+        
     for questionID in DI.data['admin']['supportQueries']:
         if questionID == question_id:
             question = DI.data['admin']['supportQueries'][questionID]
             question_name = question['name']
             question_email = question['email']
             question_message = question['message']
+            question_timestamp = question['timestamp']
             return render_template('admin/type_reply.html', name=name, position=position, 
                                    question_id = question_id,
                                     question_name = question_name, 
                                     question_email = question_email, 
-                                    question_message = question_message)
+                                    question_message = question_message,
+                                    question_timestamp = question_timestamp)
+
+    return redirect(url_for('admin.reply'))
+    

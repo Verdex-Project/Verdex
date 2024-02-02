@@ -8,8 +8,8 @@
 {% block body %}
 {% include "includes/_adminSidebar.html" %}
 <div class="question-container">
-    <h1>List of Questions</h1>
-    <h3>Question Details:</h3>
+    <h1>Support Queries</h1>
+    <h4>Question Details:</h4>
     <ol>
         {% if questions_list %}
             {% for query in questions_list %}
@@ -24,7 +24,7 @@
                     </div>
                     <div class="button">
                         <a href="{{ url_for('admin.type_reply', question_id=query.id) }}">
-                            <button type="button" class="btn btn-outline-primary">Type out reply</button>
+                            <button type="button" class="btn btn-outline-primary">Reply</button>
                         </a>
                     </div>
                 </div>

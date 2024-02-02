@@ -198,6 +198,11 @@ function reply(){{
         }
         var email_name = document.getElementById("question-name").innerHTML;
         var email_target = document.getElementById("question-email").innerHTML;
+        var questionID = document.getElementById("question-id").innerHTML;
+        var questionMessage = document.getElementById("question-message").innerHTML;
+        var submitButton = document.getElementById("submitButton");
+        submitButton.innerHTML = "Sending...";
+
         axios({
             method: 'post',
             url: '/api/reply',
@@ -209,7 +214,9 @@ function reply(){{
                 "email_title": email_title,
                 "email_body": email_body,
                 "email_name": email_name,
-                "email_target": email_target
+                "email_target": email_target,
+                "questionID": questionID,
+                "questionMessage": questionMessage
             }
         })
         .then(response => {
@@ -217,6 +224,7 @@ function reply(){{
                 if (response.data.startsWith("SUCCESS:")) {
                     console.log("Reply sent successfully.");
                     window.alert("Reply has been sent successfully!");
+                    window.location.href = '{{ url_for("admin.reply") }}'
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
                     window.alert("An error occurred: " + response.data);

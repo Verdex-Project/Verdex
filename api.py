@@ -1094,11 +1094,15 @@ def reply():
         return "ERROR: One or more payload parameters are missing."
     if "email_name" not in request.json:
         return "ERROR: One or more payload parameters are missing."
+    if "questionID" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
     
     email_title = request.json['email_title']
     email_body = request.json['email_body']
     email_target = request.json['email_target']
     email_name = request.json['email_name']
+    question_id = request.json['questionID']
+    question_message = request.json['questionMessage']
 
     altText = f"""
     Dear {email_name},
@@ -1110,12 +1114,15 @@ def reply():
     html = render_template('emails/adminReplyTemplate.html', 
                            email_name=email_name, 
                            email_body=email_body, 
-                           email_title=email_title, 
+                           email_title=email_title,
+                           question_message=question_message, 
                            copyright = Universal.copyright)
     if Emailer.servicesEnabled == False:
         return "ERROR: Email services are disabled."
     check =Emailer.sendEmail(email_target, email_title, altText, html)
     if check == True:
+        del DI.data['admin']['supportQueries'][question_id]
+        DI.save()
         return "SUCCESS: Email sent."
     else:
         return "ERROR: Email failed to send."

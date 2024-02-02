@@ -8,9 +8,11 @@
 {% block body %}
 {% include "includes/_adminSidebar.html" %}
 <div class="question-container">
-    <h1>Question: {{question_message}}</h1>
+    <h1>Question: <span id="question-message">{{ question_message }}</span></h1>
     <h4>Name: <span id ="question-name">{{ question_name }}</span></h4>
     <h4>Email: <span id = "question-email">{{ question_email }}</span></h4>
+    <h4>Question ID: <span id ="question-id">{{ question_id }}</span></h4>
+    <h4>Time where query was sent in: <span id ="question-timestamp">{{ question_timestamp }}</span></h4>
     <h4>Reply:</h4>
     <div class="form-group">
         <label for="title">Subject:</label>
@@ -18,7 +20,7 @@
         <label for="body">Email body:</label>
         <textarea class="form-control" id="question-body" name="reply" rows="3"></textarea>
     </div>
-    <button id="submitButton" type="submit" class="btn btn-outline-primary" onclick = "reply()">Submit</button>
+    <button id="submitButton" type="submit" class="btn btn-outline-primary" onclick = "reply()">Send email</button>
     
 </div>
 <script src ="/assets/adminJS"></script>
