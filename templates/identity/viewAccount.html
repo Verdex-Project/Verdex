@@ -7,15 +7,16 @@
 {% endblock %}
 
 {% block body %}
-{% with messages = get_flashed_messages() %}  
-    {% if messages %}  
-        {% for message in messages %}
-            <h3>{{ message }}</h3>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
 
 <div id="top">
+    {% with messages = get_flashed_messages() %}  
+        {% if messages %}  
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert" id="uploadAlert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1 id="heading">My Account</h1>
 </div>
 
@@ -93,6 +94,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="removePFP()">Remove</button>
                 <input type="submit" form="pfpForm" class="btn btn-primary" value="Upload">
             </div>
         </div>

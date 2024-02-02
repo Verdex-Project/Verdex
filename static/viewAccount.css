@@ -2,9 +2,12 @@
     box-sizing: border-box;
 }
 
+#top {
+    margin-top: 50px;
+}
+
 #heading {
     text-align: center;
-    margin-top: 50px;
     font-size: 3em;
     font-weight: bold;
     margin-bottom: 50px;
@@ -52,6 +55,13 @@
     margin-top: 10px;
     margin-left: 5px;
     color: red;
+}
+
+#uploadAlert {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
 }
 
 #pfp {

@@ -72,6 +72,9 @@ def myAccount():
             Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE: Profile picture uploaded for account ID {}".format(targetAccountID))
 
             return redirect(request.url)
+        else:
+            flash("File type not supported.")
+            return redirect(request.url)
     
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]
