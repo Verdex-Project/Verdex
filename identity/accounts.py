@@ -52,21 +52,24 @@ def myAccount():
             # Register folder via FolderManager if not registered
             if not FolderManager.checkIfFolderIsRegistered(targetAccountID):
                 response = FolderManager.registerFolder(targetAccountID)
-                if response.startswith("ERROR"):
-                    Logger.log("ACCOUNTS UPLOAD_FILE ERROR: Failed to register folder for account id {}; response: {}".format(targetAccountID, response))
+                if response != True:
+                    Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE ERROR: Failed to register folder for account id {}; response: {}".format(targetAccountID, response))
                     flash("Failed to register a folder in the system for your account. Please try again.")
                     return redirect(request.url)
+            
             fileNames = FolderManager.getFilenames(targetAccountID)
             for file in fileNames:
                 filename = file.split('.')[0]
-                if filename[-3:] == 'pfp':
-                    os.remove(file)
+                if filename.endswith("pfp"):
+                    location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, file)
+                    os.remove(location)
 
-            fileExtension = '.' in filename and filename.rsplit('.', 1)[1].lower()
+            fileExtension = FolderManager.getFileExtension(file.filename)
 
-            filename = secure_filename(targetAccountID, "_pfp", fileExtension)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+            filename = secure_filename("{}_pfp.{}".format(targetAccountID, fileExtension))
+            file.save(os.path.join("UserFolders", targetAccountID, filename))
+            Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE: File registered for account id {}".format(targetAccountID))
+            return redirect(request.url)
     
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]

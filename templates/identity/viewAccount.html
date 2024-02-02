@@ -7,6 +7,14 @@
 {% endblock %}
 
 {% block body %}
+{% with messages = get_flashed_messages() %}  
+    {% if messages %}  
+        {% for message in messages %}
+            <h3>{{ message }}</h3>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <div id="top">
     <h1 id="heading">My Account</h1>
 </div>
@@ -75,7 +83,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post" enctype="multipart/form-data">
+                <form id="pfpForm" method="post" enctype="multipart/form-data">
                     <div id="pfpModalContent">
                         <img id="modalpfp" src="/assets/profileIcon">
                         <br>
@@ -85,7 +93,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Upload">
+                <input type="submit" form="pfpForm" class="btn btn-primary" value="Upload">
             </div>
         </div>
     </div>
