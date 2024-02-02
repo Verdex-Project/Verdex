@@ -161,6 +161,9 @@ if __name__ == '__main__':
     ## Set up Logger
     Logger.setup()
 
+    ## Load generation data from file
+    Universal.loadGenerationData()
+
     # Database Synchronisation with Firebase Auth accounts
     if FireConn.checkPermissions():
         previousCopy = copy.deepcopy(DI.data["accounts"])

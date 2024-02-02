@@ -270,15 +270,16 @@ def generateItinerary():
     if headersCheck != True:
         return headersCheck
     
-    authCheck = manageIDToken()
-    if not authCheck.startswith("SUCCESS"):
-        return authCheck
-    targetAccountID = authCheck[len("SUCCESS: ")::]
+    # authCheck = manageIDToken()
+    # if not authCheck.startswith("SUCCESS"):
+    #     return authCheck
+    # targetAccountID = authCheck[len("SUCCESS: ")::]
+    targetAccountID = "04b138f63a0e4ab7855c7d272b1fa1d2"
 
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return "ERROR: Admins cannot generate itineraries."
     
-    ## Check body
+    # Check body
     if "targetLocations" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     if not isinstance(request.json["targetLocations"], list):
@@ -287,8 +288,42 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
     if "description" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+
+    cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
+    title: str = request.json['title'].strip()
+    description: str = request.json['description'].strip()
     
-    ### MORE TO COME
+    # Itinerary generation process
+    firstActivityTimeRange = ("0900", "1200")
+    secondActivityTimeRange = ("1300", "1600")
+    thirdActivityTimeRange = ("1600", "1800")
+
+    ## Prepare root itinerary object
+    itineraryID = Universal.generateUniqueID()
+    itinerary = {
+        "title": request.json["title"].strip(),
+        "description": request.json["description"].strip(),
+        "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+        "associatedAccountID": targetAccountID
+    }
+
+    ## Prepare locations list
+    locations = cleanTargetLocations
+    while len(locations) < 9:
+        randomIndex = random.randint(0, len(locations) - 1)
+        randomLocation = None
+        while randomLocation == None or randomLocation in locations:
+            randomLocation = random.choice([name for name in Universal.generationData["locations"]])
+        locations.insert(randomIndex, randomLocation)
+    
+    activities = [tuple(locations[i:i+3]) for i in range(0, len(locations), 3)]
+
+    ## Prepare days
+    sevenDayDeltaObject = datetime.datetime.now() + datetime.timedelta(days=7)
+    dayDates = [(sevenDayDeltaObject + datetime.timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(3)]
+
+    print(activities)
+    print(dayDates)
 
     return "SUCCESS: Itinerary ID: {}".format("abc123")
 
