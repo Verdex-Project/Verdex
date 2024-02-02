@@ -554,8 +554,6 @@ function addNewActivity(activityId,location, name, imageURL, startTime, endTime)
     let currentActivityId = activityId
     let currentLocation = location
     let currentName = name
-    // let currentLatitude = latitude
-    // let currentLongitude = longitude
     let currentImageURL = imageURL
     let currentStartTime = startTime
     let currentEndTime = endTime
