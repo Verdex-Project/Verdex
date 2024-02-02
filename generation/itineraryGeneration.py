@@ -17,4 +17,4 @@ def targetLocations():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return redirect(url_for('admin.admin'))
 
-    return render_template("generation/targetLocations.html", popularLocations=[x for x in generationData["locations"]])
+    return render_template("generation/targetLocationsNew.html", popularLocations=generationData["locations"])
