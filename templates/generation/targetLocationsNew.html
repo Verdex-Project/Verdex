@@ -11,7 +11,7 @@
     <h1>What do you want to see?</h1>
     <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
 
-    <div class="carouselContainer">
+    <div class="carouselContainer" id="popularAttractionsCarousel">
         <div id="carouselExampleCaptions" class="carousel slide">
             <div class="carousel-inner">
                 {% for location in popularLocations %}
@@ -21,7 +21,7 @@
                     <div class="carousel-item">
                     {% endif %}
                         <div class="addButtonCarouselContainer">
-                            <button class="btn btn-success addButtonCarousel">Add</button>
+                            <button class="btn btn-success addButtonCarousel" id="add-{{ location }}" onclick="addAttraction(this)">Add</button>
                         </div>
                         <img src="{{ popularLocations[location]["imageURL"] }}" class="d-block w-100" alt="Image of {{ location }}">
                         <div class="carousel-caption d-none d-md-block">
@@ -48,7 +48,7 @@
     </div>
 
     <button id="cancelButton" class="btn btn-outline-danger cancel-button" onclick="window.location.href='/'">Cancel</button>
-    <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed ></button>
+    <button id="proceedButton" class="btn btn-outline-primary proceed-button" onclick="proceed()">Proceed ></button>
 
     <div id="titleAndDescriptionBox">
         <div class="mb-3">
@@ -59,26 +59,8 @@
             <label for="descriptionInput" class="form-label">Description</label>
             <textarea class="form-control" id="descriptionInput" rows="3"></textarea>
         </div>
-        <button id="proceedButton2" class="btn btn-outline-primary proceed-button" onclick="proceedToGeneration()">Proceed</button>
+        <button id="generateButton" class="btn btn-outline-primary proceed-button" onclick="proceed()">Generate</button>
     </div>
-
-    <script>
-        // let attractions = document.getElementsByClassName("attraction-item");
-        // let targetBox = document.getElementById("targetAttractionsBox");
-        // let popularBox = document.getElementById("popularAttractionsBox");
-
-        // function move(element) {
-        //     const attractionItem = element.parentNode;
-
-        //     if (attractionItem.parentNode.id == popularBox.id) {
-        //         targetBox.appendChild(attractionItem);
-        //         element.innerText = "Remove";
-        //     } else {
-        //         popularBox.appendChild(attractionItem);
-        //         element.innerText = "Add";
-        //     }
-        // }
-    </script>
     <script src="/assets/targetLocationsJS"></script>
 </div>
 {% endblock %}
