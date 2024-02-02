@@ -126,47 +126,72 @@ def completionHome(itineraryID):
 
     cleanedRoutes = {}
 
-    locations = []
+    locations = {}
     #get all locations
 
-    endTimes = []
+    endTimes = {}
     #get end times
 
-    dates = []
+    days = {}
 
-    dateTimeObjects = []
+    dateTimeObjects = {}
 
     for day in DI.data["itineraries"][itineraryID]["days"]:
+        days[day] = {}
+        days[day]["locations"] = {}
+        days[day]["endTimes"] = {}
+        days[day]["dateTimeObjects"] = {}
+        locations = {}
+        endTimes = {}
+        dateTimeObjects = {}
         activityDate = DI.data["itineraries"][itineraryID]["days"][day]["date"]
-        dates.append(activityDate)
+        # dates.append(activityDate)
         #get day date
         activities = DI.data["itineraries"][itineraryID]["days"][day]["activities"]
         for i in activities:
-            locations.append(activities[i]["name"])
+            locations[i] = {}
+            locations[i] = activities[i]["name"]
+            days[day]["locations"] = locations
 
         for j in activities:
-            endTime = activities[j]["endTime"]
-            endTimes.append(activities[j]["endTime"])
+            endTimes[j] = {}
+            endTimes[j] = activities[j]["endTime"]
         #create date time object
+            endTime = DI.data["itineraries"][itineraryID]["days"][day]["activities"][j]["endTime"]
             combinedDatetimeStr = f"{activityDate} {endTime}"
             dateObject = datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
-            dateTimeObjects.append(dateObject)
-   
+            dateTimeObjects[j] = {}
+            dateTimeObjects[j] = dateObject
+        days[day]["locations"] = locations
+        days[day]["endTimes"] = endTimes
+        days[day]["dateTimeObjects"] = dateTimeObjects
 
     print(locations)
+    print(endTimes)
     print(dateTimeObjects)
+    print(days)
 
     #generate routes for every activity and add to dictionary
     # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
     routes = {}
-    for locationIndex in range(len(locations)):
-        if locationIndex + 1 != len(locations):
-            print("Origin: {}".format(locations[locationIndex]))
-            print("Destination: {}".format(locations[locationIndex + 1]))
-            print(dateTimeObjects[locationIndex])
-            route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
-            cleanedRoute = cleanRoute(route, endTimes[locationIndex])
-            cleanedRoutes[str(locationIndex)] = cleanedRoute
+    for dayIndex in range(len(days)):
+        routeIndex = 0
+        index = str(dayIndex + 1)
+        cleanedRoutes[index] = {}
+        locations = "locations"
+        endTimes = "endTimes"
+        dateTimeObjects = "dateTimeObjects"
+        if locations in days[index] and endTimes in days[index] and dateTimeObjects in days[index]:
+            for locationIndex in range(len(days[index][locations])):
+                if locationIndex + 1 != len(days[index][locations]):
+                    locationIndex = str(locationIndex)
+                    print("Origin: {}".format(days[index][locations][locationIndex]))
+                    print("Destination: {}".format(days[index][locations][str(int(locationIndex) + 1)]))
+                    print(days[index][dateTimeObjects][locationIndex])
+                    route = GoogleMapsService.generateRoute(days[index][locations][locationIndex],days[index][locations][str(int(locationIndex) + 1)], "transit", days[index][dateTimeObjects][locationIndex])
+                    cleanedRoute = cleanRoute(route,days[index][endTimes][locationIndex])
+                    cleanedRoutes[index][str(routeIndex)] = cleanedRoute
+                    routeIndex += 1
     print(cleanedRoutes)
 
     # print(locations)
