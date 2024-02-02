@@ -53,22 +53,24 @@ def myAccount():
             if not FolderManager.checkIfFolderIsRegistered(targetAccountID):
                 response = FolderManager.registerFolder(targetAccountID)
                 if response != True:
-                    Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE ERROR: Failed to register folder for account id {}; response: {}".format(targetAccountID, response))
+                    Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE ERROR: Failed to register folder for account ID {}; response: {}".format(targetAccountID, response))
                     flash("Failed to register a folder in the system for your account. Please try again.")
                     return redirect(request.url)
             
-            fileNames = FolderManager.getFilenames(targetAccountID)
-            for file in fileNames:
-                filename = file.split('.')[0]
-                if filename.endswith("pfp"):
-                    location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, file)
+            storedFilenames = FolderManager.getFilenames(targetAccountID)
+            for storedFile in storedFilenames:
+                storedFilename = storedFile.split('.')[0]
+                if storedFilename.endswith("pfp"):
+                    location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, storedFile)
                     os.remove(location)
 
             fileExtension = FolderManager.getFileExtension(file.filename)
 
-            filename = secure_filename("{}_pfp.{}".format(targetAccountID, fileExtension))
-            file.save(os.path.join("UserFolders", targetAccountID, filename))
-            Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE: File registered for account id {}".format(targetAccountID))
+            newFilename = secure_filename("{}_pfp.{}".format(targetAccountID, fileExtension))
+            file.save(os.path.join("UserFolders", targetAccountID, newFilename))
+
+            Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE: Profile picture uploaded for account ID {}".format(targetAccountID))
+
             return redirect(request.url)
     
     targetAccount = DI.data["accounts"][targetAccountID]
