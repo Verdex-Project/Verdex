@@ -2,67 +2,121 @@
     "locations": {
         "Marina Bay Sands": {
             "imageURL": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Marina_Bay_Sands_in_the_evening_-_20101120.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting",
+                "Cycling",
+                "Running",
+                "Shopping"
+            ]
          },
         "Gardens by the Bay": {
             "imageURL": "https://www.marinabaysands.com/content/dam/marinabaysands/guides/around-mbs/gardens-by-the-bay/masthead.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting",
+                "Cycling",
+                "Running",
+                "Picnic"
+            ]
         },
         "Singapore Botanic Gardens": {
             "imageURL": "https://mywowo.net/media/images/cache/singapore_giardino_botanico_01_introduzione_jpg_1200_630_cover_85.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         },
         "Singapore Zoo": {
             "imageURL": "https://upload.wikimedia.org/wikipedia/commons/5/50/Singapore_Zoo_entrance-15Feb2010.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         },
         "Orchard Road": {
             "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1200px-Presenting..._the_real_ION_%288200217734%29.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Shopping",
+                "Visiting"
+            ]
         },
         "Jewel Changi Airport": {
             "imageURL": "https://images.squarespace-cdn.com/content/v1/6244901b5326a2313a3f3c91/1665766514863-YIU0DCDJT8JY6MCS3KPE/Jewel_Slideshow_02.png",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Shopping",
+                "Visiting"
+            ]
         },
         "Universal Studios Singapore": {
             "imageURL": "https://d3gw4aml0lneeh.cloudfront.net/assets/locations/9kTC2X9mXLmE.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         },
         "Singapore Flyer": {
             "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Dikaiosp_210819_6963.jpg/1200px-Dikaiosp_210819_6963.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         },
         "Chinatown MRT Station": {
             "imageURL": "https://assets-global.website-files.com/581110f944272e4a11871c01/59371a097c0c612f3ce7bb94_Chinatown-Street-Market-11.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Shopping",
+                "Visiting"
+            ]
         },
         "East Coast Park": {
             "imageURL": "https://media.timeout.com/images/105697504/image.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Picnic",
+                "Camping",
+                "Running",
+                "Cycling"
+            ]
         },
         "Fort Canning Park": {
             "imageURL": "https://a.cdn-hotels.com/gdcs/production152/d1240/65dee8c1-5cf8-4625-b9eb-979be59842a6.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Hiking",
+                "Running",
+                "Cycling"
+            ]
         },
         "Marina Barrage": {
             "imageURL": "https://www.greenroofs.com/wp-content/uploads/2018/09/marina_barrage1.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Picnic",
+                "Running",
+                "Cycling"
+            ]
         },
         "Sungei Buloh Nature Park": {
             "imageURL": "https://4.bp.blogspot.com/-wlYwCA8Q8Ok/UjsbIVIlVII/AAAAAAAARaU/TTfhVVPIzG0/s1600/044+(2).JPG",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Running",
+                "Hiking",
+                "Picnic",
+                "Cycling"
+            ]
         }, 
         "MacRitchie Reservoir": {
             "imageURL": "https://lp-cms-production.imgix.net/2019-06/a2aa48e66952bf8816898991072e32f5-macritchie-reservoir.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Running",
+                "Hiking",
+                "Picnic",
+                "Cycling"
+            ]
         },
         "River Wonders": {
             "imageURL": "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/07/01/4e/94.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         },
         "Wild Wild Wet": {
             "imageURL": "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_3000,h_2000,f_auto/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/b8uttsvddk4febdpzilw/BookSingaporeWildWildWetTicketsOnline-KlookSingapore.jpg",
-            "supportedActivities": [""]
+            "supportedActivities": [
+                "Visiting"
+            ]
         }
     }
 }
