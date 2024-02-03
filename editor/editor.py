@@ -50,29 +50,16 @@ def editorDay(itineraryID, day):
         dateObject = datetime.strptime(combinedDatetimeStr, "%Y-%m-%d %H%M")
         dateTimeObjects.append(dateObject)
 
-    print(locations)
-    print(dateTimeObjects)
-
     #generate routes for every activity and add to dictionary
-    # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
     routes = {}
     for locationIndex in range(len(locations)):
         if locationIndex + 1 != len(locations):
-            print("Origin: {}".format(locations[locationIndex]))
-            print("Destination: {}".format(locations[locationIndex + 1]))
-            print(dateTimeObjects[locationIndex])
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
             if isinstance(route,str):
                 cleanedRoute = "Route Could Not Be Determined"
             else:
                 cleanedRoute = cleanRoute(route, endTimes[locationIndex])
             cleanedRoutes[str(locationIndex)] = cleanedRoute
-    print(cleanedRoutes)
-
-    # print(locations)
-    # print(endTimes)
-    # print(dateTimeObjects)
-
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:
