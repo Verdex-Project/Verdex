@@ -495,7 +495,6 @@ function addNewActivity(activityId) {
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
     let newActivityId = parseInt(activityId)
-    let currentActivityId = parseInt(activityId) - 1
 
     let newImageURL = document.getElementById(`newActivityImageURL${newActivityId}`).value
     let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
@@ -549,7 +548,6 @@ function addNewActivity(activityId) {
             data: {
                 "itineraryID" : itineraryId,
                 'dayCount' : dayCount,
-                'currentActivityId' : currentActivityId,
                 'currentStartTime' : newStartTime,
                 'currentEndTime' : newEndTime,
                 'currentImageURL' : newImageURL,

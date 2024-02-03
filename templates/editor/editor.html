@@ -424,7 +424,6 @@
                 <div class="modal fade" id="addActivityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     {% for activityId in activityCountList %}
                         {% if loop.last %}
-                        {% set activity = itinerary_data[itineraryID]['days'][day]['activities'][activityCountList[-2]] %}
                         {% set newActivityId = (activityId | int + 1) | string %}
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
@@ -479,6 +478,60 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% else %}
+                        {% set newActivityId = "1" %}
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                        <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Add This Activity! </h5>
+                                        <span style="color:gray">(Click on the elements that you want to add)</span></h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="activityLogBox"> <!--ACTIVITY LOG--> <!--scrollable-->
+                                        <!--get current day from dayCount-->
+                                        <div id="activityBox">
+                                            <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
+                                                <div id="timeStart">
+                                                    <div>
+                                                        <span hidden id="activityId">{{ newActivityId }}</span>
+                                                        <h3 id="startTimeModal{{ newActivityId }}" contenteditable="true">Start time here</h3>
+                                                    </div>
+                                                </div>
+                                                <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
+                                                <div id="timeEnd">
+                                                    <div>
+                                                        <h3 id="endTimeModal{{ newActivityId }}" contenteditable="true">End time here</h3>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                    
+                                            <div id="activityPictureModal{{ newActivityId }}">
+                                                <input type="text" name="url" id="newActivityImageURL{{ newActivityId }}" placeholder="Image URL here">
+                                            </div>
+                    
+                                            <div id="activityFooterModal">
+                                                <div id="activityDescriptionModal"> <!--left-->
+                                                    <h5 id="activityActivityModal{{ newActivityId }}" contenteditable="true">Activity here</h5> 
+                                                    <h5> &nbsp | &nbsp  </h5>
+                                                    <h5 id="activityNameModal{{ newActivityId }}" contenteditable="true">Location here</h5>
+                                                </div>
+                                            </div>       
+                                        </div>
+                                        <div id="errorDisplayModal{{ newActivityId }}"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="addActivityButton" 
+                                        onclick="
+                                        addNewActivity('{{ newActivityId }}')">                       
+                                        Add Activity
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     {% endfor %}
                 </div>
             </div>

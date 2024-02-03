@@ -909,7 +909,6 @@ def addNewActivity():
     
     itineraryID = request.json['itineraryID']
     day = request.json["dayCount"]
-    activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
     imageURL = request.json["currentImageURL"]
@@ -917,7 +916,7 @@ def addNewActivity():
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
         return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
@@ -930,8 +929,6 @@ def addNewActivity():
     
     for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
         activityIdList.append(str(key))
-    if str(activityId) not in activityIdList:
-        return "UERROR: Activity ID not found!"
 
     DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "activity" : activity, "name" : name}
     DI.save()
@@ -988,7 +985,7 @@ def addDay():
         return "ERROR: One or more required payload parameters not provided."
     
     itineraryID = request.json['itineraryID']
-    dayNo = request.json['dayNo']
+    dayNo = str(request.json['dayNo'])
 
     latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
     if latestDate == None:
@@ -1004,7 +1001,7 @@ def addDay():
     if itineraryID in DI.data["itineraries"]:
         if "days" in DI.data["itineraries"][itineraryID]:
             if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
-                DI.data["itineraries"][itineraryID]["days"][str(dayNo)] = {"date" : newDate, "activities" : {}}
+                DI.data["itineraries"][itineraryID]["days"][dayNo] = {"date" : newDate, "activities" : {}}
                 DI.save()
                 return "SUCCESS: Day is added successfully."
             else:
