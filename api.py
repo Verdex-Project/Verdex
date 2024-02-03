@@ -906,6 +906,9 @@ def addNewActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
     
     itineraryID = request.json['itineraryID']
     day = request.json["dayCount"]
@@ -915,9 +918,6 @@ def addNewActivity():
     activity = request.json["currentActivity"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
-
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
-        return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
     activityIdList = []
@@ -990,13 +990,8 @@ def addDay():
     latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
     if latestDate == None:
         return "ERROR: Latest date is not found."
-    dateParts = latestDate.split("-")
-    # newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-    if (int(dateParts[2]) + 1) < 10:
-        newDateNumber = "0" + str(int(dateParts[2]) + 1)
-    else:
-        newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-    newDate = dateParts[0] + "-" + dateParts[1] + "-" + newDateNumber
+
+    newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
     if itineraryID in DI.data["itineraries"]:
         if "days" in DI.data["itineraries"][itineraryID]:
