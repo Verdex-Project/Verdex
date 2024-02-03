@@ -168,6 +168,9 @@ def loginAccount():
     if targetAccountID == None:
         return "UERROR: Account does not exist!"
     
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please login via Google instead."
+    
     response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json["password"])
     if isinstance(response, str):
         return "UERROR: Incorrect email/username or password. Please try again."
