@@ -24,7 +24,7 @@ def cleanRoute(route,time):
 
             initialTimeStr = startTime
             initialTime = datetime.datetime.strptime(initialTimeStr, "%H%M")
-            arriveTime = initialTime + timedelta(minutes=int(durationString))
+            arriveTime = initialTime + datetime.timedelta(minutes=int(durationString))
             arriveTime = arriveTime.strftime("%H%M")
 
             startInstruction = stepListDictionary["html_instructions"]
