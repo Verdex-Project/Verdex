@@ -218,6 +218,7 @@ def createAccount():
     DI.data["accounts"][accID] = {
         "id": accID,
         "fireAuthID": tokenInfo["uid"],
+        "googleLogin": False,
         "username": request.json["username"],
         "email": request.json["email"],
         "password": Encryption.encodeToSHA256(request.json["password"]),
