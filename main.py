@@ -190,7 +190,7 @@ if __name__ == '__main__':
                 "associatedAccountID": "366e25aff98845f28f284434b739b6b1",
                 "days" : {
                     "1" : {
-                        "date" : "2024-01-01",
+                        "date" : "2024-03-01",
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
@@ -207,8 +207,8 @@ if __name__ == '__main__':
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
-                                "activity" : "Singapore", 
+                                "name" : "Sentosa Island",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2200"
@@ -216,7 +216,7 @@ if __name__ == '__main__':
                         }
                     },
                     "2" : {
-                        "date" : "2024-01-02",
+                        "date" : "2024-03-02",
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
@@ -226,14 +226,14 @@ if __name__ == '__main__':
                                 "endTime" : "1200"
                             },
                             "1" : {
-                                "name" : "Botanical Gardens",
+                                "name" : "Singapore Botanic Gardens",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
                                 "endTime" : "1600"
                             },
                             "2" : {
-                                "name" : "Orchard Raod",
+                                "name" : "Orchard Road",
                                 "activity" : "Singapore",
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
@@ -242,17 +242,17 @@ if __name__ == '__main__':
                         }
                     },
                     "3" : {
-                        "date" : "2024-01-03",
+                        "date" : "2024-03-03",
                         "activities" : {
                             "0" : {
-                                "name" : "Gardens By The Bay",
+                                "name" : "Gardens by the Bay",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
                                 "endTime" : "1800"
                             },
                             "1" : {
-                                "name" : "Chinatown",
+                                "name" : "Chinatown MRT Station",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",
@@ -269,7 +269,7 @@ if __name__ == '__main__':
                 "associatedAccountID": "1443c467fe594c149f9a1344e2c2fb9b",
                 "days" : {
                     "1" : {
-                        "date" : "2024-01-01",
+                        "date" : "2024-04-01",
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
@@ -286,9 +286,8 @@ if __name__ == '__main__':
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
+                                "name" : "Sentosa Island",
                                 "activity" : "Singapore",
-                                "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2200"
@@ -296,7 +295,7 @@ if __name__ == '__main__':
                         }
                     },
                     "2" : {
-                        "date" : "2024-01-02",
+                        "date" : "2024-04-02",
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
@@ -306,14 +305,14 @@ if __name__ == '__main__':
                                 "endTime" : "1200"
                             },
                             "1" : {
-                                "name" : "Botanical Gardens",
+                                "name" : "Singapore Botanical Gardens",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
                                 "endTime" : "1600"
                             },
                             "2" : {
-                                "name" : "Orchard Raod",
+                                "name" : "Orchard Road",
                                 "activity" : "Singapore",
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
@@ -322,17 +321,17 @@ if __name__ == '__main__':
                         }
                     },
                     "3" : {
-                        "date" : "2024-01-03",
+                        "date" : "2024-04-03",
                         "activities" : {
                             "0" : {
-                                "name" : "Gardens By The Bay",
+                                "name" : "Gardens by the Bay",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
                                 "endTime" : "1800"
                             },
                             "1" : {
-                                "name" : "Chinatown",
+                                "name" : "Chinatown MRT Station",
                                 "activity" : "Singapore",
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",
@@ -349,6 +348,10 @@ if __name__ == '__main__':
     # Register routes
     
     ## Generation routes
+    ## API routes
+    from api import apiBP
+    app.register_blueprint(apiBP)
+
     from generation.itineraryGeneration import itineraryGenBP
     app.register_blueprint(itineraryGenBP)
     
@@ -374,10 +377,6 @@ if __name__ == '__main__':
     ## Account route
     from identity.accounts import accountsBP
     app.register_blueprint(accountsBP)
-
-    ## API routes
-    from api import apiBP
-    app.register_blueprint(apiBP)
 
     ## Assets service
     from assets import assetsBP
