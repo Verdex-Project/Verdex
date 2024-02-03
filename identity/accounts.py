@@ -162,4 +162,6 @@ def myAccount():
     else:
         notVerified = not accInfo["emailVerified"]
 
-    return render_template("identity/viewAccount.html", username=username, email=email, emailNotVerified=notVerified)
+    googleLinked = "googleLogin" in targetAccount and targetAccount["googleLogin"] == True
+
+    return render_template("identity/viewAccount.html", username=username, email=email, emailNotVerified=notVerified, googleLinked=googleLinked)

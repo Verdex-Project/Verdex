@@ -19,8 +19,10 @@
     </div>
 
     <div id="email">
-        <p>Email: <span id="displayed-email">{{ email }}</span> 
+        <p>Email: <span id="displayed-email">{{ email }}</span>
+            {% if not googleLinked %}
             <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
+            {% endif %}
         </p>
         <div id="unverifiedEmail">
             {% if emailNotVerified %}
@@ -32,6 +34,7 @@
         </div>
     </div>
 
+    {% if not googleLinked %}
     <div id="password">
         <p>Password</p>
         <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#newPasswordModal">Change Password</button>
@@ -63,6 +66,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <br>
     <div id="buttons">
