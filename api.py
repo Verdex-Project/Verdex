@@ -227,7 +227,7 @@ def createAccount():
         "disabled": False,
         "admin": False,
         "forumBanned": False,
-        "aboutMe": ""
+        "aboutMe": "",
         "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
