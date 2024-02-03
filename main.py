@@ -1,6 +1,9 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, cachecontrol
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
+from google_auth_oauthlib.flow import Flow
+import google.auth.transport.requests
+from google.oauth2 import id_token
 from models import *
 from FolderManager import FolderManager
 from emailer import Emailer
@@ -14,6 +17,16 @@ CORS(app)
 
 ## Configure app
 app.secret_key = os.environ['AppSecretKey']
+
+if "GoogleAuthEnabled" in os.environ and os.environ["GoogleAuthEnabled"] == "True":
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    GOOGLE_CLIENT_ID = os.environ['GoogleClientID']
+
+    flow = Flow.from_client_secrets_file(
+        client_secrets_file=os.path.join(os.getcwd(), "clientSecrets.json"),
+        scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
+        redirect_uri="http://127.0.0.1:8000/account/oauthCallback"
+    )
 
 ## Global methods
 def deleteSession(accountID):
