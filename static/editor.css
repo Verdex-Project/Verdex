@@ -448,19 +448,26 @@
     text-align: center;
 }
 
-.addActivityButton{
-    font-size: large;
-    padding: none;
-    background: none;
-    border: none;
-    color: green;
-    transition: 0.5s ease-out;
-    padding-top: 10px;
-    height: 35px;
+#addExtra .btn.btn-primary h5 {
+    margin-top: 3.5px;
+    margin-bottom: 3.5px;
 }
 
-.addActivityButton:hover {
-    color: rgb(0, 210, 0);
+#addExtra #out .btn.btn-primary{
+    background: none;
+    color: blue;
+    border-width: 2px;
+    border-radius: 10px;
+    align-items: center;
+    text-align: center;
+    transition: 0.5s ease-out;
+}
+
+#addExtra #out .btn.btn-primary:hover {
+    padding-left: 20px;
+    padding-right: 20px;
+    background: blue;
+    color :white;
     transition: 0.5s;
 }
 

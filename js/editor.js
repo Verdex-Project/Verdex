@@ -558,16 +558,11 @@ function checkEndTime(endTime,startTime) {
     return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30 && endTime.slice(0,2) < 24 && endTime.slice(2) < 60)
 }
 
-function saveActivityEdits(activityId,activity, name, startTime, endTime) {
+function saveActivityEdits(activityId) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
-
-    let currentActivity = activity
-    let currentName = name
-    let currentstartTime = startTime
-    let currentendTime = endTime
 
     let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
     let newName = document.getElementById(`activityNameModal${activityId}`).innerText
@@ -673,66 +668,120 @@ function saveActivityEdits(activityId,activity, name, startTime, endTime) {
     }
 }
 
-function addNewActivity(activityId, activity, name, imageURL, startTime, endTime) {
+function addNewActivity(activityId, imageURL) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
+    let newActivityId = parseInt(activityId)
+    let currentActivityId = parseInt(activityId) - 1
 
-    let currentActivityId = activityId
-    let currentActivity = activity
-    let currentName = name
-    let currentImageURL = imageURL
-    let currentStartTime = startTime
-    let currentEndTime = endTime
-    let newActivityId = parseInt(activityId) + 1
-    axios({
-        method: 'post',
-        url: `/api/addNewActivity`,
-        headers: {
-            'Content-Type': 'application/json',
-            'VerdexAPIKey': '\{{ API_KEY }}'
-        },
-        data: {
-            "itineraryID" : itineraryId,
-            'dayCount' : dayCount,
-            'currentActivityId' : currentActivityId,
-            'currentStartTime' : currentStartTime,
-            'currentEndTime' : currentEndTime,
-            'currentImageURL' : currentImageURL,
-            'currentActivity' : currentActivity,
-            'currentName' : currentName,
-            'newActivityID' : newActivityId
-        }
-    })
-    .then(response => {
-        console.log("Response:", response);  // Add this line to print the response
-        if (response.status == 200) {
-            if (!response.data.startsWith("ERROR:")) {
-                if (!response.data.startsWith("UERROR")) {
-                    if (response.data.startsWith("SUCCESS:")) {
-                        window.location.reload();
+    let newImageURL = imageURL
+    let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
+    let newName = document.getElementById(`activityNameModal${activityId}`).innerText
+    let newStartTime = document.getElementById(`startTimeModal${activityId}`).innerText
+    let newEndTime = document.getElementById(`endTimeModal${activityId}`).innerText
+    let errorDisplayModal = document.getElementById(`errorDisplayModal${activityId}`)
+
+    console.log(newActivity)
+    console.log(newName)
+    console.log(newStartTime)
+    console.log(newEndTime)
+    console.log("Start Time:", newStartTime);
+    console.log("String(startTime).length:", String(newStartTime).length);
+    console.log(newActivityId)
+    
+
+    // Check format of all fields; startTime and endTime should be in 24-hr format, perform length check on other fields
+    if (!(checkStartTime(newStartTime) && isLastTwoCharsLessThan60(newStartTime) && isFirstTwoCharsLessThan25(newStartTime))) {
+        errorDisplayModal.innerHTML = "Start time should be in 24-hour format and 4 digits!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newStartTime = newStartTime
+    }
+
+    if (!(checkEndTime(newEndTime, newStartTime) && isLastTwoCharsLessThan60(newEndTime) && isFirstTwoCharsLessThan25(newEndTime))) {
+        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and\n must be later than START TIME by 30 minutes"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newEndTime = newEndTime
+    }
+
+    if (!checkActivity(newActivity)) {
+        errorDisplayModal.innerHTML = "Activity activity should not be more than 10 characters!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = "" 
+        newActivity = capitalizeEachWord(newActivity)
+    }
+
+    if (!checkName(newName)) {
+        errorDisplayModal.innerHTML = "Activity name should not be more than 40 characters!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newName = capitalizeEachWord(newName)
+    }
+
+
+    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime,newStartTime) && checkActivity(newActivity) && checkName(newName))
+    console.log(checkStartTime(newStartTime))
+    console.log(checkEndTime(newEndTime, newStartTime))
+    console.log(checkActivity(newActivity))
+    console.log(checkName(newName))
+
+    // Make request via axios
+    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkActivity(newActivity) && checkName(newName)) {
+        axios({
+            method: 'post',
+            url: `/api/addNewActivity`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "itineraryID" : itineraryId,
+                'dayCount' : dayCount,
+                'currentActivityId' : currentActivityId,
+                'currentStartTime' : newStartTime,
+                'currentEndTime' : newEndTime,
+                'currentImageURL' : newImageURL,
+                'currentActivity' : newActivity,
+                'currentName' : newName,
+                'newActivityID' : newActivityId
+            }
+        })
+        .then(response => {
+            console.log("Response:", response);  // Add this line to print the response
+            if (response.status == 200) {
+                if (!response.data.startsWith("ERROR:")) {
+                    if (!response.data.startsWith("UERROR")) {
+                        if (response.data.startsWith("SUCCESS:")) {
+                            window.location.reload();
+                        } else {
+                            alert("An unknown response was recieved from Verdex Servers.")
+                            console.log("Unknown response received: " + response.data)
+                        }
                     } else {
-                        alert("An unknown response was recieved from Verdex Servers.")
-                        console.log("Unknown response received: " + response.data)
+                        alert("User error occured. Check for user inputs and try again")
+                        console.log("User error occurred; error: " + response.data)
                     }
                 } else {
-                    alert("User error occured. Check for user inputs and try again")
-                    console.log("User error occurred; error: " + response.data)
+                    alert("An error occured while updating your edits for your activity. Please try again later.")
+                    console.log("Error occured while adding a new activity to your itinerary: " + response.data)
                 }
             } else {
-                alert("An error occured while updating your edits for your activity. Please try again later.")
-                console.log("Error occured while adding a new activity to your itinerary: " + response.data)
+                alert("An error occured while connecting to Verdex Servers. Please try again later.")
+                console.log("Non-200 responnse status code recieved from Verdex Servers.")
             }
-        } else {
-            alert("An error occured while connecting to Verdex Servers. Please try again later.")
-            console.log("Non-200 responnse status code recieved from Verdex Servers.")
-        }
-    })
-    .catch(err => {
-        console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured while adding a new activity to your itinerary. Please try again later.")
-    })
+        })
+        .catch(err => {
+            console.log("An error occured in connecting to Verdex Servers: " + err)
+            alert("An error occured while adding a new activity to your itinerary. Please try again later.")
+        })
+    }
 }
 
 
