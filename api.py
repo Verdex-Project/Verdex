@@ -1056,10 +1056,16 @@ def editdate():
     editedDate = request.json['editedDate']
 
     if itineraryID in DI.data["itineraries"]:
+        for loopedDay in DI.data["itineraries"][itineraryID]["days"]:
+            if DI.data["itineraries"][itineraryID]["days"][loopedDay]["date"] == editedDate:
+                return "UERROR: Date already exists in the itinerary, can't duplicate date."
         if day in DI.data["itineraries"][itineraryID]["days"]:
-            DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
-            DI.save()
-            return "SUCCESS: Date is edited successfully."
+            if DI.data["itineraries"][itineraryID]["days"][day]["date"] != editedDate:
+                DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
+                DI.save()
+                return "SUCCESS: Date is edited successfully."
+            else:
+                return "UERROR: There were no changes to the date!"
         else:
             return "ERROR: Day not found in system."
     else:

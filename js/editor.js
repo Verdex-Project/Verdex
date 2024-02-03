@@ -55,16 +55,6 @@ function closeEditPopup(){
     window.location.reload()
 }
 
-function dateFormatter(unformattedDate){ //Converts DD-MM-YYYY to YYYY-MM-DD//
-    unformattedDateParts = unformattedDate.split("-")
-    formattedYear = unformattedDateParts[2]
-    formattedMonth = unformattedDateParts[1]
-    formattedDay = unformattedDateParts[0]
-    formattedDate = `${formattedYear}-${formattedMonth}-${formattedDay}`
-    console.log("Date formatted")
-    return formattedDate
-}
-
 function editDateSave(itineraryID, day, previousDate){
     const editedDate = document.getElementById("newDate").value; // Already formatted
 
@@ -93,14 +83,6 @@ function editDateSave(itineraryID, day, previousDate){
     const previousVSeditedDifference = utcEditedDate - utcPreviousDate;
     const diffBetweenPreviousVSedited = Math.floor(previousVSeditedDifference / oneDayMilliseconds);
 
-    console.log("UTC Edited Date: ", utcEditedDate);
-    console.log("UTC Current Date: ", utcCurrentDate);
-    console.log("Diff of days: ", diffOfDays);
-    console.log("UTC Max Date: ", utcMaxDate);
-    console.log("Edited date less than Max Date: ", utcEditedDate < utcMaxDate);
-    console.log("UTC Previous Date: ", utcPreviousDate);
-    console.log("Diff between previous date and edited date: ", diffBetweenPreviousVSedited)
-
     if (diffOfDays > 0){
         if (utcEditedDate > utcMaxDate){
             alert("New date cannot be more than 2 months from currrent real-time date.");
@@ -117,6 +99,7 @@ function editDateSave(itineraryID, day, previousDate){
     }
     if (parseInt(diffBetweenPreviousVSedited) == 0){
         alert("You didn't make any changes to the date!")
+        return;
     }
 
     axios({

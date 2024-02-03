@@ -29,10 +29,40 @@
                 {% else %}
                 <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
                 {% endif %}
+                <div id="addDay">
+                    <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')" id="addDayButton">+ Add Day</button>
+                </div>
             </div>
-            <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')" id="addDayButton">Add Day</button>
-            <button onclick="editDate()" id="editDateButton">Edit Date</button>
             <div id="sub-headder-box-right">
+                <div id="editDateButton">
+                    <button type="button" id="editDateButtonButton" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <img id="editDateImage" src="/static/Images/editButtonBlack.png" alt="#">
+                    </button>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Date</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="editDatePopup-body-content">
+                                        <div class="editDatePopup-body-content-date">
+                                            <input contenteditable="true" type="date" id="newDate" name="newDate" value="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}">
+                                            <i></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onclick="editDateSave('{{ itineraryID }}', '{{ day }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="date">
                     <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
                 </div>
@@ -415,7 +445,7 @@
             </div>
         </div>
     </div>
-    <div id="editDatePopup">
+    <!-- <div id="editDatePopup">
         <div class="editDatePopup-content">
             <div class="editDatePopup-header">
                 <h1 id="editDateHeader">Edit Date</h1>
@@ -435,5 +465,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 {% endblock %}
