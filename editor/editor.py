@@ -51,7 +51,6 @@ def editorDay(itineraryID, day):
         dateTimeObjects.append(dateObject)
 
     #generate routes for every activity and add to dictionary
-    routes = {}
     for locationIndex in range(len(locations)):
         if locationIndex + 1 != len(locations):
             route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
@@ -60,6 +59,7 @@ def editorDay(itineraryID, day):
             else:
                 cleanedRoute = cleanRoute(route, endTimes[locationIndex])
             cleanedRoutes[str(locationIndex)] = cleanedRoute
+    print(cleanedRoutes)
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:
