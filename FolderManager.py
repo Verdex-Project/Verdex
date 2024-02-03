@@ -66,3 +66,14 @@ class FolderManager:
                 return "ERROR: No such file exists in the folder registered under that account ID."
         else:
             return "ERROR: No such folder exists."
+        
+    @staticmethod
+    def getFileExtension(filename):
+        extension = ''
+        for char in reversed(filename):
+            if char == '.':
+                break
+            else:
+                extension = char + extension
+        
+        return extension

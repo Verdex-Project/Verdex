@@ -1,5 +1,5 @@
-from main import fileContent
-from flask import Flask, Blueprint, request, send_file, send_from_directory
+from main import fileContent, FolderManager, manageIDToken
+from flask import Flask, Blueprint, request, send_file, send_from_directory, redirect, url_for
 
 assetsBP = Blueprint('assets', __name__)
 
@@ -17,6 +17,36 @@ def logo():
     else:
         return send_file("assets/logos/logoColour.png", mimetype="image/png")
     
+@assetsBP.route("/assets/userProfilePicture", methods=["GET"])
+def userPFP():
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for('assets.profileIcon'))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    folderRegistered = FolderManager.checkIfFolderIsRegistered(targetAccountID)
+    if not folderRegistered:
+        return redirect(url_for('assets.profileIcon'))
+
+    storedFilenames = FolderManager.getFilenames(targetAccountID)
+    filename = None
+    for storedFile in storedFilenames:
+        storedFilename = storedFile.split('.')[0]
+        if storedFilename.endswith("pfp"):
+            filename = storedFile
+    
+    if filename == None:
+        return redirect(url_for('assets.profileIcon'))
+
+    mimetype = 'image/'
+
+    if FolderManager.getFileExtension(filename) == 'jpg' or FolderManager.getFileExtension(filename) == 'jpeg':
+        mimetype = mimetype + 'jpeg'
+    else:
+        mimetype = mimetype + FolderManager.getFileExtension(filename)
+        
+    return send_file('UserFolders/{}/{}'.format(targetAccountID, filename), mimetype=mimetype)
+
 @assetsBP.route("/assets/profileIcon", methods=["GET"])
 def profileIcon():
     return send_file("assets/logos/profileIcon.svg", mimetype="image/svg+xml")
