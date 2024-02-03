@@ -337,6 +337,7 @@ function changePassword() {
 function aboutMe() {
     var description = document.getElementById("description");
     const aboutMeErrorMsg = document.getElementById("aboutMeErrorMsg");
+    const aboutMeSuccessMsg = document.getElementById("aboutMeSuccessMsg");
 
     description.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
@@ -359,7 +360,11 @@ function aboutMe() {
                     if (!response.data.startsWith("ERROR:")) {
                         if (!response.data.startsWith("UERROR:")) {
                             if (response.data.startsWith("SUCCESS:")) {
-                                location.reload()
+                                aboutMeSuccessMsg.style.visibility = 'visible'
+                                aboutMeSuccessMsg.innerHTML = "Changes saved!"
+                                setTimeout(() => {
+                                    aboutMeSuccessMsg.style.visibility = 'hidden'
+                                }, 3000)
                             } else {
                                 aboutMeErrorMsg.style.visibility = 'visible'
                                 aboutMeErrorMsg.innerText = "An unknown error occured. Please try again later."

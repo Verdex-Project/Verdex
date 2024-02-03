@@ -103,6 +103,14 @@
     margin-bottom: 5px;
 }
 
+#aboutMeSuccessMsg {
+    margin-left: 5px;
+    font-size: small;
+    color: green;
+    visibility: hidden;
+    margin-top: 5px;
+}
+
 #editAboutMeButton {
     margin-left: 127px;
 }
