@@ -60,14 +60,7 @@ def completionHome(itineraryID):
         days[day]["endTimes"] = endTimes
         days[day]["dateTimeObjects"] = dateTimeObjects
 
-    print(locations)
-    print(endTimes)
-    print(dateTimeObjects)
-    print(days)
-
     #generate routes for every activity and add to dictionary
-    # print(GoogleMapsService.generateRoute("Marina Bay Sands", "Universal Studios Singapore", "transit", datetime.datetime.now()))
-    routes = {}
     for dayIndex in range(len(days)):
         routeIndex = 0
         index = str(dayIndex + 1)
@@ -79,9 +72,6 @@ def completionHome(itineraryID):
             for locationIndex in range(len(days[index][locations])):
                 if locationIndex + 1 != len(days[index][locations]):
                     locationIndex = str(locationIndex)
-                    print("Origin: {}".format(days[index][locations][locationIndex]))
-                    print("Destination: {}".format(days[index][locations][str(int(locationIndex) + 1)]))
-                    print(days[index][dateTimeObjects][locationIndex])
                     route = GoogleMapsService.generateRoute(days[index][locations][locationIndex],days[index][locations][str(int(locationIndex) + 1)], "transit", days[index][dateTimeObjects][locationIndex])
                     if isinstance(route,str):
                         cleanedRoute = "Route Could Not Be Determined"
@@ -89,12 +79,6 @@ def completionHome(itineraryID):
                         cleanedRoute = cleanRoute(route,days[index][endTimes][locationIndex])
                     cleanedRoutes[index][str(routeIndex)] = cleanedRoute
                     routeIndex += 1
-    print(cleanedRoutes)
-
-    # print(locations)
-    # print(endTimes)
-    # print(dateTimeObjects)
-
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:
