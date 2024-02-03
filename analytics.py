@@ -111,7 +111,7 @@ class Analytics:
     @staticmethod
     def add_metrics(event_type: str):
         if not Analytics.checkPermissions():
-            Logger.log("ANALYTICS ADD_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type))
+            Logger.log("ANALYTICS ADD_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type), debugPrintExplicitDeny=True)
             return True
 
         if event_type.lower() not in ["get_request", "post_request", 'question_answered', 'sign_ins', 'sign_outs', 'verdex_talks_posts']:
