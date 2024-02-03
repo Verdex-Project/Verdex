@@ -2,6 +2,112 @@ import os, json, sys, random, datetime, copy, base64, uuid
 from passlib.hash import sha256_crypt as sha
 from addons import *
 
+def cleanRoute(route,time):
+    cleanedRoute = {}
+    cleanedRoute["steps"] = []
+
+    startTime = time
+    cleanedRoute["startTime"] = startTime
+    print(cleanedRoute["startTime"])
+
+    eta = route['duration']
+    cleanedRoute["eta"] = eta
+    print(cleanedRoute["eta"])
+
+    copyright = route['copyright']
+    cleanedRoute["copyright"] = copyright
+
+    for stepListDictionary in route["steps"]:
+        stepsDictionary = {}
+        travelMode = stepListDictionary["travel_mode"]
+        if travelMode == "WALKING":
+            duration = stepListDictionary["duration"]["text"]
+            durationString = ''.join(filter(str.isdigit, duration))
+            print(durationString)
+
+            initialTimeStr = startTime
+            initialTime = datetime.strptime(initialTimeStr, "%H%M")
+            arriveTime = initialTime + timedelta(minutes=int(durationString))
+            arriveTime = arriveTime.strftime("%H%M")
+
+            startInstruction = stepListDictionary["html_instructions"]
+
+            walkIcon = "static/Images/walkIcon.png"
+
+            transportType = "Walk"
+
+            walkTime = stepListDictionary["duration"]["text"]
+
+            walkDistance = stepListDictionary["distance"]["text"]
+
+            stepsDictionary["startInstruction"] = startInstruction
+            stepsDictionary["startTime"] = initialTimeStr
+            stepsDictionary["arriveTime"] = arriveTime
+            stepsDictionary["icon"] = walkIcon
+            stepsDictionary["transportType"] = transportType
+            stepsDictionary["time"] = walkTime
+            stepsDictionary["distance"] = walkDistance
+
+            cleanedRoute["steps"].append(stepsDictionary)
+
+            startTime = arriveTime
+
+        elif travelMode == "TRANSIT":
+            duration = stepListDictionary["duration"]["text"]
+            durationString = ''.join(filter(str.isdigit, duration))
+            print(durationString)
+
+            initialTimeStr = startTime
+            initialTime = datetime.strptime(initialTimeStr, "%H%M")
+            arriveTime = initialTime + timedelta(minutes=int(durationString))
+            arriveTime = arriveTime.strftime("%H%M")
+
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Bus":
+                transitIcon = "static/Images/busIcon.png"
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Subway":
+                stepListDictionary["transit_details"]["line"]["vehicle"]["name"] = "MRT"
+                transitIcon = "static/Images/subwayIcon.png"
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
+            if stepListDictionary["transit_details"]["line"]["vehicle"]["name"] == "Tram":
+                stepListDictionary["transit_details"]["line"]["vehicle"]["name"] = "Tram"
+                transitIcon = "static/Images/subwayIcon.png"
+                transportType = stepListDictionary["transit_details"]["line"]["vehicle"]["name"]
+
+            startInstruction = stepListDictionary["html_instructions"].replace("Subway", "MRT")
+
+            transitTime = stepListDictionary["duration"]["text"]
+
+            transitDistance = stepListDictionary["distance"]["text"]
+
+            departure = stepListDictionary["transit_details"]["departure_stop"]["name"]
+
+            arrival = stepListDictionary["transit_details"]["arrival_stop"]["name"]
+
+            name = stepListDictionary["transit_details"]["line"]["name"]
+
+            stepsDictionary["startInstruction"] = startInstruction
+            stepsDictionary["startTime"] = initialTimeStr
+            stepsDictionary["arriveTime"] = arriveTime
+            stepsDictionary["icon"] = transitIcon
+            stepsDictionary["transportType"] = transportType
+            stepsDictionary["time"] = transitTime
+            stepsDictionary["distance"] = transitDistance
+            stepsDictionary["departure"] = departure
+            stepsDictionary["arrival"] = arrival
+            stepsDictionary["name"] = name
+
+            cleanedRoute["steps"].append(stepsDictionary)
+
+            startTime = arriveTime
+        else:
+            return "TRAVEL METHOD IS NOT WALKING / TRANSIT"
+
+    # print(stepsDictionary)
+    # print(cleanedRoute)
+    return cleanedRoute
+    
+
 def fileContent(filePath, passAPIKey=False):
     with open(filePath, 'r') as f:
         f_content = f.read()

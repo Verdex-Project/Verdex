@@ -989,7 +989,10 @@ def addDay():
     
     itineraryID = request.json['itineraryID']
     dayNo = request.json['dayNo']
+
     latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
+    if latestDate == None:
+        return "ERROR: Latest date is not found."
     dateParts = latestDate.split("-")
     # newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     if (int(dateParts[2]) + 1) < 10:
