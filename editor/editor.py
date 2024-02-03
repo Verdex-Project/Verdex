@@ -59,7 +59,6 @@ def editorDay(itineraryID, day):
             else:
                 cleanedRoute = cleanRoute(route, endTimes[locationIndex])
             cleanedRoutes[str(locationIndex)] = cleanedRoute
-    print(cleanedRoutes)
 
     dayCountList = []
     for key in DI.data["itineraries"][itineraryID]["days"]:
