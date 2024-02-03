@@ -34,8 +34,8 @@
                         
                         <table id="routeTableFinal">
                         <tr>
-                            <td id="startTimeLeft">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['startTime'] }}</td>
-                            <td id="activityNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                            <td id="startTimeLeft">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['startTime'] }}</td>
+                            <td id="activityNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                         </tr>
                         <tr>
                             <td id="barLeft">|</td>
@@ -50,7 +50,7 @@
                                             {% if cleanedRoutes[day][activityIndex] is string %}
                                             <p><strong>{{ cleanedRoutes[day][activityIndex] }}</strong></p>
                                             {% else %}
-                                            <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1)| string]['name'] }}</strong></p>
+                                            <p>From <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1)| string]['name'] }}</strong></p>
                                             {% endif %}
                                         </div>
                                         <div id="detailJourney">
@@ -69,7 +69,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <div id="modalTitleText">
-                                                                <p style="text-align: center;"><strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</strong></p>
+                                                                <p style="text-align: center;"><strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</strong></p>
                                                             </div>
                                                             <div id="modalEta" style="text-align: center;">
                                                                 <h5>{{ cleanedRoutes[day][activityIndex]["eta"] }}</h5><p>* including transit waiting time *</p>
@@ -80,7 +80,7 @@
                                                                             {% if loop.first %}
                                                                             <tr>
                                                                                 <td id="timeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["endTime"] }}</td>
-                                                                                <td id="nameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                                                                                <td id="nameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                                                                             </tr>
                                                                             {% endif %}
                                                             
@@ -149,7 +149,7 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td id="walkArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
-                                                                                    <td id="walkArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
+                                                                                    <td id="walkArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
                                                                                 </tr>
                                                                             {% endif %}
                                                                             {% if routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
@@ -174,7 +174,7 @@
                                                                                 </tr>
                                                                                 <tr>
                                                                                     <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
-                                                                                    <td id="transitArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
+                                                                                    <td id="transitArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
                                                                                 </tr>
                                                                             {% endif %}
                                                                         {% endif %}
@@ -187,7 +187,7 @@
         
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}&destination={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
+                                                            <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}&destination={{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                         </div>
                                                     </div>
@@ -205,7 +205,7 @@
                     {% if loop.last %} 
                         <tr>
                             <td id="arriveTimeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
-                            <td id="arriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                            <td id="arriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                         </tr>
                     </table>
                     {% endif %}
