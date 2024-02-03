@@ -1,7 +1,9 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from models import *
+from FolderManager import FolderManager
 from emailer import Emailer
 from analytics import Analytics
 from GMapsService import GoogleMapsService
@@ -12,6 +14,10 @@ app = Flask(__name__)
 CORS(app)
 
 ## Configure app
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "Chute")
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.environ['AppSecretKey']
 
 ## Global methods
@@ -73,6 +79,9 @@ def manageIDToken(checkIfAdmin=False):
     # If we get here, the session is invalid as the ID token is not in the database
     del session["idToken"]
     return "ERROR: Invalid credentials."
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.before_request
 def updateAnalytics():
@@ -141,6 +150,12 @@ if __name__ == '__main__':
     else:
         print("FIREAUTH: Setup complete.")
 
+    ## Set up FolderManager
+    response = FolderManager.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up FolderManager; error: " + response)
+        sys.exit(1)
+
     ## Get Emailer to check context
     Emailer.checkContext()
 
@@ -153,6 +168,9 @@ if __name__ == '__main__':
     
     ## Set up Logger
     Logger.setup()
+
+    ## Load generation data from file
+    Universal.loadGenerationData()
 
     # Database Synchronisation with Firebase Auth accounts
     if FireConn.checkPermissions():
@@ -228,7 +246,7 @@ if __name__ == '__main__':
                         "activities" : {
                             "0" : {
                                 "name" : "Gardens by the Bay",
-                                "activtiy" : "Singapore",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
                                 "endTime" : "1800"

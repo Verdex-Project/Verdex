@@ -44,13 +44,13 @@
     <h1>List of Users</h1>
     <h3>Email:</h3>
     <ol>
-        {% if users %}
-            {% for user in users %}
+        {% if accountsInfo %}
+            {% for user_id, user_data in accountsInfo.items() %}
                 <div class="users">
                     <div class="user-item">
-                        <li>{{ user['email'] }}</li> <!-- is this the correct way to get the email? -->
+                        <li>{{ user_data['email'] }}</li>
                         <div class="button">
-                            <a href="{{ url_for('admin.user_profile', user_id=user['id']) }}">
+                            <a href="{{ url_for('admin.user_profile', user_id=user_id) }}">
                                 <button type="button" class="btn btn-outline-primary">Edit User</button>
                             </a>
                         </div>
