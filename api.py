@@ -998,7 +998,7 @@ def addDay():
     if (int(dateParts[2]) + 1) < 10:
         newDateNumber = "0" + str(int(dateParts[2]) + 1)
     else:
-        newDateNumber = str(int(dateParts[2]) + 1)
+        newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     newDate = dateParts[0] + "-" + dateParts[1] + "-" + newDateNumber
 
     if itineraryID in DI.data["itineraries"]:
