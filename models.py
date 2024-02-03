@@ -8,11 +8,9 @@ def cleanRoute(route,time):
 
     startTime = time
     cleanedRoute["startTime"] = startTime
-    print(cleanedRoute["startTime"])
 
     eta = route['duration']
     cleanedRoute["eta"] = eta
-    print(cleanedRoute["eta"])
 
     copyright = route['copyright']
     cleanedRoute["copyright"] = copyright
@@ -23,7 +21,6 @@ def cleanRoute(route,time):
         if travelMode == "WALKING":
             duration = stepListDictionary["duration"]["text"]
             durationString = ''.join(filter(str.isdigit, duration))
-            print(durationString)
 
             initialTimeStr = startTime
             initialTime = datetime.strptime(initialTimeStr, "%H%M")
@@ -55,7 +52,6 @@ def cleanRoute(route,time):
         elif travelMode == "TRANSIT":
             duration = stepListDictionary["duration"]["text"]
             durationString = ''.join(filter(str.isdigit, duration))
-            print(durationString)
 
             initialTimeStr = startTime
             initialTime = datetime.strptime(initialTimeStr, "%H%M")
