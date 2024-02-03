@@ -1,7 +1,6 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics, FolderManager
-from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -229,6 +228,7 @@ def createAccount():
         "admin": False,
         "forumBanned": False,
         "aboutMe": ""
+        "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -279,7 +279,7 @@ def generateItinerary():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return "ERROR: Admins cannot generate itineraries."
     
-    ## Check body
+    # Check body
     if "targetLocations" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     if not isinstance(request.json["targetLocations"], list):
@@ -288,116 +288,89 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
     if "description" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+
+    cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
+    if len(cleanTargetLocations) > 9:
+        cleanTargetLocations = cleanTargetLocations[:9]
     
-    ## Generate itinerary object
-    newItinerary = {
-        "id": Universal.generateUniqueID(),
-        "title": request.json["title"].strip(),
-        "description": request.json["description"].strip(),
+    uniqueLocations = []
+    for location in cleanTargetLocations:
+        if location not in uniqueLocations:
+            uniqueLocations.append(location)
+    cleanTargetLocations = uniqueLocations
+
+    title: str = request.json['title'].strip()
+    description: str = request.json['description'].strip()
+    
+    # Itinerary generation process
+    firstActivityTimeRange = ("0900", "1200")
+    secondActivityTimeRange = ("1300", "1600")
+    thirdActivityTimeRange = ("1600", "1800")
+    activityTimeRanges = [firstActivityTimeRange, secondActivityTimeRange, thirdActivityTimeRange]
+
+    ## Prepare root itinerary object
+    itineraryID = Universal.generateUniqueID()
+    itinerary = {
+        "title": title,
+        "description": description,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "associatedAccountID": targetAccountID,
         "days": {}
     }
 
+    ## Prepare locations list
+    locations = cleanTargetLocations
+    while len(locations) < 9:
+        randomIndex = random.randint(0, len(locations) - 1)
+        randomLocation = None
+        while randomLocation == None or randomLocation in locations:
+            randomLocation = random.choice([name for name in Universal.generationData["locations"]])
+        locations.insert(randomIndex, randomLocation)
+    
+    activities = [tuple(locations[i:i+3]) for i in range(0, len(locations), 3)]
+
+    ## Prepare days
+    sevenDayDeltaObject = datetime.datetime.now() + datetime.timedelta(days=7)
+    dayDates = [(sevenDayDeltaObject + datetime.timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(3)]
+
     ## Generate days
-    allActivities = request.json["targetLocations"]
-    remainingActivities = [x for x in staticLocations if x not in allActivities]
-
-    ### Insert remaining activities into all activities at random indexes
-    for activity in remainingActivities:
-        allActivities.insert(random.randint(0, len(allActivities)), activity)
-
-    firstDayActivities = allActivities[:6]
-    secondDayActivities = allActivities[6:]
-
-    ## DEBUG PHASE ONLY
-    newItinerary["days"] = {
-        "1" : {
-            "date" : "2024-01-01",
-            "activities" : {
-                "0" : {
-                    "name" : "Marina Bay Sands",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
-                    "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
-                    "startTime" : "0800",
-                    "endTime" : "1000"
-                },
-                "1" : {
-                    "name" : "Universal Studios Singapore",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
-                    "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
-                    "startTime" : "1000", 
-                    "endTime" : "1800"
-                },
-                "2" : {
-                    "name" : "Sentosa",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
-                    "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
-                    "startTime" : "1800",
-                    "endTime" : "2200"
-                }
-            }
-        },
-        "2" : {
-            "date" : "2024-01-02",
-            "activities" : {
-                "0" : {
-                    "name" : "SEA Aquarium",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
-                    "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
-                    "startTime" : "0800",
-                    "endTime" : "1200"
-                },
-                "1" : {
-                    "name" : "Botanical Gardens",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
-                    "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
-                    "startTime" : "1200",
-                    "endTime" : "1600"
-                },
-                "2" : {
-                    "name" : "Orchard Raod",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
-                    "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
-                    "startTime" : "1600",
-                    "endTime" : "2200"
-                }
-            }
-        },
-        "3" : {
-            "date" : "2024-01-03",
-            "activities" : {
-                "0" : {
-                    "name" : "Gardens By The Bay",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
-                    "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
-                    "startTime" : "1000",
-                    "endTime" : "1800"
-                },
-                "1" : {
-                    "name" : "Chinatown",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
-                    "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
-                    "startTime" : "1800",
-                    "endTime" : "2100"
-                }
-            }
+    for dayCount in range(3):
+        day = {
+            "date": dayDates[dayCount],
+            "activities": {}
         }
-    }
+
+        for activityCount in range(3):
+            activityLocation = activities[dayCount][activityCount]
+
+            attempts = 5
+            activityType = None
+            while (activityType == None or activityType in [x["activity"] for x in day["activities"].values()]) and attempts > 0:
+                activityType = random.choice(Universal.generationData["locations"][activityLocation]["supportedActivities"])
+                attempts -= 1
+            
+            if activityType == None:
+                ## Backup default activity type
+                activityType = "Visiting"
+            
+            startTime = activityTimeRanges[activityCount][0]
+            endTime = activityTimeRanges[activityCount][1]
+            
+            day["activities"][str(activityCount)] = {
+                "name": activities[dayCount][activityCount],
+                "activity": activityType,
+                "imageURL": Universal.generationData["locations"][activityLocation]["imageURL"],
+                "startTime": startTime,
+                "endTime": endTime
+            }
+
+        itinerary["days"][str(dayCount + 1)] = day
     
     ## Save itinerary
-    DI.data["itineraries"][newItinerary["id"]] = newItinerary
+    DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
 
-    return "SUCCESS: Itinerary ID: {}".format(newItinerary["id"])
+    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
@@ -724,9 +697,16 @@ def like_post():
     post_id = request.json['postId']
 
     if post_id in DI.data["forum"]:
-        DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
-        DI.save()
-        return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        if targetAccountID not in DI.data["forum"][post_id]["users_who_liked"]:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) + 1)
+            DI.data["forum"][post_id]["users_who_liked"].append(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
+        else:
+            DI.data["forum"][post_id]["likes"] = str(int(DI.data["forum"][post_id]["likes"]) - 1)
+            DI.data["forum"][post_id]["users_who_liked"].remove(targetAccountID)
+            DI.save()
+            return jsonify({'likes': int(DI.data["forum"][post_id]["likes"])})
         
     return "ERROR: Post ID not found in system."
 
@@ -824,7 +804,7 @@ def deleteComment():
 
     if post_id in DI.data["forum"]:
         if comment_id in DI.data["forum"][post_id]["comments"]:
-            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[2]:
+            if targetAccountID == DI.data["forum"][post_id]["targetAccountIDOfPostAuthor"] or targetAccountID == comment_id.split("_")[1]:
                 del DI.data["forum"][post_id]["comments"][comment_id]
                 DI.save()
                 return "SUCCESS: Comment was successfully removed from the post in the system."
@@ -864,7 +844,7 @@ def submitPost():
         "post_description": post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
@@ -898,7 +878,7 @@ def commentPost():
         if 'comments' not in DI.data["forum"][post_id]:
             DI.data["forum"][post_id]['comments'] = {}
         postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
-        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID)] = comment_description
+        DI.data["forum"][post_id]['comments'][str(postDateTime + "_" + targetAccountID + "_" + DI.data["accounts"][targetAccountID]["username"])] = comment_description
         DI.save()
         return "SUCCESS: Comment successfully made."
     else:
@@ -1000,7 +980,7 @@ def submitPostWithItinerary():
         "post_description": itinerary_post_description,
         "likes": "0",
         "postDateTime": postDateTime,
-        "liked_status": False,
+        "users_who_liked": [],
         "tag": itinerary_post_tag,
         "targetAccountIDOfPostAuthor": targetAccountID,
         "comments": {},
@@ -1014,6 +994,39 @@ def submitPostWithItinerary():
     DI.data["forum"][postDateTime] = new_post
     DI.save()
     return "SUCCESS: Itinerary was successfully shared to the forum."
+
+@apiBP.route('/api/submitReport', methods=['POST'])
+def submitReport():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "author_acc_id" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "report_reason" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    
+    author_acc_id = request.json['author_acc_id']
+    report_reason = request.json['report_reason']
+
+    postDateTime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+
+    if author_acc_id in DI.data["accounts"]:
+        if targetAccountID != author_acc_id:
+            DI.data["accounts"][author_acc_id]["reports"][str(targetAccountID + "_" + postDateTime)] = report_reason
+            DI.save()
+            return "SUCCESS: Report was successfully submitted to the system."
+        else:
+            return "UERROR: You can't report yourself!"
+    else:
+        return "ERROR: User account ID not found in system."
+
+
 
 @apiBP.route("/api/editActivity", methods = ['POST'])
 def editActivity():
@@ -1098,14 +1111,12 @@ def addNewActivity():
     activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
-    latitude = request.json["currentLatitude"]
-    longitude = request.json["currentLongitude"]
     imageURL = request.json["currentImageURL"]
     location = request.json["currentLocation"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
 
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentImageURL","currentLocation","currentName","newActivityID"]]:
         return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
@@ -1121,7 +1132,7 @@ def addNewActivity():
     if str(activityId) not in activityIdList:
         return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "location" : location, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"
@@ -1162,4 +1173,4 @@ def deleteItinerary():
     del DI.data["itineraries"][itineraryID]
     DI.save()
     
-    return "SUCCESS: Itinerarty is deleted."
+    return "SUCCESS: Itinerary is deleted."

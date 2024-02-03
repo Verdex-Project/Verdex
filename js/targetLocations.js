@@ -1,28 +1,81 @@
 const targetAttractionsBox = document.getElementById("targetAttractionsBox")
-const popularAttractionsBox = document.getElementById("popularAttractionsBox")
-var proceedButton = document.getElementById("proceedButton")
-var proceedButton2 = document.getElementById("proceedButton2")
+const popularAttractionsCarousel = document.getElementById("popularAttractionsCarousel")
+const proceedButton = document.getElementById("proceedButton")
+proceedButton.disabled = true
+const generateButton = document.getElementById("generateButton")
 const cancelButton = document.getElementById("cancelButton")
 const titleInput = document.getElementById("titleInput")
 const descriptionInput = document.getElementById("descriptionInput")
 const titleAndDescriptionBox = document.getElementById("titleAndDescriptionBox")
 
 var locations = []
-function proceedToGeneration() {
-    if (locations.length == 0) {
-        // Find all the locations by looping through children of targetAttractionsBox
-        var targetAttractionsBox = document.getElementById("targetAttractionsBox")
-        var children = targetAttractionsBox.children
-        for (var i = 1; i < children.length; i++) {
-            var location = children[i].children[0].innerHTML
-            locations.push(location)
+var locationsConfirmed = false
+
+function addAttraction(element) {
+    const attractionName = element.id.split("-")[1];
+
+    if (locations.includes(attractionName)) {
+        alert("You have already added this attraction.")
+        return
+    }
+    locations.push(attractionName)
+
+    let newAttraction = document.createElement("div");
+    newAttraction.classList.add("attraction-item");
+    newAttraction.id = "target-" + attractionName;
+
+    let span = document.createElement("span");
+    span.innerText = attractionName;
+
+    let removeButton = document.createElement("button");
+    removeButton.classList.add("btn", "btn-danger", "removeButton");
+    removeButton.innerText = "Remove";
+    removeButton.onclick = function () {
+        removeAttraction(attractionName);
+    }
+
+    newAttraction.appendChild(span);
+    newAttraction.appendChild(removeButton);
+    targetAttractionsBox.appendChild(newAttraction);
+
+    document.getElementById(element.id).innerText = "Added"
+    document.getElementById(element.id).disabled = true
+
+    if (locations.length > 0) {
+        proceedButton.disabled = false
+    }
+}
+
+function removeAttraction(attractionName) {
+    let attraction = document.getElementById("target-" + attractionName);
+    attraction.remove();
+
+    document.getElementById("add-" + attractionName).innerText = "Add"
+    document.getElementById("add-" + attractionName).disabled = false
+
+    // Remove the attraction from the locations array
+    const index = locations.indexOf(attractionName);
+    if (index > -1) {
+        locations.splice(index, 1);
+    }
+
+    if (locations.length <= 0) {
+        proceedButton.disabled = true
+    }
+}
+
+function proceed() {
+    if (!locationsConfirmed) {
+        if (locations.length == 0) {
+            alert("Please select at least one attraction.")
+            return
         }
-        proceedButton.innerText = "Generate"
         targetAttractionsBox.remove()
-        popularAttractionsBox.remove()
-        titleAndDescriptionBox.style.visibility = "visible"
+        popularAttractionsCarousel.remove()
         cancelButton.remove()
         proceedButton.remove()
+        titleAndDescriptionBox.style.visibility = "visible"
+        locationsConfirmed = true
     } else {
         if (titleInput.value == "" || descriptionInput.value == "") {
             alert("Please enter a title and description for your itinerary.")
@@ -30,8 +83,8 @@ function proceedToGeneration() {
         }
 
         // Change button to processing
-        proceedButton2.innerText = "Processing..."
-        proceedButton2.disabled = true
+        generateButton.innerText = "Generating... please wait!"
+        generateButton.disabled = true
 
         // Send locations to server
         axios({
@@ -54,6 +107,7 @@ function proceedToGeneration() {
                         if (response.data.startsWith("SUCCESS:")) {
                             const newItineraryID = response.data.substring("SUCCESS: Itinerary ID: ".length)
                             window.location.href = `${origin}/editor?itineraryID=${newItineraryID}`
+                            return
                         } else {
                             alert("Something went wrong. Please try again.")
                             console.log("Non-success response received when submitting target locations; response: " + response.data)
@@ -70,10 +124,14 @@ function proceedToGeneration() {
                 alert("Something went wrong. Please try again.")
                 console.log("Non-200 response received when submitting target locations; response: " + response.data)
             }
+            generateButton.innerText = "Generate"
+            generateButton.disabled = false
         })
         .catch(error => {
             alert("An error occurred. Please try again.")
             console.log("Error in submitting target locations; error: " + error)
+            generateButton.innerText = "Generate"
+            generateButton.disabled = false
         })
     }
 }
