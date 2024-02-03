@@ -9,12 +9,12 @@
 {% block body %}
 
 <div id="top">
-    {% with messages = get_flashed_messages() %}  
-        {% if messages %}  
-            {% for message in messages %}
-                <div class="alert alert-danger" role="alert" id="uploadAlert">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert" id="uploadAlert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 
     <h1 id="heading">My Account</h1>
@@ -31,11 +31,11 @@
         <div id="aboutMeDiv">
             <div id="description" contenteditable="true" onclick="aboutMe()">
                 {% if aboutMeDescription %}
-                    {{ aboutMeDescription }}
+                {{ aboutMeDescription }}
                 {% else %}
-                    Tell us more about yourself!
+                Tell us more about yourself!
                 {% endif %}
-                </div>
+            </div>
         </div>
         <div id="aboutMeSuccessMsg"></div>
     </div>
@@ -82,6 +82,30 @@
     </div>
 </div>
 
+<br>
+<div id="myItinerariesDiv">
+    <h2>My Itineraries</h2>
+    <div id="myItineraries">
+        {% for itineraryID, itinerary in itineraries.items() %}
+            {% if itinerary.associatedAccountID == accID %}
+                <div id="itineraryContainer">
+                    <div id="itineraryDetails">
+                        <h5>Title: </h5>
+                        <p class="descriptions">{{ itinerary.title }}</p>
+                        <h5>Description: </h5>
+                        <p class="descriptions">{{ itinerary.description }}</p>
+                    </div>
+                    <div id="itineraryButtons">
+                        <button type="button" class="btn btn-primary">View</button>
+                        <button type="button" class="btn btn-dark">Edit</button>
+                    </div>
+                </div>
+                <hr>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
 <!-- Modal for PFP-->
 <div class="modal" id="pfpModal" tabindex="-1" aria-labelledby="pfpModal" aria-hidden="true">
     <div class="modal-dialog">
@@ -109,8 +133,7 @@
 </div>
 
 <!-- Modal for new password-->
-<div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,23 +142,20 @@
             </div>
             <div class="modal-body">
                 <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
-                <input type="password" class="form-control" id="currentPasswordInput"
-                    placeholder="Current Password">
+                <input type="password" class="form-control" id="currentPasswordInput" placeholder="Current Password">
                 <br>
                 <label for="newPasswordInput" class="form-label">Enter New Password</label>
-                <input type="password" class="form-control" id="newPasswordInput"
-                    placeholder="New Password">
+                <input type="password" class="form-control" id="newPasswordInput" placeholder="New Password">
                 <br>
                 <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
-                <input type="password" class="form-control" id="cfmPasswordInput"
-                    placeholder="Confirm New Password">
+                <input type="password" class="form-control" id="cfmPasswordInput" placeholder="Confirm New Password">
                 <div id="changePasswordMsg"></div>
             </div>
             <div class="modal-footer">
                 <button id="modalCloseBtn" type="button" class="btn btn-secondary"
                     data-bs-dismiss="modal">Close</button>
-                <button id="modalSaveBtn" type="button" class="btn btn-primary"
-                    onclick="changePassword()">Save changes</button>
+                <button id="modalSaveBtn" type="button" class="btn btn-primary" onclick="changePassword()">Save
+                    changes</button>
             </div>
         </div>
     </div>

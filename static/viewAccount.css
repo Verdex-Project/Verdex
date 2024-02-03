@@ -133,6 +133,57 @@
     margin-right: 15px;
 }
 
+#myItinerariesDiv {
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+}
+
+#myItinerariesDiv > h2 {
+    text-align: center;
+}
+
+#myItineraries {
+    margin-top: 20px;
+    display: block;
+    min-height: 200px;
+    border-radius: 10px;
+    border: 1px solid green;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+#itineraryContainer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    max-height: fit-content;
+}
+
+
+#itineraryDetails {
+    grid-column: 1;
+    max-width: 500px;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+#itineraryDetails > p.descriptions {
+    word-wrap: break-word;
+    font-size: small;
+}
+
+#itineraryButtons {
+    grid-column: 2;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 30px;
+}
+
+#itineraryButtons > button {
+    margin: 5px;
+}
+
 #copyright {
+    margin-top: 30px;
     text-align: center;
 }
