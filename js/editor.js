@@ -668,7 +668,7 @@ function saveActivityEdits(activityId) {
     }
 }
 
-function addNewActivity(activityId, imageURL) {
+function addNewActivity(activityId) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
@@ -676,7 +676,7 @@ function addNewActivity(activityId, imageURL) {
     let newActivityId = parseInt(activityId)
     let currentActivityId = parseInt(activityId) - 1
 
-    let newImageURL = imageURL
+    let newImageURL = document.getElementById(`newActivityImageURL${newActivityId}`).value
     let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
     let newName = document.getElementById(`activityNameModal${activityId}`).innerText
     let newStartTime = document.getElementById(`startTimeModal${activityId}`).innerText

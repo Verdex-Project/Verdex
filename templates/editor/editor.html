@@ -415,7 +415,7 @@
 
             <div id="addExtra"> 
                 <div id="out">
-                    <button type="button" class="btn btn-primary" class="addActivityButton" data-bs-toggle="modal" data-bs-target="#addActivityModal" id="addActivityButton"><h5>+ Add Activity</h5></button>
+                    <button type="button" class="addActivityButton" data-bs-toggle="modal" data-bs-target="#addActivityModal" id="addActivityButton"><h5>+ Add Activity</h5></button>
                 </div>
 
                 <div class="modal fade" id="addActivityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -427,7 +427,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">
-                                        <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Edit This Activity! </h5>
+                                        <h5 style="padding-top: 10px; padding-right: 10px; font-weight: bold;">Add This Activity! </h5>
                                         <span style="color:gray">(Click on the elements that you want to add)</span></h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
@@ -438,36 +438,38 @@
                                             <div id="activityTimeline"><!--Timeline Box (static on top left corner on each activities)-->
                                                 <div id="timeStart">
                                                     <div>
-                                                        <span hidden id="activityId">{{ newActivityId  }}</span>
-                                                        <h3 id="startTimeModal{{ newActivityId  }}" contenteditable="true" placeholder="0800">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+                                                        <span hidden id="activityId">{{ newActivityId }}</span>
+                                                        <h3 id="startTimeModal{{ newActivityId }}" contenteditable="true">Start time here</h3>
                                                     </div>
                                                 </div>
                                                 <div id="divider"><h4><strong>·</strong>---<strong>·</strong></h4></div>
                                                 <div id="timeEnd">
                                                     <div>
-                                                        <h3 id="endTimeModal{{ newActivityId  }}" contenteditable="true" placeholder="1000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h3>
+                                                        <h3 id="endTimeModal{{ newActivityId }}" contenteditable="true">End time here</h3>
                                                     </div>
                                                 </div>  
                                             </div>
                     
-                                            <div id="activityPictureModal{{ newActivityId  }}"><img src="{{ activity['imageURL'] }}" alt="#"></div>
+                                            <div id="activityPictureModal{{ newActivityId }}">
+                                                <input type="text" name="url" id="newActivityImageURL{{ newActivityId }}" placeholder="Image URL here">
+                                            </div>
                     
                                             <div id="activityFooterModal">
                                                 <div id="activityDescriptionModal"> <!--left-->
-                                                    <h5 id="activityActivityModal{{ newActivityId  }}" contenteditable="true" placeholder="Visiting">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h5> 
+                                                    <h5 id="activityActivityModal{{ newActivityId }}" contenteditable="true">Activity here</h5> 
                                                     <h5> &nbsp | &nbsp  </h5>
-                                                    <h5 id="activityNameModal{{ newActivityId  }}" contenteditable="true" placeholder="Nanyang Polytechnic">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h5>
+                                                    <h5 id="activityNameModal{{ newActivityId }}" contenteditable="true">Location here</h5>
                                                 </div>
                                             </div>       
                                         </div>
-                                        <div id="errorDisplayModal{{ newActivityId  }}"></div>
+                                        <div id="errorDisplayModal{{ newActivityId }}"></div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="button" class="btn btn-primary" id="addActivityButton" 
                                         onclick="
-                                        addNewActivity('{{ newActivityId  }}','{{ activity['imageURL'] }}')">                       
+                                        addNewActivity('{{ newActivityId }}')">                       
                                         Add Activity
                                     </button>
                                 </div>

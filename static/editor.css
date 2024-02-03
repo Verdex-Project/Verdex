@@ -453,7 +453,7 @@
     margin-bottom: 3.5px;
 }
 
-#addExtra #out .btn.btn-primary{
+#addExtra .btn.btn-primary{
     background: none;
     color: blue;
     border-width: 2px;
@@ -463,11 +463,28 @@
     transition: 0.5s ease-out;
 }
 
-#addExtra #out .btn.btn-primary:hover {
+#addExtra .btn.btn-primary:hover {
     padding-left: 20px;
     padding-right: 20px;
     background: blue;
     color :white;
+    transition: 0.5s;
+}
+
+.addActivityButton{
+    background: none;
+    font-size: large;
+    padding: none;
+    border: none;
+    color: green;
+    padding-top: 10px;
+    height: 35px;
+    transition: 0.5s ease-out;
+
+}
+
+.addActivityButton:hover {
+    color: rgb(0, 210, 0);
     transition: 0.5s;
 }
 
