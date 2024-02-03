@@ -86,7 +86,7 @@ def editorDay(itineraryID, day):
         "editor/editor.html", 
         itineraryID = itineraryID, 
         day = day, 
-        itinerary_data = DI.data, 
+        itinerary_data = DI.data["itineraries"], 
         dayCountList = dayCountList,
         activityCountList = activityCountList,
         cleanedRoutes = cleanedRoutes,

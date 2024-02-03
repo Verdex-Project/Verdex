@@ -30,7 +30,7 @@
                 <div id="changeDayArrowRight-no"><button><strong>></strong></button></div>
                 {% endif %}
                 <div id="addDay">
-                    <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')" id="addDayButton">+ Add Day</button>
+                    <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data[itineraryID]['days'][day]['date'] }}')" id="addDayButton">+ Add Day</button>
                 </div>
                 <div id="deleteDay">
                     <button id="deleteDayButton" onclick="deleteDay('{{ itineraryID }}', '{{ day }}')">Delete Day </button>
@@ -53,14 +53,14 @@
                                 <div class="modal-body">
                                     <div class="editDatePopup-body-content">
                                         <div class="editDatePopup-body-content-date">
-                                            <input contenteditable="true" type="date" id="newDate" name="newDate" value="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}">
+                                            <input contenteditable="true" type="date" id="newDate" name="newDate" value="{{ itinerary_data[itineraryID]['days'][day]['date'] }}">
                                             <i></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" onclick="editDateSave('{{ itineraryID }}', '{{ day }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Save changes</button>
+                                    <button type="button" class="btn btn-primary" onclick="editDateSave('{{ itineraryID }}', '{{ day }}', '{{ itinerary_data[itineraryID]['days'][day]['date'] }}')">Save changes</button>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                             </div>  
                         </div>
 
-                        <div id="activityPicture"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                        <div id="activityPicture"><img src="{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
@@ -130,7 +130,7 @@
                                                         </div>  
                                                     </div>
                             
-                                                    <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                                                    <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
                             
                                                     <div id="activityFooterModal">
                                                         <div id="activityDescriptionModal"> <!--left-->
@@ -170,7 +170,7 @@
                                     {% if cleanedRoutes[activityId] is string %}
                                     <p><strong>{{ cleanedRoutes[activityId] }}</strong></p>
                                     {% else %}
-                                    <p>From <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1)| string]['name'] }}</strong></p>
+                                    <p>From <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityId | int + 1)| string]['name'] }}</strong></p>
                                     {% endif %}
                                 </div>
                                 <div id="detailJourney">
@@ -189,7 +189,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div id="modalTitleText">
-                                                        <p style="text-align: center;"><strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</strong></p>
+                                                        <p style="text-align: center;"><strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</strong></p>
                                                     </div>
                                                     <div id="modalEta" style="text-align: center;">
                                                         <h5>{{ cleanedRoutes[activityId]["eta"] }}</h5><p>* including transit waiting time *</p>
@@ -200,7 +200,7 @@
                                                                     {% if loop.first %}
                                                                     <tr>
                                                                         <td id="timeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] }}</td>
-                                                                        <td id="nameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}</td>
+                                                                        <td id="nameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['name'] }}</td>
                                                                     </tr>
                                                                     {% endif %}
                                                     
@@ -269,7 +269,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td id="walkArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
-                                                                            <td id="walkArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
+                                                                            <td id="walkArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
                                                                         </tr>
                                                                     {% endif %}
                                                                     {% if routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
@@ -294,7 +294,7 @@
                                                                         </tr>
                                                                         <tr>
                                                                             <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
-                                                                            <td id="transitArriveNameRight">{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
+                                                                            <td id="transitArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}</td>
                                                                         </tr>
                                                                     {% endif %}
                                                                 {% endif %}
@@ -307,7 +307,7 @@
 
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['name'] }}&destination={{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
+                                                    <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['name'] }}&destination={{ itinerary_data[itineraryID]['days'][day]['activities'][(activityId | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                 </div>
                                             </div>
@@ -335,7 +335,7 @@
                             </div>
                         </div>
 
-                        <div id="activityPicture"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div> <!--Image Box-->
+                        <div id="activityPicture"><img src="{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div> <!--Image Box-->
 
                         <div id="activityFooter">
                             <div id="activityDescription"> <!--left-->
@@ -373,7 +373,7 @@
                                                         </div>  
                                                     </div>
                             
-                                                    <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
+                                                    <div id="activityPictureModal{{ activityId }}"><img src="{{ itinerary_data[itineraryID]['days'][day]['activities'][activityId]['imageURL'] }}" alt="#"></div>
                             
                                                     <div id="activityFooterModal">
                                                         <div id="activityDescriptionModal"> <!--left-->
@@ -424,7 +424,7 @@
                 <div class="modal fade" id="addActivityModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     {% for activityId in activityCountList %}
                         {% if loop.last %}
-                        {% set activity = itinerary_data['itineraries'][itineraryID]['days'][day]['activities'][activityCountList[-2]] %}
+                        {% set activity = itinerary_data[itineraryID]['days'][day]['activities'][activityCountList[-2]] %}
                         {% set newActivityId = (activityId | int + 1) | string %}
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
@@ -490,25 +490,4 @@
             </div>
         </div>
     </div>
-    <!-- <div id="editDatePopup">
-        <div class="editDatePopup-content">
-            <div class="editDatePopup-header">
-                <h1 id="editDateHeader">Edit Date</h1>
-            </div>
-            <div id="discardChangesButton">
-                <button onclick="closeEditPopup()" id="discardChangesButtonClickable">Discard Changes</button>
-            </div>
-            <div class="editDatePopup-body">
-                <div class="editDatePopup-body-content">
-                    <div class="editDatePopup-body-content-date">
-                        <input type="date" id="newDate" name="newDate" value="{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}">
-                    </div>
-                </div>
-            </div>
-            <div class="editDatePopup-footer">
-                <button type="button" name="editDatePopupButton" id="editDatePopupButton" onclick="editDateSave('{{ itineraryID }}', '{{ day }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')">Save</button>
-            </div>
-        </div>
-    </div>
-</div> -->
 {% endblock %}
