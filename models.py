@@ -54,7 +54,7 @@ def cleanRoute(route,time):
             durationString = ''.join(filter(str.isdigit, duration))
 
             initialTimeStr = startTime
-            initialTime = datetime.strptime(initialTimeStr, "%H%M")
+            initialTime = datetime.datetime.strptime(initialTimeStr, "%H%M")
             arriveTime = initialTime + datetime.timedelta(minutes=int(durationString))
             arriveTime = arriveTime.strftime("%H%M")
 
