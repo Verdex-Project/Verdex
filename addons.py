@@ -1,4 +1,4 @@
-import os, sys, json, datetime, copy, pyrebase, uuid, re, googlemaps
+import os, sys, json, datetime, copy, pyrebase, uuid, re
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
 from dotenv import load_dotenv
