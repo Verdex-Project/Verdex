@@ -26,10 +26,10 @@
                         <h1><strong>Day {{ day }}</strong></h1>
                     </div>
                     <div id="dateFinalRight">
-                        <h6>{{ itinerary_data["itineraries"][itineraryID]["days"][day]["date"] }}</h6>
+                        <h6>{{ itinerary_data[itineraryID]["days"][day]["date"] }}</h6>
                     </div>
                 </div>
-                {% for activityIndex in itinerary_data["itineraries"][itineraryID]["days"][day]["activities"] %}
+                {% for activityIndex in itinerary_data[itineraryID]["days"][day]["activities"] %}
                     {% if not loop.last %}
                         
                         <table id="routeTableFinal">
@@ -79,7 +79,7 @@
                                                                     {% for routeStep in cleanedRoutes[day][activityIndex]["steps"] %}
                                                                             {% if loop.first %}
                                                                             <tr>
-                                                                                <td id="timeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["endTime"] }}</td>
+                                                                                <td id="timeLeft">{{ itinerary_data[itineraryID]["days"][day]["activities"][activityIndex]["endTime"] }}</td>
                                                                                 <td id="nameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                                                                             </tr>
                                                                             {% endif %}
@@ -204,7 +204,7 @@
                     {% endif %}
                     {% if loop.last %} 
                         <tr>
-                            <td id="arriveTimeLeft">{{ itinerary_data["itineraries"][itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
+                            <td id="arriveTimeLeft">{{ itinerary_data[itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
                             <td id="arriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
                         </tr>
                     </table>
