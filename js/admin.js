@@ -228,6 +228,7 @@ function reply(){{
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
                     window.alert("An error occurred: " + response.data);
+                    submitButton.innerHTML = "Send email"
                 }
                 else {
                     console.log("Unknown response received: " + response.data);

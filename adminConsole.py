@@ -1,6 +1,6 @@
 import re, datetime, sys, copy
 from models import DI, Logger, Universal, Encryption, fileContent, customRenderTemplate
-from addons import FireConn, FireAuth
+from addons import FireConn, FireAuth, AddonsManager
 from emailer import Emailer
 from getpass import getpass
 from flask import render_template
@@ -34,7 +34,15 @@ if FireConn.checkPermissions():
     if previousCopy != DI.data["accounts"]:
         print("ADMINCONSOLE: Necessary database synchronisation with Firebase Authentication complete.")
 
+response = AddonsManager.setup()
+if response != "Success":
+    print("ADMINCONSOLE: Error in setting up AddonsManager; error: " + response)
+    sys.exit(1)
+else:
+    print("ADDONSMANAGER: Setup complete.")
+
 Emailer.checkContext()
+
 emailregex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
 

@@ -1020,11 +1020,15 @@ def toggle_emailer():
     
     if emailer_current == True:
         AddonsManager.setConfigKey("EmailingServicesEnabled", False)
+        Emailer.checkContext()
+        print(Emailer.servicesEnabled)
         Logger.log("ADMIN TOGGLE_EMAILER: Emailer disabled.")
         return 'SUCCESS: Emailer disabled.'
 
     else:
         AddonsManager.setConfigKey("EmailingServicesEnabled", True)
+        Emailer.checkContext()
+        print(Emailer.servicesEnabled)
         Logger.log("ADMIN TOGGLE_EMAILER: Emailer enabled.")
         return 'SUCCESS: Emailer enabled.'
     

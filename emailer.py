@@ -26,6 +26,8 @@ class Emailer:
                 Emailer.sender_email = os.environ["AppEmail"]
                 Emailer.password = os.environ['EmailAppPassword']
                 Emailer.servicesEnabled = True
+            else:
+                Emailer.servicesEnabled = False
         else:
             Emailer.servicesEnabled = False
 
