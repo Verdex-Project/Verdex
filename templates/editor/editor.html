@@ -32,6 +32,9 @@
                 <div id="addDay">
                     <button onclick="addDay('{{ itineraryID }}', '{{ dayLength }}', '{{ itinerary_data['itineraries'][itineraryID]['days'][day]['date'] }}')" id="addDayButton">+ Add Day</button>
                 </div>
+                <div id="deleteDay">
+                    <button id="deleteDayButton" onclick="deleteDay('{{ itineraryID }}', '{{ day }}')">Delete Day </button>
+                </div>
             </div>
             <div id="sub-headder-box-right">
                 <div id="editDateButton">

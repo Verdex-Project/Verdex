@@ -598,10 +598,10 @@
 
 #addDayButton {
     background: none;
-    border: 2px solid #427b44;
+    border: 2px solid green;
     border-radius: 10px;
     background: white;
-    color: #427b44;
+    color: green;
     padding-left: 20px;
     padding-right:20px;
     transition: 0.5s ease-out;
@@ -615,6 +615,27 @@
     color:white;
     transition: 0.5s;
 }
+
+#deleteDayButton {
+    background: none;
+    border: 2px solid red;
+    border-radius: 10px;
+    background: white;
+    color: red;
+    padding-left: 20px;
+    padding-right:20px;
+    transition: 0.5s ease-out;
+    width: 140px;
+    margin-left: 10px;
+}
+
+#deleteDayButton:hover{
+    width: 150px;
+    background-color:red;
+    color:white;
+    transition: 0.5s;
+}
+
 
 #editDateButton {
     margin-right: 10px;

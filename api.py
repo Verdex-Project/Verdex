@@ -1038,6 +1038,30 @@ def addDay():
     else:
         return "ERROR: Itinerary ID not found in system."
             
+@apiBP.route('/api/deleteDay', methods=['POST'])
+def deleteDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = request.json['dayNo']
+
+    if itineraryID in DI.data["itineraries"]:
+        if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+            del DI.data["itineraries"][itineraryID]["days"][str(dayNo)] 
+            DI.save()
+            return "SUCCESS: Day is deleted successfully."
+        else:
+            return "UERROR: Day not found, can't delete day."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+
 @apiBP.route('/api/editDate', methods=['POST'])
 def editdate():
     check = checkHeaders(request.headers)

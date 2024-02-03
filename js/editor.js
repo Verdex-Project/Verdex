@@ -13,39 +13,72 @@
 // }
 
 function addDay(itineraryID, dayNo) {
-    var isConfirmedAdd = confirm(`Are you sure you want to add a day?`);
-    if (isConfirmedAdd) {
+    axios({
+        method: 'post',
+        url: `/api/addDay`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID": itineraryID,
+            "dayNo": parseInt(parseInt(dayNo) + 1),
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while adding a day. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error adding day:', error);
+    });    
+}
+
+function deleteDay(itineraryID, dayNo) {
+    var isConfirmedDelete = confirm(`Are you sure you want to delete this day?`);
+    if (isConfirmedDelete) {
         axios({
             method: 'post',
-            url: `/api/addDay`,
+            url: `/api/deleteDay`,
             headers: {
                 'Content-Type': 'application/json',
                 'VerdexAPIKey': '\{{ API_KEY }}'
             },
             data: {
                 "itineraryID": itineraryID,
-                "dayNo": parseInt(parseInt(dayNo) + 1),
+                "dayNo": parseInt(dayNo),
             }
         })
         .then(function (response) {
             if (response.data.startsWith("ERROR:")){
-                console.log(response.data)
-                alert("An error occured while adding a day. Please try again.")
+                console.log(response.data);
+                alert("An error occurred while deleting this day. Please try again.");
                 return;
             }
             else if (response.data.startsWith("UERROR:")){
-                console.log(response.data)
-                alert(response.data.substring("UERROR: ".length))
+                console.log(response.data);
+                alert(response.data.substring("UERROR: ".length));
                 return;
             }
-            console.log(response.data)
-            window.location.reload();
+            console.log(response.data);
+            location.href = `/editor/${itineraryID}/${parseInt(dayNo) - 1}`;
         })
         .catch(function (error) {
-            console.error('Error adding day:', error);
+            console.error('Error deleting day:', error);
         });    
     }
 }
+    
 
 function editDate(){
     document.getElementById('editDatePopup').style.display = "block"
