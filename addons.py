@@ -1,6 +1,9 @@
 import os, sys, json, datetime, copy, pyrebase, uuid, re
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
+from google_auth_oauthlib.flow import Flow
+import google.auth.transport.requests
+from google.oauth2 import id_token
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -765,3 +768,34 @@ class FireAuth:
                             break
 
         return accounts
+    
+class GoogleOAuth:
+    oauthFlow = None
+    googleClientID = None
+
+    @staticmethod
+    def checkPermissions():
+        return "GoogleAuthEnabled" in os.environ and os.environ["GoogleAuthEnabled"] == "True"
+
+    @staticmethod
+    def setup():
+        if GoogleOAuth.checkPermissions():
+            if "GoogleClientID" not in os.environ:
+                return "ERROR: Google OAuth is enabled but Google Client ID is not set as environment variable."
+            elif not os.path.isfile(os.path.join(os.getcwd(), "clientSecrets.json")):
+                return "ERROR: Google OAuth is enabled but clientSecrets.json is not found in the root directory."
+    
+            GoogleOAuth.googleClientID = os.environ['GoogleClientID']
+    
+            try:
+                GoogleOAuth.oauthFlow = Flow.from_client_secrets_file(
+                    client_secrets_file=os.path.join(os.getcwd(), "clientSecrets.json"),
+                    scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
+                    redirect_uri="http://127.0.0.1:8000/account/oauthCallback"
+                )
+
+                return True
+            except Exception as e:
+                return "ERROR: Error in setting up Google OAuth flow; error: {}".format(e)
+        else:
+            return "ERROR: Google OAuth is not granted permission to operate."
