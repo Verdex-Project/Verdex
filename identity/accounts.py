@@ -114,6 +114,7 @@ def oauthCallback():
             "disabled": False,
             "admin": False,
             "forumBanned": False,
+            "aboutMe": "",
             "reports": {}
         }
         Logger.log("ACCOUNTS OAUTHCALLBACK: New account created for Google OAuth login; account ID: {}".format(targetAccountID))
