@@ -27,9 +27,15 @@
         </div>
 
         <legend id="aboutMeLabel">About Me</legend>
+        <div id="aboutMeErrorMsg"></div>
         <div id="aboutMeDiv">
-            <div id="description" contenteditable="true">Hello there!! Welcome to Verdex!! You can view your account
-                here. This is an about me description. Maximum length is 150 characters including spaces!!</div>
+            <div id="description" contenteditable="true" onclick="aboutMe()">
+                {% if aboutMeDescription %}
+                    {{ aboutMeDescription }}
+                {% else %}
+                    Tell us more about yourself!
+                {% endif %}
+                </div>
         </div>
     </div>
 

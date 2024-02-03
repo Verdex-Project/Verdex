@@ -336,10 +336,13 @@ function changePassword() {
 
 function aboutMe() {
     var description = document.getElementById("description");
+    const aboutMeErrorMsg = document.getElementById("aboutMeErrorMsg");
 
-    description.addEventListener("keypress", function(event) {
+    description.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            var newDescription = description.innerText;
+            event.preventDefault(); 
+            var newDescription = description.innerText.trim();
+            console.log("OK");
 
             axios({
                 method: 'post',
@@ -359,20 +362,29 @@ function aboutMe() {
                             if (response.data.startsWith("SUCCESS:")) {
                                 location.reload()
                             } else {
-
+                                aboutMeErrorMsg.style.visibility = 'visible'
+                                aboutMeErrorMsg.innerText = "An unknown error occured. Please try again later."
                                 console.log("Unknown response received: " + response.data)
                             }
                         } else {
+                            aboutMeErrorMsg.style.visibility = 'visible'
+                            aboutMeErrorMsg.innerText = response.data.substring("UERROR: ".length)
                             console.log("User error occured: " + response.data)
                         }
                     } else {
-                        console.log("Error occured in changing password: " + response.data)
+                        aboutMeErrorMsg.style.visibility = 'visible'
+                        aboutMeErrorMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
+                        console.log("Error occured in updating about me description: " + response.data)
                     }
                 } else {
+                    aboutMeErrorMsg.style.visibility = 'visible'
+                    aboutMeErrorMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
                     console.log("Non-200 responnse status code recieved from Verdex Servers.")
                 }
             })
             .catch(err => {
+                aboutMeErrorMsg.style.visibility = 'visible'
+                aboutMeErrorMsg.innerText = "An error occured in connecting to Verdex Servers. Please try again later."
                 console.log("An error occured in connecting to Verdex Servers: " + err)
             })
         }
@@ -398,7 +410,7 @@ function removePFP(){
                     console.log("Unknown response received: " + response.data)
                 }
             } else {
-                console.log("Error occured in changing password: " + response.data)
+                console.log("Error occured in removing profile picture: " + response.data)
             }
         } else {
             console.log("Non-200 responnse status code recieved from Verdex Servers.")

@@ -79,6 +79,7 @@ def myAccount():
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]
     email = targetAccount["email"]
+    aboutMeDescription = targetAccount["aboutMe"]
 
     ## Check email verification
     notVerified = False
@@ -89,4 +90,4 @@ def myAccount():
     else:
         notVerified = not accInfo["emailVerified"]
 
-    return render_template("identity/viewAccount.html", username=username, email=email, emailNotVerified=notVerified)
+    return render_template("identity/viewAccount.html", username=username, email=email, aboutMeDescription=aboutMeDescription, emailNotVerified=notVerified)
