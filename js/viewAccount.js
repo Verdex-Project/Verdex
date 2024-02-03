@@ -342,11 +342,10 @@ function aboutMe() {
         if (event.key === "Enter") {
             event.preventDefault(); 
             var newDescription = description.innerText.trim();
-            console.log("OK");
 
             axios({
                 method: 'post',
-                url: '/api/aboutMeDescription',
+                url: '/api/editAboutMeDescription',
                 headers: {
                     'Content-Type': 'application/json',
                     'VerdexAPIKey': '\{{ API_KEY }}'

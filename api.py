@@ -227,7 +227,8 @@ def createAccount():
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
         "disabled": False,
         "admin": False,
-        "forumBanned": False
+        "forumBanned": False,
+        "aboutMe": ""
     }
     Logger.log("Account with ID {} created.".format(accID))
     DI.save()
@@ -633,7 +634,7 @@ def deletePFP():
 
     return "SUCCESS: File removed successfully."
 
-@apiBP.route('/api/aboutMeDescription', methods=['POST'])
+@apiBP.route('/api/editAboutMeDescription', methods=['POST'])
 def aboutMeDescription():
     check = checkHeaders(request.headers)
     if check != True:
@@ -647,10 +648,15 @@ def aboutMeDescription():
     if "description" not in request.json:
         return "ERROR: One or more payload not present."
     
-    if len(request.json["description"]) > 150:
+    if not isinstance(request.json["description"], str):
+        return "ERROR: Invalid description provided."
+    
+    description = request.json["description"].strip()
+    
+    if len(description) > 150:
         return "UERROR: Your description cannot exceed 150 characters."
 
-    DI.data["accounts"][targetAccountID]["aboutMe"] = request.json["description"]
+    DI.data["accounts"][targetAccountID]["aboutMe"] = description
     Logger.log("ACCOUNTS ABOUTMEDESCRIPTION: About Me description updated for {}".format(targetAccountID))
     DI.save()
 

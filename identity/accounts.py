@@ -1,6 +1,5 @@
 import os
 from flask import Flask, render_template, Blueprint, session, redirect, url_for, request, flash
-from flask_cors import CORS
 from main import DI, FireAuth, Universal, manageIDToken, Logger, secure_filename, allowed_file, app, FolderManager
 
 accountsBP = Blueprint("accounts",__name__)
@@ -54,7 +53,7 @@ def myAccount():
                 response = FolderManager.registerFolder(targetAccountID)
                 if response != True:
                     Logger.log("ACCOUNTS MYACCOUNT UPLOADFILE ERROR: Failed to register folder for account ID {}; response: {}".format(targetAccountID, response))
-                    flash("Failed to register a folder in the system for your account. Please try again.")
+                    flash("File upload unsuccessful. Please try again.")
                     return redirect(request.url)
             
             storedFilenames = FolderManager.getFilenames(targetAccountID)
@@ -76,6 +75,10 @@ def myAccount():
             flash("File type not supported.")
             return redirect(request.url)
     
+    if "aboutMe" not in DI.data["accounts"][targetAccountID]:
+        DI.data["accounts"][targetAccountID]["aboutMe"] = "Tell us more about yourself!"
+        DI.save()
+
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]
     email = targetAccount["email"]

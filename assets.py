@@ -17,7 +17,7 @@ def logo():
     else:
         return send_file("assets/logos/logoColour.png", mimetype="image/png")
     
-@assetsBP.route("/assets/userPFP", methods=["GET"])
+@assetsBP.route("/assets/userProfilePicture", methods=["GET"])
 def userPFP():
     authCheck = manageIDToken()
     if not authCheck.startswith("SUCCESS"):
