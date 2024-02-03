@@ -13,19 +13,21 @@
     <ol>
         {% if questions_list %}
             {% for query in questions_list %}
-                <div class="question-item">
-                    <div class="question-details">
-                        <li>
-                            <p class="question-id">ID: <span id="question-id">{{ query.id }}</span></p>
-                            <p class="question-name">Name: <span id="question-name">{{ query.name }}</span></p>
-                            <p class="question-email">Email: <span id="question-email">{{ query.email }}</span></p>
-                            <p class="question-message">Message: <span id="question-message">{{ query.message }}</span></p>
-                        </li>                                               
-                    </div>
-                    <div class="button">
-                        <a href="{{ url_for('admin.type_reply', question_id=query.id) }}">
-                            <button type="button" class="btn btn-outline-primary">Reply</button>
-                        </a>
+                <div class="question-box">
+                    <div class="question-item">
+                        <div class="question-details">
+                            <li>
+                                <p class="question-name">Name: <span id="question-name">{{ query.name }}</span></p>
+                                <p class="question-email">Email: <span id="question-email">{{ query.email }}</span></p>
+                                <p class="question-message">Message: <span id="question-message">{{ query.message }}</span></p>
+                                <p class="question-id">ID: <span id="question-id">{{ query.id }}</span></p>
+                            </li>                                               
+                        </div>
+                        <div class="button">
+                            <a href="{{ url_for('admin.type_reply', question_id=query.id) }}">
+                                <button type="button" class="btn btn-outline-primary">Reply</button>
+                            </a>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
