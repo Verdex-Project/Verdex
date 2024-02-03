@@ -1028,11 +1028,11 @@ def deleteDay():
         return "ERROR: One or more required payload parameters not provided."
     
     itineraryID = request.json['itineraryID']
-    dayNo = request.json['dayNo']
+    dayNo = str(request.json['dayNo'])
 
     if itineraryID in DI.data["itineraries"]:
         if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
-            del DI.data["itineraries"][itineraryID]["days"][str(dayNo)] 
+            del DI.data["itineraries"][itineraryID]["days"][dayNo] 
             DI.save()
             return "SUCCESS: Day is deleted successfully."
         else:
