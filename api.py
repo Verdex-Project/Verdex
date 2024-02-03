@@ -289,6 +289,15 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
 
     cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
+    if len(cleanTargetLocations) > 9:
+        cleanTargetLocations = cleanTargetLocations[:9]
+    
+    uniqueLocations = []
+    for location in cleanTargetLocations:
+        if location not in uniqueLocations:
+            uniqueLocations.append(location)
+    cleanTargetLocations = uniqueLocations
+
     title: str = request.json['title'].strip()
     description: str = request.json['description'].strip()
     
