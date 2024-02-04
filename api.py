@@ -350,7 +350,7 @@ def generateItinerary():
     itinerary = {
         "title": title,
         "description": description,
-        "associatedAccountID": targetAccountID,
+        "associatedAccountID": "None" if targetAccountID == None else targetAccountID,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "days": {}
     }
