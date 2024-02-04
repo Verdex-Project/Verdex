@@ -60,6 +60,12 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            <div class="genAIDiv">
+                <input type="text" name="prompt" id="prompt" placeholder="Ask Verdex-GPT anything..." size="60">
+                <button type="button" id="submitPromptButton" onclick="submitPrompt()">Submit Prompt</button>
+                <div id="response"></div>
+                <p id="responseNote">Please note that Verdex-GPT allows for a max output length of 600 characters.</p>
+            </div>
             <div class="post-section-container">
                 {% if postsInfoJson.items()|length == 0 %}
                     <div class="no-posts-here-container">

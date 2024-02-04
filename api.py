@@ -1,4 +1,4 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint, openai
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
 from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics, FolderManager
 from dotenv import load_dotenv
@@ -1263,3 +1263,29 @@ def editdate():
             return "ERROR: Day not found in system."
     else:
         return "ERROR: Itinerary ID not found in system."
+    
+@apiBP.route('/api/verdexgpt', methods=['POST'])
+def verdexgpt():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "prompt" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    openai.api_key = os.environ.get("VerdexGPTSecretKey")
+    
+    userPrompt = request.json['prompt']
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": userPrompt}
+        ],
+        max_tokens=150
+    )
+
+    generated_text = response.choices[0].message['content'].strip()
+    return jsonify({'generated_text': generated_text})
+

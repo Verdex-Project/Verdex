@@ -512,3 +512,94 @@ function closeReportPopup(){
         window.location.reload();
     }
 }
+
+// function submitPrompt(){
+//     const prompt = document.getElementById("prompt")
+//     if (prompt.value != ""){
+//         axios({
+//             method: 'post',
+//             url: `/api/verdexgpt`,
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'VerdexAPIKey': '\{{ API_KEY }}'
+//             },
+//             data: {
+//                 "prompt": prompt.value
+//             }
+//         })
+//         .then(function (response) {
+//             console.log("Payload successfully sent")
+//             if (response.data.startsWith("ERROR:")){
+//                 console.log(response.data)
+//                 alert("An error occured while generating text completion. Please try again.")
+//                 return;
+//             }
+//             else if (response.data.startsWith("UERROR:")){
+//                 console.log(response.data)
+//                 alert(response.data.substring("UERROR: ".length))
+//                 return;
+//             }
+//             console.log(response.data)
+//         })
+//         .catch(function (error) {
+//             console.error('Error generating text completion:', error);
+//         });
+//     }
+//     else {
+//         alert("Please enter a valid prompt.");
+//         return;
+//     }
+// }
+
+
+function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
+    console.log(generatedText)
+    const characters = generatedText.split('');
+    let i = 0;
+
+    const intervalId = setInterval(() => {
+        resultDiv.innerHTML += characters[i];
+        i++;
+
+        if (i === characters.length || i === maxLength) {
+            clearInterval(intervalId);
+        }
+    }, 20); 
+}
+
+function submitPrompt() {
+    const prompt = document.getElementById("prompt");
+
+    if (prompt.value !== "") {
+        axios({
+            method: 'post',
+            url: `/api/verdexgpt`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "prompt": prompt.value
+            }
+        })
+        .then(function (response) {
+            console.log("Payload successfully sent")
+
+            console.log(response.data);
+
+            const resultDiv = document.getElementById('response');
+            
+            resultDiv.innerHTML = '';
+
+            const maxLength = 600;
+
+            handleTypewriterEffect(resultDiv, response.data.generated_text, maxLength);
+        })
+        .catch(function (error) {
+            console.error('Error generating text completion:', error);
+        });
+    } else {
+        alert("Please enter a valid prompt.");
+        return;
+    }
+}
