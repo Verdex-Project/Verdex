@@ -77,7 +77,7 @@ def manageIDToken(checkIfAdmin=False):
             return "SUCCESS: {}".format(accountID)
     
     # If we get here, the session is invalid as the ID token is not in the database
-    del session["idToken"]
+    session.clear()
     return "ERROR: Invalid credentials."
 
 def allowed_file(filename):
@@ -85,7 +85,7 @@ def allowed_file(filename):
 
 @app.before_request
 def updateAnalytics():
-    Analytics.add_metrics('get_request' if request.method == "GET" else "post_request")
+    Analytics.add_metrics(Analytics.EventTypes.get_request if request.method == "GET" else Analytics.EventTypes.post_request)
     return
 
 @app.route('/')
@@ -158,13 +158,18 @@ if __name__ == '__main__':
 
     ## Get Emailer to check context
     Emailer.checkContext()
+    if Emailer.servicesEnabled and AddonsManager.readConfigKey("EmailingServicesEnabled") == False:
+        Emailer.servicesEnabled = False
 
     ## Set up GoogleMapsService
     GoogleMapsService.checkContext()
     
     ## Set up Analytics
-    Analytics.setup()
-    Analytics.load_metrics()
+    if AddonsManager.readConfigKey("AnalyticsEnabled") != "Key Not Found":
+        Analytics.setup(adminEnabled=AddonsManager.readConfigKey("AnalyticsEnabled"))
+    else:
+        Analytics.setup()
+        AddonsManager.setConfigKey("AnalyticsEnabled", Analytics.adminEnabled)
     
     ## Set up Logger
     Logger.setup()
