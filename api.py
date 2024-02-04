@@ -1080,6 +1080,8 @@ def submitReport():
 
     if author_acc_id in DI.data["accounts"]:
         if targetAccountID != author_acc_id:
+            if "reports" not in DI.data["accounts"][author_acc_id]:
+                DI.data["accounts"][author_acc_id]["reports"] = {}
             DI.data["accounts"][author_acc_id]["reports"][str(targetAccountID + "_" + postDateTime)] = report_reason
             DI.save()
             return "SUCCESS: Report was successfully submitted to the system."
