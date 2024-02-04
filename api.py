@@ -274,22 +274,23 @@ def createAccount():
     # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = accID
+            DI.save()
+            
+            generatedItineraryID = session["generatedItineraryID"]
+            del session["generatedItineraryID"]
+            return "SUCCESS ITINERARYREDIRECT: Account created successfully. Itinerary ID: {}".format(generatedItineraryID)
+        del session["generatedItineraryID"]
 
-    return "SUCCESS: Account created successfully"
+    return "SUCCESS: Account created successfully."
 
 @apiBP.route("/api/generateItinerary", methods=["POST"])
 def generateItinerary():
     headersCheck = checkHeaders(request.headers)
     if headersCheck != True:
         return headersCheck
-    
-    authCheck = manageIDToken()
-    if not authCheck.startswith("SUCCESS"):
-        return authCheck
-    targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
-        return "ERROR: Admins cannot generate itineraries."
     
     # Check body
     if "targetLocations" not in request.json:
@@ -326,7 +327,6 @@ def generateItinerary():
         "title": title,
         "description": description,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-        "associatedAccountID": targetAccountID,
         "days": {}
     }
 
@@ -381,6 +381,8 @@ def generateItinerary():
     ## Save itinerary
     DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
+
+    session["generatedItineraryID"] = itineraryID
 
     return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 

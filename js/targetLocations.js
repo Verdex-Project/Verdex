@@ -106,7 +106,7 @@ function proceed() {
                     if (!response.data.startsWith("ERROR:")) {
                         if (response.data.startsWith("SUCCESS:")) {
                             const newItineraryID = response.data.substring("SUCCESS: Itinerary ID: ".length)
-                            window.location.href = `${origin}/editor?itineraryID=${newItineraryID}`
+                            window.location.href = `${origin}/account/signup?fromItineraryGeneration=true`
                             return
                         } else {
                             alert("Something went wrong. Please try again.")

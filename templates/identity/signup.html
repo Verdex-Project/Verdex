@@ -13,6 +13,10 @@
 {% block body %}
 <div id="top">
     <h1 id="heading">Create Your Verdex Account</h1>
+
+    {% if fromItineraryGeneration %}
+    <div class="alert alert-success" role="alert" id="fromItineraryGenerationAlert">Please create an account to view or edit your itinerary.</div>
+    {% endif %}
 </div>
 
 <div id="content">

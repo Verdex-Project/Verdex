@@ -133,7 +133,8 @@ def oauthCallback():
 def signUp():
     if "idToken" in session:
         return redirect(url_for('accounts.myAccount'))
-    return render_template('identity/signup.html')
+    fromItineraryGeneration = request.args.get("fromItineraryGeneration") != None
+    return render_template('identity/signup.html', fromItineraryGeneration=fromItineraryGeneration)
 
 @accountsBP.route('/account/accountRecovery')
 def accountRecovery():
