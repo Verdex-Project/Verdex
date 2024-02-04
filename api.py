@@ -1112,12 +1112,6 @@ def deleteItinerary():
     if check != True:
         return check
 
-
-    itineraryID = request.json['itineraryID']
-
-    
-    itineraryID = request.json['itineraryID']
-
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
     if request.json["itineraryID"] not in DI.data["itineraries"]:
