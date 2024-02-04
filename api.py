@@ -1222,7 +1222,7 @@ def deleteDay():
     dayNo = str(request.json['dayNo'])
 
     if itineraryID in DI.data["itineraries"]:
-        if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+        if dayNo in DI.data["itineraries"][itineraryID]["days"]:
             del DI.data["itineraries"][itineraryID]["days"][dayNo] 
             DI.save()
             return "SUCCESS: Day is deleted successfully."
