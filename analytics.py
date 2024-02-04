@@ -15,8 +15,16 @@ class Analytics:
         "question_answered": 0,
         "sign_ins": 0,
         "sign_outs": 0,
-        "verdex_talks_posts": 0,
+        "forum_posts": 0,
     }
+
+    class EventTypes:
+        get_request = "get_request"
+        post_request = "post_request"
+        question_answered = "question_answered"
+        sign_in = "sign_ins"
+        sign_out = "sign_outs"
+        forumPost = "forum_posts"
 
     @staticmethod
     def checkPermissions():
@@ -36,7 +44,7 @@ class Analytics:
             return randomID
 
     @staticmethod
-    def setup(adminEnabled: bool):
+    def setup(adminEnabled: bool=True):
         Analytics.adminEnabled = adminEnabled
 
         if not Analytics.checkPermissions():
@@ -48,6 +56,7 @@ class Analytics:
             if not os.path.isfile(Analytics.filePath):
                 with open(Analytics.filePath, "w") as f:
                     json.dump(Analytics.sampleMetricsObject, f)
+                Analytics.data = Analytics.sampleMetricsObject
             else:
                 with open(Analytics.filePath, "r") as metrics:
                     Analytics.data = json.load(metrics)
@@ -78,6 +87,7 @@ class Analytics:
             if not os.path.isfile(Analytics.filePath):
                 with open(Analytics.filePath, "w") as f:
                     json.dump(Analytics.sampleMetricsObject, f)
+                Analytics.data = Analytics.sampleMetricsObject
             else:
                 with open(Analytics.filePath, "r") as metrics:
                     Analytics.data = json.load(metrics)
@@ -108,31 +118,31 @@ class Analytics:
             Logger.log("ANALYTICS ADD_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type), debugPrintExplicitDeny=True)
             return True
 
-        if event_type.lower() not in ["get_request", "post_request", 'question_answered', 'sign_ins', 'sign_outs', 'verdex_talks_posts']:
+        if event_type not in [Analytics.EventTypes.get_request, Analytics.EventTypes.post_request, Analytics.EventTypes.question_answered, Analytics.EventTypes.sign_in, Analytics.EventTypes.sign_out, Analytics.EventTypes.forumPost]:
             return False
         
         try:
-            Analytics.data[event_type.lower()] += 1
+            Analytics.data[event_type] += 1
             Analytics.save_metrics()
         except Exception as e:
-            Logger.log("ANALYTICS ADD_METRICS ERROR: Failed to update metrics for event type '{}'; error: {}".format(event_type.lower(), e))
+            Logger.log("ANALYTICS ADD_METRICS ERROR: Failed to update metrics for event type '{}'; error: {}".format(event_type, e))
             return False
 
         return True
     @staticmethod
-    def minus_metrics(event_type, str):
+    def minus_metrics(event_type: str):
         if not Analytics.checkPermissions():
             Logger.log("ANALYTICS MINUS_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type))
             return True
 
-        if event_type.lower() not in ['verdex_talks_posts']:
+        if event_type not in [Analytics.EventTypes.get_request, Analytics.EventTypes.post_request, Analytics.EventTypes.question_answered, Analytics.EventTypes.sign_in, Analytics.EventTypes.sign_out, Analytics.EventTypes.forumPost]:
             return False
         
         try:
-            Analytics.data[event_type.lower()] -= 1
+            Analytics.data[event_type] -= 1
             Analytics.save_metrics()
         except Exception as e:
-            Logger.log("ANALYTICS MINUS_METRICS ERROR: Failed to update metrics for event type '{}'; error: {}".format(event_type.lower(), e))
+            Logger.log("ANALYTICS MINUS_METRICS ERROR: Failed to update metrics for event type '{}'; error: {}".format(event_type, e))
             return False
 
         return True
@@ -165,13 +175,13 @@ In this report a few metrics are shown. These matrices are:
 - Number of Verdex Talks posts
 -----------------------
 The metrics are shown below:
-- Number of Get Requests: {Analytics.data['get_request']}
-- Number of Post Requests: {Analytics.data['post_request']}
-- Number of Total Requests: {Analytics.data['get_request'] + Analytics.data['post_request']}
-- Number of Questions Answered: {Analytics.data['question_answered']}
-- Number of Sign Ins: {Analytics.data['sign_ins']}
-- Number of Sign Outs: {Analytics.data['sign_outs']}
-- Number of Verdex Talks Posts: {Analytics.data['verdex_talks_posts']}
+- Number of Get Requests: {Analytics.data[Analytics.EventTypes.get_request]}
+- Number of Post Requests: {Analytics.data[Analytics.EventTypes.post_request]}
+- Number of Total Requests: {Analytics.data[Analytics.EventTypes.get_request] + Analytics.data[Analytics.EventTypes.post_request]}
+- Number of Questions Answered: {Analytics.data[Analytics.EventTypes.question_answered]}
+- Number of Sign Ins: {Analytics.data[Analytics.EventTypes.sign_in]}
+- Number of Sign Outs: {Analytics.data[Analytics.EventTypes.sign_out]}
+- Number of Verdex Talks Posts: {Analytics.data[Analytics.EventTypes.forumPost]}
 -----------------------
 """
         ## Use open(os.path.join(os.getcwd(), "reports", "report-<UNIQUE STRING 4 CHARS LONG>.txt"), "w") to dump the massive report string into the report file
@@ -195,13 +205,13 @@ The metrics are shown below:
         reportsInfo[unique_string] = {
             "report_id": unique_string,
             "timestamp": report_timestamp,
-            "get_request": Analytics.data['get_request'],
-            "post_request": Analytics.data['post_request'],
-            "total_requests": Analytics.data['get_request'] + Analytics.data['post_request'],
-            "question_answered": Analytics.data['question_answered'],
-            "sign_ins": Analytics.data['sign_ins'],
-            "sign_outs": Analytics.data['sign_outs'],
-            "verdex_talks_posts": Analytics.data['verdex_talks_posts'],
+            "get_request": Analytics.data[Analytics.EventTypes.get_request],
+            "post_request": Analytics.data[Analytics.EventTypes.post_request],
+            "total_requests": Analytics.data[Analytics.EventTypes.get_request] + Analytics.data[Analytics.EventTypes.post_request],
+            "question_answered": Analytics.data[Analytics.EventTypes.question_answered],
+            "sign_ins": Analytics.data[Analytics.EventTypes.sign_in],
+            "sign_outs": Analytics.data[Analytics.EventTypes.sign_out],
+            "verdex_talks_posts": Analytics.data[Analytics.EventTypes.forumPost],
         }
 
         with open(Analytics.reportsInfoFilePath, "w") as f:

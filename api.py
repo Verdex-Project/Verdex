@@ -53,6 +53,8 @@ def loginAccount():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         session["admin"] = True
 
+    Analytics.add_metrics(Analytics.EventTypes.sign_in)
+
     return "SUCCESS: User logged in succesfully."
 
 @apiBP.route("/api/createAccount", methods = ['POST'])
@@ -491,6 +493,8 @@ def logoutIdentity():
     
     deleteSession(targetAccountID)
 
+    Analytics.add_metrics(Analytics.EventTypes.sign_out)
+
     return "SUCCESS: User logged out."
 
 @apiBP.route('/api/deleteIdentity', methods=['POST'])
@@ -686,6 +690,10 @@ def submitPost():
 
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Post was successfully submitted to the system."
 
 @apiBP.route('/api/commentPost', methods=['POST'])
@@ -826,6 +834,10 @@ def submitPostWithItinerary():
     }
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Itinerary was successfully shared to the forum."
 
 @apiBP.route("/api/editActivity", methods = ['POST'])
@@ -1148,10 +1160,10 @@ def reply():
         copyright = Universal.copyright
     )
 
-    check = Emailer.sendEmail(email_target, email_title, altText, html)
-    if check == True:
-        del DI.data['admin']['supportQueries'][question_id]
-        DI.save()
-        return "SUCCESS: Email sent."
-    else:
-        return "ERROR: Email failed to send."
+    Emailer.sendEmail(email_target, email_title, altText, html)
+
+    Analytics.add_metrics(Analytics.EventTypes.question_answered)
+    
+    del DI.data['admin']['supportQueries'][question_id]
+    DI.save()
+    return "SUCCESS: Email sent."
