@@ -146,7 +146,6 @@
 #myItineraries {
     margin-top: 20px;
     display: block;
-    min-height: 150px;
     border-radius: 10px;
     border: 1px solid green;
     display: grid;
