@@ -56,8 +56,9 @@ function deleteDay(itineraryID, dayNo) {
                 alert(response.data.substring("UERROR: ".length));
                 return;
             }
+
             console.log(response.data);
-            location.href = `/editor/${itineraryID}/${parseInt(dayNo) - 1}`;
+            location.href = `/editor/${itineraryID}/${response.data.substring("SUCCESS: Day is deleted successfully. Redirect to day ".length)}`;
         })
         .catch(function (error) {
             console.error('Error deleting day:', error);

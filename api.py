@@ -1221,15 +1221,29 @@ def deleteDay():
     itineraryID = request.json['itineraryID']
     dayNo = str(request.json['dayNo'])
 
-    if itineraryID in DI.data["itineraries"]:
-        if dayNo in DI.data["itineraries"][itineraryID]["days"]:
-            del DI.data["itineraries"][itineraryID]["days"][dayNo] 
-            DI.save()
-            return "SUCCESS: Day is deleted successfully."
-        else:
-            return "UERROR: Day not found, can't delete day."
-    else:
-        return "ERROR: Itinerary ID not found in system."
+    if itineraryID not in DI.data["itineraries"]:
+        return "ERROR: Itinerary not found."
+    
+    if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+        return "ERROR: Day not found, can't delete day."
+    if len(DI.data["itineraries"][itineraryID]["days"]) == 1:
+        return "UERROR: Can't delete the only day in the itinerary. Please delete the itinerary itself."
+    
+    del DI.data["itineraries"][itineraryID]["days"][dayNo]
+    
+    daysData = [DI.data["itineraries"][itineraryID]["days"][x] for x in DI.data["itineraries"][itineraryID]["days"]]
+    newDaysObject = {}
+    for i in range(len(daysData)):
+        newDaysObject[str(i+1)] = daysData[i]
+    
+    DI.data["itineraries"][itineraryID]["days"] = newDaysObject
+    DI.save()
+
+    dayToRedirectTo = 1
+    if dayNo != "1":
+        dayToRedirectTo = int(dayNo) - 1
+
+    return "SUCCESS: Day is deleted successfully. Redirect to day {}".format(dayToRedirectTo)
 
 @apiBP.route('/api/editDate', methods=['POST'])
 def editdate():
