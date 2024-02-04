@@ -61,6 +61,7 @@
 <div class="content">
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>
+        {% if permission %}
             <div class="button-container">
                 <!-- Generate Report Button -->
                 <button class="btn btn-outline-success generate-report-button" type="button" onclick="showConfirmation('generateReportButton')">Generate Report</button>
@@ -71,6 +72,9 @@
                 <!-- Clear Data Button -->
                 <button class="btn btn-outline-danger clear-data-button" type="button" onclick="showConfirmation('clearDataButton')">Clear Data</button>
             </div>
+            {% else %}
+            <p class ="reports-check">Analytics Service is Disabled and not able to use any of the functions</p>
+            {% endif %}
             {% for report_id, report_data in data.items() %}
             <div class="report-container">
                 <h3>Report #{{ report_id }}</h3>

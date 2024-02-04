@@ -7,13 +7,13 @@
 
 {% block body %}
 {% include "includes/_adminSidebar.html" %}
+<button type="button" id="back-button" class="btn btn-outline-dark" onclick="goBack()">Go back</button>
 <div class="question-container">
     <h1>Question: <span id="question-message">{{ question_message }}</span></h1>
-    <h4>Name: <span id ="question-name">{{ question_name }}</span></h4>
-    <h4>Email: <span id = "question-email">{{ question_email }}</span></h4>
-    <h4>Question ID: <span id ="question-id">{{ question_id }}</span></h4>
-    <h4>Time where query was sent in: <span id ="question-timestamp">{{ question_timestamp }}</span></h4>
-    <h4>Reply:</h4>
+    <h5>Name: <span id ="question-name">{{ question_name }}</span></h5>
+    <h5>Email: <span id = "question-email">{{ question_email }}</span></h5>
+    <h5>Question ID: <span id ="question-id">{{ question_id }}</span></h5>
+    <h5>Time where query was sent in: <span id ="question-timestamp">{{ question_timestamp }}</span></h5>
     <div class="form-group">
         <label for="title">Subject:</label>
         <input type="text" class="form-control" id="question-title" name="title" >

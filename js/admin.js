@@ -110,7 +110,7 @@ function toggleAnalytics(){
 }
 
 function reloadDatabase(){
-    var confirmation = confirm("Are you sure you want to reload the database?");
+    var confirmation = confirm("Are you sure you want to reload the database? It is critical and could affect the whole system. Proceed with caution!");
     if (confirmation) {
         axios({
             method: 'post',
@@ -242,4 +242,8 @@ function reply(){{
             console.log("An error occurred while sending the reply: " + error);
         });
     }
+}
+
+function goBack(){
+    window.location.href = '{{ url_for("admin.reply") }}'
 }

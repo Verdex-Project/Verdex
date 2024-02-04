@@ -13,7 +13,7 @@ body {
 
 .sidenav {
     height: 100%;
-    width: 13%;
+    width: 12%;
     position: fixed;
     /* z-index: 1; */
     top: 0;
@@ -161,7 +161,11 @@ body {
     cursor: pointer;
     margin-right:10px;
 }
-
+.reports-check{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
 
 .button-container{
     display:flex;
@@ -184,13 +188,17 @@ body {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     justify-content: center;
-    width: 75%;
-    margin-left:250px;
+    width: 60%;
+    margin-left:300px;
     margin-top:20px;
     font-family: 'Open Sans', sans-serif;
 }
 .user-container h1{
     margin-top:-20px;
+    font-family: 'Open Sans', sans-serif;
+}
+.user-container li {
+    list-style: none;
     font-family: 'Open Sans', sans-serif;
 }
 .users{

@@ -55,8 +55,11 @@
         <div class="edit-buttons">
             <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
             <button class="btn btn-outline-secondary">Password Reset</button>
-            <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
-            <button class="btn btn-outline-success" onclick ="unbanFromForum()">Unban from VerdexTalks</button>
+            {% if user['forumBanned'] %}
+                <button class="btn btn-outline-success" onclick ="unbanFromForum()">Unban from VerdexTalks</button>
+            {% else %}
+                <button class="btn btn-outline-warning" onclick ="banFromForum()">Ban from VerdexTalks</button>
+            {% endif %}
             <button class="btn btn-outline-danger" onclick ="deleteAccount()">Delete account</button>
             <button type="button" class="btn btn-outline-info" onclick="logUserOut()">Log users out</button>
         </div>
