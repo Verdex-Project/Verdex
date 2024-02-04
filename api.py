@@ -39,6 +39,9 @@ def sendPasswordResetKey():
     if targetAccountID == None:
         return "UERROR: Account doesnt exist."
     
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
+    
     resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     resetKeyValue = Analytics.generateRandomID(customLength=6)
     resetKey = f"{resetKeyTime}_{resetKeyValue}"
@@ -99,6 +102,9 @@ def passwordReset():
             break
     if targetAccountID == None:
         return "UERROR: No such account with that email or username."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
 
     ## Expire reset keys
     expiredRequestingAccountsResetKey = False
