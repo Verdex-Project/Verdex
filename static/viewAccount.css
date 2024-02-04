@@ -2,18 +2,38 @@
     box-sizing: border-box;
 }
 
+#top {
+    margin-top: 50px;
+}
+
 #heading {
     text-align: center;
-    margin-top: 50px;
     font-size: 3em;
     font-weight: bold;
     margin-bottom: 50px;
 }
 
 #content {
-    max-width: 500px;
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 400px;
+}
+
+#left {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    margin-left: 100px;
+}
+
+#right {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 500px;
 }
 
 #unverifiedEmail {
@@ -35,6 +55,77 @@
     margin-top: 10px;
     margin-left: 5px;
     color: red;
+}
+
+#uploadAlert {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+#pfp {
+    border-radius: 50%;
+    width: 130px;
+    height: 130px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#modalpfp {
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+}
+
+#pfpModalContent {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 200px;
+}
+
+[contenteditable="true"] {
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 350px;
+    min-height: 90px;
+    border-radius: 10px;
+    font-size: small;
+}
+
+#aboutMeErrorMsg {
+    margin-left: 5px;
+    font-size: small;
+    color: red;
+    visibility: hidden;
+    margin-bottom: 5px;
+}
+
+#aboutMeSuccessMsg {
+    margin-left: 5px;
+    font-size: small;
+    color: green;
+    visibility: hidden;
+    margin-top: 5px;
+}
+
+#editAboutMeButton {
+    margin-left: 127px;
+}
+
+#aboutMeLabel {
+    margin-left: 5px;
+}
+
+#description {
+    padding: 5px;
+}
+
+#buttondiv {
+    margin-top: 30px;
+    margin-bottom: 40px;
 }
 
 .button-container {

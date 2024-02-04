@@ -1,16 +1,158 @@
-// function allowDrop(event) {
-//     event.preventDefault();
-// }
+function addDay(itineraryID, dayNo) {
+    axios({
+        method: 'post',
+        url: `/api/addDay`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID": itineraryID,
+            "dayNo": parseInt(parseInt(dayNo) + 1),
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while adding a day. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error adding day:', error);
+    });    
+}
 
-// function drag(event) {
-//     event.dataTransfer.setData("text", event.target.id);
-// }
+function deleteDay(itineraryID, dayNo) {
+    var isConfirmedDelete = confirm(`Are you sure you want to delete this day?`);
+    if (isConfirmedDelete) {
+        axios({
+            method: 'post',
+            url: `/api/deleteDay`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "itineraryID": itineraryID,
+                "dayNo": parseInt(dayNo),
+            }
+        })
+        .then(function (response) {
+            if (response.data.startsWith("ERROR:")){
+                console.log(response.data);
+                alert("An error occurred while deleting this day. Please try again.");
+                return;
+            }
+            else if (response.data.startsWith("UERROR:")){
+                console.log(response.data);
+                alert(response.data.substring("UERROR: ".length));
+                return;
+            }
+            console.log(response.data);
+            location.href = `/editor/${itineraryID}/${parseInt(dayNo) - 1}`;
+        })
+        .catch(function (error) {
+            console.error('Error deleting day:', error);
+        });    
+    }
+}
+    
 
-// function drop(event) {
-//     event.preventDefault();
-//     var fetchData = event.dataTransfer.getData("text");
-//     event.target.appendChild(document.getElementById(fetchData));
-// }
+function editDate(){
+    document.getElementById('editDatePopup').style.display = "block"
+}
+
+function closeEditPopup(){
+    window.location.reload()
+}
+
+function editDateSave(itineraryID, day, previousDate){
+    const editedDate = document.getElementById("newDate").value; // Already formatted
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentDay = currentDate.getDate();
+    const currentDateString = `${currentYear}-${currentMonth < 10 ? '0' : ''}${currentMonth}-${currentDay < 10 ? '0' : ''}${currentDay}`;
+
+    const oneDayMilliseconds = 24 * 60 * 60 * 1000;
+
+    const currentDateObj = new Date(currentDateString);
+    const previousDateObj = new Date(previousDate);
+    const editedDateObj = new Date(editedDate);
+
+    const utcPreviousDate = Date.UTC(previousDateObj.getFullYear(), previousDateObj.getMonth(), previousDateObj.getDate());
+    const utcEditedDate = Date.UTC(editedDateObj.getFullYear(), editedDateObj.getMonth(), editedDateObj.getDate());
+    const utcCurrentDate = Date.UTC(currentDateObj.getFullYear(), currentDateObj.getMonth(), currentDateObj.getDate());
+    const utcMaxDate = Date.UTC(currentDateObj.getFullYear(), currentDateObj.getMonth() + 2, currentDateObj.getDate());
+
+    const timeDifference = utcEditedDate - utcCurrentDate;
+    const diffOfDays = Math.floor(timeDifference / oneDayMilliseconds);
+
+    const timeDistanceDifference = utcMaxDate - utcEditedDate;
+
+    const previousVSeditedDifference = utcEditedDate - utcPreviousDate;
+    const diffBetweenPreviousVSedited = Math.floor(previousVSeditedDifference / oneDayMilliseconds);
+
+    if (diffOfDays > 0){
+        if (utcEditedDate > utcMaxDate){
+            alert("New date cannot be more than 2 months from currrent real-time date.");
+            return;
+        }
+    }
+    if (parseInt(diffOfDays) < 0){
+        alert("New date cannot be earlier than current date.");
+        return;
+    }
+    if (parseInt(diffOfDays) == 0){
+        alert("Chosen date can't be today's date!");
+        return;
+    }
+    if (parseInt(diffBetweenPreviousVSedited) == 0){
+        alert("You didn't make any changes to the date!")
+        return;
+    }
+
+    axios({
+        method: 'post',
+        url: `/api/editDate`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "itineraryID": itineraryID,
+            "day": day,
+            "editedDate": editedDate
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while editing the date. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        alert("Date sucessfully edited!")
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error editing date:', error);
+    });
+}
 
 function capitalizeEachWord(str) {
     str = String(str).toLowerCase()
@@ -21,6 +163,12 @@ function isLastTwoCharsLessThan60(str) {
     var lastTwoChars = str.slice(-2)
     var lastTwoDigits = parseInt(lastTwoChars, 10)
     return (lastTwoDigits < 60)
+}
+
+function isFirstTwoCharsLessThan25(str) {
+    var firstTwoChars = str.slice(0, 2);
+    var firstTwoDigits = parseInt(firstTwoChars, 10);
+    return (firstTwoDigits < 25);
 }
 
 function nextDay(){
@@ -112,167 +260,6 @@ function previousDay(){
         alert("An error occured while directing you to the previous day. Please try again later or check you itinerary again.")
     })
     }
-
-// function editActivity(activityId, location, name, startTime, endTime) {
-//     let value = "";
-//     while (value == "") {
-//     value = prompt("Which one do you want to change : \n 1: Activity Name and Location \n 2: Activity Time \n 3: Exit" )
-//         if (value == "1") {
-//             var currentUrl = window.location.href;
-//             var urlParts = currentUrl.split('/');
-//             var dayCount = urlParts[urlParts.length - 1];
-//             let currentActivityId = activityId
-//             let currentActivityLocation = location;
-//             let currentActivityName = name;
-//             let newActivityLocation = ""
-//             while (newActivityLocation == "") {
-//             newActivityLocation = prompt("Enter a new activity Location (Exp. Singapore):\nNOTE: LENGTH IS NOT MORE THAN 10 WORDS\n\nLeave here blank if you don't want to change ");
-//                 if (newActivityLocation == "") {
-//                     newActivityLocation = currentActivityLocation;
-//                 } else if (newActivityLocation.length >10){
-//                     alert("Invalid input.\n\nInput LESS THAN 10 WORDS are accepted only");
-//                     newActivityLocation = "";
-//                 } else {
-//                     newActivityLocation = capitalizeEachWord(newActivityLocation);
-//                     break;
-//                 }
-//             }
-//             let newActivityName = ""
-//             while (newActivityName == "") {
-//             newActivityName = prompt("Enter a new activity name (Exp. Marina Bay Sands):\nNOTE: LENGTH IS NOT MORE THAN 25 WORDS\n\nLeave here blank if you don't want to change ");
-//                 if (newActivityName == "") {
-//                     newActivityName = currentActivityName
-//                 } else if (newActivityName.length >25){
-//                     alert("Invalid input.\n\nInput LESS THAN 25 WORDS are accepted only");
-//                     newActivityName = "";
-//                 } else {
-//                     newActivityName = capitalizeEachWord(newActivityName);
-//                     break;
-//                 }
-//             }
-//             axios({
-//                 method: 'post',
-//                 url: `/api/newActivityLocationName`,
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'VerdexAPIKey': '\{{ API_KEY }}'
-//                 },
-//                 data: {
-//                     "newActivityName" : newActivityName,
-//                     "newActivityLocation" : newActivityLocation,
-//                     "day" : dayCount,
-//                     "activityId": currentActivityId
-//                 }
-//             })
-//             .then(response => {
-//                 console.log("Response:", response);  // Add this line to print the response
-//                 if (response.status == 200) {
-//                     if (!response.data.startsWith("ERROR:")) {
-//                         if (response.data.startsWith("SUCCESS:")) {
-//                             alert("Your new activity location and name is updated!");
-//                             window.location.reload();
-//                         } else {
-//                             alert("An unknown response was recieved from Verdex Servers.")
-//                             console.log("Unknown response received: " + response.data)
-//                         }
-//                     } else {
-//                         alert("An error occured while updating your new activity location and name. Please try again later.")
-//                         console.log("Error occured updating new activity location and name: " + response.data)
-//                     }
-//                 } else {
-//                     alert("An error occured while connecting to Verdex Servers. Please try again later.")
-//                     console.log("Non-200 responnse status code recieved from Verdex Servers.")
-//                 }
-//             })
-//             .catch(err => {
-//                 console.log("An error occured in connecting to Verdex Servers: " + err)
-//                 alert("An error occured while updating your new activity location and name. Please try again later or check the value that you've input.")
-//             })
-//             break;
-//         }
-//         if (value == "2"){
-//             var currentUrl = window.location.href;
-//             var urlParts = currentUrl.split('/');
-//             var dayCount = urlParts[urlParts.length - 1];
-//             let currentActivityId = activityId
-//             let currentActivityStartTime = startTime;
-//             let currentActivityEndTime = endTime;
-//             let newActivityStartTime = ""
-//             while (newActivityStartTime == "") {
-//             newActivityStartTime = prompt("Enter a new activity start time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
-//                 if (newActivityStartTime == "") {
-//                     newActivityStartTime = currentActivityStartTime;
-//                     break;
-//                 } else if (isNaN(newActivityStartTime) || newActivityStartTime.length !== 4) {
-//                     alert("Invalid input.\n\nPlease enter a valid number for the start time.\n\nOR\n\nPlease enter a 4 DIGIT number to represent the time");
-//                     newActivityStartTime = "";
-//                 } else {
-//                     break;
-//                 }
-//             }
-//             let newActivityEndTime = ""
-//             while(newActivityEndTime == "") {
-//             newActivityEndTime = prompt("Enter a new activity end time (Exp. 1200):\n\nLeave here blank if you don't want to change ");
-//                 if (newActivityEndTime == "") {
-//                     newActivityEndTime = currentActivityEndTime
-//                     break;
-//                 } else if (isNaN(newActivityEndTime) || newActivityStartTime.length !== 4) {
-//                     alert("Invalid input.\n\nPlease enter a valid number for the start time.\n\nOR\n\nPlease enter a 4 DIGIT number to represent the time");
-//                     newActivityEndTime = "";
-//                 } else {
-//                     break;
-//                 }
-//             }
-//             axios({
-//                 method: 'post',
-//                 url: `/api/newActivityStartEndTime`,
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'VerdexAPIKey': '\{{ API_KEY }}'
-//                 },
-//                 data: {
-//                     "newActivityStartTime" : newActivityStartTime,
-//                     "newActivityEndTime" : newActivityEndTime,
-//                     "day" : dayCount,
-//                     "activityId": currentActivityId
-//                 }
-//             })
-//             .then(response => {
-//                 console.log("Response:", response);  // Add this line to print the response
-//                 if (response.status == 200) {
-//                     if (!response.data.startsWith("ERROR:")) {
-//                         if (response.data.startsWith("SUCCESS:")) {
-//                             alert("Your new activity start time and end time is updated!");
-//                             window.location.reload();
-//                         } else {
-//                             alert("An unknown response was recieved from Verdex Servers.")
-//                             console.log("Unknown response received: " + response.data)
-//                         }
-//                     } else {
-//                         alert("An error occured while updating your new activity start time and end time. Please try again later.")
-//                         console.log("Error occured updating new activity start time and end time: " + response.data)
-//                     }
-//                 } else {
-//                     alert("An error occured while connecting to Verdex Servers. Please try again later.")
-//                     console.log("Non-200 responnse status code recieved from Verdex Servers.")
-//                 }
-//             })
-//             .catch(err => {
-//                 console.log("An error occured in connecting to Verdex Servers: " + err)
-//                 alert("An error occured while updating your new activity start time and end time. Please try again later or check the value that you've input.")
-//             })   
-//             break;            
-//         }
-//         if (value == "3" || value == null) {
-//             break;
-//         }
-//         else {
-//             alert("Please select a number that identicates the attribute that you would like to edit. \n\nIf you want to QUIT editing, TYPE 3")
-//             value = ""
-//             // value = prompt("Which one do you want to change : \n 1: Activity Name and Location \n 2: Activity Time \n 3: Exit" )
-//         }
-//     }
-// }
 
 function deleteActivity(activityId) {
     var currentUrl = window.location.href;
@@ -380,31 +367,9 @@ function deleteItinerary() {
     }
 }
 
-// errorModal = []
-
-// function newStartTime(currentStartTime){ 
-//     let newStartTime = document.getElementById(startTimeModal);
-//     let errorStartTime = "";
-//     let currentStartTime = currentStartTime;
-//     while (true) {
-//         if (newStartTime.length !== 4 && isNaN(newActivityEndTime)){
-//             newStartTime = currentStartTime
-//             errorStartTime = "EDIT TIME must be 4 numbers"
-//             break
-//         } else {
-//             newStartTime = newStartTime
-//             errorStartTime = ""
-//             break
-//         }
-//     }
-//     if (errorStartTime != "") {
-//         errorModal.push(errorStartTime);
-//     }
-// }
-
-function checkLocation(location) {
-    location = capitalizeEachWord(location);
-    if (location.length > 10) {
+function checkActivity(activity) {
+    activity = capitalizeEachWord(activity);
+    if (activity.length > 10) {
         return false
     } else {
         return true
@@ -413,7 +378,7 @@ function checkLocation(location) {
 
 function checkName(name) {
     name = capitalizeEachWord(name);
-    if (name.length > 25) {
+    if (name.length > 40) {
         return false
     } else {
         return true
@@ -421,41 +386,28 @@ function checkName(name) {
 }
 
 function checkStartTime(startTime) {
-    return (!isNaN(startTime) && String(startTime).length == 4)
+    return (!isNaN(startTime) && String(startTime).length == 4 && startTime.slice(0,2) < 24 && startTime.slice(2) < 60)
 }
 
 function checkEndTime(endTime,startTime) {
     let timeDiff = parseInt(endTime) - parseInt(startTime)
-    return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30)
+    return (!isNaN(endTime) && String(endTime).length == 4 && parseInt(startTime) < parseInt(endTime) && timeDiff >= 30 && endTime.slice(0,2) < 24 && endTime.slice(2) < 60)
 }
 
-function saveActivityEdits(activityId,location, name, startTime, endTime) {
+function saveActivityEdits(activityId) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
 
-    let currentLocation = location
-    let currentName = name
-    let currentstartTime = startTime
-    let currentendTime = endTime
-
-    let newLocation = document.getElementById(`activityLocationModal${activityId}`).innerText
+    let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
     let newName = document.getElementById(`activityNameModal${activityId}`).innerText
     let newStartTime = document.getElementById(`startTimeModal${activityId}`).innerText
     let newEndTime = document.getElementById(`endTimeModal${activityId}`).innerText
     let errorDisplayModal = document.getElementById(`errorDisplayModal${activityId}`)
 
-    console.log(newLocation)
-    console.log(newName)
-    console.log(newStartTime)
-    console.log(newEndTime)
-    console.log("Start Time:", newStartTime);
-    console.log("String(startTime).length:", String(newStartTime).length);
-    
-
     // Check format of all fields; startTime and endTime should be in 24-hr format, perform length check on other fields
-    if (!(checkStartTime(newStartTime) && isLastTwoCharsLessThan60(newStartTime))) {
+    if (!(checkStartTime(newStartTime) && isLastTwoCharsLessThan60(newStartTime) && isFirstTwoCharsLessThan25(newStartTime))) {
         errorDisplayModal.innerHTML = "Start time should be in 24-hour format and 4 digits!"
         return
     } else {
@@ -463,7 +415,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         newStartTime = newStartTime
     }
 
-    if (!(checkEndTime(newEndTime, newStartTime) && isLastTwoCharsLessThan60(newEndTime))) {
+    if (!(checkEndTime(newEndTime, newStartTime) && isLastTwoCharsLessThan60(newEndTime) && isFirstTwoCharsLessThan25(newEndTime))) {
         errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and\n must be later than START TIME by 30 minutes"
         return
     } else {
@@ -471,31 +423,24 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
         newEndTime = newEndTime
     }
 
-    if (!checkLocation(newLocation)) {
-        errorDisplayModal.innerHTML = "Activity location should not be more than 10 characters!"
+    if (!checkActivity(newActivity)) {
+        errorDisplayModal.innerHTML = "Activity activity should not be more than 10 characters!"
         return
     } else {
         errorDisplayModal.innerHTML = "" 
-        newLocation = capitalizeEachWord(newLocation)
+        newActivity = capitalizeEachWord(newActivity)
     }
 
     if (!checkName(newName)) {
-        errorDisplayModal.innerHTML = "Activity name should not be more than 25 characters!"
+        errorDisplayModal.innerHTML = "Activity name should not be more than 40 characters!"
         return
     } else {
         errorDisplayModal.innerHTML = ""
         newName = capitalizeEachWord(newName)
     }
 
-
-    console.log(checkStartTime(newStartTime) && checkEndTime(newEndTime) && checkLocation(newLocation) && checkName(newName))
-    console.log(checkStartTime(newStartTime))
-    console.log(checkEndTime(newEndTime, newStartTime))
-    console.log(checkLocation(newLocation))
-    console.log(checkName(newName))
-
     // Make request via axios
-    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkLocation(newLocation) && checkName(newName)) {
+    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkActivity(newActivity) && checkName(newName)) {
         axios({
             method: 'post',
             url: `/api/editActivity`,
@@ -509,7 +454,7 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
                 'activityId' : activityId,
                 'newStartTime' : newStartTime,
                 'newEndTime' : newEndTime,
-                'newLocation' : newLocation,
+                'newActivity' : newActivity,
                 'newName' : newName
             }
         })
@@ -519,7 +464,6 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
                 if (!response.data.startsWith("ERROR:")) {
                     if (!response.data.startsWith("UERROR")) {
                         if (response.data.startsWith("SUCCESS:")) {
-                            alert("Your Itinerary is edited successfully!");
                             window.location.reload();
                         } else {
                             alert("An unknown response was recieved from Verdex Servers.")
@@ -545,78 +489,100 @@ function saveActivityEdits(activityId,location, name, startTime, endTime) {
     }
 }
 
-function addNewActivity(activityId,location, name,latitude, longitude, imageURL, startTime, endTime) {
+function addNewActivity(activityId) {
     var currentUrl = window.location.href;
     var urlParts = currentUrl.split('/');
     var dayCount = urlParts[urlParts.length - 1];
     var itineraryId = urlParts[urlParts.length - 2];
+    let newActivityId = parseInt(activityId)
 
-    let currentActivityId = activityId
-    let currentLocation = location
-    let currentName = name
-    let currentLatitude = latitude
-    let currentLongitude = longitude
-    let currentImageURL = imageURL
-    let currentStartTime = startTime
-    let currentEndTime = endTime
-    let newActivityId = parseInt(activityId) + 1
-    axios({
-        method: 'post',
-        url: `/api/addNewActivity`,
-        headers: {
-            'Content-Type': 'application/json',
-            'VerdexAPIKey': '\{{ API_KEY }}'
-        },
-        data: {
-            "itineraryID" : itineraryId,
-            'dayCount' : dayCount,
-            'currentActivityId' : currentActivityId,
-            'currentStartTime' : currentStartTime,
-            'currentEndTime' : currentEndTime,
-            'currentLatitude' : currentLatitude,
-            'currentLongitude' : currentLongitude,
-            'currentImageURL' : currentImageURL,
-            'currentLocation' : currentLocation,
-            'currentName' : currentName,
-            'newActivityID' : newActivityId
-        }
-    })
-    .then(response => {
-        console.log("Response:", response);  // Add this line to print the response
-        if (response.status == 200) {
-            if (!response.data.startsWith("ERROR:")) {
-                if (!response.data.startsWith("UERROR")) {
-                    if (response.data.startsWith("SUCCESS:")) {
-                        alert("A new activity is added successfully!");
-                        window.location.reload();
+    let newImageURL = document.getElementById(`newActivityImageURL${newActivityId}`).value
+    let newActivity = document.getElementById(`activityActivityModal${activityId}`).innerText
+    let newName = document.getElementById(`activityNameModal${activityId}`).innerText
+    let newStartTime = document.getElementById(`startTimeModal${activityId}`).innerText
+    let newEndTime = document.getElementById(`endTimeModal${activityId}`).innerText
+    let errorDisplayModal = document.getElementById(`errorDisplayModal${activityId}`)
+
+    // Check format of all fields; startTime and endTime should be in 24-hr format, perform length check on other fields
+    if (!(checkStartTime(newStartTime) && isLastTwoCharsLessThan60(newStartTime) && isFirstTwoCharsLessThan25(newStartTime))) {
+        errorDisplayModal.innerHTML = "Start time should be in 24-hour format and 4 digits!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newStartTime = newStartTime
+    }
+
+    if (!(checkEndTime(newEndTime, newStartTime) && isLastTwoCharsLessThan60(newEndTime) && isFirstTwoCharsLessThan25(newEndTime))) {
+        errorDisplayModal.innerHTML = "End time should be in 24-hour format and 4 digits! and\n must be later than START TIME by 30 minutes"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newEndTime = newEndTime
+    }
+
+    if (!checkActivity(newActivity)) {
+        errorDisplayModal.innerHTML = "Activity activity should not be more than 10 characters!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = "" 
+        newActivity = capitalizeEachWord(newActivity)
+    }
+
+    if (!checkName(newName)) {
+        errorDisplayModal.innerHTML = "Activity name should not be more than 40 characters!"
+        return
+    } else {
+        errorDisplayModal.innerHTML = ""
+        newName = capitalizeEachWord(newName)
+    }
+
+    // Make request via axios
+    if (checkStartTime(newStartTime) && checkEndTime(newEndTime, newStartTime) && checkActivity(newActivity) && checkName(newName)) {
+        axios({
+            method: 'post',
+            url: `/api/addNewActivity`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "itineraryID" : itineraryId,
+                'dayCount' : dayCount,
+                'currentStartTime' : newStartTime,
+                'currentEndTime' : newEndTime,
+                'currentImageURL' : newImageURL,
+                'currentActivity' : newActivity,
+                'currentName' : newName,
+                'newActivityID' : newActivityId
+            }
+        })
+        .then(response => {
+            console.log("Response:", response);  // Add this line to print the response
+            if (response.status == 200) {
+                if (!response.data.startsWith("ERROR:")) {
+                    if (!response.data.startsWith("UERROR")) {
+                        if (response.data.startsWith("SUCCESS:")) {
+                            window.location.reload();
+                        } else {
+                            alert("An unknown response was recieved from Verdex Servers.")
+                            console.log("Unknown response received: " + response.data)
+                        }
                     } else {
-                        alert("An unknown response was recieved from Verdex Servers.")
-                        console.log("Unknown response received: " + response.data)
+                        alert("User error occured. Check for user inputs and try again")
+                        console.log("User error occurred; error: " + response.data)
                     }
                 } else {
-                    alert("User error occured. Check for user inputs and try again")
-                    console.log("User error occurred; error: " + response.data)
+                    alert("An error occured while updating your edits for your activity. Please try again later.")
+                    console.log("Error occured while adding a new activity to your itinerary: " + response.data)
                 }
             } else {
-                alert("An error occured while updating your edits for your activity. Please try again later.")
-                console.log("Error occured while adding a new activity to your itinerary: " + response.data)
+                alert("An error occured while connecting to Verdex Servers. Please try again later.")
+                console.log("Non-200 responnse status code recieved from Verdex Servers.")
             }
-        } else {
-            alert("An error occured while connecting to Verdex Servers. Please try again later.")
-            console.log("Non-200 responnse status code recieved from Verdex Servers.")
-        }
-    })
-    .catch(err => {
-        console.log("An error occured in connecting to Verdex Servers: " + err)
-        alert("An error occured while adding a new activity to your itinerary. Please try again later.")
-    })
+        })
+        .catch(err => {
+            console.log("An error occured in connecting to Verdex Servers: " + err)
+            alert("An error occured while adding a new activity to your itinerary. Please try again later.")
+        })
+    }
 }
-
-
-// // Get the button element by its ID
-// const myButton = document.getElementById('myButton');
-
-// // Add a click event listener to the button
-// myButton.addEventListener('click', function() {
-//   alert('Button clicked!');
-// });

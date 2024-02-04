@@ -1,7 +1,6 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption
-from generation.itineraryGeneration import staticLocations
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics, FolderManager
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,6 +16,135 @@ def checkHeaders(headers):
         return "ERROR: Invalid API key."
 
     return True
+
+@apiBP.route('/api/sendPasswordResetKey', methods=['POST'])
+def sendPasswordResetKey():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "usernameOrEmail" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    ## Check if email / username exists
+    usernameOrEmail = request.json["usernameOrEmail"]
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+        elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+    if targetAccountID == None:
+        return "UERROR: Account doesnt exist."
+    
+    resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    resetKeyValue = Analytics.generateRandomID(customLength=6)
+    resetKey = f"{resetKeyTime}_{resetKeyValue}"
+    DI.data["accounts"][targetAccountID]["resetKey"] = resetKey
+    DI.save()
+
+    altText = f"""
+    Dear {DI.data["accounts"][targetAccountID]["username"]},
+
+    We received a request to recover your account. To proceed, please use the following reset key: 
+    {resetKeyValue}
+
+    If you did not request this, please ignore this email.
+
+    Kind regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+
+    html = render_template(
+        "emails/forgetCredentialsEmail.html",
+        username = DI.data["accounts"][targetAccountID]["username"],
+        resetKey = resetKeyValue,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(DI.data["accounts"][targetAccountID]["email"], "Verdex Account Recovery", altText, html)
+    
+    return "SUCCESS: Password reset key sent to your email."
+
+@apiBP.route('/api/passwordReset', methods=['POST'])
+def passwordReset():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "resetKeyValue" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "newPassword" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "cfmPassword" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    if "usernameOrEmail" not in request.json:
+        return "ERROR: One or more required payload parameters not present."
+    
+    usernameOrEmail = request.json["usernameOrEmail"]
+    newPassword = request.json["newPassword"].strip()
+    cfmPassword = request.json["cfmPassword"].strip()
+
+    ## Get user targetAccountID using usernameOrEmail
+    targetAccountID = None
+    for accountID in DI.data["accounts"]:
+        if DI.data["accounts"][accountID]["email"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+        elif DI.data["accounts"][accountID]["username"] == usernameOrEmail:
+            targetAccountID = accountID
+            break
+    if targetAccountID == None:
+        return "UERROR: No such account with that email or username."
+
+    ## Expire reset keys
+    expiredRequestingAccountsResetKey = False
+    for accountID in DI.data["accounts"]:
+        if "resetKey" in DI.data["accounts"][accountID]:
+            key = DI.data["accounts"][accountID]["resetKey"]
+            keySplit = key.split('_')
+            keyTimeStr = keySplit[0]
+            keyValue = keySplit[1]
+            ## Check reset key value is valid
+            delta = datetime.datetime.now() - datetime.datetime.strptime(keyTimeStr, "%Y-%m-%dT%H:%M:%S")
+            if delta.total_seconds() > 900:
+                del DI.data["accounts"][accountID]["resetKey"]
+                Logger.log("ACCOUNTS PASSWORDRESET: Deleted expired reset key for account ID {}.".format(accountID))
+                if accountID == targetAccountID:
+                    expiredRequestingAccountsResetKey = True
+    
+    if expiredRequestingAccountsResetKey:
+        return "UERROR: Reset key has expired. Please refresh and try again."
+
+    ## Check if reset key value is correct
+    if "resetKey" not in DI.data["accounts"][targetAccountID]:
+        return "UERROR: Please request a password reset key first."
+    if request.json["resetKeyValue"] != DI.data["accounts"][targetAccountID]["resetKey"].split("_")[1]:
+        return "UERROR: Incorrect reset key."
+
+    ## Password validation
+    if newPassword != cfmPassword:
+        return "UERROR: New and confirm password fields do not match."
+    if len(newPassword) < 6:
+        return "UERROR: Password must be at least 6 characters long."
+
+    ## Update password
+    fireAuthID = DI.data["accounts"][targetAccountID]["fireAuthID"]
+    response = FireAuth.updatePassword(fireAuthID=fireAuthID, newPassword=newPassword)
+    if response != True:
+        Logger.log("ACCOUNTS CHANGEPASSWORD ERROR: Failed to change password; response: {}".format(response))
+        return "ERROR: Failed to change password."
+    
+    ### Update DI
+    DI.data["accounts"][targetAccountID]["password"] = Encryption.encodeToSHA256(newPassword)
+    del DI.data["accounts"][targetAccountID]["resetKey"]
+    DI.save()
+
+    Logger.log("ACCOUNTS PASSWORDRESET: Password reset for account ID {} successful.".format(targetAccountID))
+    return "SUCCESS: Password has been reset."
 
 @apiBP.route('/api/loginAccount', methods=['POST'])
 def loginAccount():
@@ -99,6 +227,7 @@ def createAccount():
         "disabled": False,
         "admin": False,
         "forumBanned": False,
+        "aboutMe": "",
         "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
@@ -117,7 +246,7 @@ def createAccount():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -150,7 +279,7 @@ def generateItinerary():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         return "ERROR: Admins cannot generate itineraries."
     
-    ## Check body
+    # Check body
     if "targetLocations" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     if not isinstance(request.json["targetLocations"], list):
@@ -159,116 +288,89 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
     if "description" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+
+    cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
+    if len(cleanTargetLocations) > 9:
+        cleanTargetLocations = cleanTargetLocations[:9]
     
-    ## Generate itinerary object
-    newItinerary = {
-        "id": Universal.generateUniqueID(),
-        "title": request.json["title"].strip(),
-        "description": request.json["description"].strip(),
+    uniqueLocations = []
+    for location in cleanTargetLocations:
+        if location not in uniqueLocations:
+            uniqueLocations.append(location)
+    cleanTargetLocations = uniqueLocations
+
+    title: str = request.json['title'].strip()
+    description: str = request.json['description'].strip()
+    
+    # Itinerary generation process
+    firstActivityTimeRange = ("0900", "1200")
+    secondActivityTimeRange = ("1300", "1600")
+    thirdActivityTimeRange = ("1600", "1800")
+    activityTimeRanges = [firstActivityTimeRange, secondActivityTimeRange, thirdActivityTimeRange]
+
+    ## Prepare root itinerary object
+    itineraryID = Universal.generateUniqueID()
+    itinerary = {
+        "title": title,
+        "description": description,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "associatedAccountID": targetAccountID,
         "days": {}
     }
 
+    ## Prepare locations list
+    locations = cleanTargetLocations
+    while len(locations) < 9:
+        randomIndex = random.randint(0, len(locations) - 1)
+        randomLocation = None
+        while randomLocation == None or randomLocation in locations:
+            randomLocation = random.choice([name for name in Universal.generationData["locations"]])
+        locations.insert(randomIndex, randomLocation)
+    
+    activities = [tuple(locations[i:i+3]) for i in range(0, len(locations), 3)]
+
+    ## Prepare days
+    sevenDayDeltaObject = datetime.datetime.now() + datetime.timedelta(days=7)
+    dayDates = [(sevenDayDeltaObject + datetime.timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(3)]
+
     ## Generate days
-    allActivities = request.json["targetLocations"]
-    remainingActivities = [x for x in staticLocations if x not in allActivities]
-
-    ### Insert remaining activities into all activities at random indexes
-    for activity in remainingActivities:
-        allActivities.insert(random.randint(0, len(allActivities)), activity)
-
-    firstDayActivities = allActivities[:6]
-    secondDayActivities = allActivities[6:]
-
-    ## DEBUG PHASE ONLY
-    newItinerary["days"] = {
-        "1" : {
-            "date" : "2024-01-01",
-            "activities" : {
-                "0" : {
-                    "name" : "Marina Bay Sands",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
-                    "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
-                    "startTime" : "0800",
-                    "endTime" : "1000"
-                },
-                "1" : {
-                    "name" : "Universal Studios Singapore",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
-                    "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
-                    "startTime" : "1000", 
-                    "endTime" : "1800"
-                },
-                "2" : {
-                    "name" : "Sentosa",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
-                    "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
-                    "startTime" : "1800",
-                    "endTime" : "2200"
-                }
-            }
-        },
-        "2" : {
-            "date" : "2024-01-02",
-            "activities" : {
-                "0" : {
-                    "name" : "SEA Aquarium",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
-                    "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
-                    "startTime" : "0800",
-                    "endTime" : "1200"
-                },
-                "1" : {
-                    "name" : "Botanical Gardens",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
-                    "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
-                    "startTime" : "1200",
-                    "endTime" : "1600"
-                },
-                "2" : {
-                    "name" : "Orchard Raod",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
-                    "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
-                    "startTime" : "1600",
-                    "endTime" : "2200"
-                }
-            }
-        },
-        "3" : {
-            "date" : "2024-01-03",
-            "activities" : {
-                "0" : {
-                    "name" : "Gardens By The Bay",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
-                    "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
-                    "startTime" : "1000",
-                    "endTime" : "1800"
-                },
-                "1" : {
-                    "name" : "Chinatown",
-                    "location" : "Singapore",
-                    "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
-                    "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
-                    "startTime" : "1800",
-                    "endTime" : "2100"
-                }
-            }
+    for dayCount in range(3):
+        day = {
+            "date": dayDates[dayCount],
+            "activities": {}
         }
-    }
+
+        for activityCount in range(3):
+            activityLocation = activities[dayCount][activityCount]
+
+            attempts = 5
+            activityType = None
+            while (activityType == None or activityType in [x["activity"] for x in day["activities"].values()]) and attempts > 0:
+                activityType = random.choice(Universal.generationData["locations"][activityLocation]["supportedActivities"])
+                attempts -= 1
+            
+            if activityType == None:
+                ## Backup default activity type
+                activityType = "Visiting"
+            
+            startTime = activityTimeRanges[activityCount][0]
+            endTime = activityTimeRanges[activityCount][1]
+            
+            day["activities"][str(activityCount)] = {
+                "name": activities[dayCount][activityCount],
+                "activity": activityType,
+                "imageURL": Universal.generationData["locations"][activityLocation]["imageURL"],
+                "startTime": startTime,
+                "endTime": endTime
+            }
+
+        itinerary["days"][str(dayCount + 1)] = day
     
     ## Save itinerary
-    DI.data["itineraries"][newItinerary["id"]] = newItinerary
+    DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
 
-    return "SUCCESS: Itinerary ID: {}".format(newItinerary["id"])
+    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
@@ -346,7 +448,7 @@ def editEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -398,7 +500,7 @@ def resendEmail():
 
     If you did not request this, please ignore this email.
 
-    Kindly regards, The Verdex Team
+    Kind regards, The Verdex Team
     THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
     {Universal.copyright}
     """
@@ -479,6 +581,60 @@ def changePassword():
     
     return "SUCCESS: Password updated successfully."
 
+@apiBP.route('/api/deletePFP', methods=['POST'])
+def deletePFP():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    folderRegistered = FolderManager.checkIfFolderIsRegistered(targetAccountID)
+    if not folderRegistered:
+        return "ERROR: No folder registered."
+
+    storedFilenames = FolderManager.getFilenames(targetAccountID)
+    for storedFile in storedFilenames:
+        storedFilename = storedFile.split('.')[0]
+        if storedFilename.endswith("pfp"):
+            location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, storedFile)
+            os.remove(location)
+
+    Logger.log("ACCOUNTS DELETEPFP: Profile picture deleted for {}".format(targetAccountID))
+
+    return "SUCCESS: File removed successfully."
+
+@apiBP.route('/api/editAboutMeDescription', methods=['POST'])
+def aboutMeDescription():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "description" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    if not isinstance(request.json["description"], str):
+        return "ERROR: Invalid description provided."
+    
+    description = request.json["description"].strip()
+    
+    if len(description) > 150:
+        return "UERROR: Your description cannot exceed 150 characters."
+
+    DI.data["accounts"][targetAccountID]["aboutMe"] = description
+    Logger.log("ACCOUNTS ABOUTMEDESCRIPTION: About Me description updated for {}".format(targetAccountID))
+    DI.save()
+
+    return "SUCCESS: Description updated."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     check = checkHeaders(request.headers)
@@ -516,6 +672,9 @@ def deleteIdentity():
     del DI.data["accounts"][targetAccountID]
     DI.save()
     Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
+
+    ## Remove the userfolder
+    FolderManager.deleteFolder(targetAccountID)
 
     session.clear()
 
@@ -880,7 +1039,7 @@ def editActivity():
     activityId = request.json["activityId"]
     startTime = request.json["newStartTime"]
     endTime = request.json["newEndTime"]
-    location = request.json["newLocation"]
+    activity = request.json["newActivity"]
     name = request.json["newName"]
 
     if 'itineraryID' not in request.json:
@@ -893,7 +1052,7 @@ def editActivity():
         return "ERROR: One or more required payload parameters not provided."
     if "newEndTime" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
-    if "newLocation" not in request.json:
+    if "newActivity" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
     if "newName" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -917,51 +1076,47 @@ def editActivity():
     if not endTime.isnumeric():
         return "UERROR: End Time is not a numeric value"
 
-    if len(startTime) != 4:
+    if len(startTime) != 4 or int(startTime[0:2]) >= 24 or int(startTime[2:]) >= 60 :
         return "UERROR: Start Time Format is not correct"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
     timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30  or int(endTime[0:2]) >= 24  or int(endTime[2:]) >= 60 :
         return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
-    if len(location) > 10:
-        return "UERROR: Activity Location should be less than 10 characters!"
+    if len(activity) > 10:
+        return "UERROR: Activity should be less than 10 characters!"
     else:
-        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] = activity
 
-    if len(name) > 25:
-        return "UERROR: Activity name should be less than 25 characters!"
+    if len(name) > 40:
+        return "UERROR: Activity name should be less than 40 characters!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
 
-
 @apiBP.route("/api/addNewActivity", methods = ['POST'])
 def addNewActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
     
     itineraryID = request.json['itineraryID']
     day = request.json["dayCount"]
-    activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
-    latitude = request.json["currentLatitude"]
-    longitude = request.json["currentLongitude"]
     imageURL = request.json["currentImageURL"]
-    location = request.json["currentLocation"]
+    activity = request.json["currentActivity"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
-
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentLatitude", "currentLongitude","currentImageURL","currentLocation","currentName","newActivityID"]]:
-        return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
     activityIdList = []
@@ -973,10 +1128,8 @@ def addNewActivity():
     
     for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
         activityIdList.append(str(key))
-    if str(activityId) not in activityIdList:
-        return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "locationCoordinates" : {"lat" : latitude, "long" : longitude}, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "activity" : activity, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"
@@ -1017,4 +1170,96 @@ def deleteItinerary():
     del DI.data["itineraries"][itineraryID]
     DI.save()
     
-    return "SUCCESS: Itinerarty is deleted."
+    return "SUCCESS: Itinerary is deleted."
+
+@apiBP.route('/api/addDay', methods=['POST'])
+def addDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = str(request.json['dayNo'])
+
+    latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
+    if latestDate == None:
+        return "ERROR: Latest date is not found."
+
+    newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+
+    if itineraryID in DI.data["itineraries"]:
+        if "days" in DI.data["itineraries"][itineraryID]:
+            if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+                DI.data["itineraries"][itineraryID]["days"][dayNo] = {"date" : newDate, "activities" : {}}
+                DI.save()
+                return "SUCCESS: Day is added successfully."
+            else:
+                return "UERROR: Day already exists, can't duplicate day."
+        else:
+            DI.data["itineraries"][itineraryID]["days"] = {dayNo : {"date" : newDate, "activities" : {}}}
+            DI.save()
+            return "SUCCESS: Day is added successfully."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+            
+@apiBP.route('/api/deleteDay', methods=['POST'])
+def deleteDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = str(request.json['dayNo'])
+
+    if itineraryID in DI.data["itineraries"]:
+        if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+            del DI.data["itineraries"][itineraryID]["days"][dayNo] 
+            DI.save()
+            return "SUCCESS: Day is deleted successfully."
+        else:
+            return "UERROR: Day not found, can't delete day."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+
+@apiBP.route('/api/editDate', methods=['POST'])
+def editdate():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "day" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "editedDate" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json['day']
+    editedDate = request.json['editedDate']
+
+    if itineraryID in DI.data["itineraries"]:
+        for loopedDay in DI.data["itineraries"][itineraryID]["days"]:
+            if DI.data["itineraries"][itineraryID]["days"][loopedDay]["date"] == editedDate:
+                return "UERROR: Date already exists in the itinerary, can't duplicate date."
+        if day in DI.data["itineraries"][itineraryID]["days"]:
+            if DI.data["itineraries"][itineraryID]["days"][day]["date"] != editedDate:
+                DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
+                DI.save()
+                return "SUCCESS: Date is edited successfully."
+            else:
+                return "UERROR: There were no changes to the date!"
+        else:
+            return "ERROR: Day not found in system."
+    else:
+        return "ERROR: Itinerary ID not found in system."
