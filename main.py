@@ -200,10 +200,13 @@ if __name__ == '__main__':
             print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
 
     # UserFolders pruning
-    for folder in os.listdir("UserFolders"):
-        if folder not in DI.data["accounts"]:
-            shutil.rmtree(os.path.join("UserFolders", folder))
-            print(f"MAIN: Pruned UserFolders/{folder} as it is not in the database.")
+    try:
+        for folder in os.listdir("UserFolders"):
+            if folder not in DI.data["accounts"]:
+                shutil.rmtree(os.path.join("UserFolders", folder))
+                print(f"MAIN: Pruned UserFolders/{folder} as it is not in the database.")
+    except Exception as e:
+        print("MAIN: (Non-terminal) Failed to prune folder {} from UserFolders; error: {}".format(folder, e))
     
     if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
         DI.data["itineraries"] = {
