@@ -83,6 +83,7 @@ def myAccount():
     username = targetAccount["username"]
     email = targetAccount["email"]
     aboutMeDescription = targetAccount["aboutMe"]
+    itineraries = DI.data["itineraries"]
 
     ## Check email verification
     notVerified = False
@@ -93,4 +94,6 @@ def myAccount():
     else:
         notVerified = not accInfo["emailVerified"]
 
-    return render_template("identity/viewAccount.html", username=username, email=email, aboutMeDescription=aboutMeDescription, emailNotVerified=notVerified)
+    itineraryIDs = [itineraryID for itineraryID, itinerary in itineraries.items() if itinerary["associatedAccountID"] == targetAccountID]
+
+    return render_template("identity/viewAccount.html", username=username, email=email, aboutMeDescription=aboutMeDescription, emailNotVerified=notVerified, accID = targetAccountID, itineraries = itineraries, itineraryIDs = itineraryIDs)

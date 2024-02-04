@@ -266,7 +266,7 @@ if __name__ == '__main__':
                 "title" : "Second Itinerary",
                 "description" : "5 days itinerary in Singapore",
                 "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-                "associatedAccountID": "1443c467fe594c149f9a1344e2c2fb9b",
+                "associatedAccountID": "1e80d6b46ac5463390b585ea2f2c00c6",
                 "days" : {
                     "1" : {
                         "date" : "2024-04-01",
