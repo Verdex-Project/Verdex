@@ -33,16 +33,12 @@ def admin():
     emailerFinalStatus = emailerInternalStatus and emailerAdminStatus
     
 
-    total_user = 0
     logged_in = 0
     user_list = FireAuth.listUsers()
 
-    for user in user_list:
-        total_user+=1
-
     for accountID in DI.data['accounts']:
         if 'idToken' in DI.data['accounts'][accountID]:
-            logged_in +=1
+            logged_in += 1
     
     return render_template(
         'admin/system_health.html', 
@@ -52,7 +48,7 @@ def admin():
         analyticsInternalStatus = analyticsInternalStatus,
         emailerInternalStatus = emailerInternalStatus, 
         emailerFinalStatus = emailerFinalStatus, 
-        total_user = total_user,
+        total_user = len(user_list),
         logged_in = logged_in,
         sync_status = DI.syncStatus
     )
@@ -147,9 +143,12 @@ def unbanAccount(user_id):
 def logoutAccount(user_id):
     for accountID in DI.data['accounts']:
         if DI.data['accounts'][accountID]['id'] == user_id:
-            del DI.data['accounts'][accountID]['idToken']
-            del DI.data['accounts'][accountID]['refreshToken']
-            del DI.data['accounts'][accountID]['tokenExpiry']
+            if 'idToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['idToken']
+            if 'refreshToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['refreshToken']
+            if 'tokenExpiry' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['tokenExpiry']
             DI.save()
             
             Logger.log(f'ADMIN LOGOUTACCOUNT: Account with ID {accountID} has been logged out')
