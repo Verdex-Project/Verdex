@@ -198,6 +198,12 @@ if __name__ == '__main__':
 
         if previousCopy != DI.data["accounts"]:
             print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
+
+    # UserFolders pruning
+    for folder in os.listdir("UserFolders"):
+        if folder not in DI.data["accounts"]:
+            shutil.rmtree(os.path.join("UserFolders", folder))
+            print(f"MAIN: Pruned UserFolders/{folder} as it is not in the database.")
     
     if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
         DI.data["itineraries"] = {
