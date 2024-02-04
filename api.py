@@ -39,6 +39,9 @@ def sendPasswordResetKey():
     if targetAccountID == None:
         return "UERROR: Account doesnt exist."
     
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
+    
     resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     resetKeyValue = Analytics.generateRandomID(customLength=6)
     resetKey = f"{resetKeyTime}_{resetKeyValue}"
@@ -99,6 +102,9 @@ def passwordReset():
             break
     if targetAccountID == None:
         return "UERROR: No such account with that email or username."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
 
     ## Expire reset keys
     expiredRequestingAccountsResetKey = False
@@ -168,6 +174,9 @@ def loginAccount():
     if targetAccountID == None:
         return "UERROR: Account does not exist!"
     
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please login via Google instead."
+    
     response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json["password"])
     if isinstance(response, str):
         return "UERROR: Incorrect email/username or password. Please try again."
@@ -220,6 +229,7 @@ def createAccount():
     DI.data["accounts"][accID] = {
         "id": accID,
         "fireAuthID": tokenInfo["uid"],
+        "googleLogin": False,
         "username": request.json["username"],
         "email": request.json["email"],
         "password": Encryption.encodeToSHA256(request.json["password"]),
@@ -417,6 +427,9 @@ def editEmail():
     for accountID in DI.data["accounts"]:
         if DI.data["accounts"][accountID]["email"] == request.json["email"]:
             return "UERROR: Email is already taken."
+        
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, email cannot be changed."
     
     # Success case
         
@@ -482,6 +495,9 @@ def resendEmail():
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, email verification is not needed."
+
     token = DI.data["accounts"][targetAccountID]["idToken"]
     verified = FireAuth.accountInfo(token)["emailVerified"]
     if verified != False:
@@ -546,6 +562,9 @@ def changePassword():
         return "UERROR: Password must be at least 6 characters long."
     if currentPassword == newPassword:
         return "UERROR: New password must differ from the current password."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please change password via Google instead."
     
     ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
     if "password" not in DI.data["accounts"][targetAccountID]:
@@ -1174,10 +1193,12 @@ def deleteItinerary():
     if check != True:
         return check
 
-    itineraryID = request.json['itineraryID']
-
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if request.json["itineraryID"] not in DI.data["itineraries"]:
+        return "ERROR: Itinerary ID not found."
+
+    itineraryID = request.json['itineraryID']
 
     del DI.data["itineraries"][itineraryID]
     DI.save()

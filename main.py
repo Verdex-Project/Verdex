@@ -20,6 +20,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.environ['AppSecretKey']
 
+### For Google OAuth Login, if it were to be enabled
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+
 ## Global methods
 def deleteSession(accountID):
     if accountID not in DI.data["accounts"]:
@@ -149,6 +152,15 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print("FIREAUTH: Setup complete.")
+
+    ## Set up Google OAuth Login
+    if GoogleOAuth.checkPermissions():
+        response = GoogleOAuth.setup()
+        if response != True:
+            print("MAIN BOOT: Error in setting up Google OAuth; error: " + response)
+            sys.exit(1)
+        else:
+            print("GOOGLE OAUTH: Setup complete.")
 
     ## Set up FolderManager
     response = FolderManager.setup()
