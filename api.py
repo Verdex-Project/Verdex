@@ -1283,7 +1283,7 @@ def verdexgpt():
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": userPrompt}
         ],
-        max_tokens=150
+        max_tokens=450
     )
 
     generated_text = response.choices[0].message['content'].strip()

@@ -526,7 +526,7 @@ function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
         if (i === characters.length || i === maxLength) {
             clearInterval(intervalId);
         }
-    }, 10); 
+    }, 5); 
 }
 
 function submitPrompt() {
@@ -552,7 +552,7 @@ function submitPrompt() {
 
             const resultDiv = document.getElementById('response');
 
-            const maxLength = 600;
+            const maxLength = 1800;
 
             resultDiv.innerHTML = '';
 
