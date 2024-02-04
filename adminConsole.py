@@ -63,15 +63,6 @@ def createUser():
         break
 
     while True:
-        password = getpass("Enter the password of the admin: ").strip()
-        if password == "":
-            print("Password cannot be empty. Please try again.")
-            continue
-        elif len(password)<6:
-            print("Password must be at least 6 characters long. Please try again.")
-            continue
-        break
-    while True:
         email = input("Enter the email of the admin: ").strip()
         if email == "":
             print("Email cannot be empty. Please try again.")
@@ -80,7 +71,16 @@ def createUser():
             print("Invalid email. Please try again.")
             continue
         break
-
+    while True:
+        password = getpass("Enter the password of the admin: ").strip()
+        if password == "":
+            print("Password cannot be empty. Please try again.")
+            continue
+        elif len(password)<6:
+            print("Password must be at least 6 characters long. Please try again.")
+            continue
+        break
+    
     while True:
         name = input("Enter the name of the admin: ").strip()
         if name == "":
