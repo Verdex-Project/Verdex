@@ -1018,19 +1018,17 @@ def toggle_emailer():
 
     emailer_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
     
-    if emailer_current == True:
-        AddonsManager.setConfigKey("EmailingServicesEnabled", False)
-        Emailer.checkContext()
-        print(Emailer.servicesEnabled)
-        Logger.log("ADMIN TOGGLE_EMAILER: Emailer disabled.")
-        return 'SUCCESS: Emailer disabled.'
-
+    if "EmailingServicesEnabled" in os.environ and os.environ["EmailingServicesEnabled"] == "True":
+        if emailer_current == "Key Not Found":
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services enabled by admin '{}'.".format(targetAccountID))
+        else:
+            Emailer.servicesEnabled = not emailer_current
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services toggled to {} by admin '{}'.".format("True" if Emailer.servicesEnabled else "False", targetAccountID))
+        return 'SUCCESS: Emailing services toggled.'
     else:
-        AddonsManager.setConfigKey("EmailingServicesEnabled", True)
-        Emailer.checkContext()
-        print(Emailer.servicesEnabled)
-        Logger.log("ADMIN TOGGLE_EMAILER: Emailer enabled.")
-        return 'SUCCESS: Emailer enabled.'
+        return "ERROR: Emailing services are internally disabled and cannot be changed."
     
 @apiBP.route('/api/toggleAnalytics', methods=['POST'])
 def toggle_analytics():
