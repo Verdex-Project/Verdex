@@ -513,44 +513,6 @@ function closeReportPopup(){
     }
 }
 
-// function submitPrompt(){
-//     const prompt = document.getElementById("prompt")
-//     if (prompt.value != ""){
-//         axios({
-//             method: 'post',
-//             url: `/api/verdexgpt`,
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'VerdexAPIKey': '\{{ API_KEY }}'
-//             },
-//             data: {
-//                 "prompt": prompt.value
-//             }
-//         })
-//         .then(function (response) {
-//             console.log("Payload successfully sent")
-//             if (response.data.startsWith("ERROR:")){
-//                 console.log(response.data)
-//                 alert("An error occured while generating text completion. Please try again.")
-//                 return;
-//             }
-//             else if (response.data.startsWith("UERROR:")){
-//                 console.log(response.data)
-//                 alert(response.data.substring("UERROR: ".length))
-//                 return;
-//             }
-//             console.log(response.data)
-//         })
-//         .catch(function (error) {
-//             console.error('Error generating text completion:', error);
-//         });
-//     }
-//     else {
-//         alert("Please enter a valid prompt.");
-//         return;
-//     }
-// }
-
 
 function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
     console.log(generatedText)
@@ -564,7 +526,7 @@ function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
         if (i === characters.length || i === maxLength) {
             clearInterval(intervalId);
         }
-    }, 20); 
+    }, 10); 
 }
 
 function submitPrompt() {

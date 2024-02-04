@@ -61,8 +61,9 @@
                 {% endfor %}
             </div>
             <div class="genAIDiv">
-                <input type="text" name="prompt" id="prompt" placeholder="Ask Verdex-GPT anything..." size="60">
-                <button type="button" id="submitPromptButton" onclick="submitPrompt()">Submit Prompt</button>
+                <img src="static/Images/openai.png" id="openaiImg" width="75" height="50">
+                <input type="text" name="prompt" id="prompt" placeholder="Ask Verdex-GPT anything..." size="55">
+                <button type="button" id="submitPromptButton" onclick="submitPrompt()">Ask me!</button>
                 <div id="response"></div>
                 <p id="responseNote">Please note that Verdex-GPT allows for a max output length of 600 characters.</p>
             </div>

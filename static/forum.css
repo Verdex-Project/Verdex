@@ -399,7 +399,7 @@ body {
     color: white;
     float: right;
     transition: transform 0.2s ease-in-out;
-    margin-left: 20px;
+    margin-right: 20px;
 }
 
 #submitPromptButton:hover {
@@ -731,13 +731,15 @@ body {
     padding: 20px;
     overflow-x: auto;
     width: 65%;
+    background-color: white;
 }
 
 #response {
     margin-top: 10px;
     white-space: pre-line;
     font-family: 'Courier New', monospace;
-    width: 65%;
+    width: 75%;
+    color: black;
 }
 
 #prompt {
@@ -748,4 +750,13 @@ body {
 
 #responseNote {
     margin-top: 10px;
+    color: black;
+    margin-bottom: -10px;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+#openaiImg {
+    float: left;
+    margin-top: -2px;
 }
