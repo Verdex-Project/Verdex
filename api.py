@@ -194,14 +194,21 @@ def loginAccount():
 
     if "generatedItineraryID" in session:
         if session["generatedItineraryID"] in DI.data["itineraries"]:
-            DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
-            DI.save()
+            if "admin" in session and session["admin"] == True:
+                ## Admin accounts cannot be associated with itineraries
+                del DI.data["itineraries"][session["generatedItineraryID"]]
+                DI.save()
+            else:
+                ## Link itinerary to account
+                DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
+                DI.save()
             
-            generatedItineraryID = session["generatedItineraryID"]
+                generatedItineraryID = session["generatedItineraryID"]
+                del session["generatedItineraryID"]
+                return "SUCCESS ITINERARYREDIRECT: User logged in succesfully. Itinerary ID: {}".format(generatedItineraryID)
+        else:
+            ## Invalid itinerary ID
             del session["generatedItineraryID"]
-            return "SUCCESS ITINERARYREDIRECT: User logged in succesfully. Itinerary ID: {}".format(generatedItineraryID)
-        
-        del session["generatedItineraryID"]
 
     return "SUCCESS: User logged in succesfully."
 
@@ -337,6 +344,7 @@ def generateItinerary():
     itinerary = {
         "title": title,
         "description": description,
+        "associatedAccountID": None,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "days": {}
     }
