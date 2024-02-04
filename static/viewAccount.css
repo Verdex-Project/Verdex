@@ -136,7 +136,7 @@
 #myItinerariesDiv {
     margin-left: auto;
     margin-right: auto;
-    width: 800px;
+    width: 700px;
 }
 
 #myItinerariesDiv > h2 {
@@ -146,7 +146,7 @@
 #myItineraries {
     margin-top: 20px;
     display: block;
-    min-height: 200px;
+    min-height: 150px;
     border-radius: 10px;
     border: 1px solid green;
     display: grid;
@@ -167,7 +167,11 @@
     margin-left: 20px;
 }
 
-#itineraryDetails > p.descriptions {
+#itineraryTitle {
+    word-wrap: break-word;
+}
+
+#itineraryDescription {
     word-wrap: break-word;
     font-size: small;
 }
@@ -181,6 +185,13 @@
 
 #itineraryButtons > button {
     margin: 5px;
+}
+
+#itineraryGenerateBtn {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #copyright {

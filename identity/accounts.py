@@ -79,12 +79,6 @@ def myAccount():
         DI.data["accounts"][targetAccountID]["aboutMe"] = "Tell us more about yourself!"
         DI.save()
 
-    # itineraryID = None
-    # for itinerary_id, itinerary_info in DI.data["itineraries"].items():
-    #     if "associatedAccountID" in itinerary_info and itinerary_info["associatedAccountID"] == targetAccountID:
-    #         itineraryID = itinerary_id
-    #         break
-
     targetAccount = DI.data["accounts"][targetAccountID]
     username = targetAccount["username"]
     email = targetAccount["email"]
@@ -100,4 +94,6 @@ def myAccount():
     else:
         notVerified = not accInfo["emailVerified"]
 
-    return render_template("identity/viewAccount.html", username=username, email=email, aboutMeDescription=aboutMeDescription, emailNotVerified=notVerified, accID = targetAccountID, itineraries = itineraries)
+    itineraryIDs = [itineraryID for itineraryID, itinerary in itineraries.items() if itinerary["associatedAccountID"] == targetAccountID]
+
+    return render_template("identity/viewAccount.html", username=username, email=email, aboutMeDescription=aboutMeDescription, emailNotVerified=notVerified, accID = targetAccountID, itineraries = itineraries, itineraryIDs = itineraryIDs)

@@ -85,25 +85,27 @@
 <br>
 <div id="myItinerariesDiv">
     <h2>My Itineraries</h2>
+    {% if itineraryIDs|length != 0 %}
     <div id="myItineraries">
-        {% for itineraryID, itinerary in itineraries.items() %}
-            {% if itinerary.associatedAccountID == accID %}
-                <div id="itineraryContainer">
-                    <div id="itineraryDetails">
-                        <h5>Title: </h5>
-                        <p class="descriptions">{{ itinerary.title }}</p>
-                        <h5>Description: </h5>
-                        <p class="descriptions">{{ itinerary.description }}</p>
-                    </div>
-                    <div id="itineraryButtons">
-                        <button type="button" class="btn btn-primary">View</button>
-                        <button type="button" class="btn btn-dark">Edit</button>
-                    </div>
-                </div>
-                <hr>
-            {% endif %}
+        {% for itineraryID in itineraryIDs %}
+        <div id="itineraryContainer">
+            <div id="itineraryDetails">
+                <h5 id="itineraryTitle">{{ itineraries[itineraryID].title }}</h5>
+                <h5 id="itineraryDescription">{{ itineraries[itineraryID].description }}</h5>
+            </div>
+        <div id="itineraryButtons">
+                <a href="{{ url_for('completionPageBP.completionHome', itineraryID=itineraryID) }}"><button type="button" class="btn btn-primary">View</button></a>
+                <a href="{{ url_for('editorPageBP.editorHome', itineraryID=itineraryID) }}"><button type="button" class="btn btn-dark">Edit</button></a>
+            </div>
+        </div>
+        <hr>
         {% endfor %}
     </div>
+    {% else %}
+        <div id="itineraryGenerateBtn">
+            <a href="/generate/targetLocations"><button class="btn btn-outline-success">Generate an Itinerary</button></a>
+        </div>
+    {% endif %}
 </div>
 
 <!-- Modal for PFP-->
