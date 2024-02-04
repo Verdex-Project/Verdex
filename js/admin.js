@@ -239,7 +239,7 @@ function reply(){{
                 if (response.data.startsWith("SUCCESS:")) {
                     console.log("Reply sent successfully.");
                     window.alert("Reply has been sent successfully!");
-                    window.location.href = '{{ url_for("admin.reply") }}'
+                    window.location.href = '/admin/customer_support'
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
                     window.alert("An error occurred: " + response.data);
@@ -260,5 +260,5 @@ function reply(){{
 }
 
 function goBack(){
-    window.location.href = '{{ url_for("admin.reply") }}'
+    window.location.href = '/admin/customer_support'
 }
