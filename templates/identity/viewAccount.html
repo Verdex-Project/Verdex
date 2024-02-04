@@ -7,75 +7,158 @@
 {% endblock %}
 
 {% block body %}
+
 <div id="top">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert" id="uploadAlert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <h1 id="heading">My Account</h1>
 </div>
 
 <div id="content">
-    <div id="username">
-        <p>Username: <span id="displayed-username">{{ username }}</span> 
-            <button id="editUsernameButton" type="button" class="btn btn-outline-dark" onclick="changeUsername()">Edit</button>
-        </p>
-    </div>
-
-    <div id="email">
-        <p>Email: <span id="displayed-email">{{ email }}</span>
-            {% if not googleLinked %}
-            <button id="editEmailButton" type="button" class="btn btn-outline-dark" onclick="changeEmail()">Edit</button>
-            {% endif %}
-        </p>
-        <div id="unverifiedEmail">
-            {% if emailNotVerified %}
-            <div class="alert alert-warning" role="alert">
-                Your Email has NOT been verified. 
-                <button id="resendEmailBtn" type="button" class="btn btn-outline-success" onclick="resendEmail()">Resend Verification Email</button>
-            </div>
-            {% endif %}
+    <div id="left">
+        <div id="pfpDiv">
+            <img id="pfp" src="/assets/userProfilePicture" data-bs-toggle="modal" data-bs-target="#pfpModal">
         </div>
-    </div>
 
-    {% if not googleLinked %}
-    <div id="password">
-        <p>Password</p>
-        <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#newPasswordModal">Change Password</button>
-        
-        <!-- Modal -->
-        <div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="newPasswordModalLabel">Change Your Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
-                    <input type="password" class="form-control" id="currentPasswordInput" placeholder="Current Password">
-                    <br>
-                    <label for="newPasswordInput" class="form-label">Enter New Password</label>
-                    <input type="password" class="form-control" id="newPasswordInput" placeholder="New Password">
-                    <br>
-                    <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" id="cfmPasswordInput" placeholder="Confirm New Password">
-                    <div id="changePasswordMsg"></div>
-                </div>
-                <div class="modal-footer">
-                    <button id="modalCloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button id="modalSaveBtn" type="button" class="btn btn-primary" onclick="changePassword()">Save changes</button>
-                </div>
-            </div>
+        <legend id="aboutMeLabel">About Me</legend>
+        <div id="aboutMeErrorMsg"></div>
+        <div id="aboutMeDiv">
+            <div id="description" contenteditable="true" onclick="aboutMe()">
+                {% if aboutMeDescription %}
+                {{ aboutMeDescription }}
+                {% else %}
+                Tell us more about yourself!
+                {% endif %}
             </div>
         </div>
+        <div id="aboutMeSuccessMsg"></div>
     </div>
+
+    <div id="right">
+        <div id="username">
+            <p>Username: <span id="displayed-username">{{ username }}</span>
+                <button id="editUsernameButton" type="button" class="btn btn-outline-dark"
+                    onclick="changeUsername()">Edit</button>
+            </p>
+        </div>
+
+        <div id="email">
+            <p>Email: <span id="displayed-email">{{ email }}</span>
+                <button id="editEmailButton" type="button" class="btn btn-outline-dark"
+                    onclick="changeEmail()">Edit</button>
+            </p>
+            <div id="unverifiedEmail">
+                {% if emailNotVerified %}
+                <div class="alert alert-warning" role="alert">
+                    Your Email has NOT been verified.
+                    <button id="resendEmailBtn" type="button" class="btn btn-outline-success"
+                        onclick="resendEmail()">Resend Verification Email</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="password">
+            <p>Password</p>
+            <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                data-bs-target="#newPasswordModal">Change Password</button>
+        </div>
+
+        <br>
+        <div id="buttondiv">
+            <div class="button-container" id="logout">
+                <button type="button" class="btn btn-outline-primary" onclick="logoutIdentity()">Logout</button>
+            </div>
+            <div class="button-container" id="deleteAccount">
+                <button type="button" class="btn btn-outline-danger" onclick="deleteIdentity()">Delete Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<div id="myItinerariesDiv">
+    <h2>My Itineraries</h2>
+    {% if itineraryIDs|length != 0 %}
+    <div id="myItineraries">
+        {% for itineraryID in itineraryIDs %}
+        <div id="itineraryContainer">
+            <div id="itineraryDetails">
+                <h5 id="itineraryTitle">{{ itineraries[itineraryID].title }}</h5>
+                <h5 id="itineraryDescription">{{ itineraries[itineraryID].description }}</h5>
+            </div>
+        <div id="itineraryButtons">
+                <a href="{{ url_for('completionPageBP.completionHome', itineraryID=itineraryID) }}"><button type="button" class="btn btn-primary">View</button></a>
+                <a href="{{ url_for('editorPageBP.editorHome', itineraryID=itineraryID) }}"><button type="button" class="btn btn-dark">Edit</button></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div id="itineraryGenerateBtn">
+            <a href="/generate/targetLocations"><button class="btn btn-outline-success">Generate an Itinerary</button></a>
+        </div>
     {% endif %}
+</div>
 
-    <br>
-    <div id="buttons">
-        <div class="button-container" id="logout">
-            <button type="button" class="btn btn-outline-primary" onclick="logoutIdentity()">Logout</button>
+<!-- Modal for PFP-->
+<div class="modal" id="pfpModal" tabindex="-1" aria-labelledby="pfpModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pfpForm" method="post" enctype="multipart/form-data">
+                    <div id="pfpModalContent">
+                        <img id="modalpfp" src="/assets/userProfilePicture">
+                        <br>
+                        <input type="file" name="file">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="removePFP()">Remove</button>
+                <input type="submit" form="pfpForm" class="btn btn-primary" value="Upload">
+            </div>
         </div>
-        <div class="button-container" id="deleteAccount">
-            <button type="button" class="btn btn-outline-danger" onclick="deleteIdentity()">Delete Account</button>
-        </div>    
+    </div>
+</div>
+
+<!-- Modal for new password-->
+<div class="modal fade" id="newPasswordModal" tabindex="-1" aria-labelledby="newPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newPasswordModalLabel">Change Your Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="currentPasswordInput" class="form-label">Enter Current Password</label>
+                <input type="password" class="form-control" id="currentPasswordInput" placeholder="Current Password">
+                <br>
+                <label for="newPasswordInput" class="form-label">Enter New Password</label>
+                <input type="password" class="form-control" id="newPasswordInput" placeholder="New Password">
+                <br>
+                <label for="cfmPasswordInput" class="form-label">Confirm New Password</label>
+                <input type="password" class="form-control" id="cfmPasswordInput" placeholder="Confirm New Password">
+                <div id="changePasswordMsg"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCloseBtn" type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button id="modalSaveBtn" type="button" class="btn btn-primary" onclick="changePassword()">Save
+                    changes</button>
+            </div>
+        </div>
     </div>
 </div>
 

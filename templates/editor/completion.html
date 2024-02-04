@@ -20,75 +20,197 @@
 
     <div id="completeItinerary"> <!--FINAL ITINERARY-->
         <div id="itineraryLogFinal">
-            {% for i in days %}
-                {% for j in activities %}
-                {% if not loop.last %}
-                    <div id="dayAndDateHeader">
-                        <div id="dayFinal">
-                            <h1>Day {{ i }}</h1>
-                        </div>
-                        <div id="dateFinal">
-                            <h6>{{ date }}</h6>
-                        </div>
+            {% for day in dayCountList %}
+                <div id="dayAndDateHeader">
+                    <div id="dayFinalLeft">
+                        <h1><strong>Day {{ day }}</strong></h1>
                     </div>
+                    <div id="dateFinalRight">
+                        <h6>{{ itinerary_data[itineraryID]["days"][day]["date"] }}</h6>
+                    </div>
+                </div>
+                {% for activityIndex in itinerary_data[itineraryID]["days"][day]["activities"] %}
+                    {% if not loop.last %}
                         
-                    <div id="itineraryActivityFinal">
-                        <div id="activityTable">
-                            <!-- <table style="width:100%"> --> <!--this may be changed-->
-                                <tr>
-                                <th>{{ startTime }}</th>
-                                <th></th>
-                                </tr>
-                                <tr>
-                                <td style="text-align:center">|</td>
-                                <td></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:center">|</td>
-                                    <td>
-                                    <div id="journeyBox">
-                                        <div id="journeyBox-box">
-                                            <div id="transportInfo">
-                                                <!--Bus Number and Line Name (Exception for walking and bicycling)-->
-                                            </div>
-                                            <div id="transportLogo">
-                                                <!--
-                                                    If bus import busLogo
-                                                    If train import trainLogo
-                                                    ...
-                                                -->
-                                            </div>
-                                            <div id="transportDescription">
-                                                <p>From {{ startLocation }} to {{ endLocation }}</p>
-                                            </div>
-                                            <div id="detailJourney">
-                                                <button id="detailJoutneyButton" onclick="detailedJourney()">
-                                                <img src="#" alt="#">
+                        <table id="routeTableFinal">
+                        <tr>
+                            <td id="startTimeLeft">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['startTime'] }}</td>
+                            <td id="activityNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td id="barLeft">|</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td id="barLeft">|</td>
+                            <td id="activityDesRight">
+                                <div id="journeyBox">
+                                    <div id="journeyBox-box">
+                                        <div id="transportDescription">
+                                            {% if cleanedRoutes[day][activityIndex] is string %}
+                                            <p><strong>{{ cleanedRoutes[day][activityIndex] }}</strong></p>
+                                            {% else %}
+                                            <p>From <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1)| string]['name'] }}</strong></p>
+                                            {% endif %}
+                                        </div>
+                                        <div id="detailJourney">
+                                            {% if cleanedRoutes[day][activityIndex] is string %}
+                                            {% else %}
+                                            <button id="detailJourneyButton" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expandedRoute{{ day }}{{ activityIndex }}">
+                                                <img src="/static//Images/expandButton.png" alt="#">
                                             </button>
+                                            {% endif %}
+                                            <div class="modal fade" id="expandedRoute{{ day }}{{ activityIndex }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-scrollable" style="max-width: 800px;">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Expanded Route</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div id="modalTitleText">
+                                                                <p style="text-align: center;"><strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</strong> to <strong>{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</strong></p>
+                                                            </div>
+                                                            <div id="modalEta" style="text-align: center;">
+                                                                <h5>{{ cleanedRoutes[day][activityIndex]["eta"] }}</h5><p>* including transit waiting time *</p>
+                                                            </div>
+                                                            <div id="modalActivityRoute">
+                                                                <table id="routeTable">
+                                                                    {% for routeStep in cleanedRoutes[day][activityIndex]["steps"] %}
+                                                                            {% if loop.first %}
+                                                                            <tr>
+                                                                                <td id="timeLeft">{{ itinerary_data[itineraryID]["days"][day]["activities"][activityIndex]["endTime"] }}</td>
+                                                                                <td id="nameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                                                                            </tr>
+                                                                            {% endif %}
+                                                            
+                                                                            {% if not loop.last and routeStep["transportType"] == "Walk" %}
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td id="walkDesRight">
+                                                                                        <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                                        <p><span>{{ routeStep["name"] }}</span> {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                {% if not loop.last %}
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                            
+                                                                            {% if not loop.last and routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
+                                                                            <tr>
+                                                                                <td id="transitStartTimeLeft">{{ routeStep["startTime"] }}</td>
+                                                                                <td id="transitDepartNameRight">{{ routeStep["departure"] }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td id="barTransitLeft">|</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td id="barTransitLeft">|</td>
+                                                                                <td id="transitDesRight">
+                                                                                    <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                                    <p><span>{{ routeStep["name"] }}</span>  {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td id="barTransitLeft">|</td>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                                <td id="transitArriveNameRight">{{ routeStep["arrival"] }}</td>
+                                                                            </tr>
+                                                                            {% endif %}
+                                                            
+                                                                        {% if loop.last %}
+                                                                            {% if routeStep["transportType"] == "Walk" %}
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td id="walkDesRight">
+                                                                                        <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                                        <p><span>{{ routeStep["name"] }}</span>  {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barWalkLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="walkArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                                    <td id="walkArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
+                                                                                </tr>
+                                                                            {% endif %}
+                                                                            {% if routeStep["transportType"] in ["Bus", "MRT", "Tram"] %}
+                                                                                <tr>
+                                                                                    <td  id="transitStartTimeLeft">{{ routeStep["startTime"] }}</td>
+                                                                                    <td id="transitDepartNameRight">{{ routeStep["departure"] }}</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barTransitLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barTransitLeft">|</td>
+                                                                                    <td id="transitDesRight">
+                                                                                        <img style="width: 30px; height: 30px;" src="/{{ routeStep['icon'] }}" alt="#">
+                                                                                        <p><span>{{ routeStep["name"] }}</span> {{ routeStep["startInstruction"] }} | {{ routeStep["time"] }}  {{ routeStep["distance"] }}</p>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="barTransitLeft">|</td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td id="transitArriveTimeLeft">{{ routeStep["arriveTime"] }}</td>
+                                                                                    <td id="transitArriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}</td>
+                                                                                </tr>
+                                                                            {% endif %}
+                                                                        {% endif %}
+                                                                    {% endfor %}  
+                                                                </table>
+                                                                <div id="modalFooterCopyright">
+                                                                    <p id="gmapsCopyright">{{ cleanedRoutes[day][activityIndex]["copyright"] }}</p>
+                                                                </div>
+                                                            </div>                                                    
+        
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <a target="_blank" class="activityGmapsLink" href="https://www.google.com/maps/dir/?api=1&origin={{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}&destination={{ itinerary_data[itineraryID]['days'][day]['activities'][(activityIndex | int + 1) | string]['name'] }}">Click here to open route in Google Maps</a>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                <td style="text-align:center">|</td>
-                                <td></td>
-                                </tr>
-                                <tr>
-                                <th>{{ endTime }}</th>
-                                <th></th>
-                                </tr>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if loop.last %}
-                    <tr>
-                    <th>{{ startTime }}</th>
-                    <th></th>
-                    </tr>
-                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="barLeft">|</td>
+                            <td></td>
+                        </tr>
+                    {% endif %}
+                    {% if loop.last %} 
+                        <tr>
+                            <td id="arriveTimeLeft">{{ itinerary_data[itineraryID]["days"][day]["activities"][activityIndex]["startTime"] }}</td>
+                            <td id="arriveNameRight">{{ itinerary_data[itineraryID]['days'][day]['activities'][activityIndex]['name'] }}</td>
+                        </tr>
+                    </table>
+                    {% endif %}
                 {% endfor %}
+                <hr style="height: 3px; color: black; margin-top: 40px; ;">
             {% endfor %}
         </div>
     </div>

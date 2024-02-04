@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, AddonsManager, FireConn, Analytics, FolderManager, getNameAndPosition
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -190,6 +190,8 @@ def loginAccount():
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         session["admin"] = True
 
+    Analytics.add_metrics(Analytics.EventTypes.sign_in)
+
     return "SUCCESS: User logged in succesfully."
 
 @apiBP.route("/api/createAccount", methods = ['POST'])
@@ -237,6 +239,7 @@ def createAccount():
         "disabled": False,
         "admin": False,
         "forumBanned": False,
+        "aboutMe": "",
         "reports": {}
     }
     Logger.log("Account with ID {} created.".format(accID))
@@ -299,6 +302,15 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
 
     cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
+    if len(cleanTargetLocations) > 9:
+        cleanTargetLocations = cleanTargetLocations[:9]
+    
+    uniqueLocations = []
+    for location in cleanTargetLocations:
+        if location not in uniqueLocations:
+            uniqueLocations.append(location)
+    cleanTargetLocations = uniqueLocations
+
     title: str = request.json['title'].strip()
     description: str = request.json['description'].strip()
     
@@ -590,6 +602,60 @@ def changePassword():
     
     return "SUCCESS: Password updated successfully."
 
+@apiBP.route('/api/deletePFP', methods=['POST'])
+def deletePFP():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    folderRegistered = FolderManager.checkIfFolderIsRegistered(targetAccountID)
+    if not folderRegistered:
+        return "ERROR: No folder registered."
+
+    storedFilenames = FolderManager.getFilenames(targetAccountID)
+    for storedFile in storedFilenames:
+        storedFilename = storedFile.split('.')[0]
+        if storedFilename.endswith("pfp"):
+            location = os.path.join(os.getcwd(), "UserFolders", targetAccountID, storedFile)
+            os.remove(location)
+
+    Logger.log("ACCOUNTS DELETEPFP: Profile picture deleted for {}".format(targetAccountID))
+
+    return "SUCCESS: File removed successfully."
+
+@apiBP.route('/api/editAboutMeDescription', methods=['POST'])
+def aboutMeDescription():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "description" not in request.json:
+        return "ERROR: One or more payload not present."
+    
+    if not isinstance(request.json["description"], str):
+        return "ERROR: Invalid description provided."
+    
+    description = request.json["description"].strip()
+    
+    if len(description) > 150:
+        return "UERROR: Your description cannot exceed 150 characters."
+
+    DI.data["accounts"][targetAccountID]["aboutMe"] = description
+    Logger.log("ACCOUNTS ABOUTMEDESCRIPTION: About Me description updated for {}".format(targetAccountID))
+    DI.save()
+
+    return "SUCCESS: Description updated."
+
 @apiBP.route('/api/logoutIdentity', methods=['POST'])
 def logoutIdentity():
     check = checkHeaders(request.headers)
@@ -602,6 +668,8 @@ def logoutIdentity():
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     deleteSession(targetAccountID)
+
+    Analytics.add_metrics(Analytics.EventTypes.sign_out)
 
     return "SUCCESS: User logged out."
 
@@ -627,6 +695,9 @@ def deleteIdentity():
     del DI.data["accounts"][targetAccountID]
     DI.save()
     Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
+
+    ## Remove the userfolder
+    FolderManager.deleteFolder(targetAccountID)
 
     session.clear()
 
@@ -805,6 +876,10 @@ def submitPost():
 
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Post was successfully submitted to the system."
 
 @apiBP.route('/api/commentPost', methods=['POST'])
@@ -945,6 +1020,10 @@ def submitPostWithItinerary():
     }
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Itinerary was successfully shared to the forum."
 
 @apiBP.route('/api/submitReport', methods=['POST'])
@@ -991,7 +1070,7 @@ def editActivity():
     activityId = request.json["activityId"]
     startTime = request.json["newStartTime"]
     endTime = request.json["newEndTime"]
-    location = request.json["newLocation"]
+    activity = request.json["newActivity"]
     name = request.json["newName"]
 
     if 'itineraryID' not in request.json:
@@ -1004,7 +1083,7 @@ def editActivity():
         return "ERROR: One or more required payload parameters not provided."
     if "newEndTime" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
-    if "newLocation" not in request.json:
+    if "newActivity" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
     if "newName" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
@@ -1028,49 +1107,47 @@ def editActivity():
     if not endTime.isnumeric():
         return "UERROR: End Time is not a numeric value"
 
-    if len(startTime) != 4:
+    if len(startTime) != 4 or int(startTime[0:2]) >= 24 or int(startTime[2:]) >= 60 :
         return "UERROR: Start Time Format is not correct"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["startTime"] = startTime
     
     timeDiff = int(endTime) - int(startTime)
-    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30 :
+    if len(endTime) != 4 or int(endTime) < int(startTime) or timeDiff < 30  or int(endTime[0:2]) >= 24  or int(endTime[2:]) >= 60 :
         return "UERROR: End Time Format is not correct and should be 30 minutes earlier than Start Time!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["endTime"] = endTime
 
-    if len(location) > 10:
-        return "UERROR: Activity Location should be less than 10 characters!"
+    if len(activity) > 10:
+        return "UERROR: Activity should be less than 10 characters!"
     else:
-        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["location"] = location
+        DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["activity"] = activity
 
-    if len(name) > 25:
-        return "UERROR: Activity name should be less than 25 characters!"
+    if len(name) > 40:
+        return "UERROR: Activity name should be less than 40 characters!"
     else:
         DI.data["itineraries"][itineraryID]["days"][day]["activities"][activityId]["name"] = name
 
     DI.save()
     return "SUCCESS: Activity edits is saved successfully"
 
-
 @apiBP.route("/api/addNewActivity", methods = ['POST'])
 def addNewActivity():
     check = checkHeaders(request.headers)
     if check != True:
         return check
+
+    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentStartTime","currentEndTime","currentImageURL","currentActivity","currentName","newActivityID"]]:
+        return "ERROR: One or more payload parameters are not provided."
     
     itineraryID = request.json['itineraryID']
     day = request.json["dayCount"]
-    activityId = request.json["currentActivityId"]
     startTime = request.json["currentStartTime"]
     endTime = request.json["currentEndTime"]
     imageURL = request.json["currentImageURL"]
-    location = request.json["currentLocation"]
+    activity = request.json["currentActivity"]
     name = request.json["currentName"]
     newActivityId = str(request.json["newActivityID"])
-
-    if False in [(requiredParameter in request.json) for requiredParameter in ["itineraryID","dayCount","currentActivityId","currentStartTime","currentEndTime","currentImageURL","currentLocation","currentName","newActivityID"]]:
-        return "ERROR: One or more payload parameters are not provided."
 
     dayCountList = []
     activityIdList = []
@@ -1082,10 +1159,8 @@ def addNewActivity():
     
     for key in DI.data["itineraries"][itineraryID]["days"][day]["activities"]:
         activityIdList.append(str(key))
-    if str(activityId) not in activityIdList:
-        return "UERROR: Activity ID not found!"
 
-    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "location" : location, "name" : name}
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"][newActivityId] = {"startTime" : startTime, "endTime" : endTime, "imageURL": imageURL, "activity" : activity, "name" : name}
     DI.save()
 
     return "SUCCESS: New activity is added successfully"
@@ -1129,3 +1204,287 @@ def deleteItinerary():
     DI.save()
     
     return "SUCCESS: Itinerary is deleted."
+
+@apiBP.route('/api/sendTestEmail', methods=['POST'])
+def sendTestEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+
+    altText = f"""
+    Dear {username},
+    This is a test email to ensure that the email system is working correctly.
+    If you are reading this, then the email system is working correctly.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+    html = render_template('emails/testEmail.html', username=username, copyright = Universal.copyright)
+
+    email_sent = Emailer.sendEmail(email, "Test Email", altText, html)
+    if email_sent:
+        Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
+        return "SUCCESS: Test email sent to {}.".format(email)
+    else:
+        return "ERROR: Test email failed to send to {}.".format(email)
+    
+@apiBP.route('/api/toggleEmailer', methods=['POST'])
+def toggle_emailer():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    emailer_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
+    
+    if "EmailingServicesEnabled" in os.environ and os.environ["EmailingServicesEnabled"] == "True":
+        if emailer_current == "Key Not Found":
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services enabled by admin '{}'.".format(targetAccountID))
+        else:
+            Emailer.servicesEnabled = not emailer_current
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services toggled to {} by admin '{}'.".format("True" if Emailer.servicesEnabled else "False", targetAccountID))
+        return 'SUCCESS: Emailing services toggled.'
+    else:
+        return "ERROR: Emailing services are internally disabled and cannot be changed."
+    
+@apiBP.route('/api/toggleAnalytics', methods=['POST'])
+def toggle_analytics():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    analyticsInternalStatus = os.environ.get("AnalyticsEnabled") == "True"
+
+    analyticsAdminStatus = AddonsManager.readConfigKey("AnalyticsEnabled")
+    if analyticsAdminStatus == "Key Not Found":
+        AddonsManager.setConfigKey("AnalyticsEnabled", analyticsInternalStatus)
+
+    if not analyticsInternalStatus:
+        return "ERROR: Analytics is internally disabled. You cannot toggle it."
+    
+    analyticsAdminStatus = not analyticsAdminStatus
+    AddonsManager.setConfigKey("AnalyticsEnabled", analyticsAdminStatus)
+    Analytics.adminEnabled = analyticsAdminStatus
+
+    if Analytics.checkPermissions():
+        response = Analytics.load_metrics()
+        if not response:
+            Logger.log("API TOGGLE_ANALYTICS: Failed to auto-load Analytics upon admin enable.")
+
+    Logger.log("API TOGGLE_ANALYTICS: Analytics toggled to {} by admin '{}'.".format("True" if analyticsAdminStatus else "False", targetAccountID))
+
+    return "SUCCESS: Analytics toggled successfully."
+    
+@apiBP.route('/api/reload_database', methods=['POST'])
+def reload_database():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    DI.load()
+    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded by admin {}.". format(targetAccountID))
+    return 'SUCCESS: Database reloaded.'
+
+@apiBP.route('/api/reload_fireauth', methods=['POST'])
+def reload_fireauth():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+
+        if previousCopy != DI.data["accounts"]:
+            print("ADMIN: Necessary database synchronisation with Firebase Authentication complete.")
+
+    Logger.log("ADMIN RELOAD_FIREAUTH: FireAuth reloaded.")
+    return 'SUCCESS: FireAuth reloaded.'
+
+@apiBP.route('/api/reply', methods=['POST'])
+def reply():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "email_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "email_body" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "questionID" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "supportQueries" in DI.data["admin"] and request.json["questionID"] not in DI.data["admin"]["supportQueries"]:
+        return "ERROR: No such question exists."
+    
+    question_id = request.json['questionID']
+    email_title = request.json['email_title']
+    email_body = request.json['email_body']
+    email_target = DI.data['admin']['supportQueries'][question_id]['email']
+    email_name = DI.data['admin']['supportQueries'][question_id]['name']
+    question_message = DI.data['admin']['supportQueries'][question_id]['message']
+    question_timestamp = DI.data['admin']['supportQueries'][question_id]['timestamp']
+    readableQuestionTimestamp = datetime.datetime.strptime(question_timestamp, Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
+    
+    adminName, adminPosition = getNameAndPosition(DI.data["accounts"], targetAccountID)
+    altText = f"""
+    ----------
+    In response to this customer support message you sent on {readableQuestionTimestamp}:
+
+    {question_message}
+    ----------
+
+    Dear {email_name},
+    
+    {email_body}
+
+    Yours sincerely,
+    {adminName}
+    {adminPosition}
+    The Verdex Team
+    
+    {Universal.copyright}
+    """
+
+    html = render_template('emails/adminReplyTemplate.html', 
+        email_name=email_name, 
+        email_body=email_body,
+        email_title=email_title,
+        question_message=question_message,
+        adminName = adminName,
+        adminPosition = adminPosition,
+        question_timestamp = readableQuestionTimestamp,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email_target, email_title, altText, html)
+
+    Analytics.add_metrics(Analytics.EventTypes.question_answered)
+    
+    del DI.data['admin']['supportQueries'][question_id]
+    DI.save()
+    return "SUCCESS: Email sent."
+
+@apiBP.route('/api/addDay', methods=['POST'])
+def addDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = str(request.json['dayNo'])
+
+    latestDate = max((day["date"] for day in DI.data["itineraries"][itineraryID]["days"].values()), default=None) if itineraryID in DI.data["itineraries"] else None
+    if latestDate == None:
+        return "ERROR: Latest date is not found."
+
+    newDate = (datetime.datetime.strptime(latestDate, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+
+    if itineraryID in DI.data["itineraries"]:
+        if "days" in DI.data["itineraries"][itineraryID]:
+            if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+                DI.data["itineraries"][itineraryID]["days"][dayNo] = {"date" : newDate, "activities" : {}}
+                DI.save()
+                return "SUCCESS: Day is added successfully."
+            else:
+                return "UERROR: Day already exists, can't duplicate day."
+        else:
+            DI.data["itineraries"][itineraryID]["days"] = {dayNo : {"date" : newDate, "activities" : {}}}
+            DI.save()
+            return "SUCCESS: Day is added successfully."
+    else:
+        return "ERROR: Itinerary ID not found in system."
+            
+@apiBP.route('/api/deleteDay', methods=['POST'])
+def deleteDay():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "dayNo" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    dayNo = str(request.json['dayNo'])
+
+    if itineraryID not in DI.data["itineraries"]:
+        return "ERROR: Itinerary not found."
+    
+    if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+        return "ERROR: Day not found, can't delete day."
+    if len(DI.data["itineraries"][itineraryID]["days"]) == 1:
+        return "UERROR: Can't delete the only day in the itinerary. Please delete the itinerary itself."
+    
+    del DI.data["itineraries"][itineraryID]["days"][dayNo]
+    
+    daysData = [DI.data["itineraries"][itineraryID]["days"][x] for x in DI.data["itineraries"][itineraryID]["days"]]
+    newDaysObject = {}
+    for i in range(len(daysData)):
+        newDaysObject[str(i+1)] = daysData[i]
+    
+    DI.data["itineraries"][itineraryID]["days"] = newDaysObject
+    DI.save()
+
+    dayToRedirectTo = 1
+    if dayNo != "1":
+        dayToRedirectTo = int(dayNo) - 1
+
+    return "SUCCESS: Day is deleted successfully. Redirect to day {}".format(dayToRedirectTo)
+
+@apiBP.route('/api/editDate', methods=['POST'])
+def editdate():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    if "itineraryID" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "day" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    if "editedDate" not in request.json:
+        return "ERROR: One or more required payload parameters not provided."
+    
+    itineraryID = request.json['itineraryID']
+    day = request.json['day']
+    editedDate = request.json['editedDate']
+
+    if itineraryID in DI.data["itineraries"]:
+        for loopedDay in DI.data["itineraries"][itineraryID]["days"]:
+            if DI.data["itineraries"][itineraryID]["days"][loopedDay]["date"] == editedDate:
+                return "UERROR: Date already exists in the itinerary, can't duplicate date."
+        if day in DI.data["itineraries"][itineraryID]["days"]:
+            if DI.data["itineraries"][itineraryID]["days"][day]["date"] != editedDate:
+                DI.data["itineraries"][itineraryID]["days"][day]["date"] = editedDate
+                DI.save()
+                return "SUCCESS: Date is edited successfully."
+            else:
+                return "UERROR: There were no changes to the date!"
+        else:
+            return "ERROR: Day not found in system."
+    else:
+        return "ERROR: Itinerary ID not found in system."

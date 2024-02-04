@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reply Email</title>
+</head>
+<body>
+    <hr>
+    <p>In response to a customer support message you sent on {{ question_timestamp }}:</p>
+    <i>{{ question_message }}</i>
+    <hr>
+    <p>Dear {{ email_name }}</p>
+    <br>
+    <p>{{ email_body }}</p>
+    <br>
+    <p>Yours sincerely,</p>
+    <p><strong>{{ adminName }}</strong></p>
+    <p><strong>{{ adminPosition }}</strong></p>
+    <p>The Verdex Team</p>
+    <br>
+    <p>{{ copyright }}</p>
+    <script src ="/assets/adminJS"></script>
+</body>
+</html>
