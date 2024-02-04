@@ -229,7 +229,16 @@ class FireRTDB:
             # Null object replacement
             tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='local')
 
-            # TODO: Perform email translation (convert commas to dots)
+            # Remove prefixes from day numbers of itineraries and activity numbers
+            if "itineraries" in tempData:
+                for itineraryID in tempData["itineraries"]:
+                    if "days" in tempData["itineraries"][itineraryID]:
+                        tempData["itineraries"][itineraryID]["days"] = {day[1:]: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                        for day in tempData["itineraries"][itineraryID]["days"]:
+                            if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                                tempData["itineraries"][itineraryID]["days"][day]["activities"] = {activity[1:]: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
+            
         except Exception as e:
             return "ERROR: Error in translating fetched RTDB data for local system use; error: {}".format(e)
         
@@ -240,7 +249,15 @@ class FireRTDB:
         '''Returns a translated data structure that can be stored in the cloud.'''
         tempData = copy.deepcopy(loadedData)
 
-        # TODO: Perform email translation (convert dots to commas)
+        # Prefix day numbers of itineraries with 'd' and prefix activity numbers with 'a' avoid automatic Firebase conversion to lists
+        if "itineraries" in tempData:
+            for itineraryID in tempData["itineraries"]:
+                if "days" in tempData["itineraries"][itineraryID]:
+                    tempData["itineraries"][itineraryID]["days"] = {"d" + day: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                    for day in tempData["itineraries"][itineraryID]["days"]:
+                        if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                            tempData["itineraries"][itineraryID]["days"][day]["activities"] = {"a" + activity: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
 
         # Null object replacement
         tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='cloud')
