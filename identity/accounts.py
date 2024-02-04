@@ -127,6 +127,19 @@ def oauthCallback():
 
         session["idToken"] = tokenInfo["idToken"]
 
+    ## Check if they are from itinerary generation
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
+            DI.save()
+
+            generatedItineraryID = session["generatedItineraryID"]
+            del session["generatedItineraryID"]
+            return redirect(url_for("editorPageBP.editorHome", itineraryID=generatedItineraryID))
+        
+        ## If itinerary does not exist, just remove the session variable
+        del session["generatedItineraryID"]
+
     return redirect(url_for("accounts.myAccount"))
 
 @accountsBP.route('/account/signup')
