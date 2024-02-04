@@ -86,6 +86,8 @@
     </div>
 </div>
 
+{% if session["admin"] == True %}
+{% else %}
 <br>
 <div id="myItinerariesDiv">
     <h2>My Itineraries</h2>
@@ -110,6 +112,7 @@
         </div>
     {% endif %}
 </div>
+{% endif %}
 
 <!-- Modal for PFP-->
 <div class="modal" id="pfpModal" tabindex="-1" aria-labelledby="pfpModal" aria-hidden="true">

@@ -115,7 +115,6 @@ class Analytics:
     @staticmethod
     def add_metrics(event_type: str):
         if not Analytics.checkPermissions():
-            Logger.log("ANALYTICS ADD_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type), debugPrintExplicitDeny=True)
             return True
 
         if event_type not in [Analytics.EventTypes.get_request, Analytics.EventTypes.post_request, Analytics.EventTypes.question_answered, Analytics.EventTypes.sign_in, Analytics.EventTypes.sign_out, Analytics.EventTypes.forumPost]:
@@ -132,7 +131,6 @@ class Analytics:
     @staticmethod
     def minus_metrics(event_type: str):
         if not Analytics.checkPermissions():
-            Logger.log("ANALYTICS MINUS_METRICS: Metric update for event '{}' ignored due to insufficient permissions.".format(event_type))
             return True
 
         if event_type not in [Analytics.EventTypes.get_request, Analytics.EventTypes.post_request, Analytics.EventTypes.question_answered, Analytics.EventTypes.sign_in, Analytics.EventTypes.sign_out, Analytics.EventTypes.forumPost]:

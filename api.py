@@ -192,6 +192,25 @@ def loginAccount():
 
     Analytics.add_metrics(Analytics.EventTypes.sign_in)
 
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            if "admin" in session and session["admin"] == True:
+                ## Admin accounts cannot be associated with itineraries
+                del DI.data["itineraries"][session["generatedItineraryID"]]
+                DI.save()
+                del session["generatedItineraryID"]
+            else:
+                ## Link itinerary to account
+                DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
+                DI.save()
+            
+                generatedItineraryID = session["generatedItineraryID"]
+                del session["generatedItineraryID"]
+                return "SUCCESS ITINERARYREDIRECT: User logged in succesfully. Itinerary ID: {}".format(generatedItineraryID)
+        else:
+            ## Invalid itinerary ID
+            del session["generatedItineraryID"]
+
     return "SUCCESS: User logged in succesfully."
 
 @apiBP.route("/api/createAccount", methods = ['POST'])
@@ -274,8 +293,17 @@ def createAccount():
     # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = accID
+            DI.save()
+            
+            generatedItineraryID = session["generatedItineraryID"]
+            del session["generatedItineraryID"]
+            return "SUCCESS ITINERARYREDIRECT: Account created successfully. Itinerary ID: {}".format(generatedItineraryID)
+        del session["generatedItineraryID"]
 
-    return "SUCCESS: Account created successfully"
+    return "SUCCESS: Account created successfully."
 
 @apiBP.route("/api/generateItinerary", methods=["POST"])
 def generateItinerary():
@@ -284,12 +312,9 @@ def generateItinerary():
         return headersCheck
     
     authCheck = manageIDToken()
-    if not authCheck.startswith("SUCCESS"):
-        return authCheck
-    targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
-        return "ERROR: Admins cannot generate itineraries."
+    targetAccountID = None
+    if authCheck.startswith("SUCCESS"):
+        targetAccountID = authCheck[len("SUCCESS: ")::]
     
     # Check body
     if "targetLocations" not in request.json:
@@ -325,8 +350,8 @@ def generateItinerary():
     itinerary = {
         "title": title,
         "description": description,
-        "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "associatedAccountID": targetAccountID,
+        "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "days": {}
     }
 
@@ -382,7 +407,13 @@ def generateItinerary():
     DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
 
-    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
+    if targetAccountID == None:
+        ## Triggers redirect to create account/login flow
+        session["generatedItineraryID"] = itineraryID
+
+        return "SUCCESS ACCOUNTREDIRECT: Itinerary ID: {}".format(itineraryID)
+    else:
+        return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
