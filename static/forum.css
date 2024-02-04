@@ -10,6 +10,7 @@ html {
 
 body {
     background-color: white;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .content {
@@ -67,7 +68,7 @@ body {
     margin: 20px;
     padding: 15px;
     padding-right: 25px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: white;
     text-align: center;
     border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -84,7 +85,7 @@ body {
     border-radius: 10px;
     cursor: pointer;
     color: white;
-    transition: 0.2s ease;
+    transition: transform 0.2s ease-in-out;
     width: 55%;
     margin-top: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -93,7 +94,7 @@ body {
 .create-a-post-button:hover {
     background-color: whitesmoke;
     color: #66BB69;
-    transition: 0.2s ease;
+    transform: translateY(-5px);
 }
 
 .plus-icon {
@@ -189,8 +190,8 @@ body {
 }
 
 .name-of-user-who-shared-post-header {
-    margin-right: 100px;
     color: #529954;
+    width: 80%;
 }
 
 .itinerary-header {
@@ -216,19 +217,9 @@ body {
 .reaction-buttons {
     display: inline-block;
     margin-right: 10px;
-    padding: 8px 12px;
-    border: 3px solid rgb(195, 195, 195);
-    border-radius: 20px;
+    padding: 10px;
     cursor: pointer;
-    background-color: #66BB69;
-    color: white;
-    transition: 0.2s ease;
-}
-
-.reaction-buttons:hover {
-    border: 3px solid #66BB69;
-    background-color: white;
-    color: #66BB69;
+    color: #427b44;
     transition: 0.2s ease;
 }
 
@@ -270,7 +261,7 @@ body {
     margin-bottom: 15px;
 }
 
-#create-a-post-popup, #comment-on-post-popup, #edit-post-popup, #create-a-post-popup-with-itinerary {
+#create-a-post-popup, #comment-on-post-popup, #edit-post-popup, #create-a-post-popup-with-itinerary, #reason-for-reporting-user-popup {
     display: none;
     position: fixed;
     top: 0;
@@ -281,7 +272,7 @@ body {
     z-index: 2;
 }
 
-#comment-popup-content {
+#comment-popup-content, #report-reason-content {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -295,7 +286,7 @@ body {
     z-index: 2;
 }
 
-#comment-on-post-popup {
+#comment-on-post-popup, #reason-for-reporting-user-popup {
     display: none;
 }
 
@@ -374,7 +365,7 @@ body {
     font-size: 130%;
 }
 
-#comment-button {
+#comment-button, #submit-report {
     cursor: pointer;
     padding: 8px 12px;
     padding-left: 20px;
@@ -390,7 +381,7 @@ body {
     margin-right: 2px;
 }
 
-#post-it-button:hover, #comment-button:hover {
+#post-it-button:hover, #comment-button:hover, #submit-report:hover {
     border: 3px solid #66BB69;
     background-color: white;
     color: #66BB69;
@@ -439,6 +430,8 @@ body {
 
 .tag-display {
     color: #66BB69;
+    margin-top: -10px;
+    margin-bottom: 15px;
 }
 
 #delete-comment-button {
@@ -478,26 +471,15 @@ body {
 
 #edit-button {
     display: inline-block;
-    margin-right: 10px;
+    margin-right: -20px;
     padding: 8px 12px;
-    border: 3px solid rgb(195, 195, 195);
-    border-radius: 20px;
     cursor: pointer;
-    background-color: #66BB69;
     color: white;
     transition: 0.2s ease;
-    height: 50%;
     margin-top: 20px;
 }
 
-#edit-button:hover {
-    border: 3px solid #66BB69;
-    background-color: white;
-    color: #66BB69;
-    transition: 0.2s ease;
-}
-
-#edit-post-title, #edit-post-description, #itinerary-title, #itinerary-description, #itinerary-post-title, #itinerary-post-description {
+#edit-post-title, #edit-post-description, #itinerary-title, #itinerary-description, #itinerary-post-title, #itinerary-post-description, #report-reason {
     border: 2px solid #427b44;
     margin-bottom: 15px;
     border-radius: 10px;
@@ -525,13 +507,22 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     border-radius: 15px;
     height: 30%;
+    background-color: white;
 }
 
-.filter-posts-header, .recent-itineraries-header, .generated-itineraries-header {
+.filter-posts-header, .recent-itineraries-header {
     font-size: 20px;
     font-weight: bold;
     text-align: center;
     margin-top:20px;
+    margin-bottom: 0;
+    color: #427b44;
+}
+
+.generated-itineraries-header {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
     margin-bottom: 0;
     color: #427b44;
 }
@@ -574,6 +565,7 @@ body {
     padding: 20px;
     width: 65%;
     border: 3px solid #66bb69;
+    background-color: white;
 }
 
 .generated-itineraries {
@@ -610,4 +602,103 @@ body {
 
 #itinerary-header, #itinerary-info {
     color: #427b44;
+}
+
+#comment {
+    list-style-type: none;
+}
+
+.toggle {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 62px;
+    height: 32px;
+    display: inline-block;
+    position: relative;
+    border-radius: 50px;
+    overflow: hidden;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background-color: #707070;
+    transition: background-color ease 0.3s;
+}
+  
+.toggle:before {
+    content: "on off";
+    display: block;
+    position: absolute;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    font: 10px/28px Helvetica;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-indent: -22px;
+    word-spacing: 37px;
+    color: #fff;
+    text-shadow: -1px -1px rgba(0,0,0,0.15);
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
+}
+
+.toggle:checked {
+    background-color: #4CD964;
+}
+
+.toggle:checked:before {
+    left: 32px;
+}
+
+.dark-mode-toggle {
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+  .top-right {
+    top: 70px; 
+    right: 10px; 
+}
+
+.dark-mode-text {
+    margin-right: 5px; 
+}
+
+.dark-mode {
+    background-color: #323437;
+    color: white;
+    transition: 0.2s ease;
+}
+
+.dark-mode #no-posts-header { 
+    color: #DBB941;
+    transition: 0.2s ease;
+}
+
+.dark-mode .post-description {
+    color: #323437;
+}
+
+#report-user-button {
+    width: 20%;
+    height: 50px;
+    margin-right: 10px;
+    margin-top: -10px;
+    background-color: rgb(255, 70, 70);
+    border-radius: 15px;
+    border: 2px solid rgb(255, 70, 70);
+    color: white;
+    padding: 10px;
+}
+
+#report-user-button:hover {
+    background-color: white;
+    color: rgb(255, 70, 70);
 }

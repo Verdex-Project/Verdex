@@ -229,7 +229,16 @@ class FireRTDB:
             # Null object replacement
             tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='local')
 
-            # TODO: Perform email translation (convert commas to dots)
+            # Remove prefixes from day numbers of itineraries and activity numbers
+            if "itineraries" in tempData:
+                for itineraryID in tempData["itineraries"]:
+                    if "days" in tempData["itineraries"][itineraryID]:
+                        tempData["itineraries"][itineraryID]["days"] = {day[1:]: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                        for day in tempData["itineraries"][itineraryID]["days"]:
+                            if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                                tempData["itineraries"][itineraryID]["days"][day]["activities"] = {activity[1:]: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
+            
         except Exception as e:
             return "ERROR: Error in translating fetched RTDB data for local system use; error: {}".format(e)
         
@@ -240,7 +249,15 @@ class FireRTDB:
         '''Returns a translated data structure that can be stored in the cloud.'''
         tempData = copy.deepcopy(loadedData)
 
-        # TODO: Perform email translation (convert dots to commas)
+        # Prefix day numbers of itineraries with 'd' and prefix activity numbers with 'a' avoid automatic Firebase conversion to lists
+        if "itineraries" in tempData:
+            for itineraryID in tempData["itineraries"]:
+                if "days" in tempData["itineraries"][itineraryID]:
+                    tempData["itineraries"][itineraryID]["days"] = {"d" + day: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                    for day in tempData["itineraries"][itineraryID]["days"]:
+                        if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                            tempData["itineraries"][itineraryID]["days"][day]["activities"] = {"a" + activity: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
 
         # Null object replacement
         tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='cloud')
@@ -595,6 +612,36 @@ class FireAuth:
             return link
         except Exception as e:
             return "ERROR: Failed to generate email verification link; error response: {}".format(e)
+        
+    @staticmethod
+    def generatePasswordResetLink(email):
+        '''Returns a password reset link upon successful generation.
+
+        Usage:
+        ```python
+        FireAuth.connect() ## optional but recommended
+        FireConn.connect()
+        response = FireAuth.generatePasswordResetLink(email="test@example.com")
+        if "ERROR" in response:
+            print(response)
+        else:
+            print("Password reset link generated! Link: " + response)
+        ```
+
+        NOTE: This method uses firebase_admin rather than pyrebase unlike some other methods in this class. `FireConn.connect()` needs to be executed successfully prior to execution of this method.
+        '''
+
+        if re.match(r"[^@]+@[^@]+\.[^@]+", email) == None:
+            return "ERROR: Invalid email address."
+
+        if not (FireConn.checkPermissions() and FireConn.connected):
+            return "ERROR: Generate password reset link requires a Firebase Admin connection granted by explicit permission."
+        
+        try:
+            passwordResetLink = adminAuth.generate_password_reset_link(email)
+            return passwordResetLink
+        except Exception as e:
+            return "ERROR: Failed to generate password reset link; error response: {}".format(e)
     
     @staticmethod
     def updateEmailVerifiedStatus(fireAuthID, newStatus: bool):

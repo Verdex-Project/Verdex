@@ -24,7 +24,151 @@
     border-radius: 50px;
     height: 500px;
     width: 70%;
+    overflow: scroll;
 }
+
+#completeItinerary::-webkit-scrollbar{
+    display: none;
+}
+
+#dateFinalRight {
+    color: grey;
+}
+
+#activityNameRight, #arriveNameRight {
+    font-weight: bolder;
+}
+
+#startTimeLeft, #barLeft, #arriveTimeLeft {
+    padding-right: 50px ;
+    text-align: center;
+}
+
+#itineraryLogFinal {
+    width: 90%;
+    margin: auto;
+    margin-top: 30px;
+}
+
+#routeTableFinal {
+    margin-left: 20px;
+}
+
+#dayAndDateHeader {
+    border: 2px solid green;
+    border-radius: 20px;
+    padding: 10px 20px 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+#journeyBox-box {
+    display: flex;
+    justify-content: space-around;
+    height: 90%;
+}
+
+#journeyBox-box {
+    border: 2px solid black;
+    border-radius: 10px;
+    background: white;
+    align-items: center;
+}
+#detailJourneyButton {
+    background: none;
+    border: none;
+    border-radius: 8px;
+    transition: 0.5s ease-out;
+}
+
+#detailJourneyButton:hover {
+    background-color: rgb(196, 196, 196);
+    transition: 0.5s;
+}
+
+#detailJourneyButton img {
+    height: 34px;
+    width: 34px;
+}
+
+#transportDescription, #transportLogo,#transportInfo {
+    height: 28px;
+    padding: 0 5px 0 5px;
+}
+
+#transportDescription {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#modalTitleText p {
+    font-size: larger;
+}
+
+#modalEta  h5{
+    width: 35%;
+    margin: auto;
+    border: 2px green solid;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#modalEta  p {
+    color: grey;
+}
+
+#routeTable {
+    width: 100%;
+}
+
+#timeLeft, #barWalkLeft, #barTransitLeft, #transitStartTimeLeft, #transitArriveTimeLeft, #walkArriveTimeLeft {
+    padding-right: 50px ;
+    text-align: center;
+}
+
+#barTransitLeft {
+    font-size: large;
+    font-weight:900;
+    color: limegreen;
+}
+
+#transitArriveNameRight, #transitDepartNameRight, #nameRight, #walkArriveNameRight{
+    font-weight: bold;
+}
+
+#walkDesRight, #transitDesRight {
+    display: flex;
+    text-align: center;
+}
+
+#walkDesRight p, #transitDesRight p {
+    margin: 1px 0 0 10px ;
+}
+
+#transitDesRight span {
+    margin: 1px 0 0 0 ;
+    padding: 5px;
+    border: 2px black solid;
+    border-radius: 5px;
+}
+
+#modalFooterCopyright{
+    display: flex;
+    align-items: center;
+    width: auto;
+    justify-content: center;
+    padding: 10px;
+    margin: auto;
+    margin-top: 30px;
+}
+
+#gmapsCopyright {
+    color: grey;
+}
+
 
 #completionFooter {
     margin: auto;
@@ -78,4 +222,32 @@
     background-color: red;
     color: white;
     transition: 0.5s;
+}
+
+.btn.btn-primary {
+    background: none;
+    color: blue;
+    transition: 0.2s ease-out;
+}
+
+.btn.btn-primary:hover {
+    padding-left: 14px;
+    padding-right: 14px;
+    background: blue;
+    color :white;
+    transition: 0.2s;
+}
+
+.btn.btn-secondary{
+    background: none;
+    color: grey;
+    transition: 0.2s ease-out;
+}
+
+.btn.btn.btn-secondary:hover {
+    padding-left: 14px;
+    padding-right: 14px;
+    background: grey;
+    color :white;
+    transition: 0.2s;
 }

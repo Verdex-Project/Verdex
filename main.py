@@ -1,7 +1,9 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 from models import *
+from FolderManager import FolderManager
 from emailer import Emailer
 from analytics import Analytics
 from GMapsService import GoogleMapsService
@@ -12,6 +14,10 @@ app = Flask(__name__)
 CORS(app)
 
 ## Configure app
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "Chute")
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.environ['AppSecretKey']
 
 ## Global methods
@@ -73,6 +79,9 @@ def manageIDToken(checkIfAdmin=False):
     # If we get here, the session is invalid as the ID token is not in the database
     session.clear()
     return "ERROR: Invalid credentials."
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.before_request
 def updateAnalytics():
@@ -141,6 +150,12 @@ if __name__ == '__main__':
     else:
         print("FIREAUTH: Setup complete.")
 
+    ## Set up FolderManager
+    response = FolderManager.setup()
+    if response != "Success":
+        print("MAIN BOOT: Error in setting up FolderManager; error: " + response)
+        sys.exit(1)
+
     ## Get Emailer to check context
     Emailer.checkContext()
     if Emailer.servicesEnabled and AddonsManager.readConfigKey("EmailingServicesEnabled") == False:
@@ -158,6 +173,9 @@ if __name__ == '__main__':
     
     ## Set up Logger
     Logger.setup()
+
+    ## Load generation data from file
+    Universal.loadGenerationData()
 
     # Database Synchronisation with Firebase Auth accounts
     if FireConn.checkPermissions():
@@ -177,28 +195,25 @@ if __name__ == '__main__':
                 "associatedAccountID": "366e25aff98845f28f284434b739b6b1",
                 "days" : {
                     "1" : {
-                        "date" : "2024-01-01",
+                        "date" : "2024-03-01",
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "123.456", "long" : "321.654"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1000"
                             },
                             "1" : {
                                 "name" : "Universal Studios Singapore",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "135.579", "long" : "579.135"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
                                 "startTime" : "1000", 
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "246.680", "long" : "246.468"},
+                                "name" : "Sentosa Island",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2200"
@@ -206,28 +221,25 @@ if __name__ == '__main__':
                         }
                     },
                     "2" : {
-                        "date" : "2024-01-02",
+                        "date" : "2024-03-02",
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "112.223", "long" : "223.334"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1200"
                             },
                             "1" : {
-                                "name" : "Botanical Gardens",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "334.445", "long" : "445.556"},
+                                "name" : "Singapore Botanic Gardens",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
                                 "endTime" : "1600"
                             },
                             "2" : {
-                                "name" : "Orchard Raod",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "556.667", "long" : "667.778"},
+                                "name" : "Orchard Road",
+                                "activity" : "Singapore",
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
                                 "endTime" : "2200"
@@ -235,20 +247,18 @@ if __name__ == '__main__':
                         }
                     },
                     "3" : {
-                        "date" : "2024-01-03",
+                        "date" : "2024-03-03",
                         "activities" : {
                             "0" : {
-                                "name" : "Gardens By The Bay",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "234.432", "long" : "243.342"},
+                                "name" : "Gardens by the Bay",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
                                 "endTime" : "1800"
                             },
                             "1" : {
-                                "name" : "Chinatown",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "198.898", "long" : "278.298"},
+                                "name" : "Chinatown MRT Station",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2100"
@@ -261,31 +271,28 @@ if __name__ == '__main__':
                 "title" : "Second Itinerary",
                 "description" : "5 days itinerary in Singapore",
                 "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-                "associatedAccountID": "1443c467fe594c149f9a1344e2c2fb9b",
+                "associatedAccountID": "1e80d6b46ac5463390b585ea2f2c00c6",
                 "days" : {
                     "1" : {
-                        "date" : "2024-01-01",
+                        "date" : "2024-04-01",
                         "activities" : {
                             "0" : {
                                 "name" : "Marina Bay Sands",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "123.456", "long" : "321.654"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1000"
                             },
                             "1" : {
                                 "name" : "Universal Studios Singapore",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "135.579", "long" : "579.135"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
                                 "startTime" : "1000", 
                                 "endTime" : "1800"
                             },
                             "2" : {
-                                "name" : "Sentosa",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "246.680", "long" : "246.468"},
+                                "name" : "Sentosa Island",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2200"
@@ -293,28 +300,25 @@ if __name__ == '__main__':
                         }
                     },
                     "2" : {
-                        "date" : "2024-01-02",
+                        "date" : "2024-04-02",
                         "activities" : {
                             "0" : {
                                 "name" : "SEA Aquarium",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "112.223", "long" : "223.334"},
+                                "activity" : "Singapore",
                                 "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
                                 "startTime" : "0800",
                                 "endTime" : "1200"
                             },
                             "1" : {
-                                "name" : "Botanical Gardens",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "334.445", "long" : "445.556"},
+                                "name" : "Singapore Botanical Gardens",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
                                 "startTime" : "1200",
                                 "endTime" : "1600"
                             },
                             "2" : {
-                                "name" : "Orchard Raod",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lar" : "556.667", "long" : "667.778"},
+                                "name" : "Orchard Road",
+                                "activity" : "Singapore",
                                 "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
                                 "startTime" : "1600",
                                 "endTime" : "2200"
@@ -322,20 +326,18 @@ if __name__ == '__main__':
                         }
                     },
                     "3" : {
-                        "date" : "2024-01-03",
+                        "date" : "2024-04-03",
                         "activities" : {
                             "0" : {
-                                "name" : "Gardens By The Bay",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "234.432", "long" : "243.342"},
+                                "name" : "Gardens by the Bay",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
                                 "startTime" : "1000",
                                 "endTime" : "1800"
                             },
                             "1" : {
-                                "name" : "Chinatown",
-                                "location" : "Singapore",
-                                "locationCoordinates" : {"lat" : "198.898", "long" : "278.298"},
+                                "name" : "Chinatown MRT Station",
+                                "activity" : "Singapore",
                                 "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
                                 "startTime" : "1800",
                                 "endTime" : "2100"
@@ -351,6 +353,10 @@ if __name__ == '__main__':
     # Register routes
     
     ## Generation routes
+    ## API routes
+    from api import apiBP
+    app.register_blueprint(apiBP)
+
     from generation.itineraryGeneration import itineraryGenBP
     app.register_blueprint(itineraryGenBP)
     
@@ -376,10 +382,6 @@ if __name__ == '__main__':
     ## Account route
     from identity.accounts import accountsBP
     app.register_blueprint(accountsBP)
-
-    ## API routes
-    from api import apiBP
-    app.register_blueprint(apiBP)
 
     ## Assets service
     from assets import assetsBP

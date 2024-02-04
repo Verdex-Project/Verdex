@@ -1,5 +1,6 @@
 var commentedPostId = null
 var editPostId = null
+var authorAccID = null
 
 function createPostPopup() {
     document.getElementById("create-a-post-popup").style.display = "block";
@@ -83,18 +84,22 @@ function submitPost() {
 function likePost(postId) {
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
-            const likeButton = document.querySelector(`[data-post-id='${postId}'] .reaction-buttons`);
-            if (typeof response.data !== "string"){
-                likeButton.innerHTML = `Likes (${response.data.likes})`;
-            }
-            else if (response.data.startsWith("ERROR:")){
-                console.log(response.data)
-                alert("An error occured while liking post. Please try again.")
+            if (typeof response.data !== "string") {
+                const likesCountElement = document.querySelector(`[data-post-id="${postId}"] #likes-count`);
+                console.log('likesCountElement:', likesCountElement);
+
+                if (likesCountElement) {
+                    likesCountElement.textContent = ` (${response.data.likes})`;
+                } else {
+                    console.error('Error: likesCountElement not found.');
+                }
+            } else if (response.data.startsWith("ERROR:")) {
+                console.log(response.data);
+                alert("An error occurred while liking the post. Please try again.");
                 return;
-            }
-            else if (response.data.startsWith("UERROR:")){
-                console.log(response.data)
-                alert(response.data.substring("UERROR: ".length))
+            } else if (response.data.startsWith("UERROR:")) {
+                console.log(response.data);
+                alert(response.data.substring("UERROR: ".length));
                 return;
             }
         })
@@ -418,4 +423,92 @@ function itinerarySelectTag(tag, event, buttonToEnable, firstButtonToDisable, se
 
     event.preventDefault();
     event.stopPropagation();
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+
+    // Check if dark mode is currently active
+    const isDarkMode = body.classList.contains('dark-mode');
+    if (isDarkMode){
+        document.getElementById('verdexNavbar').classList.add("bg-dark")
+        document.getElementById('verdexNavbar').setAttribute("data-bs-theme", "dark")
+    }
+    else {
+        document.getElementById('verdexNavbar').classList.remove("bg-dark")
+        document.getElementById('verdexNavbar').removeAttribute("data-bs-theme")
+    }
+    // Store the current dark mode state in localStorage
+    localStorage.setItem('darkMode', isDarkMode);
+
+    // Update the toggle button state
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.checked = isDarkMode;
+}
+
+// Check if dark mode was enabled before (on page load)
+document.addEventListener('DOMContentLoaded', () => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+
+    // If dark mode was enabled before, apply it on page load
+    if (savedDarkMode === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('verdexNavbar').classList.add("bg-dark")
+        document.getElementById('verdexNavbar').setAttribute("data-bs-theme", "dark")
+
+        // Update the toggle button state
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.checked = true;
+    }
+});
+
+function reportUser(passedInID){
+    document.getElementById('reason-for-reporting-user-popup').style.display = "block"
+    authorAccID = passedInID
+}
+
+function submitReport(){
+    const reportReason = document.getElementById('report-reason').value
+    if (reportReason.trim() === "") {
+        alert("Please enter a valid reason. Empty inputs are not accepted.");
+        return;
+    }
+    axios({
+        method: 'post',
+        url: `/api/submitReport`,
+        headers: {
+            'Content-Type': 'application/json',
+            'VerdexAPIKey': '\{{ API_KEY }}'
+        },
+        data: {
+            "author_acc_id": authorAccID,
+            "report_reason": reportReason
+        }
+    })
+    .then(function (response) {
+        if (response.data.startsWith("ERROR:")){
+            console.log(response.data)
+            alert("An error occured while reporting user. Please try again.")
+            return;
+        }
+        else if (response.data.startsWith("UERROR:")){
+            console.log(response.data)
+            alert(response.data.substring("UERROR: ".length))
+            return;
+        }
+        console.log(response.data)
+        alert("Report submitted. We will review it and ban the user if necessary.")
+        window.location.reload();
+    })
+    .catch(function (error) {
+        console.error('Error reporting user:', error);
+    });
+}
+
+function closeReportPopup(){
+    closeReportConfirmation = confirm("Are you sure you'd like to discard all changes?");
+    if (closeReportConfirmation == true) {
+        window.location.reload();
+    }
 }
