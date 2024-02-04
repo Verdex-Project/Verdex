@@ -198,6 +198,7 @@ def loginAccount():
                 ## Admin accounts cannot be associated with itineraries
                 del DI.data["itineraries"][session["generatedItineraryID"]]
                 DI.save()
+                del session["generatedItineraryID"]
             else:
                 ## Link itinerary to account
                 DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
