@@ -782,6 +782,8 @@ class GoogleOAuth:
         if GoogleOAuth.checkPermissions():
             if "GoogleClientID" not in os.environ:
                 return "ERROR: Google OAuth is enabled but Google Client ID is not set as environment variable."
+            elif "GoogleAuthRedirectURI" not in os.environ:
+                return "ERROR: Google OAuth is enabled but Google Redirect URI is not set as environment variable."
             elif not os.path.isfile(os.path.join(os.getcwd(), "clientSecrets.json")):
                 return "ERROR: Google OAuth is enabled but clientSecrets.json is not found in the root directory."
     
@@ -791,7 +793,7 @@ class GoogleOAuth:
                 GoogleOAuth.oauthFlow = Flow.from_client_secrets_file(
                     client_secrets_file=os.path.join(os.getcwd(), "clientSecrets.json"),
                     scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
-                    redirect_uri="http://127.0.0.1:8000/account/oauthCallback"
+                    redirect_uri=os.environ['GoogleAuthRedirectURI']
                 )
 
                 return True
