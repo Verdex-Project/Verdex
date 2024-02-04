@@ -109,7 +109,7 @@ function editDateSave(itineraryID, day, previousDate){
         }
     }
     if (parseInt(diffOfDays) < 0){
-        alert("New date cannot be earlier than current date.");
+        alert("New date cannot be earlier than current real-time date.");
         return;
     }
     if (parseInt(diffOfDays) == 0){
