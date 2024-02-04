@@ -104,9 +104,13 @@ function proceed() {
             if (response.status == 200) {
                 if (!response.data.startsWith("UERROR:")) {
                     if (!response.data.startsWith("ERROR:")) {
-                        if (response.data.startsWith("SUCCESS:")) {
-                            const newItineraryID = response.data.substring("SUCCESS: Itinerary ID: ".length)
-                            window.location.href = `${origin}/account/signup?fromItineraryGeneration=true`
+                        if (response.data.startsWith("SUCCESS")) {
+                            if (response.data.startsWith("SUCCESS ACCOUNTREDIRECT")) {
+                                window.location.href = `${origin}/account/signup?fromItineraryGeneration=true`
+                            } else {
+                                const newItineraryID = response.data.substring("SUCCESS: Itinerary ID: ".length)
+                                window.location.href = `${origin}/editor/${newItineraryID}`
+                            }
                             return
                         } else {
                             alert("Something went wrong. Please try again.")

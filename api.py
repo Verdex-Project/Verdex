@@ -310,6 +310,11 @@ def generateItinerary():
     if headersCheck != True:
         return headersCheck
     
+    authCheck = manageIDToken()
+    targetAccountID = None
+    if authCheck.startswith("SUCCESS"):
+        targetAccountID = authCheck[len("SUCCESS: ")::]
+    
     # Check body
     if "targetLocations" not in request.json:
         return "ERROR: One or more required payload parameters not present."
@@ -344,7 +349,7 @@ def generateItinerary():
     itinerary = {
         "title": title,
         "description": description,
-        "associatedAccountID": None,
+        "associatedAccountID": targetAccountID,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
         "days": {}
     }
@@ -401,9 +406,13 @@ def generateItinerary():
     DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
 
-    session["generatedItineraryID"] = itineraryID
+    if targetAccountID == None:
+        ## Triggers redirect to create account/login flow
+        session["generatedItineraryID"] = itineraryID
 
-    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
+        return "SUCCESS ACCOUNTREDIRECT: Itinerary ID: {}".format(itineraryID)
+    else:
+        return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
