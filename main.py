@@ -1,4 +1,9 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import os
+if os.path.isfile("isInReplit.txt"):
+    print("MAIN: Detected Replit environment. Installing requirements...")
+    os.system("pip install -r requirements.txt")
+
+import json, random, time, sys, subprocess, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from werkzeug.utils import secure_filename

@@ -3,7 +3,6 @@ from models import DI, Logger, Universal, Encryption, fileContent, customRenderT
 from addons import FireConn, FireAuth, AddonsManager
 from emailer import Emailer
 from getpass import getpass
-from flask import render_template
 print("Setting up .....")
 
 ## Set up FireConn
