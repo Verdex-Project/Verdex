@@ -3,7 +3,6 @@ import smtplib, ssl, re, os, subprocess, sys, shutil
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
-from addons import AddonsManager
 load_dotenv()
 
 class Emailer:
@@ -17,19 +16,9 @@ class Emailer:
     @staticmethod
     def checkContext():
         if "EmailingServicesEnabled" in os.environ and os.environ['EmailingServicesEnabled'] == 'True':
-            if AddonsManager.readConfigKey("EmailingServicesEnabled") == True:
-                Emailer.sender_email = os.environ["AppEmail"]
-                Emailer.password = os.environ['EmailAppPassword']
-                Emailer.servicesEnabled = True
-            elif AddonsManager.readConfigKey("EmailingServicesEnabled") == "Key Not Found":
-                AddonsManager.setConfigKey("EmailingServicesEnabled", True)
-                Emailer.sender_email = os.environ["AppEmail"]
-                Emailer.password = os.environ['EmailAppPassword']
-                Emailer.servicesEnabled = True
-            else:
-                Emailer.servicesEnabled = False
-        else:
-            Emailer.servicesEnabled = False
+            Emailer.sender_email = os.environ["AppEmail"]
+            Emailer.password = os.environ['EmailAppPassword']
+            Emailer.servicesEnabled = True
 
         Emailer.contextChecked = True
 

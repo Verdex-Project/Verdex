@@ -143,6 +143,8 @@ if __name__ == '__main__':
 
     ## Get Emailer to check context
     Emailer.checkContext()
+    if Emailer.servicesEnabled and AddonsManager.readConfigKey("EmailingServicesEnabled") == False:
+        Emailer.servicesEnabled = False
 
     ## Set up GoogleMapsService
     GoogleMapsService.checkContext()

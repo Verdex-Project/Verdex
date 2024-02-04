@@ -4,8 +4,6 @@ from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken, Emai
 
 adminHomeBP = Blueprint("admin", __name__)
 
-AddonsManager.setup()
-
 @adminHomeBP.route('/admin')
 def admin():
     authCheck = manageIDToken(checkIfAdmin=True)
