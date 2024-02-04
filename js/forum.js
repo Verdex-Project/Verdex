@@ -530,6 +530,7 @@ function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
 }
 
 function submitPrompt() {
+    document.getElementById('response').innerHTML = "Hold tight! Verdex-GPT is thinking..."
     const prompt = document.getElementById("prompt");
 
     if (prompt.value !== "") {
@@ -550,10 +551,10 @@ function submitPrompt() {
             console.log(response.data);
 
             const resultDiv = document.getElementById('response');
-            
-            resultDiv.innerHTML = '';
 
             const maxLength = 600;
+
+            resultDiv.innerHTML = '';
 
             handleTypewriterEffect(resultDiv, response.data.generated_text, maxLength);
         })

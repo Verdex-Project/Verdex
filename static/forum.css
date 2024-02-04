@@ -740,6 +740,7 @@ body {
     font-family: 'Courier New', monospace;
     width: 75%;
     color: black;
+    margin-left: 20px;
 }
 
 #prompt {
