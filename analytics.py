@@ -1,11 +1,11 @@
 import os, json, uuid, random, datetime
 from models import Logger, Universal
 from dotenv import load_dotenv
-from addons import AddonsManager
 load_dotenv()
-AddonsManager.setup()
+
 class Analytics:
     data = []
+    adminEnabled = False
     filePath = os.path.join(os.getcwd(), "analytics.json")
     reportsFolderPath = os.path.join(os.getcwd(), "reports")
     reportsInfoFilePath = os.path.join(reportsFolderPath, "reportsInfo.json")
@@ -20,15 +20,7 @@ class Analytics:
 
     @staticmethod
     def checkPermissions():
-        #Check if addons manager has AnalyticsEnabled value
-        if "AnalyticsEnabled" in os.environ and os.environ["AnalyticsEnabled"] == "True":
-            if AddonsManager.readConfigKey("AnalyticsEnabled") == True:
-                return True
-            elif AddonsManager.readConfigKey("AnalyticsEnabled") == "Key Not Found":
-                AddonsManager.setConfigKey("AnalyticsEnabled", True)
-                return True
-        else:
-            return False
+        return ("AnalyticsEnabled" in os.environ and os.environ["AnalyticsEnabled"] == "True") and Analytics.adminEnabled
 
     @staticmethod
     def generateRandomID(customLength=None):
@@ -44,7 +36,9 @@ class Analytics:
             return randomID
 
     @staticmethod
-    def setup():
+    def setup(adminEnabled: bool):
+        Analytics.adminEnabled = adminEnabled
+
         if not Analytics.checkPermissions():
             print("ANALYTICS: Analytics disabled as operation permission was not granted.")
             return True

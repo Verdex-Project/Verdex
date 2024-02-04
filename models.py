@@ -16,6 +16,12 @@ def customRenderTemplate(filePath, **kwargs):
             f_content = f_content.replace("{{ " + key + " }}", kwargs[key])
         return f_content
 
+def getNameAndPosition(accounts, targetAccountID):
+    return (
+        "Not Set" if "name" not in accounts[targetAccountID] else accounts[targetAccountID]["name"],
+        "Not Set" if "position" not in accounts[targetAccountID] else accounts[targetAccountID]["position"],
+    )
+
 # DatabaseInterface class
 class DI:
     '''## INTRO

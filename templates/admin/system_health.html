@@ -15,9 +15,9 @@
           <h5 class="card-title">Database Interface</h5>
           <p class="card-text">The primary service facilitating communication application logic and Verdex's database.</p>
           {% if not sync_status %}
-            <p class ="card-text" style ="color: red;">There is a mismatch or mis-sync with either the cloud or local database. Please re-load DI when safe.</p>
+            <p class="card-text" style ="color: red;">There is a mismatch or mis-sync with either the cloud or local database. Please re-load DI when safe.</p>
           {% endif %}
-          <a href=# class="btn btn-outline-danger" onclick = "reloadDatabase()">Reload database interface</a>
+          <button class="btn btn-outline-danger" onclick = "reloadDatabase()" id ="reload-database">Reload database interface</button>
         </div>
       </div>
     </div>
@@ -25,27 +25,27 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Emailer</h5>
-              {% if not emailer_status %}
+              {% if not emailerInternalStatus %}
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
-                        <label class="form-check-label" for="flexSwitchCheckDisabled">Emailer service is internally disabled</label>
+                        <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" disabled>
+                        <label class="form-check-label" for="emailerSwitch">Emailer service is internally disabled</label>
                     </div>
                     <p class="card-text">Send a test email to check if emailer is working.</p>
-                    <a href=# class="btn btn-primary disabled" aria-disabled="true">Test email cannot be sent as emailer disabled</a>
-              {% elif addons_email_status %}
+                    <button class="btn btn-outline-primary" disabled>Test email cannot be sent as emailer internally disabled</button>
+              {% elif emailerFinalStatus %}
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked onclick="toggleEmailer()">
-                      <label class="form-check-label" for="flexSwitchCheckChecked">Emailer service is currently on</label>
+                      <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" checked onclick="toggleEmailer()">
+                      <label class="form-check-label" for="emailerSwitch">Emailer service is currently on</label>
                     </div>
                     <p class="card-text">Send a test email to check if emailer is working.</p>
-                    <a href=# class="btn btn-primary" onclick = "sendTestEmail()">Send test email</a>
-              {% elif not addons_email_status %}
+                    <button class="btn btn-outline-primary" onclick = "sendTestEmail()" id = "test-email-button">Send test email</button>
+              {% elif not emailerFinalStatus %}
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleEmailer()">
-                      <label class="form-check-label" for="flexSwitchCheckDefault">Emailer service is disabled</label>
+                      <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" onclick="toggleEmailer()">
+                      <label class="form-check-label" for="emailerSwitch">Emailer service is disabled</label>
                   </div>
                   <p class="card-text">Send a test email to check if emailer is working.</p>
-                  <a href=# class="btn btn-primary disabled" aria-disabled="true">Test email cannot be sent as emailer disabled</a>
+                  <button class="btn btn-outline-primary" disabled>Test email cannot be sent as emailer disabled</button>
               {% endif %}
         </div>
       </div>
@@ -59,20 +59,20 @@
           <h5 class="card-title">Analytics</h5>
           <p class="card-text">Toggle on and off the Analytics system</p>
           <p class ="card-text"></p>
-              {% if not analytics_status %}
+              {% if not analyticsInternalStatus %}
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDisabled" disabled>
-                        <label class="form-check-label" for="flexSwitchCheckDisabled">Analytics service is disabled</label>
+                        <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" disabled>
+                        <label class="form-check-label" for="analyticsSwitch">Analytics service is disabled</label>
                     </div>
-              {% elif addons_analytics_status %}
+              {% elif analyticsFinalStatus %}
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked onclick="toggleAnalytics()">
-                      <label class="form-check-label" for="flexSwitchCheckChecked">Analytics service is currently on</label>
+                      <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" checked onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="analyticsSwitch">Analytics service is currently on</label>
                     </div>
-              {% elif not addons_analytics_status %}
+              {% elif not analyticsFinalStatus %}
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onclick="toggleAnalytics()">
-                      <label class="form-check-label" for="flexSwitchCheckDefault">Analytics service is currently off</label>
+                      <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="analyticsSwitch">Analytics service is currently off</label>
                   </div>
               {% endif %}
         </div>
@@ -84,7 +84,7 @@
           <h5 class="card-title">Firebase Authentication</h5>
           <p class="card-text">Create a summary of the number of users in the system and the number of users currently logged in</p>
           <p class ="card-text">Total users: {{ total_user }} Total users logged in: {{ logged_in }}</p>
-          <a href=# class="btn btn-primary" onclick ="reloadFireauth()">Reload Firebase Authentication</a>
+          <button class="btn btn-outline-primary" onclick ="reloadFireauth()" id ="reload-fireauth">Reload Firebase Authentication</button>
         </div>
       </div>
     </div>

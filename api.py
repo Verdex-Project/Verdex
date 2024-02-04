@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, AddonsManager, FireConn
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, AddonsManager, FireConn, Analytics, getNameAndPosition
 from generation.itineraryGeneration import staticLocations
 from dotenv import load_dotenv
 load_dotenv()
@@ -983,7 +983,7 @@ def sendTestEmail():
     check = checkHeaders(request.headers)
     if check != True:
         return check
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
@@ -1037,16 +1037,27 @@ def toggle_analytics():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
-    analytics_current = AddonsManager.readConfigKey("AnalyticsEnabled")
+    analyticsInternalStatus = os.environ.get("AnalyticsEnabled") == "True"
+
+    analyticsAdminStatus = AddonsManager.readConfigKey("AnalyticsEnabled")
+    if analyticsAdminStatus == "Key Not Found":
+        AddonsManager.setConfigKey("AnalyticsEnabled", analyticsInternalStatus)
+
+    if not analyticsInternalStatus:
+        return "ERROR: Analytics is internally disabled. You cannot toggle it."
     
-    if analytics_current == True:
-        AddonsManager.setConfigKey("AnalyticsEnabled", False)
-        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics disabled.")
-        return 'SUCCESS: Analytics disabled.'
-    else:
-        AddonsManager.setConfigKey("AnalyticsEnabled", True)
-        Logger.log("ADMIN TOGGLE_ANALYTICS: Analytics enabled.")
-        return 'SUCCESS: Analytics enabled.'
+    analyticsAdminStatus = not analyticsAdminStatus
+    AddonsManager.setConfigKey("AnalyticsEnabled", analyticsAdminStatus)
+    Analytics.adminEnabled = analyticsAdminStatus
+
+    if Analytics.checkPermissions():
+        response = Analytics.load_metrics()
+        if not response:
+            Logger.log("API TOGGLE_ANALYTICS: Failed to auto-load Analytics upon admin enable.")
+
+    Logger.log("API TOGGLE_ANALYTICS: Analytics toggled to {} by admin '{}'.".format("True" if analyticsAdminStatus else "False", targetAccountID))
+
+    return "SUCCESS: Analytics toggled successfully."
     
 @apiBP.route('/api/reload_database', methods=['POST'])
 def reload_database():
@@ -1056,7 +1067,7 @@ def reload_database():
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
     DI.load()
-    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded.")
+    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded by admin {}.". format(targetAccountID))
     return 'SUCCESS: Database reloaded.'
 
 @apiBP.route('/api/reload_fireauth', methods=['POST'])
@@ -1083,7 +1094,7 @@ def reply():
     if check != True:
         return check
     
-    authCheck = manageIDToken()
+    authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
@@ -1092,36 +1103,52 @@ def reply():
         return "ERROR: One or more payload parameters are missing."
     if "email_body" not in request.json:
         return "ERROR: One or more payload parameters are missing."
-    if "email_target" not in request.json:
-        return "ERROR: One or more payload parameters are missing."
-    if "email_name" not in request.json:
-        return "ERROR: One or more payload parameters are missing."
     if "questionID" not in request.json:
         return "ERROR: One or more payload parameters are missing."
+    if "supportQueries" in DI.data["admin"] and request.json["questionID"] not in DI.data["admin"]["supportQueries"]:
+        return "ERROR: No such question exists."
     
+    question_id = request.json['questionID']
     email_title = request.json['email_title']
     email_body = request.json['email_body']
-    email_target = request.json['email_target']
-    email_name = request.json['email_name']
-    question_id = request.json['questionID']
-    question_message = request.json['questionMessage']
-
+    email_target = DI.data['admin']['supportQueries'][question_id]['email']
+    email_name = DI.data['admin']['supportQueries'][question_id]['name']
+    question_message = DI.data['admin']['supportQueries'][question_id]['message']
+    question_timestamp = DI.data['admin']['supportQueries'][question_id]['timestamp']
+    readableQuestionTimestamp = datetime.datetime.strptime(question_timestamp, Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
+    
+    adminName, adminPosition = getNameAndPosition(DI.data["accounts"], targetAccountID)
     altText = f"""
+    ----------
+    In response to this customer support message you sent on {readableQuestionTimestamp}:
+
+    {question_message}
+    ----------
+
     Dear {email_name},
+    
     {email_body}
 
-    Kindly regards, The Verdex Team
+    Yours sincerely,
+    {adminName}
+    {adminPosition}
+    The Verdex Team
+    
     {Universal.copyright}
     """
+
     html = render_template('emails/adminReplyTemplate.html', 
-                           email_name=email_name, 
-                           email_body=email_body, 
-                           email_title=email_title,
-                           question_message=question_message, 
-                           copyright = Universal.copyright)
-    if Emailer.servicesEnabled == False:
-        return "ERROR: Email services are disabled."
-    check =Emailer.sendEmail(email_target, email_title, altText, html)
+        email_name=email_name, 
+        email_body=email_body,
+        email_title=email_title,
+        question_message=question_message,
+        adminName = adminName,
+        adminPosition = adminPosition,
+        question_timestamp = readableQuestionTimestamp,
+        copyright = Universal.copyright
+    )
+
+    check = Emailer.sendEmail(email_target, email_title, altText, html)
     if check == True:
         del DI.data['admin']['supportQueries'][question_id]
         DI.save()

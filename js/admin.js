@@ -1,5 +1,8 @@
 function sendTestEmail() {
     var confirmation = confirm("Are you sure you want to send a test email?");
+    var sendTestEmailButton = document.getElementById("test-email-button");
+    sendTestEmailButton.innerHTML = "Sending...";
+    sendTestEmailButton.disabled = true;
     if (confirmation) {
         axios({
             method: 'post',
@@ -15,6 +18,7 @@ function sendTestEmail() {
                 if (response.data.startsWith("SUCCESS:")) {
                     console.log("Test email sent successfully.");
                     window.alert("Test email has been sent successfully!");
+                    location.reload();
                 } else if (response.data.startsWith("ERROR:")) {
                     console.log("An error occurred: " + response.data);
                     window.alert("An error occurred: " + response.data);
@@ -30,9 +34,14 @@ function sendTestEmail() {
             console.log("An error occurred while sending the test email: " + error);
         });
     }
+    else {
+        sendTestEmailButton.innerHTML = "Send test email";
+        sendTestEmailButton.disabled = false;
+    }
 }
 function toggleEmailer(){
     var confirmation = confirm("Are you sure you want to toggle the emailer?");
+    var emailSwitch = document.getElementById("emailerSwitch")
     if (confirmation) {
         axios({
             method: 'post',
@@ -65,13 +74,13 @@ function toggleEmailer(){
         });
     }
     else {
-        window.alert("Emailer toggle cancelled.");
-        location.reload();
+        emailSwitch.checked = !emailSwitch.checked;
     }
 }
 
 function toggleAnalytics(){
     var confirmation = confirm("Are you sure you want to toggle analytics?");
+    var analyticsSwitch = document.getElementById("analyticsSwitch")
     if (confirmation) {
         axios({
             method: 'post',
@@ -104,13 +113,15 @@ function toggleAnalytics(){
         });
     }
     else {
-        window.alert("Analytics toggle cancelled.");
-        location.reload();
+        analyticsSwitch.checked = !analyticsSwitch.checked;
     }
 }
 
 function reloadDatabase(){
     var confirmation = confirm("Are you sure you want to reload the database? It is critical and could affect the whole system. Proceed with caution!");
+    var reloadButton = document.getElementById("reload-database");
+    reloadButton.innerHTML = "Reloading...";
+    reloadButton.disabled = true;
     if (confirmation) {
         axios({
             method: 'post',
@@ -140,13 +151,16 @@ function reloadDatabase(){
         });
     }
     else {
-        window.alert("Database reload cancelled.");
-        location.reload();
+        reloadButton.innerHTML = "Reload database interface";
+        reloadButton.disabled = false;
     }
 }
 
 function reloadFireauth(){
     var confirmation = confirm("Are you sure you want to reload the Firebase Auth?");
+    var fireAuthButton = document.getElementById("reload-fireauth");
+    fireAuthButton.innerHTML = "Reloading...";
+    fireAuthButton.disabled = true;
     if (confirmation) {
         axios({
             method: 'post',
@@ -180,8 +194,8 @@ function reloadFireauth(){
         });
     }
     else {
-        window.alert("Firebase Auth reload cancelled.");
-        location.reload();
+        fireAuthButton.innerHTML = "Reload Firebase Authentication";
+        fireAuthButton.disabled = false;
     }
 }
 
@@ -202,6 +216,7 @@ function reply(){{
         var questionMessage = document.getElementById("question-message").innerHTML;
         var submitButton = document.getElementById("submitButton");
         submitButton.innerHTML = "Sending...";
+        submitButton.disabled = true;
 
         axios({
             method: 'post',

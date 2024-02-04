@@ -150,7 +150,7 @@ if __name__ == '__main__':
     GoogleMapsService.checkContext()
     
     ## Set up Analytics
-    Analytics.setup()
+    Analytics.setup(adminEnabled=AddonsManager.readConfigKey("AnalyticsEnabled") == True)
     Analytics.load_metrics()
     
     ## Set up Logger

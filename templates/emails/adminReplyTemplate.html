@@ -6,7 +6,6 @@
     <title>Reply Email</title>
 </head>
 <body>
-    <h1>{{ email_title }}</h1>
     <hr>
     <p>In response to a customer support message you sent on {{ question_timestamp }}:</p>
     <i>{{ question_message }}</i>
@@ -15,7 +14,10 @@
     <br>
     <p>{{ email_body }}</p>
     <br>
-    <p>Kind regards, The Verdex Team</p>
+    <p>Yours sincerely,</p>
+    <p><strong>{{ adminName }}</strong></p>
+    <p><strong>{{ adminPosition }}</strong></p>
+    <p>The Verdex Team</p>
     <br>
     <p>{{ copyright }}</p>
     <script src ="/assets/adminJS"></script>
