@@ -741,6 +741,12 @@ body {
     width: 75%;
     color: black;
     margin-left: 20px;
+    -webkit-tap-highlight-color: rgb(189, 186, 217);
+    -webkit-touch-callout: initial;
+    -webkit-user-select: initial;
+    -moz-user-select: initial;
+    -ms-user-select: initial;
+    user-select: initial;
 }
 
 #prompt {
