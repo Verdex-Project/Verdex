@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}Reports{% endblock %}
 
 {% block head %}
@@ -7,7 +6,6 @@
 <script>
     function downloadReport(reportId) {
         const downloadUrl = `{{ url_for('admin.download_report', report_id='') }}${reportId}`;
-        console.log(downloadUrl)
         window.location.href = downloadUrl;
     }
 
@@ -58,41 +56,12 @@
 {% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="profile">
-            <img class='profile' src="/static/Images/user.png" alt="">
-            <span class="admin-name">{{ name }}</span>
-            <br>
-            <span class="admin-position">{{ position }}</span>
-        </div>
-        <ul>
-            <li>
-                <a href="/admin">
-                    <span class="item">System Health</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/user_management" >
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/report" class="active">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/customer_support">
-                    <span class="item">Customer Support</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
+{% include "includes/_adminSidebar.html" %}
+
 <div class="content">
     <div class="report">
         <h2 class="generated-reports-header">Weekly Reports</h2>
+        {% if permission %}
             <div class="button-container">
                 <!-- Generate Report Button -->
                 <button class="btn btn-outline-success generate-report-button" type="button" onclick="showConfirmation('generateReportButton')">Generate Report</button>
@@ -103,6 +72,9 @@
                 <!-- Clear Data Button -->
                 <button class="btn btn-outline-danger clear-data-button" type="button" onclick="showConfirmation('clearDataButton')">Clear Data</button>
             </div>
+            {% else %}
+            <p class ="reports-check">Analytics Service is Disabled and not able to use any of the functions</p>
+            {% endif %}
             {% for report_id, report_data in data.items() %}
             <div class="report-container">
                 <h3>Report #{{ report_id }}</h3>
@@ -121,4 +93,7 @@
             {% endfor %}
     </div>
 </div>
+<script>
+    document.getElementById("reportSidebarLink").style.color = "black"
+</script>
 {% endblock %}

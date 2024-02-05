@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}User Management{% endblock %}
 
 {% block head %}
@@ -7,39 +6,7 @@
 {% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="profile">
-            <img class='profile' src="/static/Images/user.png" alt="">
-            <span class="admin-name">{{ name }}</span>
-            <br>
-            <span class="admin-position">{{ position }}</span>
-        </div>
-        <ul>
-            <li>
-                <a href="/admin">
-                    <span class="item">System Health</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/user_management" class="active">
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/report">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/customer_support">
-                    <span class="item">Customer Support</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-<br>
+{% include "includes/_adminSidebar.html" %}
 <div class="user-container">
     <h1>List of Users</h1>
     <h3>Email:</h3>
@@ -62,4 +29,7 @@
         {% endif %}
     </ol>
 </div>
+<script>
+    document.getElementById("userSidebarLink").style.color = "black"
+</script>
 {% endblock %}

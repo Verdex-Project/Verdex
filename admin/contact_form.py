@@ -1,4 +1,4 @@
-from flask import  render_template, request, redirect, url_for, Blueprint, flash
+from flask import  render_template, request, redirect, url_for, Blueprint, flash, abort
 from main import Universal, DI
 import uuid, os, json, datetime
 contactBP = Blueprint("faq", __name__)
@@ -36,8 +36,8 @@ def faq():
 def contact_form():
     if request.method == "GET":
         return render_template('misc/contact.html')
-    if request.method == "POST":
-    ## Check if correct form fields are provided
+    elif request.method == "POST":
+        ## Check if correct form fields are provided
         if 'name' not in request.form:
             flash("Please provide your name.")
             return redirect(url_for('faq.contact_form'))
@@ -57,11 +57,12 @@ def contact_form():
             return redirect(url_for('faq.contact_form'))
         
         ## Generate ID and timestamp
-        supportQueryID = uuid.uuid4().hex
+        supportQueryID = Universal.generateUniqueID()
         time_stamp = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
         
         if "supportQueries" not in DI.data["admin"]:
             DI.data["admin"]["supportQueries"] = {}
+        
         DI.data["admin"]["supportQueries"][supportQueryID] = {
             "name": name,
             "email": email,
@@ -69,11 +70,12 @@ def contact_form():
             "supportQueryID": supportQueryID,
             "timestamp": time_stamp
         }
-        ## Save to DI
         DI.save()
-        ## Redirect to success page
-        return redirect(url_for('faq.contact_success', supportQueryID= supportQueryID))
 
+        ## Redirect to success page
+        return redirect(url_for('faq.contact_success', supportQueryID=supportQueryID))
+    else:
+        return abort(500)
 
 @contactBP.route('/contactUs/success', methods=['GET'], endpoint='contact_success')
 def success():
@@ -82,4 +84,4 @@ def success():
     elif request.args['supportQueryID'] not in DI.data["admin"]["supportQueries"]:
         return redirect(url_for('faq.contact_form'))
     else:
-        return render_template('misc/success.html')
+        return render_template('misc/success.html') 

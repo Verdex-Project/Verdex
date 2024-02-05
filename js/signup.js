@@ -49,9 +49,13 @@ function signUp() {
         if (response.status == 200) {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
-                    if (response.data.startsWith("SUCCESS:")) {
+                    if (response.data.startsWith("SUCCESS")) {
                         signUpButton.innerHTML = "Account created! Redirecting now..."
-                        location.href = `${origin}/account/info`;
+                        if (response.data.startsWith("SUCCESS ITINERARYREDIRECT:")) {
+                            location.href = `${origin}/editor/${response.data.substring("SUCCESS ITINERARYREDIRECT: Account created successfully. Itinerary ID: ".length)}`
+                        } else {
+                            location.href = `${origin}/account/info`;
+                        }
                     } else {
                         cfmPasswordMsg.style.color = 'red'
                         cfmPasswordMsg.innerText = "An unknown error occured in creating the account. Please try again."

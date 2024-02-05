@@ -41,9 +41,13 @@ function signIn() {
         if (response.status == 200) {
             if (!response.data.startsWith("ERROR:")) {
                 if (!response.data.startsWith("UERROR:")) {
-                    if (response.data.startsWith("SUCCESS:")) {
+                    if (response.data.startsWith("SUCCESS")) {
                         signInButton.innerText = "Logged in! Redirecting now..."
-                        location.href = `${origin}/account/info`;
+                        if (response.data.startsWith("SUCCESS ITINERARYREDIRECT:")) {
+                            location.href = `${origin}/editor/${response.data.substring("SUCCESS ITINERARYREDIRECT: User logged in succesfully. Itinerary ID: ".length)}`
+                        } else {
+                            location.href = `${origin}/account/info`;
+                        }
                     } else {
                         statusLabel.style.color = "red";
                         statusLabel.innerText = "An unknown response was recieved from Verdex Servers."
