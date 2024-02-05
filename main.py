@@ -1,4 +1,9 @@
-import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime
+import os
+if os.path.isfile("isInReplit.txt"):
+    print("MAIN: Detected Replit environment. Installing requirements...")
+    os.system("pip install -r requirements.txt")
+
+import json, random, time, sys, subprocess, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -19,6 +24,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.environ['AppSecretKey']
+
+### For Google OAuth Login, if it were to be enabled
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 ## Global methods
 def deleteSession(accountID):
@@ -77,7 +85,7 @@ def manageIDToken(checkIfAdmin=False):
             return "SUCCESS: {}".format(accountID)
     
     # If we get here, the session is invalid as the ID token is not in the database
-    del session["idToken"]
+    session.clear()
     return "ERROR: Invalid credentials."
 
 def allowed_file(filename):
@@ -85,7 +93,12 @@ def allowed_file(filename):
 
 @app.before_request
 def updateAnalytics():
-    Analytics.add_metrics('get_request' if request.method == "GET" else "post_request")
+    if AddonsManager.readConfigKey("UsageLock") == True:
+        if request.path != "/" and (not request.path.startswith("/debug")):
+            return redirect(url_for("homepage"))
+    
+    if not (request.path.startswith("/static") or request.path.startswith("/assets") or request.path.startswith("/favicon.ico")):
+        Analytics.add_metrics(Analytics.EventTypes.get_request if request.method == "GET" else Analytics.EventTypes.post_request)
     return
 
 @app.route('/')
@@ -150,6 +163,15 @@ if __name__ == '__main__':
     else:
         print("FIREAUTH: Setup complete.")
 
+    ## Set up Google OAuth Login
+    if GoogleOAuth.checkPermissions():
+        response = GoogleOAuth.setup()
+        if response != True:
+            print("MAIN BOOT: Error in setting up Google OAuth; error: " + response)
+            sys.exit(1)
+        else:
+            print("GOOGLE OAUTH: Setup complete.")
+
     ## Set up FolderManager
     response = FolderManager.setup()
     if response != "Success":
@@ -158,13 +180,18 @@ if __name__ == '__main__':
 
     ## Get Emailer to check context
     Emailer.checkContext()
+    if Emailer.servicesEnabled and AddonsManager.readConfigKey("EmailingServicesEnabled") == False:
+        Emailer.servicesEnabled = False
 
     ## Set up GoogleMapsService
     GoogleMapsService.checkContext()
     
     ## Set up Analytics
-    Analytics.setup()
-    Analytics.load_metrics()
+    if AddonsManager.readConfigKey("AnalyticsEnabled") != "Key Not Found":
+        Analytics.setup(adminEnabled=AddonsManager.readConfigKey("AnalyticsEnabled"))
+    else:
+        Analytics.setup()
+        AddonsManager.setConfigKey("AnalyticsEnabled", Analytics.adminEnabled)
     
     ## Set up Logger
     Logger.setup()
@@ -180,163 +207,91 @@ if __name__ == '__main__':
 
         if previousCopy != DI.data["accounts"]:
             print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
+
+    # UserFolders pruning
+    try:
+        for folder in os.listdir("UserFolders"):
+            if folder not in DI.data["accounts"]:
+                shutil.rmtree(os.path.join("UserFolders", folder))
+                print(f"MAIN: Pruned UserFolders/{folder} as it is not in the database.")
+    except Exception as e:
+        print("MAIN: (Non-terminal) Failed to prune folder {} from UserFolders; error: {}".format(folder, e))
     
     if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
-        DI.data["itineraries"] = {
-            "abc123": {
-                "title" : "My Itinerary",
-                "description" : "3 days itinerary in Singapore",
-                "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-                "associatedAccountID": "366e25aff98845f28f284434b739b6b1",
-                "days" : {
-                    "1" : {
-                        "date" : "2024-03-01",
-                        "activities" : {
-                            "0" : {
-                                "name" : "Marina Bay Sands",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
-                                "startTime" : "0800",
-                                "endTime" : "1000"
-                            },
-                            "1" : {
-                                "name" : "Universal Studios Singapore",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
-                                "startTime" : "1000", 
-                                "endTime" : "1800"
-                            },
-                            "2" : {
-                                "name" : "Sentosa Island",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
-                                "startTime" : "1800",
-                                "endTime" : "2200"
-                            }
-                        }
-                    },
-                    "2" : {
-                        "date" : "2024-03-02",
-                        "activities" : {
-                            "0" : {
-                                "name" : "SEA Aquarium",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
-                                "startTime" : "0800",
-                                "endTime" : "1200"
-                            },
-                            "1" : {
-                                "name" : "Singapore Botanic Gardens",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
-                                "startTime" : "1200",
-                                "endTime" : "1600"
-                            },
-                            "2" : {
-                                "name" : "Orchard Road",
-                                "activity" : "Singapore",
-                                "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
-                                "startTime" : "1600",
-                                "endTime" : "2200"
-                            }
-                        }
-                    },
-                    "3" : {
-                        "date" : "2024-03-03",
-                        "activities" : {
-                            "0" : {
-                                "name" : "Gardens by the Bay",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
-                                "startTime" : "1000",
-                                "endTime" : "1800"
-                            },
-                            "1" : {
-                                "name" : "Chinatown MRT Station",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
-                                "startTime" : "1800",
-                                "endTime" : "2100"
-                            }
+        DI.data["itineraries"]["abc123"] = {
+            "title" : "My Itinerary",
+            "description" : "3 days itinerary in Singapore",
+            "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
+            "associatedAccountID": None,
+            "days" : {
+                "1" : {
+                    "date" : "2024-03-01",
+                    "activities" : {
+                        "0" : {
+                            "name" : "Marina Bay Sands",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
+                            "startTime" : "0800",
+                            "endTime" : "1000"
+                        },
+                        "1" : {
+                            "name" : "Universal Studios Singapore",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
+                            "startTime" : "1000", 
+                            "endTime" : "1800"
+                        },
+                        "2" : {
+                            "name" : "Sentosa Island",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
+                            "startTime" : "1800",
+                            "endTime" : "2200"
                         }
                     }
-                }
-            },
-            "def456": {
-                "title" : "Second Itinerary",
-                "description" : "5 days itinerary in Singapore",
-                "generationDateTime" : datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-                "associatedAccountID": "1443c467fe594c149f9a1344e2c2fb9b",
-                "days" : {
-                    "1" : {
-                        "date" : "2024-04-01",
-                        "activities" : {
-                            "0" : {
-                                "name" : "Marina Bay Sands",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://mustsharenews.com/wp-content/uploads/2023/03/MBS-Expansion-Delay-FI.jpg",
-                                "startTime" : "0800",
-                                "endTime" : "1000"
-                            },
-                            "1" : {
-                                "name" : "Universal Studios Singapore",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://static.honeykidsasia.com/wp-content/uploads/2021/02/universal-studios-singapore-kids-family-guide-honeykids-asia-900x643.jpg",
-                                "startTime" : "1000", 
-                                "endTime" : "1800"
-                            },
-                            "2" : {
-                                "name" : "Sentosa Island",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://upload.wikimedia.org/wikipedia/commons/0/0f/Merlion_Sentosa.jpg",
-                                "startTime" : "1800",
-                                "endTime" : "2200"
-                            }
+                },
+                "2" : {
+                    "date" : "2024-03-02",
+                    "activities" : {
+                        "0" : {
+                            "name" : "SEA Aquarium",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
+                            "startTime" : "0800",
+                            "endTime" : "1200"
+                        },
+                        "1" : {
+                            "name" : "Singapore Botanic Gardens",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
+                            "startTime" : "1200",
+                            "endTime" : "1600"
+                        },
+                        "2" : {
+                            "name" : "Orchard Road",
+                            "activity" : "Singapore",
+                            "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
+                            "startTime" : "1600",
+                            "endTime" : "2200"
                         }
-                    },
-                    "2" : {
-                        "date" : "2024-04-02",
-                        "activities" : {
-                            "0" : {
-                                "name" : "SEA Aquarium",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://image.kkday.com/v2/image/get/h_650%2Cc_fit/s1.kkday.com/product_23301/20230323024107_wG7zu/jpg",
-                                "startTime" : "0800",
-                                "endTime" : "1200"
-                            },
-                            "1" : {
-                                "name" : "Singapore Botanical Gardens",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://www.nparks.gov.sg/-/media/nparks-real-content/gardens-parks-and-nature/sg-botanic-gardens/sbg10_047alt.ashx",
-                                "startTime" : "1200",
-                                "endTime" : "1600"
-                            },
-                            "2" : {
-                                "name" : "Orchard Road",
-                                "activity" : "Singapore",
-                                "imageURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Presenting..._the_real_ION_%288200217734%29.jpg/1024px-Presenting..._the_real_ION_%288200217734%29.jpg",
-                                "startTime" : "1600",
-                                "endTime" : "2200"
-                            }
-                        }
-                    },
-                    "3" : {
-                        "date" : "2024-04-03",
-                        "activities" : {
-                            "0" : {
-                                "name" : "Gardens by the Bay",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
-                                "startTime" : "1000",
-                                "endTime" : "1800"
-                            },
-                            "1" : {
-                                "name" : "Chinatown MRT Station",
-                                "activity" : "Singapore",
-                                "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
-                                "startTime" : "1800",
-                                "endTime" : "2100"
-                            }
+                    }
+                },
+                "3" : {
+                    "date" : "2024-03-03",
+                    "activities" : {
+                        "0" : {
+                            "name" : "Gardens by the Bay",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://afar.brightspotcdn.com/dims4/default/ada5ead/2147483647/strip/true/crop/728x500+36+0/resize/660x453!/quality/90/?url=https%3A%2F%2Fafar-media-production-web.s3.us-west-2.amazonaws.com%2Fbrightspot%2F94%2F46%2F4e15fcdc545829ae3dc5a9104f0a%2Foriginal-7d0d74d7c60b72c7e76799a30334803e.jpg",
+                            "startTime" : "1000",
+                            "endTime" : "1800"
+                        },
+                        "1" : {
+                            "name" : "Chinatown MRT Station",
+                            "activity" : "Singapore",
+                            "imageURL" : "https://www.tripsavvy.com/thmb/bikgORwUriJhkcbmyRAbEsl_thQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/2_chinatown_street_market-5c459281c9e77c00018d54a2.jpg",
+                            "startTime" : "1800",
+                            "endTime" : "2100"
                         }
                     }
                 }
@@ -381,6 +336,10 @@ if __name__ == '__main__':
     ## Assets service
     from assets import assetsBP
     app.register_blueprint(assetsBP)
+
+    ## Debug routes
+    from debug import debugBP
+    app.register_blueprint(debugBP)
 
     print()
     print("All services online; boot pre-processing and setup complete.")

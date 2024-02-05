@@ -111,6 +111,19 @@ def fileContent(filePath, passAPIKey=False):
             f_content = f_content.replace("\{{ API_KEY }}", os.getenv("API_KEY"))
         return f_content
 
+def customRenderTemplate(filePath, **kwargs):
+    with open(filePath, 'r') as f:
+        f_content = f.read()
+        for key in kwargs:
+            f_content = f_content.replace("{{ " + key + " }}", kwargs[key])
+        return f_content
+
+def getNameAndPosition(accounts, targetAccountID):
+    return (
+        "Not Set" if "name" not in accounts[targetAccountID] else accounts[targetAccountID]["name"],
+        "Not Set" if "position" not in accounts[targetAccountID] else accounts[targetAccountID]["position"],
+    )
+
 # DatabaseInterface class
 class DI:
     '''## INTRO

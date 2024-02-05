@@ -1,114 +1,91 @@
 /* styles.css */
-
+.navbar.navbar-expand-lg.bg-body-tertiary {
+    z-index: 1;
+}
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-html, body {
-    height: 100%;
 }
 
 body {
     background: white;
 }
 
-.wrapper {
+.sidenav {
     height: 100%;
-}
-
-.sidebar {
-    box-sizing: border-box;
-    background: white;
-    width: 225px;
-    height: 120%;
-    margin-top: -58px;
-    padding-top: 70px;
-    transition: all 0.5s ease;
-    border-right: 2px solid black;
+    width: 12%;
     position: fixed;
+    /* z-index: 1; */
+    top: 0;
+    left: 0;
+    background-color: #f8f9f8;
     overflow: hidden;
-    z-index: -1;
-    font-family: 'Open Sans', sans-serif;
+    padding-top: 100px;
 }
-
-.wrapper .sidebar .profile {
-    margin-bottom: 30px;
+  
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #696969;
+    display: block;
     text-align: center;
+}
+  
+.sidenav a:hover {
+    color: black;
+    border-right: 2px solid black;
+}
+.sidenav a.active {
+    color: black;
+    border-right: 2px solid black;
+}
+.main {
+    margin-left: 160px; /* Same as the width of the sidenav */
+    font-size: 28px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+}
+  
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+.sidenav img{
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display:flex;
+      margin-left: auto;
+      margin-right: auto;
+}
+.sidenav p{
+      color: black;
+      text-align: center;
 }
 .admin-name{
-    margin-top:10px;
-    font-size:24px;
-    font-family: 'Open Sans', sans-serif;
+      margin-top:10px;
+      font-size:24px;
+      font-family: 'Open Sans', sans-serif;
 }
 .admin-position{
-    font-size:16px;
-    font-family: 'Open Sans', sans-serif;
-
-}
-.wrapper .sidebar .profile img {
-    display: block;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 0 auto;
-    align-items: center;
-}
-
-.wrapper .sidebar .profile h3 {
-    color: black;
-    margin: 10px 0 5px;
-    text-align: center;
-    font-family: 'Open Sans', sans-serif;
-}
-.wrapper .sidebar .profile p {
-    color: black;
-    font-size: 14px;
-    text-align: center;
-    font-family: 'Open Sans', sans-serif;
-}
-.wrapper .sidebar ul{
-    padding-left:0px;
-    font-family: 'Open Sans', sans-serif;
-}
-.wrapper .sidebar ul li a {
-    display: block;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    color: black;
-    font-size: 16px;
-    text-align: center;
-    text-decoration:none;
-    font-family: 'Open Sans', sans-serif;
-}
-
-.wrapper .sidebar ul li a:hover,
-.wrapper .sidebar ul li a.active {
-    color: black;
-    font-weight: bold;
-    background: white;
-    border-right: 2px solid black;
-}
-
-.wrapper .sidebar ul li a:hover:before,
-.wrapper .sidebar ul li a.active:before {
-    display: block;
+      font-size:16px;
+      font-family: 'Open Sans', sans-serif;
 }
 
 .content {
     margin-left:250px;
-    margin-top:-100vh;
     font-family: 'Open Sans', sans-serif;
 }
 .content h2{  
     z-index:-1;
 }
+
 .report{
     margin-top:40px;
     margin-left:50px;
     font-family: 'Open Sans', sans-serif;
 }
+
 .report-container {
     border: 2px solid #333;
     border-radius: 10px;
@@ -118,7 +95,6 @@ body {
     padding: 40px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left:-30px;
     justify-content: center;
     width: auto;
     font-family: 'Open Sans', sans-serif;
@@ -185,7 +161,11 @@ body {
     cursor: pointer;
     margin-right:10px;
 }
-
+.reports-check{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
 
 .button-container{
     display:flex;
@@ -204,18 +184,21 @@ body {
     border-radius: 10px;
     margin-bottom: 10px;
     margin-right:30px;
-    padding: 40px;
+    padding: 35px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left:-30px;
     justify-content: center;
-    width: 65%;
-    margin-left:250px;
-    margin-top:-95vh;
+    width: 60%;
+    margin-left:300px;
+    margin-top:20px;
     font-family: 'Open Sans', sans-serif;
 }
 .user-container h1{
     margin-top:-20px;
+    font-family: 'Open Sans', sans-serif;
+}
+.user-container li {
+    list-style: none;
     font-family: 'Open Sans', sans-serif;
 }
 .users{
@@ -240,6 +223,35 @@ body {
     margin-left:20px;
 }
 #back-button{
-    margin-top:-200vh;
     margin-left: 250px;
+    margin-bottom:20px;
+    margin-top:10px;
+}
+.row{
+    margin-left: 250px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+.question-container li{
+    list-style: none;
+}
+#submitButton {
+    margin-top: 20px;
+}
+.question-container{
+    margin-left: 250px;
+}
+.question-box {
+    border: 2px solid #333;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Open Sans', sans-serif;
+    width: 35%;
 }

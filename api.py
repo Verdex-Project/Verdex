@@ -1,6 +1,6 @@
 import json, random, time, sys, subprocess, os, shutil, copy, requests, datetime, pprint
 from flask import Flask, request, Blueprint, session, redirect, url_for, send_file, send_from_directory, jsonify, render_template
-from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, Analytics, FolderManager
+from main import DI, FireAuth, Universal, manageIDToken, deleteSession, Logger, Emailer, Encryption, AddonsManager, FireConn, Analytics, FolderManager, getNameAndPosition
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -38,6 +38,9 @@ def sendPasswordResetKey():
             break
     if targetAccountID == None:
         return "UERROR: Account doesnt exist."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
     
     resetKeyTime = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     resetKeyValue = Analytics.generateRandomID(customLength=6)
@@ -99,6 +102,9 @@ def passwordReset():
             break
     if targetAccountID == None:
         return "UERROR: No such account with that email or username."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please reset password via Google instead."
 
     ## Expire reset keys
     expiredRequestingAccountsResetKey = False
@@ -168,6 +174,9 @@ def loginAccount():
     if targetAccountID == None:
         return "UERROR: Account does not exist!"
     
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please login via Google instead."
+    
     response = FireAuth.login(email=DI.data["accounts"][targetAccountID]["email"], password=request.json["password"])
     if isinstance(response, str):
         return "UERROR: Incorrect email/username or password. Please try again."
@@ -180,6 +189,27 @@ def loginAccount():
     session["idToken"] = response["idToken"]
     if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
         session["admin"] = True
+
+    Analytics.add_metrics(Analytics.EventTypes.sign_in)
+
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            if "admin" in session and session["admin"] == True:
+                ## Admin accounts cannot be associated with itineraries
+                del DI.data["itineraries"][session["generatedItineraryID"]]
+                DI.save()
+                del session["generatedItineraryID"]
+            else:
+                ## Link itinerary to account
+                DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = targetAccountID
+                DI.save()
+            
+                generatedItineraryID = session["generatedItineraryID"]
+                del session["generatedItineraryID"]
+                return "SUCCESS ITINERARYREDIRECT: User logged in succesfully. Itinerary ID: {}".format(generatedItineraryID)
+        else:
+            ## Invalid itinerary ID
+            del session["generatedItineraryID"]
 
     return "SUCCESS: User logged in succesfully."
 
@@ -218,6 +248,7 @@ def createAccount():
     DI.data["accounts"][accID] = {
         "id": accID,
         "fireAuthID": tokenInfo["uid"],
+        "googleLogin": False,
         "username": request.json["username"],
         "email": request.json["email"],
         "password": Encryption.encodeToSHA256(request.json["password"]),
@@ -262,8 +293,17 @@ def createAccount():
     # destEmail, subject, altText, html
 
     session["idToken"] = tokenInfo["idToken"]
+    if "generatedItineraryID" in session:
+        if session["generatedItineraryID"] in DI.data["itineraries"]:
+            DI.data["itineraries"][session["generatedItineraryID"]]["associatedAccountID"] = accID
+            DI.save()
+            
+            generatedItineraryID = session["generatedItineraryID"]
+            del session["generatedItineraryID"]
+            return "SUCCESS ITINERARYREDIRECT: Account created successfully. Itinerary ID: {}".format(generatedItineraryID)
+        del session["generatedItineraryID"]
 
-    return "SUCCESS: Account created successfully"
+    return "SUCCESS: Account created successfully."
 
 @apiBP.route("/api/generateItinerary", methods=["POST"])
 def generateItinerary():
@@ -272,12 +312,9 @@ def generateItinerary():
         return headersCheck
     
     authCheck = manageIDToken()
-    if not authCheck.startswith("SUCCESS"):
-        return authCheck
-    targetAccountID = authCheck[len("SUCCESS: ")::]
-
-    if "admin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["admin"] == True:
-        return "ERROR: Admins cannot generate itineraries."
+    targetAccountID = None
+    if authCheck.startswith("SUCCESS"):
+        targetAccountID = authCheck[len("SUCCESS: ")::]
     
     # Check body
     if "targetLocations" not in request.json:
@@ -313,8 +350,8 @@ def generateItinerary():
     itinerary = {
         "title": title,
         "description": description,
+        "associatedAccountID": "None" if targetAccountID == None else targetAccountID,
         "generationDatetime": datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat),
-        "associatedAccountID": targetAccountID,
         "days": {}
     }
 
@@ -370,7 +407,13 @@ def generateItinerary():
     DI.data["itineraries"][itineraryID] = itinerary
     DI.save()
 
-    return "SUCCESS: Itinerary ID: {}".format(itineraryID)
+    if targetAccountID == None:
+        ## Triggers redirect to create account/login flow
+        session["generatedItineraryID"] = itineraryID
+
+        return "SUCCESS ACCOUNTREDIRECT: Itinerary ID: {}".format(itineraryID)
+    else:
+        return "SUCCESS: Itinerary ID: {}".format(itineraryID)
 
 @apiBP.route("/api/editUsername", methods = ['POST'])
 def editUsername():
@@ -415,6 +458,9 @@ def editEmail():
     for accountID in DI.data["accounts"]:
         if DI.data["accounts"][accountID]["email"] == request.json["email"]:
             return "UERROR: Email is already taken."
+        
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, email cannot be changed."
     
     # Success case
         
@@ -480,6 +526,9 @@ def resendEmail():
         return authCheck
     targetAccountID = authCheck[len("SUCCESS: ")::]
 
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, email verification is not needed."
+
     token = DI.data["accounts"][targetAccountID]["idToken"]
     verified = FireAuth.accountInfo(token)["emailVerified"]
     if verified != False:
@@ -544,6 +593,9 @@ def changePassword():
         return "UERROR: Password must be at least 6 characters long."
     if currentPassword == newPassword:
         return "UERROR: New password must differ from the current password."
+    
+    if "googleLogin" in DI.data["accounts"][targetAccountID] and DI.data["accounts"][targetAccountID]["googleLogin"] == True:
+        return "UERROR: This account is linked to Google, please change password via Google instead."
     
     ## Return change password cannot be executed if current password is not stored (in case of database synchronisation problems)
     if "password" not in DI.data["accounts"][targetAccountID]:
@@ -647,6 +699,8 @@ def logoutIdentity():
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
     deleteSession(targetAccountID)
+
+    Analytics.add_metrics(Analytics.EventTypes.sign_out)
 
     return "SUCCESS: User logged out."
 
@@ -853,6 +907,10 @@ def submitPost():
 
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Post was successfully submitted to the system."
 
 @apiBP.route('/api/commentPost', methods=['POST'])
@@ -993,6 +1051,10 @@ def submitPostWithItinerary():
     }
     DI.data["forum"][postDateTime] = new_post
     DI.save()
+
+    Analytics.add_metrics(Analytics.EventTypes.forumPost)
+    print(Analytics.data)
+
     return "SUCCESS: Itinerary was successfully shared to the forum."
 
 @apiBP.route('/api/submitReport', methods=['POST'])
@@ -1018,6 +1080,8 @@ def submitReport():
 
     if author_acc_id in DI.data["accounts"]:
         if targetAccountID != author_acc_id:
+            if "reports" not in DI.data["accounts"][author_acc_id]:
+                DI.data["accounts"][author_acc_id]["reports"] = {}
             DI.data["accounts"][author_acc_id]["reports"][str(targetAccountID + "_" + postDateTime)] = report_reason
             DI.save()
             return "SUCCESS: Report was successfully submitted to the system."
@@ -1162,15 +1226,195 @@ def deleteItinerary():
     if check != True:
         return check
 
-    itineraryID = request.json['itineraryID']
-
     if 'itineraryID' not in request.json:
         return "ERROR: One or more required payload parameters not provided."
+    if request.json["itineraryID"] not in DI.data["itineraries"]:
+        return "ERROR: Itinerary ID not found."
+
+    itineraryID = request.json['itineraryID']
 
     del DI.data["itineraries"][itineraryID]
     DI.save()
     
     return "SUCCESS: Itinerary is deleted."
+
+@apiBP.route('/api/sendTestEmail', methods=['POST'])
+def sendTestEmail():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    username = DI.data["accounts"][targetAccountID]["username"]
+    email = DI.data["accounts"][targetAccountID]["email"]
+
+    altText = f"""
+    Dear {username},
+    This is a test email to ensure that the email system is working correctly.
+    If you are reading this, then the email system is working correctly.
+
+    Kindly regards, The Verdex Team
+    THIS IS AN AUTOMATED MESSAGE DELIVERED TO YOU BY VERDEX. DO NOT REPLY TO THIS EMAIL.
+    {Universal.copyright}
+    """
+    html = render_template('emails/testEmail.html', username=username, copyright = Universal.copyright)
+
+    email_sent = Emailer.sendEmail(email, "Test Email", altText, html)
+    if email_sent:
+        Logger.log("ADMIN SEND_TEST_EMAIL: Test email sent to {}.".format(email))
+        return "SUCCESS: Test email sent to {}.".format(email)
+    else:
+        return "ERROR: Test email failed to send to {}.".format(email)
+    
+@apiBP.route('/api/toggleEmailer', methods=['POST'])
+def toggle_emailer():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    emailer_current = AddonsManager.readConfigKey("EmailingServicesEnabled")
+    
+    if "EmailingServicesEnabled" in os.environ and os.environ["EmailingServicesEnabled"] == "True":
+        if emailer_current == "Key Not Found":
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services enabled by admin '{}'.".format(targetAccountID))
+        else:
+            Emailer.servicesEnabled = not emailer_current
+            AddonsManager.setConfigKey("EmailingServicesEnabled", Emailer.servicesEnabled)
+            Logger.log("ADMIN TOGGLE_EMAILER: Emailing services toggled to {} by admin '{}'.".format("True" if Emailer.servicesEnabled else "False", targetAccountID))
+        return 'SUCCESS: Emailing services toggled.'
+    else:
+        return "ERROR: Emailing services are internally disabled and cannot be changed."
+    
+@apiBP.route('/api/toggleAnalytics', methods=['POST'])
+def toggle_analytics():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    analyticsInternalStatus = os.environ.get("AnalyticsEnabled") == "True"
+
+    analyticsAdminStatus = AddonsManager.readConfigKey("AnalyticsEnabled")
+    if analyticsAdminStatus == "Key Not Found":
+        AddonsManager.setConfigKey("AnalyticsEnabled", analyticsInternalStatus)
+
+    if not analyticsInternalStatus:
+        return "ERROR: Analytics is internally disabled. You cannot toggle it."
+    
+    analyticsAdminStatus = not analyticsAdminStatus
+    AddonsManager.setConfigKey("AnalyticsEnabled", analyticsAdminStatus)
+    Analytics.adminEnabled = analyticsAdminStatus
+
+    if Analytics.checkPermissions():
+        response = Analytics.load_metrics()
+        if not response:
+            Logger.log("API TOGGLE_ANALYTICS: Failed to auto-load Analytics upon admin enable.")
+
+    Logger.log("API TOGGLE_ANALYTICS: Analytics toggled to {} by admin '{}'.".format("True" if analyticsAdminStatus else "False", targetAccountID))
+
+    return "SUCCESS: Analytics toggled successfully."
+    
+@apiBP.route('/api/reload_database', methods=['POST'])
+def reload_database():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    DI.load()
+    Logger.log("ADMIN RELOAD_DATABASE: Database reloaded by admin {}.". format(targetAccountID))
+    return 'SUCCESS: Database reloaded.'
+
+@apiBP.route('/api/reload_fireauth', methods=['POST'])
+def reload_fireauth():
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if FireConn.checkPermissions():
+        previousCopy = copy.deepcopy(DI.data["accounts"])
+        DI.data["accounts"] = FireAuth.generateAccountsObject(fireAuthUsers=FireAuth.listUsers(), existingAccounts=DI.data["accounts"], strategy="overwrite")
+        DI.save()
+
+        if previousCopy != DI.data["accounts"]:
+            print("ADMIN: Necessary database synchronisation with Firebase Authentication complete.")
+
+    Logger.log("ADMIN RELOAD_FIREAUTH: FireAuth reloaded.")
+    return 'SUCCESS: FireAuth reloaded.'
+
+@apiBP.route('/api/reply', methods=['POST'])
+def reply():
+    check = checkHeaders(request.headers)
+    if check != True:
+        return check
+    
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return authCheck
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    if "email_title" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "email_body" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "questionID" not in request.json:
+        return "ERROR: One or more payload parameters are missing."
+    if "supportQueries" in DI.data["admin"] and request.json["questionID"] not in DI.data["admin"]["supportQueries"]:
+        return "ERROR: No such question exists."
+    
+    question_id = request.json['questionID']
+    email_title = request.json['email_title']
+    email_body = request.json['email_body']
+    email_target = DI.data['admin']['supportQueries'][question_id]['email']
+    email_name = DI.data['admin']['supportQueries'][question_id]['name']
+    question_message = DI.data['admin']['supportQueries'][question_id]['message']
+    question_timestamp = DI.data['admin']['supportQueries'][question_id]['timestamp']
+    readableQuestionTimestamp = datetime.datetime.strptime(question_timestamp, Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
+    
+    adminName, adminPosition = getNameAndPosition(DI.data["accounts"], targetAccountID)
+    altText = f"""
+    ----------
+    In response to this customer support message you sent on {readableQuestionTimestamp}:
+
+    {question_message}
+    ----------
+
+    Dear {email_name},
+    
+    {email_body}
+
+    Yours sincerely,
+    {adminName}
+    {adminPosition}
+    The Verdex Team
+    
+    {Universal.copyright}
+    """
+
+    html = render_template('emails/adminReplyTemplate.html', 
+        email_name=email_name, 
+        email_body=email_body,
+        email_title=email_title,
+        question_message=question_message,
+        adminName = adminName,
+        adminPosition = adminPosition,
+        question_timestamp = readableQuestionTimestamp,
+        copyright = Universal.copyright
+    )
+
+    Emailer.sendEmail(email_target, email_title, altText, html)
+
+    Analytics.add_metrics(Analytics.EventTypes.question_answered)
+    
+    del DI.data['admin']['supportQueries'][question_id]
+    DI.save()
+    return "SUCCESS: Email sent."
 
 @apiBP.route('/api/addDay', methods=['POST'])
 def addDay():
@@ -1221,15 +1465,29 @@ def deleteDay():
     itineraryID = request.json['itineraryID']
     dayNo = str(request.json['dayNo'])
 
-    if itineraryID in DI.data["itineraries"]:
-        if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
-            del DI.data["itineraries"][itineraryID]["days"][dayNo] 
-            DI.save()
-            return "SUCCESS: Day is deleted successfully."
-        else:
-            return "UERROR: Day not found, can't delete day."
-    else:
-        return "ERROR: Itinerary ID not found in system."
+    if itineraryID not in DI.data["itineraries"]:
+        return "ERROR: Itinerary not found."
+    
+    if dayNo not in DI.data["itineraries"][itineraryID]["days"]:
+        return "ERROR: Day not found, can't delete day."
+    if len(DI.data["itineraries"][itineraryID]["days"]) == 1:
+        return "UERROR: Can't delete the only day in the itinerary. Please delete the itinerary itself."
+    
+    del DI.data["itineraries"][itineraryID]["days"][dayNo]
+    
+    daysData = [DI.data["itineraries"][itineraryID]["days"][x] for x in DI.data["itineraries"][itineraryID]["days"]]
+    newDaysObject = {}
+    for i in range(len(daysData)):
+        newDaysObject[str(i+1)] = daysData[i]
+    
+    DI.data["itineraries"][itineraryID]["days"] = newDaysObject
+    DI.save()
+
+    dayToRedirectTo = 1
+    if dayNo != "1":
+        dayToRedirectTo = int(dayNo) - 1
+
+    return "SUCCESS: Day is deleted successfully. Redirect to day {}".format(dayToRedirectTo)
 
 @apiBP.route('/api/editDate', methods=['POST'])
 def editdate():
