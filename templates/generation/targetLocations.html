@@ -8,6 +8,35 @@
 
 {% block body %}
 <div class="container">
+    <div id="launchGPTButtonDiv">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Out of ideas? Ask VerdexGPT!
+        </button>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">VerdexGPT</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="genAIDiv">
+                        <img src="/static/Images/openai.png" id="openaiImg" width="75" height="50">
+                        <input type="text" name="prompt" id="prompt" placeholder="Ask VerdexGPT anything..." size="50">
+                        <div class="submitPromptButtonDiv">
+                            <button type="button" class="btn btn-outline-primary" id="submitPromptButton" onclick="submitPrompt()">Ask me!</button>
+                        </div>
+                        <div id="response"></div>
+                        <p id="responseNote">Please note that VerdexGPT allows for a max output length of 1800 characters.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <h1>What do you want to see?</h1>
     <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
 

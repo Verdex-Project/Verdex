@@ -135,3 +135,56 @@ function proceed() {
         })
     }
 }
+
+function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
+    console.log(generatedText)
+    const characters = generatedText.split('');
+    let i = 0;
+
+    const intervalId = setInterval(() => {
+        resultDiv.innerHTML += characters[i];
+        i++;
+
+        if (i === characters.length || i === maxLength) {
+            clearInterval(intervalId);
+        }
+    }, 5); 
+}
+
+function submitPrompt() {
+    document.getElementById('response').innerHTML = "Hold tight! Verdex-GPT is thinking..."
+    const prompt = document.getElementById("prompt");
+
+    if (prompt.value !== "") {
+        axios({
+            method: 'post',
+            url: `/api/verdexgpt`,
+            headers: {
+                'Content-Type': 'application/json',
+                'VerdexAPIKey': '\{{ API_KEY }}'
+            },
+            data: {
+                "prompt": prompt.value
+            }
+        })
+        .then(function (response) {
+            console.log("Payload successfully sent")
+
+            console.log(response.data);
+
+            const resultDiv = document.getElementById('response');
+
+            const maxLength = 1800;
+
+            resultDiv.innerHTML = '';
+
+            handleTypewriterEffect(resultDiv, response.data.generated_text, maxLength);
+        })
+        .catch(function (error) {
+            console.error('Error generating text completion:', error);
+        });
+    } else {
+        alert("Please enter a valid prompt.");
+        return;
+    }
+}

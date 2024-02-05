@@ -388,27 +388,6 @@ body {
     transform: translateY(-5px);
 }
 
-#submitPromptButton{
-    cursor: pointer;
-    padding: 8px 12px;
-    padding-left: 20px;
-    padding-right: 20px;
-    border: 3px solid rgb(195, 195, 195);
-    border-radius: 20px;
-    background-color: #66BB69;
-    color: white;
-    float: right;
-    transition: transform 0.2s ease-in-out;
-    margin-right: 20px;
-}
-
-#submitPromptButton:hover {
-    border: 3px solid #66BB69;
-    background-color: white;
-    color: #66BB69;
-    transform: translateY(-5px);
-}
-
 .tags-button {
     cursor: pointer;
     padding: 8px 12px;
@@ -722,48 +701,4 @@ body {
 #report-user-button:hover {
     background-color: white;
     color: rgb(255, 70, 70);
-}
-
-.genAIDiv {
-    margin-top: 20px;
-    border: 2px solid #427b44;
-    border-radius: 15px;
-    padding: 20px;
-    overflow-x: auto;
-    width: 65%;
-    background-color: white;
-}
-
-#response {
-    margin-top: 10px;
-    white-space: pre-line;
-    font-family: 'Courier New', monospace;
-    width: 75%;
-    color: black;
-    margin-left: 20px;
-    -webkit-tap-highlight-color: rgb(189, 186, 217);
-    -webkit-touch-callout: initial;
-    -webkit-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
-}
-
-#prompt {
-    border: 1px solid #66bb69;
-    border-radius: 15px;
-    padding: 10px;
-}
-
-#responseNote {
-    margin-top: 10px;
-    color: black;
-    margin-bottom: -10px;
-    margin-top: 40px;
-    margin-left: 20px;
-}
-
-#openaiImg {
-    float: left;
-    margin-top: -2px;
 }
