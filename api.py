@@ -1280,7 +1280,7 @@ def verdexgpt():
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0125",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are a helpful assistant that specifically caters to topics about sustainable travel, itineraries, activities to do in Singapore and what to post on our forum; VerdexTalks. Anything unreleated to sustainable travel, food, hiking, travelling, nature, scenery, exploration, sightseeing, itineraries, activities to do in Singapore or what to post on our forum; VerdexTalks, will be answered extremely briefly"},
             {"role": "user", "content": userPrompt}
         ],
         max_tokens=450
