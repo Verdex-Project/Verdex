@@ -1,5 +1,5 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
-from main import DI, Universal, GoogleMapsService, cleanRoute
+from main import DI, Universal, GoogleMapsService, cleanRoute, manageIDToken
 import json, os
 from datetime import datetime, timedelta
 
@@ -21,9 +21,15 @@ def editorHome(itineraryID):
 
 @editorPage.route("/editor/<itineraryID>/<day>", methods=['GET', 'POST'])
 def editorDay(itineraryID, day):
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
 
     if itineraryID not in DI.data["itineraries"]:
         return redirect(url_for("error",error="Itinerary Not Found!"))
+    if DI.data["itineraries"][itineraryID]["associatedAccountID"] != targetAccountID:
+        return redirect(url_for("error",error="You do not have permission to edit this itinerary."))
 
     if day not in DI.data["itineraries"][itineraryID]["days"]:
         return redirect(url_for("error",error="Day Not Found!"))

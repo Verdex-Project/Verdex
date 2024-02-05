@@ -1,6 +1,9 @@
-import os, sys, json, datetime, copy, pyrebase, uuid, re, googlemaps
+import os, sys, json, datetime, copy, pyrebase, uuid, re
 from firebase_admin import db, storage, credentials, initialize_app
 from firebase_admin import auth as adminAuth
+from google_auth_oauthlib.flow import Flow
+import google.auth.transport.requests
+from google.oauth2 import id_token
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -229,7 +232,16 @@ class FireRTDB:
             # Null object replacement
             tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='local')
 
-            # TODO: Perform email translation (convert commas to dots)
+            # Remove prefixes from day numbers of itineraries and activity numbers
+            if "itineraries" in tempData:
+                for itineraryID in tempData["itineraries"]:
+                    if "days" in tempData["itineraries"][itineraryID]:
+                        tempData["itineraries"][itineraryID]["days"] = {day[1:]: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                        for day in tempData["itineraries"][itineraryID]["days"]:
+                            if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                                tempData["itineraries"][itineraryID]["days"][day]["activities"] = {activity[1:]: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
+            
         except Exception as e:
             return "ERROR: Error in translating fetched RTDB data for local system use; error: {}".format(e)
         
@@ -240,7 +252,15 @@ class FireRTDB:
         '''Returns a translated data structure that can be stored in the cloud.'''
         tempData = copy.deepcopy(loadedData)
 
-        # TODO: Perform email translation (convert dots to commas)
+        # Prefix day numbers of itineraries with 'd' and prefix activity numbers with 'a' avoid automatic Firebase conversion to lists
+        if "itineraries" in tempData:
+            for itineraryID in tempData["itineraries"]:
+                if "days" in tempData["itineraries"][itineraryID]:
+                    tempData["itineraries"][itineraryID]["days"] = {"d" + day: tempData["itineraries"][itineraryID]["days"][day] for day in tempData["itineraries"][itineraryID]["days"]}
+
+                    for day in tempData["itineraries"][itineraryID]["days"]:
+                        if "activities" in tempData["itineraries"][itineraryID]["days"][day]:
+                            tempData["itineraries"][itineraryID]["days"][day]["activities"] = {"a" + activity: tempData["itineraries"][itineraryID]["days"][day]["activities"][activity] for activity in tempData["itineraries"][itineraryID]["days"][day]["activities"]}
 
         # Null object replacement
         tempData = FireRTDB.recursiveReplacement(obj=tempData, purpose='cloud')
@@ -765,3 +785,36 @@ class FireAuth:
                             break
 
         return accounts
+    
+class GoogleOAuth:
+    oauthFlow = None
+    googleClientID = None
+
+    @staticmethod
+    def checkPermissions():
+        return "GoogleAuthEnabled" in os.environ and os.environ["GoogleAuthEnabled"] == "True"
+
+    @staticmethod
+    def setup():
+        if GoogleOAuth.checkPermissions():
+            if "GoogleClientID" not in os.environ:
+                return "ERROR: Google OAuth is enabled but Google Client ID is not set as environment variable."
+            elif "GoogleAuthRedirectURI" not in os.environ:
+                return "ERROR: Google OAuth is enabled but Google Redirect URI is not set as environment variable."
+            elif not os.path.isfile(os.path.join(os.getcwd(), "clientSecrets.json")):
+                return "ERROR: Google OAuth is enabled but clientSecrets.json is not found in the root directory."
+    
+            GoogleOAuth.googleClientID = os.environ['GoogleClientID']
+    
+            try:
+                GoogleOAuth.oauthFlow = Flow.from_client_secrets_file(
+                    client_secrets_file=os.path.join(os.getcwd(), "clientSecrets.json"),
+                    scopes=["https://www.googleapis.com/auth/userinfo.email", "openid"],
+                    redirect_uri=os.environ['GoogleAuthRedirectURI']
+                )
+
+                return True
+            except Exception as e:
+                return "ERROR: Error in setting up Google OAuth flow; error: {}".format(e)
+        else:
+            return "ERROR: Google OAuth is not granted permission to operate."

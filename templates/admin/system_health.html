@@ -1,5 +1,4 @@
 {% extends "baseNav.html" %}
-
 {% block title %}System Health{% endblock %}
 
 {% block head %}
@@ -7,36 +6,92 @@
 {% endblock %}
 
 {% block body %}
-<div class="wrapper">
-    <div class="sidebar">
-        <div class="profile">
-            <img class='profile' src="/static/Images/user.png" alt="">
-            <span class="admin-name">{{ name }}</span>
-            <br>
-            <span class="admin-position">{{ position }}</span>
+
+{% include "includes/_adminSidebar.html" %}
+<div class="row">
+    <div class="col-sm-6 mb-3 mb-sm-0">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Database Interface</h5>
+          <p class="card-text">The primary service facilitating communication application logic and Verdex's database.</p>
+          {% if not sync_status %}
+            <p class="card-text" style ="color: red;">There is a mismatch or mis-sync with either the cloud or local database. Please re-load DI when safe.</p>
+          {% endif %}
+          <button class="btn btn-outline-danger" onclick = "reloadDatabase()" id ="reload-database">Reload database interface</button>
         </div>
-        <ul>
-            <li>
-                <a href="/admin" class="active">
-                    <span class="item">System Health</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/user_management">
-                    <span class="item">User Management</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/report">
-                    <span class="item">Weekly Report</span>
-                </a>
-            </li>
-            <li>
-                <a href="/admin/customer_support">
-                    <span class="item">Customer Support</span>
-                </a>
-            </li>
-        </ul>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Emailer</h5>
+              {% if not emailerInternalStatus %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" disabled>
+                        <label class="form-check-label" for="emailerSwitch">Emailer service is internally disabled</label>
+                    </div>
+                    <p class="card-text">Send a test email to check if emailer is working.</p>
+                    <button class="btn btn-outline-primary" disabled>Test email cannot be sent as emailer internally disabled</button>
+              {% elif emailerFinalStatus %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" checked onclick="toggleEmailer()">
+                      <label class="form-check-label" for="emailerSwitch">Emailer service is currently on</label>
+                    </div>
+                    <p class="card-text">Send a test email to check if emailer is working.</p>
+                    <button class="btn btn-outline-primary" onclick = "sendTestEmail()" id = "test-email-button">Send test email</button>
+              {% elif not emailerFinalStatus %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="emailerSwitch" onclick="toggleEmailer()">
+                      <label class="form-check-label" for="emailerSwitch">Emailer service is disabled</label>
+                  </div>
+                  <p class="card-text">Send a test email to check if emailer is working.</p>
+                  <button class="btn btn-outline-primary" disabled>Test email cannot be sent as emailer disabled</button>
+              {% endif %}
+        </div>
+      </div>
     </div>
 </div>
+<br>
+<div class="row">
+    <div class="col-sm-6 mb-3 mb-sm-0">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Analytics</h5>
+          <p class="card-text">Toggle on and off the Analytics system</p>
+          <p class ="card-text"></p>
+              {% if not analyticsInternalStatus %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" disabled>
+                        <label class="form-check-label" for="analyticsSwitch">Analytics service is disabled</label>
+                    </div>
+              {% elif analyticsFinalStatus %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" checked onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="analyticsSwitch">Analytics service is currently on</label>
+                    </div>
+              {% elif not analyticsFinalStatus %}
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="analyticsSwitch" onclick="toggleAnalytics()">
+                      <label class="form-check-label" for="analyticsSwitch">Analytics service is currently off</label>
+                  </div>
+              {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Firebase Authentication</h5>
+          <p class="card-text">Create a summary of the number of users in the system and the number of users currently logged in</p>
+          <p class ="card-text">Total users: {{ total_user }} Total users logged in: {{ logged_in }}</p>
+          <button class="btn btn-outline-primary" onclick ="reloadFireauth()" id ="reload-fireauth">Reload Firebase Authentication</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src ="/assets/adminJS"></script>
+<script>
+  document.getElementById("healthSidebarLink").style.color = "black"
+</script>
 {% endblock %}

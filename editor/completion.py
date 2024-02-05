@@ -1,5 +1,5 @@
 from flask import Flask,render_template,Blueprint, request,redirect,url_for
-from main import DI, Universal, GoogleMapsService, cleanRoute
+from main import DI, Universal, GoogleMapsService, cleanRoute, manageIDToken
 import json, os
 from datetime import datetime, timedelta
 
@@ -15,8 +15,15 @@ def completionRoot():
 
 @completionPage.route("/completion/<itineraryID>", methods=['GET', 'POST'])
 def completionHome(itineraryID):
+    authCheck = manageIDToken()
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
     if itineraryID not in DI.data["itineraries"]:
         return redirect(url_for("error",error="Itinerary Not Found"))
+    if DI.data["itineraries"][itineraryID]["associatedAccountID"] != targetAccountID:
+        return redirect(url_for("error",error="You do not have permission to view this itinerary."))
 
     cleanedRoutes = {}
 

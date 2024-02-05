@@ -78,6 +78,14 @@
     text-align: center;
 }
 
+#fromItineraryGenerationAlert {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    text-align: center;
+}
+
 .gsi-material-button {
     background-color: WHITE;
     background-image: none;

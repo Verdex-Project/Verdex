@@ -1,0 +1,42 @@
+{% extends "baseNav.html" %}
+{% block title %}Type Reply | Customer Support{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css')}}">
+{% endblock %}
+
+{% block body %}
+{% include "includes/_adminSidebar.html" %}
+<button type="button" id="back-button" class="btn btn-outline-dark" onclick="goBack()">Go back</button>
+<div class="question-container">
+    <h5>Question ID: <span id ="question-id">{{ question_id }}</span></h5>
+
+    <br>
+
+    <h5>Name: <span id ="question-name">{{ question_name }}</span></h5>
+    <h5>Email: <span id = "question-email">{{ question_email }}</span></h5>
+    <h5>Query Date & Time: <span id ="question-timestamp">{{ question_timestamp }}</span></h5>
+
+    <br>
+
+    <h5>Question:</h5>
+    <span id="question-message">{{ question_message }}</span>
+
+    <br>
+    <br>
+
+    <h5>Reply:</h5>
+    <div class="form-group">
+        <label for="title">Subject:</label>
+        <input type="text" class="form-control" id="question-title" name="title" >
+        <label for="body">Email body:</label>
+        <textarea class="form-control" id="question-body" name="reply" rows="3"></textarea>
+    </div>
+    <button id="submitButton" type="submit" class="btn btn-outline-primary" onclick="reply()">Send email</button>
+    
+</div>
+<script src ="/assets/adminJS"></script>
+<script>
+    document.getElementById("replySidebarLink").style.color = "black"
+</script>
+{% endblock %}

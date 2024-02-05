@@ -85,7 +85,7 @@ function likePost(postId) {
     axios.post('/api/likePost', { postId: postId }, { headers: { 'Content-Type': 'application/json', 'VerdexAPIKey': '\{{ API_KEY }}' } })
         .then(function (response) {
             if (typeof response.data !== "string") {
-                const likesCountElement = document.getElementById('likes-count');
+                const likesCountElement = document.querySelector(`[data-post-id="${postId}"] #likes-count`);
                 console.log('likesCountElement:', likesCountElement);
 
                 if (likesCountElement) {

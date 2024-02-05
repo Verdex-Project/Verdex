@@ -1,6 +1,7 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
-import json, os, datetime
-from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken
+import json, os, datetime, copy
+from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken, Emailer, AddonsManager, FireConn, FireRTDB, getNameAndPosition
+
 adminHomeBP = Blueprint("admin", __name__)
 
 @adminHomeBP.route('/admin')
@@ -10,18 +11,47 @@ def admin():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
+
+    analyticsInternalStatus = os.environ.get("AnalyticsEnabled") == "True"
     
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
+    analyticsAdminStatus = AddonsManager.readConfigKey("AnalyticsEnabled")
+    if analyticsAdminStatus == "Key Not Found":
+        AddonsManager.setConfigKey("AnalyticsEnabled", analyticsInternalStatus)
+        analyticsAdminStatus = analyticsInternalStatus
     
-    return render_template('admin/system_health.html', name=name, position=position)
+    analyticsFinalStatus = analyticsAdminStatus and analyticsInternalStatus
+
+    
+    emailerInternalStatus = os.environ.get("EmailingServicesEnabled") == "True"
+
+    emailerAdminStatus = AddonsManager.readConfigKey("EmailingServicesEnabled")
+    if emailerAdminStatus == "Key Not Found":
+        AddonsManager.setConfigKey("EmailingServicesEnabled", emailerInternalStatus)
+        emailerAdminStatus = emailerInternalStatus
+    
+    emailerFinalStatus = emailerInternalStatus and emailerAdminStatus
+    
+
+    logged_in = 0
+    user_list = FireAuth.listUsers()
+
+    for accountID in DI.data['accounts']:
+        if 'idToken' in DI.data['accounts'][accountID]:
+            logged_in += 1
+    
+    return render_template(
+        'admin/system_health.html', 
+        name=name,
+        position=position, 
+        analyticsFinalStatus = analyticsFinalStatus,
+        analyticsInternalStatus = analyticsInternalStatus,
+        emailerInternalStatus = emailerInternalStatus, 
+        emailerFinalStatus = emailerFinalStatus, 
+        total_user = len(user_list),
+        logged_in = logged_in,
+        sync_status = DI.syncStatus
+    )
 
 @adminHomeBP.route('/admin/user_management', methods=['GET'])
 def user_management():
@@ -30,16 +60,7 @@ def user_management():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
-    
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
 
     non_admin_users = []
     for accountID in DI.data['accounts']:
@@ -58,16 +79,7 @@ def user_profile(user_id):
     if user_id not in DI.data['accounts']:
         return redirect(url_for('error', error='User not found'))
     
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
-    
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
     
     return render_template('admin/edit_user.html', user=DI.data['accounts'][user_id], name=name, position=position, accountsInfo=DI.data["accounts"])
 
@@ -102,6 +114,7 @@ def deleteAccount(user_id):
             DI.save()
             Logger.log(f'ADMIN DELETEACCOUNT: Account with ID {accountID} has been deleted')
             return redirect(url_for('admin.user_management'))
+    
     return redirect(url_for('error', error='User not found'))
     
 @adminHomeBP.route('/admin/user_profile/<string:user_id>/ban')
@@ -114,7 +127,35 @@ def banAccount(user_id):
             return redirect(url_for('admin.user_management'))
 
     return redirect(url_for('error', error='User not found'))
+
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/unban')
+def unbanAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['id'] == user_id:
+            DI.data['accounts'][accountID]['forumBanned'] = False
+            DI.save()
+            Logger.log(f'ADMIN BANACCOUNT: Account with ID {accountID} has been unbanned from Verdextalks')
+            return redirect(url_for('admin.user_management'))
         
+    return redirect(url_for('error', error='User not found'))
+
+@adminHomeBP.route('/admin/user_profile/<string:user_id>/logout')
+def logoutAccount(user_id):
+    for accountID in DI.data['accounts']:
+        if DI.data['accounts'][accountID]['id'] == user_id:
+            if 'idToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['idToken']
+            if 'refreshToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['refreshToken']
+            if 'tokenExpiry' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['tokenExpiry']
+            DI.save()
+            
+            Logger.log(f'ADMIN LOGOUTACCOUNT: Account with ID {accountID} has been logged out')
+            return redirect(url_for('admin.user_management'))
+        
+    return redirect(url_for('error', error='User not found'))
+
 @adminHomeBP.route('/admin/report')
 def report():
     authCheck = manageIDToken(checkIfAdmin=True)
@@ -122,20 +163,15 @@ def report():
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
     
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
+    
     with open('reports/reportsInfo.json', 'r') as file:
         data = json.load(file)
+    
     for key in data:
         data[key]['timestamp'] = datetime.datetime.strptime(data[key]['timestamp'], Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
-    return render_template('admin/report.html', data=data, name=name, position=position)
+    
+    return render_template('admin/report.html', data=data, name=name, position=position, permission=Analytics.checkPermissions())
 
 @adminHomeBP.route('/admin/report/generate', methods=['POST', 'GET'])
 def generate_report():
@@ -215,18 +251,55 @@ def clear_data():
 
 @adminHomeBP.route('/admin/customer_support')
 def reply():
+    questions = []
     authCheck = manageIDToken(checkIfAdmin=True)
     if not authCheck.startswith("SUCCESS"):
         return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
     targetAccountID = authCheck[len("SUCCESS: ")::]
-    targetAccount = DI.data["accounts"][targetAccountID]
-    if not ('name' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['name']!=''):
-        name = "Not set"
-    else:
-        name = targetAccount["name"]
+
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
     
-    if not ('position' in DI.data['accounts'][targetAccountID] and DI.data['accounts'][targetAccountID]['position']!=''):
-        position = "Not set"
-    else:
-        position = targetAccount["position"]
-    return render_template('admin/reply.html', name=name, position=position)
+    if 'supportQueries' not in DI.data['admin']:
+        return render_template('admin/reply.html', name=name, position=position, questions_list = questions)
+    for question in DI.data['admin']['supportQueries']:
+        question_id = question
+        question_name = DI.data['admin']['supportQueries'][question]['name']
+        email = DI.data['admin']['supportQueries'][question]['email']
+        message = DI.data['admin']['supportQueries'][question]['message']
+        timestamp = datetime.datetime.strptime(DI.data['admin']['supportQueries'][question]['timestamp'], Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
+        support = {
+            'id': question_id,
+            'name': question_name,
+            'email': email,
+            'message': message,
+            'timestamp': timestamp
+        }
+        questions.append(support)
+
+    return render_template('admin/reply.html', name=name, position=position, questions_list = questions)
+
+@adminHomeBP.route('/admin/type_reply/<string:question_id>', methods=['GET', 'POST'])
+def type_reply(question_id):
+    authCheck = manageIDToken(checkIfAdmin=True)
+    if not authCheck.startswith("SUCCESS"):
+        return redirect(url_for("unauthorised", error=authCheck[len("ERROR: ")::]))
+    targetAccountID = authCheck[len("SUCCESS: ")::]
+
+    name, position = getNameAndPosition(accounts=DI.data["accounts"], targetAccountID=targetAccountID)
+
+    for questionID in DI.data['admin']['supportQueries']:
+        if questionID == question_id:
+            question = DI.data['admin']['supportQueries'][questionID]
+            question_name = question['name']
+            question_email = question['email']
+            question_message = question['message']
+            question_timestamp = datetime.datetime.strptime(question['timestamp'], Universal.systemWideStringDatetimeFormat).strftime("%d %b %Y %I:%M %p")
+            return render_template('admin/type_reply.html', name=name, position=position, 
+                                   question_id = question_id,
+                                    question_name = question_name, 
+                                    question_email = question_email, 
+                                    question_message = question_message,
+                                    question_timestamp = question_timestamp)
+
+    return redirect(url_for('admin.reply'))
+    
