@@ -156,7 +156,7 @@ function handleTypewriterEffect(resultDiv, generatedText, maxLength) {
 }
 
 function submitPrompt() {
-    document.getElementById('response').innerHTML = "Hold tight! Verdex-GPT is thinking..."
+    document.getElementById('response').innerHTML = "Hold tight! VerdexGPT is thinking..."
     const prompt = document.getElementById("prompt");
 
     if (prompt.value !== "") {
