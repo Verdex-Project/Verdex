@@ -93,6 +93,10 @@ def allowed_file(filename):
 
 @app.before_request
 def updateAnalytics():
+    if AddonsManager.readConfigKey("UsageLock") == True:
+        if request.path != "/" and (not request.path.startswith("/debug")):
+            return redirect(url_for("homepage"))
+    
     if not (request.path.startswith("/static") or request.path.startswith("/assets") or request.path.startswith("/favicon.ico")):
         Analytics.add_metrics(Analytics.EventTypes.get_request if request.method == "GET" else Analytics.EventTypes.post_request)
     return

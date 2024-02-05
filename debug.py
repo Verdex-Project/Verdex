@@ -1,5 +1,5 @@
 from flask import Flask, request, Blueprint, render_template, redirect, url_for
-from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB
+from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB, AddonsManager, Analytics, Encryption
 import os, sys, json, datetime, copy
 
 debugBP = Blueprint("debug", __name__)
@@ -20,6 +20,7 @@ Options:<br><br>
 - Reload DI: /debug/[key]/reloadDI<br>
 - FireAuth sync: /debug/[key]/fireAuthSync<br>
 - FireReset: /debug/[key]/fireReset (Wipes all Firebase data, including Firebase Auth accounts, and reloads DI. Use with caution.)
+- Toggle usage lock: /debug/[key]/toggleUsageLock
     """
     
     return options
@@ -51,6 +52,8 @@ def reloadDI(secretKey):
         return redirect(url_for('unauthorised', error="Invalid credentials."))
     
     DI.load()
+
+    Logger.log("DEBUG RELOADDI: DI reloaded.")
     return "DI reload success. DI sync status: {}".format(DI.syncStatus)
 
 @debugBP.route("/debug/<secretKey>/fireAuthSync")
@@ -90,5 +93,60 @@ def fireReset(secretKey):
         DI.load()
     except Exception as e:
         return "Firebase reset failed. Error: {}".format(e)
+    
+    Logger.log("DEBUG FIRERESET: All Firebase RTDB and Auth data wiped. DI reloaded.")
 
     return "Firebase reset success. Accounts and database data wiped."
+
+@debugBP.route("/debug/<secretKey>/toggleUsageLock")
+def toggleUsageLock(secretKey):
+    if not debugMode:
+        return redirect(url_for('unauthorised', error="Debug mode is not enabled."))
+    if secretKey != os.environ.get("AppSecretKey"):
+        return redirect(url_for('unauthorised', error="Invalid credentials."))
+    
+    currentStatus = AddonsManager.readConfigKey("UsageLock") == True
+    AddonsManager.setConfigKey("UsageLock", not currentStatus)
+
+    Logger.log("DEBUG TOGGLEUSAGELOCK: Usage lock status toggled to {}.".format("True" if (not currentStatus) else "False"))
+    return "Usage lock status toggled to {}.".format("True" if (not currentStatus) else "False")
+
+@debugBP.route("/debug/<secretKey>/createAdmin")
+def createAdmin(secretKey):
+    if not debugMode:
+        return redirect(url_for('unauthorised', error="Debug mode is not enabled."))
+    if secretKey != os.environ.get("AppSecretKey"):
+        return redirect(url_for('unauthorised', error="Invalid credentials."))
+    if "email" not in request.args:
+        return "Please provide an email."
+    if "password" not in request.args:
+        return "Please provide a password."
+    
+    email = request.args.get("email")
+    password = request.args.get("password")
+    username = Analytics.generateRandomID(customLength=5)
+
+    accID = Universal.generateUniqueID()
+    responseObject = FireAuth.createUser(email=email, password=password)
+    if "ERROR" in responseObject:
+        return "Error: {}".format(responseObject)
+    
+    DI.data["accounts"][accID] = {
+        "id": accID,
+        "fireAuthID": responseObject["uid"],
+        "username": username,
+        "email": email,
+        "password": Encryption.encodeToSHA256(password),
+        "idToken": responseObject["idToken"],
+        "refreshToken": responseObject["refreshToken"],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "disabled": False,
+        "admin": True,
+        "name": "Admin",
+        "position": "Debug Admin",
+        "aboutMe": ""
+    }
+    Logger.log("DEBUG CREATEADMIN: Created admin account with ID {}.".format(accID))
+    DI.save()
+
+    return "Admin account created with that email and password. ID: {}, Username: {}".format(accID, username)

@@ -84,4 +84,4 @@ def success():
     elif request.args['supportQueryID'] not in DI.data["admin"]["supportQueries"]:
         return redirect(url_for('faq.contact_form'))
     else:
-        return render_template('misc/success.html')
+        return render_template('misc/success.html') 
