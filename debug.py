@@ -1,4 +1,4 @@
-from flask import Flask, request, Blueprint, render_template, redirect, url_for
+from flask import Flask, request, Blueprint, render_template, redirect, url_for, jsonify
 from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB, AddonsManager, Analytics, Encryption
 import os, sys, json, datetime, copy
 
@@ -21,6 +21,9 @@ Options:<br><br>
 - FireAuth sync: /debug/[key]/fireAuthSync<br>
 - FireReset: /debug/[key]/fireReset (Wipes all Firebase data, including Firebase Auth accounts, and reloads DI. Use with caution.)
 - Toggle usage lock: /debug/[key]/toggleUsageLock
+- Create admin: /debug/[key]/createAdmin?email=[email]&password=[password]
+- Toggle GPT: /debug/[key]/toggleGPT
+- Presentation transform: /debug/[key]/presentationTransform (Wipes all data and creates a new user and admin account. Use with extreme caution.)
     """
     
     return options
@@ -150,3 +153,132 @@ def createAdmin(secretKey):
     DI.save()
 
     return "Admin account created with that email and password. ID: {}, Username: {}".format(accID, username)
+
+@debugBP.route("/debug/<secretKey>/toggleGPT")
+def toggleGPT(secretKey):
+    if not debugMode:
+        return redirect(url_for('unauthorised', error="Debug mode is not enabled."))
+    if secretKey != os.environ.get("AppSecretKey"):
+        return redirect(url_for('unauthorised', error="Invalid credentials."))
+    
+    currentStatus = AddonsManager.readConfigKey("VerdexGPTEnabled") == True
+    AddonsManager.setConfigKey("VerdexGPTEnabled", not currentStatus)
+
+    Logger.log("DEBUG TOGGLEGPT: GPT status toggled to {}.".format("True" if (not currentStatus) else "False"))
+    return "VerdexGPT status toggled to {}.".format("True" if (not currentStatus) else "False")
+
+@debugBP.route("/debug/<secretKey>/presentationTransform", methods=["GET", "POST"])
+def presentationTransform(secretKey):
+    if not debugMode:
+        return redirect(url_for('unauthorised', error="Debug mode is not enabled."))
+    if secretKey != os.environ.get("AppSecretKey"):
+        return redirect(url_for('unauthorised', error="Invalid credentials."))
+    
+    if request.method == "GET":
+        return render_template("presentationTransform.html", secretKey=secretKey)
+    
+    ## POST
+    if "userEmail" not in request.form:
+        return "Please provide a user email."
+    if "userPassword" not in request.form:
+        return "Please provide a user password."
+    if "adminEmail" not in request.form:
+        return "Please provide an admin email."
+    if "adminPassword" not in request.form:
+        return "Please provide an admin password."
+    
+    # Wipe all data
+    
+    ## Clear Firebase Authentication accounts
+    try:
+        for fireUser in FireAuth.listUsers():
+            FireAuth.deleteAccount(fireUser.uid, admin=True)
+    except Exception as e:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Firebase Authentication reset failed. Error: {}".format(e))
+        return "Firebase Authentication reset failed. Error: {}".format(e)
+    
+    ## Clear Firebase RTDB
+    try:
+        FireRTDB.setRef({})
+    except Exception as e:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Firebase RTDB reset failed. Error: {}".format(e))
+        return "Firebase RTDB reset failed. Error: {}".format(e)
+    
+    ## Clear DI
+    try:
+        DI.data = copy.deepcopy(DI.sampleData)
+        DI.save()
+    except Exception as e:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: DI reload failed. Error: {}".format(e))
+        return "DI reload failed. Error: {}".format(e)
+    
+    ## Create new user account
+    userAccEmail = request.form.get("userEmail")
+    userAccPassword = request.form.get("userPassword")
+    userAccID = Universal.generateUniqueID()
+    userAccResponse = FireAuth.createUser(email=userAccEmail, password=userAccPassword)
+    if "ERROR" in userAccResponse:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: User account creation failed. Error: {}".format(userAccResponse))
+        return "User account creation failed. Error: {}".format(userAccResponse)
+    
+    DI.data["accounts"][userAccID] = {
+        "id": userAccID,
+        "fireAuthID": userAccResponse["uid"],
+        "googleLogin": False,
+        "username": "sample",
+        "email": userAccEmail,
+        "password": Encryption.encodeToSHA256(userAccPassword),
+        "idToken": userAccResponse['idToken'],
+        "refreshToken": userAccResponse['refreshToken'],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "disabled": False,
+        "admin": False,
+        "forumBanned": False,
+        "aboutMe": "",
+        "reports": {}
+    }
+
+    ## Create new admin account
+    adminAccEmail = request.form.get("adminEmail")
+    adminAccPassword = request.form.get("adminPassword")
+    adminAccID = Universal.generateUniqueID()
+    adminAccResponse = FireAuth.createUser(email=adminAccEmail, password=adminAccPassword)
+    if "ERROR" in adminAccResponse:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Admin account creation failed. Error: {}".format(adminAccResponse))
+        return "Admin account creation failed. Error: {}".format(adminAccResponse)
+    
+    DI.data["accounts"][adminAccID] = {
+        "id": adminAccID,
+        "fireAuthID": adminAccResponse["uid"],
+        "username": "admin",
+        "email": adminAccEmail,
+        "password": Encryption.encodeToSHA256(adminAccPassword),
+        "idToken": adminAccResponse["idToken"],
+        "refreshToken": adminAccResponse["refreshToken"],
+        "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
+        "disabled": False,
+        "admin": True,
+        "name": "Admin",
+        "position": "Verdex Admin",
+        "aboutMe": ""
+    }
+
+    DI.save()
+    Logger.log("DEBUG PRESENTATIONTRANSFORM: Presentation transform success. User account ID: {}, Admin account ID: {}".format(userAccID, adminAccID))
+
+    report = """
+Presentation transform successful. Report:<br><br>
+
+User account:<br>
+- ID: {}<br>
+- Username: {}<br>
+- Email: {}<br>
+- Password: {}<br>
+<br><br><br>
+Admin account:<br>
+- ID: {}<br>
+- Username: {}<br>
+- Email: {}<br>
+- Password: {}
+    """.format(userAccID, "sample", userAccEmail, userAccPassword, adminAccID, "admin", adminAccEmail, adminAccPassword)
+    return report
