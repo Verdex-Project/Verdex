@@ -6,5 +6,5 @@ itineraryGenBP = Blueprint('itineraryGen', __name__)
 
 @itineraryGenBP.route("/generate/targetLocations")
 def targetLocations():
-    verdexGPTEnabled = AddonsManager.readConfigKey("VerdexGPTEnabled") == True
+    verdexGPTEnabled = (AddonsManager.readConfigKey("VerdexGPTEnabled") == True) and ("VerdexGPTEnabled" in os.environ and os.environ["VerdexGPTEnabled"] == "True")
     return render_template("generation/targetLocations.html", popularLocations=Universal.generationData["locations"], gptEnabled=verdexGPTEnabled)
