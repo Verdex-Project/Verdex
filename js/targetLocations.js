@@ -160,6 +160,9 @@ function submitPrompt() {
     const prompt = document.getElementById("prompt");
 
     if (prompt.value !== "") {
+        const resultDiv = document.getElementById('response');
+        resultDiv.innerHTML = '';
+        
         axios({
             method: 'post',
             url: `/api/verdexgpt`,
@@ -172,17 +175,32 @@ function submitPrompt() {
             }
         })
         .then(function (response) {
-            console.log("Payload successfully sent")
+            if (response.status == 200) {
+                if (typeof response.data != "string") {
+                    const maxLength = 1800;
 
-            console.log(response.data);
-
-            const resultDiv = document.getElementById('response');
-
-            const maxLength = 1800;
-
-            resultDiv.innerHTML = '';
-
-            handleTypewriterEffect(resultDiv, response.data.generated_text, maxLength);
+                    handleTypewriterEffect(resultDiv, response.data.generated_text, maxLength);
+                    return;
+                } else {
+                    if (response.data.startsWith("ERROR")) {
+                        resultDiv.innerText = "An error occurred. Please try again later."
+                        console.log("Error received from server when trying to use VerdexGPT: " + response.data)
+                        return
+                    } else if (response.data.startsWith("UERROR")) {
+                        resultDiv.innerText = response.data.substring("UERROR: ".length)
+                        console.log("User error received from server when trying to use VerdexGPT: " + response.data)
+                        return
+                    } else {
+                        resultDiv.innerText = "An error occurred. Please try again later."
+                        console.log("Unknown response received from server when trying to use VerdexGPT: " + response.data)
+                        return
+                    }
+                }
+            } else {
+                resultDiv.innerText = "An error occurred. Please try again later."
+                console.log("Non-200 status code response received from server when trying to get VerdexGPT response; response: " + response.data)
+                return
+            }
         })
         .catch(function (error) {
             console.error('Error generating text completion:', error);

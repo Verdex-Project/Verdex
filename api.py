@@ -6,6 +6,17 @@ load_dotenv()
 
 apiBP = Blueprint("api", __name__)
 
+openAIClient = None
+if "VerdexGPTEnabled" in os.environ and os.environ["VerdexGPTEnabled"] == "True" and "VerdexGPTSecretKey" in os.environ:
+    try:
+        openAIClient = openai.OpenAI(
+            api_key=os.environ["VerdexGPTSecretKey"]
+        )
+    except Exception as e:
+        print("API INITIALISATION ERROR: Failed to initialise OpenAI client; error: {}".format(e))
+        print("API: System will continue to run without OpenAI client. VerdexGPT prompts will not be available.")
+        Logger.log("API INITIALISATION ERROR: Failed to initialise OpenAI client (non-terminal but GPT will be disabled); error: {}".format(e))
+
 def checkHeaders(headers):
     for param in ["Content-Type", "VerdexAPIKey"]:
         if param not in headers:
@@ -1530,23 +1541,43 @@ def verdexgpt():
     
     if "prompt" not in request.json:
         return "ERROR: One or more required payload parameters not provided."
-    
-    openai.api_key = os.environ.get("VerdexGPTSecretKey")
+    if not isinstance(request.json['prompt'], str):
+        return "ERROR: One or more required payload parameters are incorrectly formatted."
     
     userPrompt = request.json['prompt']
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0125",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that specifically caters to topics about sustainable travel, itineraries, activities to do in Singapore and what to post on our forum; VerdexTalks. Anything unreleated to sustainable travel, food, hiking, travelling, nature, scenery, exploration, sightseeing, itineraries, activities to do in Singapore or what to post on our forum; VerdexTalks, will be answered extremely briefly and you'll ask if the user has any other questions related to sustainable travel and itineraries, or activities to do in Singapore"},
-            {"role": "system", "content": "Ask the user if they have any other questions related to sustainable travel and itineraries, or activities to do in Singapore at the end of your response."},
-            {"role": "system", "content": "Respond on a new line after every sentence."},
-            {"role": "system", "content": "Your name is VerdexGPT."},
-            {"role": "user", "content": userPrompt}
-        ],
-        max_tokens=450
-    )
+    if not ("VerdexGPTEnabled" in os.environ and os.environ["VerdexGPTEnabled"] == "True"):
+        return "UERROR: Verdex GPT is not available at this time. Please try again later."
+    elif AddonsManager.readConfigKey("VerdexGPTEnabled") != True:
+        Logger.log("API VERDEXGPT: Verdex GPT usage attempt blocked due to admin override of VerdexGPTEnabled.")
+        return "UERROR: Verdex GPT is not available at this time. Please try again later."
+    
+    if "VerdexGPTSecretKey" not in os.environ:
+        Logger.log("API VERDEXGPT: Verdex GPT usage attempt blocked due to missing VerdexGPTSecretKey.")
+        return "UERROR: Verdex GPT is not available at this time. Please try again later."
+    elif openAIClient == None:
+        Logger.log("API VERDEXGPT: Verdex GPT usage attempt blocked due to uninitialised internal OpenAI client.")
+        return "UERROR: Verdex GPT is not available at this time. Please try again later."
 
-    generated_text = response.choices[0].message['content'].strip()
+    try:
+        response = openAIClient.chat.completions.create(
+            model="gpt-3.5-turbo-0125",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that specifically caters to topics about sustainable travel, itineraries, activities to do in Singapore and what to post on our forum, VerdexTalks. Anything unrelated to sustainable travel, food, hiking, travelling, nature, scenery, exploration, sightseeing, itineraries, activities to do in Singapore or what to post on our forum, VerdexTalks, will be answered extremely briefly and you'll ask if the user has any other questions related to sustainable travel and itineraries, or activities to do in Singapore"},
+                {"role": "system", "content": "Ask the user if they have any other questions related to sustainable travel and itineraries, or activities to do in Singapore at the end of your response."},
+                {"role": "system", "content": "Respond on a new line after every sentence."},
+                {"role": "system", "content": "Your name is VerdexGPT."},
+                {"role": "user", "content": userPrompt}
+            ],
+            max_tokens=450
+        )
+
+        response
+        generated_text = response.choices[0].message.content
+        
+        Logger.log("API VERDEXGPT: Verdex GPT generated a response for prompt '{}'.".format(userPrompt))
+    except Exception as e:
+        Logger.log("API VERDEXGPT: Verdex GPT failed to generate a response for prompt '{}'. Error: {}".format(userPrompt, e))
+        return "UERROR: Verdex GPT failed to generate a response. Please try again later."
+    
     return jsonify({'generated_text': generated_text})
-

@@ -208,6 +208,12 @@ if __name__ == '__main__':
         if previousCopy != DI.data["accounts"]:
             print("MAIN: Necessary database synchronisation with Firebase Authentication complete.")
 
+    ## Set up VerdexGPT
+    if "VerdexGPTEnabled" in os.environ and os.environ["VerdexGPTEnabled"] == "True":
+        print("VERDEXGPT: OpenAI GPT integration is enabled.")
+        if AddonsManager.readConfigKey("VerdexGPTEnabled") == "Key Not Found":
+            AddonsManager.setConfigKey("VerdexGPTEnabled", True)
+
     # UserFolders pruning
     try:
         for folder in os.listdir("UserFolders"):
