@@ -1,5 +1,5 @@
 from flask import Flask, request, Blueprint, render_template, redirect, url_for, jsonify
-from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB, AddonsManager, Analytics, Encryption
+from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB, AddonsManager, Analytics, Encryption, FolderManager
 import os, sys, json, datetime, copy, shutil
 
 debugBP = Blueprint("debug", __name__)
@@ -271,10 +271,15 @@ def presentationTransform(secretKey):
     
     with open(Analytics.filePath, "w") as f:
         json.dump(Analytics.sampleMetricsObject, f)
-    if os.path.isdir(Analytics.reportsFolderPath):
+    if os.path.isdir(os.path.join(os.getcwd(), Analytics.reportsFolderPath)):
         shutil.rmtree(Analytics.reportsFolderPath)
     Analytics.setup()
     Logger.log("DEBUG PRESENTATIONTRANSFORM: Analytics reset, including reports directory.")
+
+    if os.path.isdir(os.path.join(os.getcwd(), FolderManager.tldName)):
+        shutil.rmtree(os.path.join(os.getcwd(), FolderManager.tldName))
+    FolderManager.setup()
+    Logger.log("DEBUG PRESENTATIONTRANSFORM: FolderManager reset.")
 
     Logger.log("DEBUG PRESENTATIONTRANSFORM: Presentation transform success. User account ID: {}, Admin account ID: {}".format(userAccID, adminAccID))
 
@@ -293,6 +298,6 @@ Admin account:<br>
 - Email: {}<br>
 - Password: {}
 <br><br><br>
-Analytics data reset including reports data. Admin configuration cleared.
+Analytics data reset including reports data. Admin configuration cleared. UserFolders directory cleared.
     """.format(userAccID, "sample", userAccEmail, userAccPassword, adminAccID, "admin", adminAccEmail, adminAccPassword)
     return report
