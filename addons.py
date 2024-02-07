@@ -67,6 +67,16 @@ class AddonsManager:
         except Exception as e:
             return "ERROR: Failed to delete config key; error: {}".format(e)
         
+    @staticmethod
+    def clearConfig():
+        '''Returns "Success" upon successful execution.'''
+        try:
+            AddonsManager.config = {}
+            json.dump(AddonsManager.config, open('config.txt', 'w'))
+            return "Success"
+        except Exception as e:
+            return "ERROR: Failed to clear config; error: {}".format(e)
+        
 class FireConn:
     '''A class that manages the admin connection to Firebase via the firebase_admin module.
     

@@ -1,6 +1,6 @@
 from flask import Flask, request, Blueprint, render_template, redirect, url_for, jsonify
 from main import DI, Logger, Universal, FireConn, FireAuth, FireRTDB, AddonsManager, Analytics, Encryption
-import os, sys, json, datetime, copy
+import os, sys, json, datetime, copy, shutil
 
 debugBP = Blueprint("debug", __name__)
 
@@ -264,6 +264,18 @@ def presentationTransform(secretKey):
     }
 
     DI.save()
+
+    ## Reset other services
+    AddonsManager.clearConfig()
+    Logger.log("DEBUG PRESENTATIONTRANSFORM: AddonsManager cleared.")
+    
+    with open(Analytics.filePath, "w") as f:
+        json.dump(Analytics.sampleMetricsObject, f)
+    if os.path.isdir(Analytics.reportsFolderPath):
+        shutil.rmtree(Analytics.reportsFolderPath)
+    Analytics.setup()
+    Logger.log("DEBUG PRESENTATIONTRANSFORM: Analytics reset, including reports directory.")
+
     Logger.log("DEBUG PRESENTATIONTRANSFORM: Presentation transform success. User account ID: {}, Admin account ID: {}".format(userAccID, adminAccID))
 
     report = """
@@ -280,5 +292,7 @@ Admin account:<br>
 - Username: {}<br>
 - Email: {}<br>
 - Password: {}
+<br><br><br>
+Analytics data reset including reports data. Admin configuration cleared.
     """.format(userAccID, "sample", userAccEmail, userAccPassword, adminAccID, "admin", adminAccEmail, adminAccPassword)
     return report
