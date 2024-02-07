@@ -197,13 +197,6 @@ def presentationTransform(secretKey):
         Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Firebase Authentication reset failed. Error: {}".format(e))
         return "Firebase Authentication reset failed. Error: {}".format(e)
     
-    ## Clear Firebase RTDB
-    try:
-        FireRTDB.setRef({})
-    except Exception as e:
-        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Firebase RTDB reset failed. Error: {}".format(e))
-        return "Firebase RTDB reset failed. Error: {}".format(e)
-    
     ## Clear DI
     try:
         DI.data = copy.deepcopy(DI.sampleData)
