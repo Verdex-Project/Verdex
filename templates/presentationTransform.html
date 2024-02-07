@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Transform</title>
+</head>
+<body>
+    <h1>Configure Presentation Transform</h1>
+    <p>Presentation transform will wipe all data across all services and create a user and admin account for presentation purposes.</p>
+    <form action="{{ url_for('debug.presentationTransform', secretKey=secretKey) }}" method="post">
+        <label for="userAccEmail">User Account Email:</label>
+        <input type="email" id="userAccEmail" name="userEmail" required><br><br>
+        <label for="userAccPassword">User Account Password:</label>
+        <input type="password" id="userAccPassword" name="userPassword" required><br><br>
+        <br><br><br>
+        <label for="adminAccEmail">Admin Account Email:</label>
+        <input type="email" id="adminAccEmail" name="adminEmail" required><br><br>
+        <label for="adminAccPassword">Admin Account Password:</label>
+        <input type="password" id="adminAccPassword" name="adminPassword" required><br><br>
+        <br>
+        <br>
+        <input id="submitButton" type="submit" value="Transform">
+    </form>
+    <script>
+        function disableButton() {
+            document.getElementById('submitButton').disabled = true;
+        }
+    </script>
+</body>
+</html>

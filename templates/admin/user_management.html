@@ -13,6 +13,7 @@
     <ol>
         {% if accountsInfo %}
             {% for user_id, user_data in accountsInfo.items() %}
+                {% if "admin" not in user_data or user_data["admin"] != True %}
                 <div class="users">
                     <div class="user-item">
                         <li>{{ user_data['email'] }}</li>
@@ -23,6 +24,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             {% endfor %}
         {% else %}
             <p>No users yet.</p>
