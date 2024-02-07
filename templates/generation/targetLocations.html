@@ -8,6 +8,7 @@
 
 {% block body %}
 <div class="container">
+    {% if gptEnabled %}
     <div id="launchGPTButtonDiv">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Out of ideas? Ask VerdexGPT!
@@ -37,6 +38,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     <h1>What do you want to see?</h1>
     <p>Tell us what are the main popular attractions you wish to see here in lovely Singapore.</p>
 
