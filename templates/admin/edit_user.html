@@ -89,7 +89,9 @@
         <h2 id="reports-header">Reports from other users:</h2>
         <ul id="report-list">
             {% for timestamp, report_text in user['reports'].items() %}
+                {% if timestamp.split('_')[0] in accountsInfo %}
                 <li id="report-list-item"><b><span id="reporterUsername"><a href="{{ url_for('admin.user_profile', user_id = timestamp.split('_')[0]) }}">{{ accountsInfo[timestamp.split("_")[0]]["username"] }}</a></span>:</b> {{ report_text }}</li>
+                {% endif %}
             {% endfor %}
         </ul>
     </div>

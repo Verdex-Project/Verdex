@@ -23,7 +23,7 @@ Options:<br><br>
 - Toggle usage lock: /debug/[key]/toggleUsageLock
 - Create admin: /debug/[key]/createAdmin?email=[email]&password=[password]
 - Toggle GPT: /debug/[key]/toggleGPT
-- Presentation transform: /debug/[key]/presentationTransform (Wipes all data and creates a new user and admin account. Use with extreme caution.)
+- Presentation transform: /debug/[key]/presentationTransform (Wipes all data and creates a new Google login user, with sample post, and admin account. Use with extreme caution.)
     """
     
     return options
@@ -180,12 +180,14 @@ def presentationTransform(secretKey):
     ## POST
     if "userEmail" not in request.form:
         return "Please provide a user email."
-    if "userPassword" not in request.form:
-        return "Please provide a user password."
+    # if "userPassword" not in request.form:
+    #     return "Please provide a user password."
     if "adminEmail" not in request.form:
         return "Please provide an admin email."
     if "adminPassword" not in request.form:
         return "Please provide an admin password."
+    if "supportQueryEmail" not in request.form:
+        return "Please provide a support query email (query reply will be sent to this email)."
     
     # Wipe all data
     
@@ -207,9 +209,8 @@ def presentationTransform(secretKey):
     
     ## Create new user account
     userAccEmail = request.form.get("userEmail")
-    userAccPassword = request.form.get("userPassword")
     userAccID = Universal.generateUniqueID()
-    userAccResponse = FireAuth.createUser(email=userAccEmail, password=userAccPassword)
+    userAccResponse = FireAuth.createUser(email=userAccEmail, password="googlelogin")
     if "ERROR" in userAccResponse:
         Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: User account creation failed. Error: {}".format(userAccResponse))
         return "User account creation failed. Error: {}".format(userAccResponse)
@@ -217,10 +218,10 @@ def presentationTransform(secretKey):
     DI.data["accounts"][userAccID] = {
         "id": userAccID,
         "fireAuthID": userAccResponse["uid"],
-        "googleLogin": False,
-        "username": "sample",
+        "googleLogin": True,
+        "username": "john",
         "email": userAccEmail,
-        "password": Encryption.encodeToSHA256(userAccPassword),
+        "password": Encryption.encodeToSHA256("googlelogin"),
         "idToken": userAccResponse['idToken'],
         "refreshToken": userAccResponse['refreshToken'],
         "tokenExpiry": (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime(Universal.systemWideStringDatetimeFormat),
@@ -230,6 +231,22 @@ def presentationTransform(secretKey):
         "aboutMe": "",
         "reports": {}
     }
+
+    ## Attach sample forum post to user account
+    newPostDatetime = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+    newPost = {
+        "username": "john",
+        "post_title": "Green Singapore!",
+        "post_description": "Can't wait to land in the greenest of nations, Singapore! Verdex has been helping a lot, but, do you have any recommendations too?",
+        "likes": "0",
+        "postDateTime": newPostDatetime,
+        "users_who_liked": [],
+        "tag": "Nature",
+        "targetAccountIDOfPostAuthor": userAccID,
+        "comments": {},
+        "itineraries": {}
+    }
+    DI.data["forum"][newPostDatetime] = newPost
 
     ## Create new admin account
     adminAccEmail = request.form.get("adminEmail")
@@ -256,6 +273,20 @@ def presentationTransform(secretKey):
         "aboutMe": ""
     }
 
+    ## Make sample support query
+    supportQueryID = Universal.generateUniqueID()
+    time_stamp = datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat)
+    if "supportQueries" not in DI.data["admin"]:
+        DI.data["admin"]["supportQueries"] = {}
+
+    DI.data["admin"]["supportQueries"][supportQueryID] = {
+        "name": 'John Appleseed',
+        "email": request.form.get("supportQueryEmail"),
+        "message": "I'm having trouble making a post on VerdexTalks. Can you guide me?",
+        "supportQueryID": supportQueryID,
+        "timestamp": time_stamp
+    }
+
     DI.save()
 
     ## Reset other services
@@ -279,11 +310,13 @@ def presentationTransform(secretKey):
     report = """
 Presentation transform successful. Report:<br><br>
 
+The user account is a Google login account. It cannot be signed into via the standard login flow.<br>
+<strong>PLEASE WAIT 10 SECONDS BEFORE LOGGING INTO THE USER ACCOUNT. THIS IS DUE TO GOOGLE OAUTH API LIMITATIONS.</strong><br><br>
 User account:<br>
 - ID: {}<br>
 - Username: {}<br>
 - Email: {}<br>
-- Password: {}<br>
+- Password: NA (Google OAuth Login)<br>
 <br><br><br>
 Admin account:<br>
 - ID: {}<br>
@@ -292,5 +325,5 @@ Admin account:<br>
 - Password: {}
 <br><br><br>
 Analytics data reset including reports data. Admin configuration cleared. UserFolders directory cleared.
-    """.format(userAccID, "sample", userAccEmail, userAccPassword, adminAccID, "admin", adminAccEmail, adminAccPassword)
+    """.format(userAccID, "john", userAccEmail, adminAccID, "admin", adminAccEmail, adminAccPassword)
     return report

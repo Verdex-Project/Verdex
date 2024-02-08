@@ -7,19 +7,24 @@
 </head>
 <body>
     <h1>Configure Presentation Transform</h1>
-    <p>Presentation transform will wipe all data across all services and create a user and admin account for presentation purposes.</p>
+    <p>Presentation transform will wipe all data across all services and sample data will be created for presentation purposes.</p>
+    <p>The user account email MUST BE A GOOGLE EMAIL as it will be created as a Google OAuth Login account. It cannot be signed into via the standard login flow.</p>
+    <p>A sample forum post will be created and attached to the user account.</p>
+    <p>A sample support query will be created with the given query sender email. Customer support replies will be sent to this email address.</p>
+    <br><br>
     <form action="{{ url_for('debug.presentationTransform', secretKey=secretKey) }}" method="post">
         <label for="userAccEmail">User Account Email:</label>
         <input type="email" id="userAccEmail" name="userEmail" required><br><br>
-        <label for="userAccPassword">User Account Password:</label>
-        <input type="password" id="userAccPassword" name="userPassword" required><br><br>
-        <br><br><br>
+        <!-- <label for="userAccPassword">User Account Password:</label>
+        <input type="password" id="userAccPassword" name="userPassword" required><br><br> -->
+        <br>
         <label for="adminAccEmail">Admin Account Email:</label>
         <input type="email" id="adminAccEmail" name="adminEmail" required><br><br>
         <label for="adminAccPassword">Admin Account Password:</label>
         <input type="password" id="adminAccPassword" name="adminPassword" required><br><br>
         <br>
-        <br>
+        <label for="queryEmail">Support Query Email:</label>
+        <input type="email" id="queryEmail" name="supportQueryEmail" required><br><br><br>
         <input id="submitButton" type="submit" value="Transform">
     </form>
     <script>

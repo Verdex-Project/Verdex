@@ -40,10 +40,10 @@ def oauthCallback():
     if "state" not in session:
         return redirect(url_for('login'))
     
-    if not session["state"] == request.args["state"]:
+    if session["state"] != request.args["state"]:
         Logger.log("ACCOUNTS OAUTHCALLBACK ERROR: Request state mismatch with session state, request rejected.")
         del session["state"]
-        return redirect(url_for("error", "Something went wrong. Please try again."))
+        return redirect(url_for("error", error="Something went wrong. Please try again."))
     
     del session["state"]
     
@@ -60,12 +60,12 @@ def oauthCallback():
         )
     except Exception as e:
         Logger.log("ACCOUNTS OAUTHCALLBACK ERROR: Failed to verify Google ID token; error: {}".format(str(e)))
-        return redirect(url_for("error", "Something went wrong. Please try again."))
+        return redirect(url_for("error", error="Something went wrong. Please try again."))
 
     email = id_info.get("email")
     if email == None:
         Logger.log("ACCOUNTS OAUTHCALLBACK ERROR: Email not found in Google ID info, request rejected.")
-        return redirect(url_for("error", "Something went wrong. Please try again."))
+        return redirect(url_for("error", error="Something went wrong. Please try again."))
     
     # Process email and create/login account accordingly
     email = email.lower()
