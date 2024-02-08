@@ -741,13 +741,26 @@ def deleteIdentity():
     else:
         Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from FireAuth.".format(targetAccountID))
     
-    ## Delete account from DI
+    ## Delete account and account-generated resources from DI
     del DI.data["accounts"][targetAccountID]
+
+    ### Delete itineraries
+    for itineraryID in copy.deepcopy(DI.data["itineraries"]):
+        if "associatedAccountID" in DI.data["itineraries"][itineraryID] and DI.data["itineraries"][itineraryID]["associatedAccountID"] == targetAccountID:
+            del DI.data["itineraries"][itineraryID]
+
+    ### Delete posts
+    for postDatetime in copy.deepcopy(DI.data["forum"]):
+        if DI.data["forum"][postDatetime]["targetAccountIDOfPostAuthor"] == targetAccountID:
+            del DI.data["forum"][postDatetime]
+
     DI.save()
-    Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
 
     ## Remove the userfolder
-    FolderManager.deleteFolder(targetAccountID)
+    if FolderManager.checkIfFolderIsRegistered(targetAccountID):
+        FolderManager.deleteFolder(targetAccountID)
+
+    Logger.log("API DELETEIDENTITY: Deleted account with ID '{}' from DI.".format(targetAccountID))
 
     session.clear()
 
