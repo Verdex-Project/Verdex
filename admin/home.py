@@ -111,9 +111,21 @@ def deleteAccount(user_id):
             if isinstance(response, str):
                 Logger.log("ADMIN USERMANAGEMENT ERROR: Failed to get FireAuth to delete account ID '{}'; response: {}".format(accountID, response))
                 return "ERROR: Failed to delete account."
+            
             del DI.data['accounts'][accountID]
+
+            ### Delete itineraries
+            for itineraryID in copy.deepcopy(DI.data["itineraries"]):
+                if "associatedAccountID" in DI.data["itineraries"][itineraryID] and DI.data["itineraries"][itineraryID]["associatedAccountID"] == accountID:
+                    del DI.data["itineraries"][itineraryID]
+
+            ### Delete posts
+            for postDatetime in copy.deepcopy(DI.data["forum"]):
+                if DI.data["forum"][postDatetime]["targetAccountIDOfPostAuthor"] == accountID:
+                    del DI.data["forum"][postDatetime]
+
             DI.save()
-            Logger.log(f'ADMIN DELETEACCOUNT: Account with ID {accountID} has been deleted')
+            Logger.log(f'ADMIN DELETEACCOUNT: Account with ID {accountID} has been deleted.')
             return redirect(url_for('admin.user_management'))
     
     return redirect(url_for('error', error='User not found'))
