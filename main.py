@@ -1,7 +1,7 @@
 import os
 if os.path.isfile("isInReplit.txt"):
     print("MAIN: Detected Replit environment. Installing requirements...")
-    os.system("pip install -r requirements.txt")
+    os.system("pip install requests flask flask-cors python-dotenv googlemaps google google-auth google-auth-oauthlib requests firebase-admin pyrebase4 passlib openai")
 
 import json, random, time, sys, subprocess, shutil, copy, requests, datetime
 from flask import Flask, request, render_template, redirect, url_for, flash, Blueprint, send_file, session
