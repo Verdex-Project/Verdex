@@ -232,6 +232,10 @@ def createAccount():
     
     if "username" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+    if not isinstance(request.json["username"], str):
+        return "ERROR: Invalid username provided."
+    if not request.json["username"].isalnum():
+        return "UERROR: Username can only contain alphanumeric characters."
     if "email" not in request.json:
         return "ERROR: One or more required payload parameters not present."
     if "password" not in request.json:
@@ -440,6 +444,10 @@ def editUsername():
     ## Check body
     if "username" not in request.json:
         return "ERROR: One or more payload not present."
+    if not isinstance(request.json["username"], str):
+        return "ERROR: Invalid username provided."
+    if not request.json["username"].isalnum():
+        return "UERROR: Username can only contain alphanumeric characters."
     
     # Check if the username is already in use
     for accountID in DI.data["accounts"]:

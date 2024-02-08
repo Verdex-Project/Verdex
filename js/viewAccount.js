@@ -33,7 +33,7 @@ function changeUsername() {
                         console.log("Unknown response received: " + response.data)
                     }
                 } else {
-                    alert("Username is already taken.")
+                    alert(response.data.substring("UERROR: ".length))
                     console.log("User error occured: " + response.data)
                 }
             } else {
