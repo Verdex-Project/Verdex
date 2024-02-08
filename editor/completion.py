@@ -79,11 +79,15 @@ def completionHome(itineraryID):
             for locationIndex in range(len(days[index][locations])):
                 if locationIndex + 1 != len(days[index][locations]):
                     locationIndex = str(locationIndex)
-                    route = GoogleMapsService.generateRoute(days[index][locations][locationIndex],days[index][locations][str(int(locationIndex) + 1)], "transit", days[index][dateTimeObjects][locationIndex])
-                    if isinstance(route,str):
+                    try:
+                        route = GoogleMapsService.generateRoute(days[index][locations][locationIndex],days[index][locations][str(int(locationIndex) + 1)], "transit", days[index][dateTimeObjects][locationIndex])
+                        if isinstance(route,str):
+                            cleanedRoute = "Route Could Not Be Determined"
+                        else:
+                            cleanedRoute = cleanRoute(route,days[index][endTimes][locationIndex])
+                    except Exception as e:
                         cleanedRoute = "Route Could Not Be Determined"
-                    else:
-                        cleanedRoute = cleanRoute(route,days[index][endTimes][locationIndex])
+                        print("EDITOR EDITORDAY ERROR: Failed to generate route for transit from '{}' to '{}'; error: {}".format(e))
                     cleanedRoutes[index][str(routeIndex)] = cleanedRoute
                     routeIndex += 1
 
