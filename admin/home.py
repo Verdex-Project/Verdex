@@ -1,6 +1,6 @@
 from flask import Blueprint,Flask, render_template, request, redirect, url_for, session, Blueprint, send_file
 import json, os, datetime, copy
-from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken, Emailer, AddonsManager, FireConn, FireRTDB, getNameAndPosition
+from main import DI, Logger, Analytics, Universal, FireAuth, manageIDToken, Emailer, AddonsManager, FireConn, FireRTDB, getNameAndPosition, deleteSession
 
 adminHomeBP = Blueprint("admin", __name__)
 
@@ -89,6 +89,12 @@ def changeEmail(user_id):
                 return redirect(url_for('error', error='Failed to change email. Please try again.'))
             
             DI.data['accounts'][accountID]['email'] = new_email
+            if 'idToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['idToken']
+            if 'refreshToken' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['refreshToken']
+            if 'tokenExpiry' in DI.data['accounts'][accountID]:
+                del DI.data['accounts'][accountID]['tokenExpiry']
             DI.save()
 
             Logger.log(f'ADMIN CHANGEEMAIL: Account with ID {accountID} has changed their email to {new_email}.')
