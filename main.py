@@ -108,6 +108,10 @@ def homepage():
 
     return render_template('homepage.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html', originURL=request.host_url)
+
 # Security pages
 @app.route('/security/error')
 def error():

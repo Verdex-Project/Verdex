@@ -1,0 +1,36 @@
+{% extends "baseXNav.html" %}
+
+{% block tabTitle %}About Verdex{% endblock %}
+
+{% block head %}
+<style>
+    #content {
+        text-align: center;
+        margin-top: 100px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    #heading {
+        margin-top: 80px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="content">
+    <img src="/assets/logo?type=transparentColour" alt="logo" width="200">
+    <br>
+    <h1 id="heading">About Verdex</h1>
+    <br>
+    <h5>Verdex is a revolutionary web app allowing users to plan sustainable itineraries to Singapore and<br>share their experiences with a community excited about sustainable tourism.</h5>
+    <br>
+    <br>
+    <br>
+    <strong><p>The Verdex Project was envisioned and developed by the Verdex Team, consisting of:</p></strong>
+    <p>Prakhar Trivedi, Joon Jun Han, Lincoln Lim Ken Yang, Joshua Long Yu Xuan, Nicholas Chew Xun Cheng</p>
+    <br>
+    <a href="{{ originURL }}"><p>Go back to Verdex Home</p></a>
+    <br>
+    <script src="/assets/copyright"></script>
+</div>
+{% endblock %}
