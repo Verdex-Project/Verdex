@@ -56,7 +56,8 @@ def oauthCallback():
         id_info = id_token.verify_oauth2_token(
             id_token=credentials.id_token,
             request=token_request,
-            audience=GoogleOAuth.googleClientID
+            audience=GoogleOAuth.googleClientID,
+            clock_skew_in_seconds=60
         )
     except Exception as e:
         Logger.log("ACCOUNTS OAUTHCALLBACK ERROR: Failed to verify Google ID token; error: {}".format(str(e)))
