@@ -136,13 +136,12 @@ class GoogleMapsService:
         # Obtain directions data from Google Maps
         try:
             directionsData = GoogleMapsService.gmapsClient.directions(startLocation, endLocation, mode=mode, departure_time=departureTime)
-            # pprint.pprint(directionsData)
+            directionsData = directionsData[0]
         except Exception as e:
             return "ERROR: Failed to obtain directions data from Google Maps; error: {}".format(e)
         
         # Extract and process relevant data
-        # return directionsData
-        directionsData = directionsData[0]
+        
         response = {}
         response["copyright"] = directionsData["copyrights"]
         response["warnings"] = directionsData["warnings"]

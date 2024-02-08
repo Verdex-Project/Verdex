@@ -1,5 +1,5 @@
-from flask import Flask,render_template,Blueprint, request,redirect,url_for
-from main import DI, Universal, GoogleMapsService, cleanRoute, manageIDToken
+from flask import Flask,render_template,Blueprint, request,redirect, url_for
+from main import DI, Universal, GoogleMapsService, cleanRoute, manageIDToken, Logger
 import json, os
 from datetime import datetime, timedelta
 
@@ -59,11 +59,24 @@ def editorDay(itineraryID, day):
     #generate routes for every activity and add to dictionary
     for locationIndex in range(len(locations)):
         if locationIndex + 1 != len(locations):
-            route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
+            try:
+                if GoogleMapsService.servicesEnabled:
+                    route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
+                else:
+                    route = "Route couldn't be determined."
+            except Exception as e:
+                route = "Route Could Not Be Determined"
+                Logger.log("EDITOR EDITORDAY ERROR: Failed to generate route for transit from '{}' to '{}'; error: {}".format(e))
+            
             if isinstance(route,str):
                 cleanedRoute = "Route Could Not Be Determined"
             else:
-                cleanedRoute = cleanRoute(route, endTimes[locationIndex])
+                try:
+                    cleanedRoute = cleanRoute(route, endTimes[locationIndex])
+                except Exception as e:
+                    cleanedRoute = "Route Could Not Be Determined"
+                    Logger.log("EDITOR EDITORDAY ERROR: Failed to clean route for transit from '{}' to '{}'; error: {}".format(e))
+            
             cleanedRoutes[str(locationIndex)] = cleanedRoute
 
     dayCountList = []
