@@ -1227,6 +1227,14 @@ def deleteActivity():
         return "ERROR: One or more required payload parameters not provided."
 
     DI.data["itineraries"][itineraryID]["days"][day]["activities"].pop(activityId)
+
+    activityData = [DI.data["itineraries"][itineraryID]["days"][day]["activities"][id] for id in DI.data["itineraries"][itineraryID]["days"][day]["activities"]]
+    newActivitiesData = {}
+    for index in range(len(activityData)):
+        newActivitiesData[str(index)] = activityData[index]
+    
+    DI.data["itineraries"][itineraryID]["days"][day]["activities"] = newActivitiesData
+
     DI.save()
     
     return "SUCCESS: Activity is deleted."
