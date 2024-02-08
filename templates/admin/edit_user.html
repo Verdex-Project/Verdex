@@ -68,8 +68,9 @@
         <p>Email: {{ user['email'] }}</p> <!-- is this the correct way of getting the email? -->
         <p>User ID: {{ user['id'] }}</p> <!-- is this the correct way of getting the id? -->
         <div class="edit-buttons">
+            {% if "googleLogin" not in user or user["googleLogin"] != True %}
             <button class="btn btn-outline-primary" onclick ="changeEmail()">Change email</button>
-            <button class="btn btn-outline-secondary">Password Reset</button>
+            {% endif %}
             {% if user['forumBanned'] %}
                 <button class="btn btn-outline-success" onclick ="unbanFromForum()">Unban from VerdexTalks</button>
             {% else %}
