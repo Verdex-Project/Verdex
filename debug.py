@@ -215,6 +215,11 @@ def presentationTransform(secretKey):
         Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: User account creation failed. Error: {}".format(userAccResponse))
         return "User account creation failed. Error: {}".format(userAccResponse)
     
+    ### Auto-verify email
+    response = FireAuth.updateEmailVerifiedStatus(userAccResponse["uid"], True)
+    if response != True:
+        Logger.log("DEBUG PRESENTATIONTRANSFORM ERROR: Failed to auto-verify email for new Google OAuth Login account created via presentation transform; error: {}".format(response))
+    
     DI.data["accounts"][userAccID] = {
         "id": userAccID,
         "fireAuthID": userAccResponse["uid"],
