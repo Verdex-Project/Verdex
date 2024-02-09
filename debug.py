@@ -19,11 +19,11 @@ Options:<br><br>
 - Clear logs: /debug/[key]/logs/clear<br>
 - Reload DI: /debug/[key]/reloadDI<br>
 - FireAuth sync: /debug/[key]/fireAuthSync<br>
-- FireReset: /debug/[key]/fireReset (Wipes all Firebase data, including Firebase Auth accounts, and reloads DI. Use with caution.)
-- Toggle usage lock: /debug/[key]/toggleUsageLock
-- Create admin: /debug/[key]/createAdmin?email=[email]&password=[password]
-- Toggle GPT: /debug/[key]/toggleGPT
-- Presentation transform: /debug/[key]/presentationTransform (Wipes all data and creates a new Google login user, with sample post, and admin account. Use with extreme caution.)
+- FireReset: /debug/[key]/fireReset (Wipes all Firebase data, including Firebase Auth accounts, and reloads DI. Use with caution.)<br>
+- Toggle usage lock: /debug/[key]/toggleUsageLock<br>
+- Create admin: /debug/[key]/createAdmin?email=[email]&password=[password]<br>
+- Toggle GPT: /debug/[key]/toggleGPT<br>
+- Presentation transform: /debug/[key]/presentationTransform (Wipes all data and creates a new Google login user, with sample post, and admin account. Use with extreme caution.)<br>
     """
     
     return options
