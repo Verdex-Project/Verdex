@@ -1,36 +1,72 @@
-{% extends "baseXNav.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Verdex</title>
+    <!-- Place in document head -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='starwarsintro.css') }}">
+</head>
+<body>
+<!-- Place in Body where you'd like intro to appear -->
+<div class="star-wars-intro">
 
-{% block tabTitle %}About Verdex{% endblock %}
+    <!-- Blue Intro Text -->
+    <p class="intro-text">
+        A long time ago in a galaxy far, far away....
+    </p>
 
-{% block head %}
-<style>
-    #content {
-        text-align: center;
-        margin-top: 100px;
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-    #heading {
-        margin-top: 80px;
-    }
-</style>
-{% endblock %}
+    <!-- Logo Image or Text goes in here -->
+    <h2 class="main-logo">
+        <img src="{{ url_for('assets.logo', type='transparentColour') }}">
+    </h2>
 
-{% block body %}
-<div id="content">
-    <img src="/assets/logo?type=transparentColour" alt="logo" width="200">
-    <br>
-    <h1 id="heading">About Verdex</h1>
-    <br>
-    <h5>Verdex is a revolutionary web app allowing users to plan sustainable itineraries to Singapore and<br>share their experiences with a community excited about sustainable tourism.</h5>
-    <br>
-    <br>
-    <br>
-    <strong><p>The Verdex Project was envisioned and developed by the Verdex Team, consisting of:</p></strong>
-    <p>Prakhar Trivedi, Joon Jun Han, Lincoln Lim Ken Yang, Joshua Long Yu Xuan, Nicholas Chew Xun Cheng</p>
-    <br>
-    <a href="{{ originURL }}"><p>Go back to Verdex Home</p></a>
-    <br>
-    <script src="/assets/copyright"></script>
+    <!-- All Scrolling Content Goes in here -->
+    <div class="main-content">
+
+        <div class="title-content">
+            <p class="content-header">EPISODE I<br />THE TRIUMPHANT & UNPRECEDENTED PROJECT</p>
+
+            <br>
+
+            <p class="content-body">
+                After hours of hard work, the Verdex Team is proud to present to you a revolutionary web application 
+                that helps you plan sustainable itineraries in an unprecedented way. Bask in the glory of a myriad
+                of features that help you plan your ideal vacation in Singapore at every step of the way.<br><br>
+
+                Indulge in the beauty of the city in a sustainable way, and let Verdex take care of the rest.<br><br>
+
+                The Verdex Project was envisioned and developed by the Verdex Team, a group of passionate unsung heroes consisting of (in no order):
+                <ul>
+                    <li>Prakhar Trivedi: Verdex Manager</li><br>
+                    <li>Joon Jun Han: Head of Identity & Accounts</li><br>
+                    <li>Lincoln Lim Ken Yang: Head of Itinerary Experience</li><br>
+                    <li>Joshua Long Yu Xuan: Head of VerdexTalks</li><br>
+                    <li>Nicholas Chew Xun Cheng: Head of Admin</li><br>
+                </ul>
+                <br><br>
+
+                We hope you enjoy your time on Verdex, and may the force be with you.
+            </p>
+
+            <!-- button or link or whatever -->
+            <a id="backLink" class="space-button">Go back to Verdex Home</a>
+
+        </div>
+    </div>
+
+    <audio id="star-wars-theme" src="{{ url_for('static', filename='starwarstrack.mp3') }}" preload="auto" autoplay></audio>
 </div>
-{% endblock %}
+<script>
+    // Place in document bottom
+    var theme = document.getElementById('star-wars-theme');
+    document.onclick = function() {
+        if (theme.paused) {
+            theme.play();
+        } else {
+            theme.pause();
+        }
+    }
+</script>
+</body>
+</html>
