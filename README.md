@@ -9,7 +9,7 @@ Verdex is a tool to generate sustainable itineraries for trips to Singapore and 
 
 Verdex is an ambitious project envisioned and developed by the Verdex Team for the App Development Project module in Year 1 Semester 2 of the Diploma in Information Technology course at Nanyang Polytechnic.
 
-The app has a 50% chance of being live at [verdex.app](https://verdex.app). Try your luck.
+The app has a 50% chance of being live at [verdex.app](https://verdex.app). Try your luck lol.
 
 Members of the Verdex Team include:
 - [Prakhar Trivedi (@Prakhar896)](https://github.com/Prakhar896) - Verdex Itinerary Generation & Overall Lead
@@ -20,35 +20,55 @@ Members of the Verdex Team include:
 
 # Table of Contents
 - [About Verdex](#about-verdex)
-- [Internal Services](#internal-services)
 - [Integrations in Verdex](#integrations-in-verdex)
+- [Internal Services](#internal-services)
 - [Usage & Requirements](#usage--requirements)
 
 # About Verdex
 
 Verdex is a state of mind. Just kidding.
 
-<img src="/assets/docs/img/itineraryGeneration.png" alt="Generating Itineraries" height="300px">
+<img src="/assets/docs/img/itineraryGeneration.png" alt="Generating Itineraries">
 
 Verdex has a unique algorithm that generates sustainable activities and itineraries for tourists visiting Singapore. The algorithm takes into account the user's preferences and the environmental impact of the activities. The app also has a community forum, neatly called VerdexTalks, where users can share their experiences and tips on sustainable tourism.
 
-<img src="/assets/docs/img/verdextalks.png" alt="VerdexTalks Community Forum" height="300px">
+---
 
-Another aim of the forum was for tourists with similar interests to connect and explore Singpaore as a group. This would reduce the carbon footprint of the tourists and also make the trip more enjoyable, especially for solo travellers.
+<img src="/assets/docs/img/verdextalks.png" alt="VerdexTalks Community Forum">
 
-<img src="/assets/docs/img/signup.png" alt="Creating an account on Verdex" height="300px">
+Another aim of the forum was for tourists with similar interests to connect and explore Singapore as a group. This would reduce the carbon footprint of the tourists and also make the trip more enjoyable, especially for solo travellers.
+
+---
+
+<img src="/assets/docs/img/signup.png" alt="Creating an account on Verdex">
 
 Our easy-to-get-started flow allows users to sign up and start using the app in no time. The app has features like **Sign in with Google**, **VerdexGPT** and more to make the user experience as smooth as possible.
 
 The UI of the app is designed to be simple and intuitive, with a focus on the user's experience. Designs across all webpages are the result of hundreds of hours of meticulous and iterative refinements with the user in mind.
 
-<img src="/assets/docs/img/editor.png" alt="Editing an Itinerary" height="300px">
+---
 
-The itinerary editor, especially, organises a large variety of granular features to personalise user itineraries in a beautiful and intuitive manner.
+<img src="/assets/docs/img/editor.png" alt="Editing an Itinerary">
 
-<img src="/assets/docs/img/admin.png" alt="Creating an account on Verdex" height="300px">
+The itinerary editor, especially, organises a large variety of granular features, including real-time directions from Google Maps between activities in a day, to personalise user itineraries in a beautiful and intuitive manner.
+
+---
+
+<img src="/assets/docs/img/admin.png" alt="Verdex Admin Dashboard">
 
 Behind the scenes, Verdex is powered by a robust backend that is designed to be scalable and secure. The backend is also stacked with various administerial features and dials to control the app's operation and features. Verdex is backed by Firebase and Google Cloud Platform, which ensures disaster recovery, data synchronisation and excellent identity management.
+
+# Integrations in Verdex
+
+Verdex is integrated with several external services and APIs to provide a seamless and feature-rich experience to the user. These integrations are designed to be secure and reliable, and are used to enhance the user experience and the app's functionality.
+
+The integrations include:
+- **Firebase Authentication**: Used to handle user authentication and identity management.
+- **Firebase Realtime Database**: Used to store and synchronise user data and itineraries across devices and the cloud.
+- **Google Maps Directions & Embed APIs**: Used to fetch and display maps, routes and other location-based data. This data is used in itineraries to guide the user from point-to-point.
+- **Google Identity Platform - OAuth**: Used to allow users to sign in with Google.
+- **Google SMTP Servers**: Used to dispatch emails from the system directly to the user.
+- **OpenAI GPT-3.5**: Used to allow users to get suggestions and tips for their sustainable itineraries. This feature is called VerdexGPT.
 
 # Internal Services
 
@@ -64,18 +84,6 @@ The services include:
 - **Analytics**: A service that allows Verdex to collect and analyse user data to improve the app's performance and user experience. This service is designed to be GDPR-compliant and respects user privacy.
 
 There are several other micro-services as well that help with system efficiency, auditing and debugging.
-
-# Integrations in Verdex
-
-Verdex is integrated with several external services and APIs to provide a seamless and feature-rich experience to the user. These integrations are designed to be secure and reliable, and are used to enhance the user experience and the app's functionality.
-
-The integrations include:
-- **Firebase Authentication**: Used to handle user authentication and identity management.
-- **Firebase Realtime Database**: Used to store and synchronise user data and itineraries across devices and the cloud.
-- **Google Maps Directions & Embed APIs**: Used to fetch and display maps, routes and other location-based data. This data is used in itineraries to guide the user from point-to-point.
-- **Google Identity Platform - OAuth**: Used to allow users to sign in with Google.
-- **Google SMTP Servers**: Used to dispatch emails from the system directly to the user.
-- **OpenAI GPT-3.5**: Used to allow users to get suggestions and tips for their sustainable itineraries. This feature is called VerdexGPT.
 
 # Usage & Requirements
 
