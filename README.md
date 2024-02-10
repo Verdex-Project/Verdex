@@ -14,7 +14,7 @@
 
 # Verdex
 
-<img src="/assets/docs/img/homepage.png" alt="Verdex Homepage" height="300px">
+<img src="/assets/docs/img/homepage.png" alt="Verdex Homepage">
 
 Verdex is a tool to generate sustainable itineraries for trips to Singapore and to share your sustainable itinerary and experiences with others in a community excited about sustainable tourism.
 
