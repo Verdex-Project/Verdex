@@ -3,6 +3,8 @@
 
 # Verdex
 
+<img src="/assets/docs/img/homepage.png" alt="Verdex Homepage" height="300px">
+
 Verdex is a tool to generate sustainable itineraries for trips to Singapore and to share your sustainable itinerary and experiences with others in a community excited about sustainable tourism.
 
 Verdex is an ambitious project envisioned and developed by the Verdex Team for the App Development Project module in Year 1 Semester 2 of the Diploma in Information Technology course at Nanyang Polytechnic.
@@ -26,17 +28,27 @@ Members of the Verdex Team include:
 
 Verdex is a state of mind. Just kidding.
 
+<img src="/assets/docs/img/itineraryGeneration.png" alt="Generating Itineraries" height="300px">
+
 Verdex has a unique algorithm that generates sustainable activities and itineraries for tourists visiting Singapore. The algorithm takes into account the user's preferences and the environmental impact of the activities. The app also has a community forum, neatly called VerdexTalks, where users can share their experiences and tips on sustainable tourism.
 
+<img src="/assets/docs/img/verdextalks.png" alt="VerdexTalks Community Forum" height="300px">
+
 Another aim of the forum was for tourists with similar interests to connect and explore Singpaore as a group. This would reduce the carbon footprint of the tourists and also make the trip more enjoyable, especially for solo travellers.
+
+<img src="/assets/docs/img/signup.png" alt="Creating an account on Verdex" height="300px">
 
 Our easy-to-get-started flow allows users to sign up and start using the app in no time. The app has features like **Sign in with Google**, **VerdexGPT** and more to make the user experience as smooth as possible.
 
 The UI of the app is designed to be simple and intuitive, with a focus on the user's experience. Designs across all webpages are the result of hundreds of hours of meticulous and iterative refinements with the user in mind.
 
+<img src="/assets/docs/img/editor.png" alt="Editing an Itinerary" height="300px">
+
 The itinerary editor, especially, organises a large variety of granular features to personalise user itineraries in a beautiful and intuitive manner.
 
-Behind the scenes, Verdex is powered by a robust backend that is designed to be scalable and secure. The backend is also stacked with various administerial feature and dials to control the app's operation and features. Verdex is backed by Firebase and Google Cloud Platform, which ensures disaster recovery, data synchronisation and excellent identity management.
+<img src="/assets/docs/img/admin.png" alt="Creating an account on Verdex" height="300px">
+
+Behind the scenes, Verdex is powered by a robust backend that is designed to be scalable and secure. The backend is also stacked with various administerial features and dials to control the app's operation and features. Verdex is backed by Firebase and Google Cloud Platform, which ensures disaster recovery, data synchronisation and excellent identity management.
 
 # Internal Services
 
@@ -81,6 +93,7 @@ Verdex requires the following minimum system requirements:
 Note that most integrations and services used in Verdex are optional to enable, so you can skip some of these steps accordingly. Refer to the [configuring environment variables](#configuring-environment-variables) section for more information on what services can be toggled.
 
 **Firebase**
+
 Verdex uses the Firebase Admin SDK and the Firebase Web Client API to interact with Firebase services. A `serviceAccountKey.json` (credentials) file and web app API key are needed.
 
 Follow these steps:
@@ -91,6 +104,7 @@ Follow these steps:
 4. Copy the web API key, auth domain, database URL, and storage bucket URL from the app configuration presented to you. These will be used in the `.env` file.
 
 **Google Cloud Platform**
+
 Verdex uses the Google Maps Embed API and the Google Maps Directions API (requires a GCP API key) to fetch and display maps, routes and other location-based data. A `clientSecrets.json` file is needed (if Google OAuth Login is to be enabled) that can be downloaded from the Google Cloud Console.
 
 Follow these steps:
@@ -102,11 +116,13 @@ Follow these steps:
     - Note: The OAuth consent screen must be configured with the necessary scopes (Verdex only uses requires the email and profile scopes, which do not require further project verification from Google) and details.
 
 **OpenAI GPT-3.5**
+
 Verdex uses the OpenAI GPT-3.5 Chat Completion API to allow users to get suggestions and tips for their sustainable itineraries. An API key is needed should you wish to enable this integration.
 
 Create an account on [OpenAI's website](https://openai.com) and follow the instructions to get an API key. This key will be used in the `.env` file.
 
 **Google SMTP Emailing Services**
+
 Verdex uses Google's SMTP servers to dispatch emails from the system directly to the user. This is used for email verification and password reset. You will need to enable less secure apps (requires 2FA to be on) on a Google account you want Verdex to use to send emails and generate an app password for Verdex to use. This Google account email and app password will be used in the `.env` file later.
 
 ## Configuring environment variables
