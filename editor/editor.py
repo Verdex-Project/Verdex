@@ -63,7 +63,6 @@ def editorDay(itineraryID, day):
                 if GoogleMapsService.servicesEnabled:
                     route = GoogleMapsService.generateRoute(locations[locationIndex], locations[locationIndex + 1], "transit", dateTimeObjects[locationIndex])
                 else:
-                    Logger.log("EDITOR EDITORDAY ERROR: Failed to generate route for transit from '{}' to '{}'; service response: {}".format(locations[locationIndex], locations[locationIndex + 1], route))
                     route = "Route couldn't be determined."
             except Exception as e:
                 route = "Route Could Not Be Determined"
