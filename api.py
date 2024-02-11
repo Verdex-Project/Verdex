@@ -372,12 +372,25 @@ def generateItinerary():
 
     ## Prepare locations list
     locations = cleanTargetLocations
+    duplicatesInsertedAsContingency = 0
     while len(locations) < 9:
-        randomIndex = random.randint(0, len(locations) - 1)
+        randomIndex = random.randint(0, len(locations) - 1) if len(locations) > 0 else 0
         randomLocation = None
-        while randomLocation == None or randomLocation in locations:
+        attempts = 30
+        while (randomLocation == None or randomLocation in locations) and attempts > 0:
             randomLocation = random.choice([name for name in Universal.generationData["locations"]])
+            attempts -= 1
+        
+        ## If a unique new location really cannot be found, insert a random location, regardless of duplicates
+        if randomLocation == None or attempts <= 0:
+            locations.insert(randomIndex, random.choice([name for name in Universal.generationData["locations"]]))
+            duplicatesInsertedAsContingency += 1
+            continue
+
         locations.insert(randomIndex, randomLocation)
+    
+    if duplicatesInsertedAsContingency > 0:
+        Logger.log("API GENERATEITINERARY WARNING: {} duplicate locations inserted as contingency as enough new unique locations could not be found to insert.".format(duplicatesInsertedAsContingency))
     
     activities = [tuple(locations[i:i+3]) for i in range(0, len(locations), 3)]
 
