@@ -340,6 +340,9 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
     if "description" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+    
+    if len(Universal.generationData) == 0 or 'locations' not in Universal.generationData or len(Universal.generationData['locations']) == 0:
+        return "UERROR: Generation data not available. Please try again later."
 
     cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
     if len(cleanTargetLocations) > 9:
@@ -372,12 +375,25 @@ def generateItinerary():
 
     ## Prepare locations list
     locations = cleanTargetLocations
+    duplicatesInsertedAsContingency = 0
     while len(locations) < 9:
-        randomIndex = random.randint(0, len(locations) - 1)
+        randomIndex = random.randint(0, len(locations) - 1) if len(locations) > 0 else 0
         randomLocation = None
-        while randomLocation == None or randomLocation in locations:
+        attempts = 30
+        while (randomLocation == None or randomLocation in locations) and attempts > 0:
             randomLocation = random.choice([name for name in Universal.generationData["locations"]])
+            attempts -= 1
+        
+        ## If a unique new location really cannot be found, insert a random location, regardless of duplicates
+        if randomLocation == None or attempts <= 0:
+            locations.insert(randomIndex, random.choice([name for name in Universal.generationData["locations"]]))
+            duplicatesInsertedAsContingency += 1
+            continue
+
         locations.insert(randomIndex, randomLocation)
+    
+    if duplicatesInsertedAsContingency > 0:
+        Logger.log("API GENERATEITINERARY WARNING: {} duplicate locations inserted as contingency as enough new unique locations could not be found to insert.".format(duplicatesInsertedAsContingency))
     
     activities = [tuple(locations[i:i+3]) for i in range(0, len(locations), 3)]
 
