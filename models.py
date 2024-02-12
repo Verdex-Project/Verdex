@@ -354,7 +354,12 @@ class Universal:
     def loadGenerationData(returnValue=False):
         if os.path.isfile(os.path.join(os.getcwd(), Universal.generationDataFilename)):
             with open(Universal.generationDataFilename, "r") as f:
-                Universal.generationData = json.load(f)
+                try:
+                    Universal.generationData = json.load(f)
+                except Exception as e:
+                    print("UNIVERSAL LOADGENERATIONDATA WARNING: Failed to load generation data. Error: {}".format(e))
+                    Universal.generationData = {}
+                
                 return Universal.generationData if returnValue else None
         else:
             Universal.generationData = {}

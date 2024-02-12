@@ -340,6 +340,9 @@ def generateItinerary():
         return "ERROR: One or more required payload parameters not present."
     if "description" not in request.json:
         return "ERROR: One or more required payload parameters not present."
+    
+    if len(Universal.generationData) == 0 or 'locations' not in Universal.generationData or len(Universal.generationData['locations']) == 0:
+        return "UERROR: Generation data not available. Please try again later."
 
     cleanTargetLocations = [x for x in request.json['targetLocations'] if x in Universal.generationData['locations']]
     if len(cleanTargetLocations) > 9:
