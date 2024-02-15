@@ -107,8 +107,8 @@ def updateAnalytics():
 
                 if lastLogsDispatch == "Key Not Found" or ((datetime.datetime.now() - datetime.datetime.strptime(lastLogsDispatch, Universal.systemWideStringDatetimeFormat)) > datetime.timedelta(days=1)):
                     logsDispatchSuccess = sendLogsWebhookUpdate(
-                        host_url=request.host_url,
-                        pfp_url=request.host_url[:-1] + url_for("assets.logo", type="icon")
+                        host_url="Verdex System",
+                        pfp_url="https://github.com/Verdex-Project/Verdex/blob/main/assets/logos/icon.png?raw=true"
                     )
 
                     if logsDispatchSuccess == "Success":
