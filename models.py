@@ -1,4 +1,4 @@
-import os, json, sys, random, datetime, copy, base64, uuid
+import os, json, sys, random, datetime, copy, base64, uuid, requests, time, json
 from passlib.hash import sha256_crypt as sha
 from addons import *
 
@@ -102,6 +102,55 @@ def cleanRoute(route,time):
     # print(stepsDictionary)
     # print(cleanedRoute)
     return cleanedRoute
+
+def sendLogsWebhookUpdate(host_url=None, pfp_url=None):
+    if "DiscordWebhookURL" not in os.environ:
+        print("LOGSWEBHOOKUPDATE: No Discord Webhook URL available.")
+        return
+    
+    webhookURL = os.environ["DiscordWebhookURL"]
+
+    dataToSend = {
+        'username': 'Verdex System'
+    }
+
+    # Get current date and time
+    now = datetime.datetime.now()
+
+    dataToSend["embeds"] = [
+        {
+            "title": "Logs Update: {} UTC{}".format(now.strftime("%d %b %Y %I:%M %p"), time.strftime("%Z")),
+            "description": "A daily automatic logs dispatch.",
+            "color": 15105570,
+            "footer": {
+                "text": "Message from {} | {}".format(host_url if host_url != None else "Verdex System", datetime.datetime.utcnow().strftime(Universal.systemWideStringDatetimeFormat))
+            }
+        }
+    ]
+
+    if pfp_url != None:
+        dataToSend["avatar_url"] = pfp_url
+
+    try:
+        if not os.path.isfile(os.path.join(os.getcwd(), "logs.txt")):
+            dataToSend["content"] = "No logs available."
+            result = requests.post(webhookURL, json=dataToSend)
+        else:
+            result = requests.post(webhookURL, files={
+                'file': open("logs.txt", "rb"),
+                'payload_json': (None, json.dumps(dataToSend))
+            })
+    except Exception as e:
+        print("LOGSWEBHOOKUPDATE ERROR: " + str(e))
+        return
+
+    try:
+        result.raise_for_status()
+    except Exception as e:
+        print("LOGSWEBHOOKUPDATE ERROR: " + str(e))
+        return
+    
+    return "Success"
     
 
 def fileContent(filePath, passAPIKey=False):

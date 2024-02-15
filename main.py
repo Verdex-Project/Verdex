@@ -99,6 +99,29 @@ def updateAnalytics():
     
     if not (request.path.startswith("/static") or request.path.startswith("/assets") or request.path.startswith("/favicon.ico")):
         Analytics.add_metrics(Analytics.EventTypes.get_request if request.method == "GET" else Analytics.EventTypes.post_request)
+
+        ## Dispatch logs to Discord webhook, if enabled
+        try:
+            if ("DiscordLogUpdatesEnabled" in os.environ and os.environ["DiscordLogUpdatesEnabled"] == "True") and "DiscordWebhookURL" in os.environ:
+                lastLogsDispatch = AddonsManager.readConfigKey("LastLogDispatch")
+
+                if lastLogsDispatch == "Key Not Found" or ((datetime.datetime.now() - datetime.datetime.strptime(lastLogsDispatch, Universal.systemWideStringDatetimeFormat)) > datetime.timedelta(days=1)):
+                    logsDispatchSuccess = sendLogsWebhookUpdate(
+                        host_url=request.host_url,
+                        pfp_url=request.host_url[:-1] + url_for("assets.logo", type="icon")
+                    )
+
+                    if logsDispatchSuccess == "Success":
+                        print("DISCORDLOGUPDATE: Logs file dispatched to Discord webhook.")
+                    else:
+                        print("DISCORDLOGUPDATE: Failed to dispatch logs file to Discord webhook. Will not attempt again till next update.")
+                        Logger.log("DISCORDLOGUPDATE ERROR: Failed to dispatch logs file to Discord webhook. Will not attempt again till next update.")
+
+                    AddonsManager.setConfigKey("LastLogDispatch", datetime.datetime.now().strftime(Universal.systemWideStringDatetimeFormat))
+        except Exception as e:
+            print("DISCORDLOGUPDATE: (Non-terminal) Failed to dispatch logs file to Discord webhook; error: {}".format(e))
+            Logger.log("DISCORDLOGUPDATE ERROR: (Non-terminal) Failed to dispatch logs file to Discord webhook; error: {}".format(e))
+        
     return
 
 @app.route('/')
@@ -226,6 +249,12 @@ if __name__ == '__main__':
                 print(f"MAIN: Pruned UserFolders/{folder} as it is not in the database.")
     except Exception as e:
         print("MAIN: (Non-terminal) Failed to prune folder {} from UserFolders; error: {}".format(folder, e))
+
+    if "DiscordLogUpdatesEnabled" in os.environ and os.environ["DiscordLogUpdatesEnabled"] == "True":
+        if "DiscordWebhookURL" not in os.environ:
+            print("DISCORDLOGUPDATE WARNING: DiscordLogUpdatesEnabled is enabled but DiscordWebhookURL is not set. Logs file dispatches to Discord will not work.")
+        else:
+            print("DISCORDLOGUPDATE: Discord logs file dispatches are enabled.")
     
     # if 'DebugMode' in os.environ and os.environ['DebugMode'] == 'True':
     #     DI.data["itineraries"]["abc123"] = {
