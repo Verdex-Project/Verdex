@@ -384,4 +384,8 @@ if __name__ == '__main__':
     print("All services online; boot pre-processing and setup complete.")
     print("Booting Verdex...")
 
-    app.run(port=8000, host='0.0.0.0')
+    if ("RuntimePort" not in os.environ) or (not os.environ["RuntimePort"].isdigit()):
+        print("MAIN ERROR: RuntimePort missing or invalid. Boot aborted.")
+        sys.exit(1)
+
+    app.run(port=int(os.environ["RuntimePort"]), host='0.0.0.0')
